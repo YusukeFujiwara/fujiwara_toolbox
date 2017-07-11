@@ -6,8 +6,10 @@ Blender用漫画addon群です。
 
 インストール方法
 "Clone or download"から"Download Zip"して解凍してできた中身の"fujiwara_toolbox-master"を、"fujiwara_toolbox"にリネームしてBlenderのaddonフォルダにおいてください。
-ユーザー設定で"fujiwara_toolbox"にチェックを入れると使えます。
+ユーザー設定で"Tools:Fujiwara Tool Box"にチェックを入れると使えます。
 
 ご利用は自己責任で。
+
+作者twitter:https://twitter.com/GhostBrain3dex
 
 開発環境：Windows 10
