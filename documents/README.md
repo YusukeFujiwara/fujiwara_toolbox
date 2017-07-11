@@ -1,6 +1,6 @@
 ﻿# Fujiwara Tool Box
 
 
-* [ページユーティリティー](pageutils.md)
+* [ページユーティリティ](pageutils.md)
 
 under construction...
