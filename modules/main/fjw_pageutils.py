@@ -286,32 +286,25 @@ class refresh(bpy.types.Operator):
             obj.location[2] = 0
 
             #マテリアル関係
-            bpy.ops.object.material_slot_add()
-            bpy.ops.material.new()
-
             matname = "コマ_" + fname
-            bpy.data.materials["Material"].name = matname
-            mat = bpy.data.materials[matname]
-
-            obj.material_slots[0].material = mat
+            mat = bpy.data.materials.new(name=matname)
             mat.use_transparency = True
             mat.alpha = 0
             mat.use_shadeless = True
 
+            obj.data.materials.append(mat)
+
 
             #テクスチャ
-            bpy.ops.texture.new()
-            bpy.data.textures["Texture"].name = file
-            tex = bpy.data.textures[file]
-            #bpy.ops.image.open(filepath="//pageutils\\img\\1.png",
-            #directory="G:\\SSD作業\\各種テスト\\pageutil\\モックテスト\\1\\pageutils\\img\\",
-            #files=[{"name":"1.png", "name":"1.png"}], show_multiview=False)
-            bpy.ops.image.open(filepath="//pageutils" + os.sep + "img" + os.sep + file, directory=imgdir)
-            tex.image = bpy.data.images[file]
+            tex = bpy.data.textures.new(file, "IMAGE")
+            load_img(imgdir+file)
 
-            mat.texture_slots.add()
-            mat.texture_slots[0].texture = tex
-            mat.texture_slots[0].use_map_alpha = True
+            tex.image = load_img(imgdir+file)
+
+            texture_slot = mat.texture_slots.add()
+            texture_slot.texture = tex
+            texture_slot.texture = tex
+            texture_slot.use_map_alpha = True
             #obj.material_slots[0].material.texture_slots[0].texture = tex
 
             bpy.context.space_data.viewport_shade = 'MATERIAL'
