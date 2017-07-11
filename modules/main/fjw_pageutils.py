@@ -190,7 +190,7 @@ class popen(bpy.types.Operator):
         return {"FINISHED"}
 
 class bgopen(bpy.types.Operator):
-    """背景を開く"""
+    """background.pngを開きます。"""
     bl_idname = "pageutils.bgopen"
     bl_label = "背景を開く"
     def execute(self,context):
@@ -388,7 +388,7 @@ class newcell(bpy.types.Operator):
     bl_label = "新規コマ"
     def execute(self,context):
         dir = os.path.dirname(bpy.data.filepath)
-        templatepath = fujiwara_toolbox.conf.pageutils_templatepath
+        templatepath = get_resourcesdir() + "pageutils" + os.sep + "cell.blend"
 
         #保存
         bpy.ops.wm.save_mainfile()
