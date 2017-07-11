@@ -28,7 +28,10 @@ import fujiwara_toolbox.conf
 def qq(str):
     return '"'+str+'"'
 
-
+def get_resourcesdir():
+    scrdir = os.path.dirname(__file__)
+    resourcesdir = scrdir + os.sep + "resources" + os.sep
+    return resourcesdir
 
 def getdirs(path):
     dirs = []
@@ -56,6 +59,7 @@ def cursor():
     return bpy.context.space_data.cursor_location
 def set_cursor(pos):
     bpy.context.space_data.cursor_location = pos
+
 
 
 def find(name):
@@ -761,7 +765,7 @@ def make_proxy_all():
 
 def append_nodetree(name):
     if name not in bpy.data.node_groups:
-        dir = fujiwara_toolbox.conf.assetdir + os.sep + "ノード"
+        dir = get_resourcesdir() + "nodes"
 
         _dataname = name
         _filename = name + ".blend"
