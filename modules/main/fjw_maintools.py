@@ -16130,7 +16130,7 @@ class MYOBJECT_596924(bpy.types.Operator):#Substance Output
     ###################################
     def execute(self, context):
         scrdir = os.path.dirname(__file__)
-        sbssourcepath = scrdir + os.sep + "files" + os.sep + "EMPTY.sbs"
+        sbssourcepath = scrdir + os.sep + "resources" + os.sep + "EMPTY.sbs"
 
         reject_notmesh()
         for obj in get_selected_list():
