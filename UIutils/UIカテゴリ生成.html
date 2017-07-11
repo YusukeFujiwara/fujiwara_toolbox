@@ -1,0 +1,164 @@
+<html>
+<head>
+
+
+<!-- ヘッダテンプレ -->
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+<script type="text/javascript" src="jquery-1.8.2.min.js"></script>
+
+
+<script>
+
+
+//textareaの改行コード変。
+TAEnter=String.fromCharCode(10);
+
+//インデント追加
+function indent(str, i){
+	indt = "";
+	for(var n = 0; n < i; n++){
+		indt+="    ";
+	}
+	
+	
+	
+	//result = str.split("¥n");
+	//result = result.join(",");
+/*	str = "¥n¥n¥r¥r";
+	result = "";
+	for(var n = 0; n < str.length; n++){
+		result += "["+str.charCodeAt(n)+"]";
+	}
+	result = 
+*/	
+	rege = new RegExp(TAEnter, "g");
+	result = indt + str.replace(rege,TAEnter + indt);
+	
+	
+	
+	return result;
+}
+
+//☆IDstrを対象のタグのvalで置き換える
+function IDreplace(targetstr, IDstr){
+	result = targetstr;
+	
+	tmpval = $("#" + IDstr).val(); 
+	
+	tmpregexp = new RegExp("☆" + IDstr, "g");
+	result = result.replace(tmpregexp, tmpval);
+	
+//	result = "変換コマンド\n" + result;
+//	result = tmpval + "\n" + result;
+	
+	return result;
+}
+
+function clear_all(){
+	$("#ButtonTitle").val("");
+	$("#TextLabel").val("");
+	$("#SourceArea").val("");
+}
+
+function excute(){
+	var ButtonTitle =$("#ButtonTitle").val(); 
+	var Source = $("#SourceArea").val();
+	var BaseCode = $("#BaseCode").text();
+	
+	outtext = "Converted:" + ButtonTitle + "¥n" + Source;
+
+	//10000のランダムな数字を生成
+	var rndnum = Math.round(Math.random() * 1000000);
+
+
+
+	//ソースにインデントつける		二個
+	outtext = BaseCode;
+	//ソースの置換
+	outtext = outtext.replace(/☆Source/g, indent(Source,2));
+	//ランダム番号の付加
+	outtext = outtext.replace(/☆rndnum/g, rndnum);
+
+
+	//各タグの置換
+//	outtext = IDreplace(outtext, "");
+	outtext = IDreplace(outtext, "ButtonTitle");//.replace(/☆ButtonTitle/g, ButtonTitle);
+	outtext = IDreplace(outtext, "TextLabel");//.replace(/☆TextLabel/g, TextLabel);
+
+	if($("#TextLabel").val() != ""){
+		outtext = "############################################################################################################################\n"+
+				'uiitem("'+$("#TextLabel").val()+'")' + "\n"+
+				"############################################################################################################################\n" +
+				outtext
+	}
+
+
+	
+	$("#output").val(outtext);
+}
+
+
+</script>
+
+</head>
+<body>
+通常ボタン<br>
+<br>
+
+
+
+
+
+
+テキストラベル<br>
+<textarea id="TextLabel" style="width:800px"></textarea><br>
+タイトル　<a onclick="clear_all()">クリア</a><br>
+<textarea id="ButtonTitle" style="width:800px"></textarea><br>
+Source　<a onclick="excute()">実行</a><br>
+<textarea id="SourceArea" style="width:800px;height:200px">
+</textarea>
+<br>
+<br><br>
+<textarea id="output" style="width:800px;height:400px"></textarea>
+
+
+
+
+
+
+
+
+
+<pre id="BaseCode">
+################################################################################
+#UIカテゴリ
+########################################
+#☆ButtonTitle
+########################################
+class CATEGORYBUTTON_☆rndnum(bpy.types.Operator):#☆ButtonTitle
+    """☆ButtonTitle"""
+    bl_idname = "object.categorybutton_☆rndnum"
+    bl_label = "☆ButtonTitle"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem("☆ButtonTitle",True)
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+    uiitem.direction = "vertical"
+
+    ###################################
+    #処理部分
+    ###################################
+    def execute(self, context):
+        uicategory_execute(self)
+        return {'FINISHED'}
+########################################
+################################################################################
+
+
+
+
+</pre>
+
+
+</body>
+</html>
