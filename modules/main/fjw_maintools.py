@@ -16304,9 +16304,6 @@ class MYOBJECT_358608(bpy.types.Operator):#テクスチャ回収
                 texture_slot.diffuse_color_factor = 1
                 texture_slot.blend_type = 'MULTIPLY'
 
-                
-
-
         bpy.ops.file.make_paths_relative()
         return {'FINISHED'}
 ########################################
