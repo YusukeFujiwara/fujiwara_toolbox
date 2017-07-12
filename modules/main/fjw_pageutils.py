@@ -56,6 +56,9 @@ class PageUtils(bpy.types.Panel):#メインパネル
         layout.operator("pageutils.bgopen")
 
         if "page" in filename:
+            layout.label("ページセットアップ")
+            row = layout.row(align=True)
+            row.operator("pageutils.deploy_pages")
             layout.label("ページモード")
             #layout.operator("pageutils.refresh")
             row = layout.row(align=True)
@@ -316,6 +319,36 @@ class refresh(bpy.types.Operator):
         return {'RUNNING_MODAL'}
 
 
+
+class deploy_pages(bpy.types.Operator):
+    """このフォルダをテンプレートとして、上のフォルダ内にある画像をページフォルダとして展開します。\n既存のフォルダは無視されます。png以外はbackground.pngとしてコピーされません。"""
+    bl_idname = "pageutils.deploy_pages"
+    bl_label = "ページ展開"
+    def execute(self,context):
+        self_dir = os.path.dirname(bpy.data.filepath)
+        parent_dir = os.path.dirname(self_dir)
+        files = os.listdir(parent_dir)
+        for file in files:
+            name, ext = os.path.splitext(file)
+            if re.search("bmp,jpg,jpeg,png", ext, re.IGNORECASE) is not None:
+                #ファイル名から連番を抽出 _は残しておく(見開きのため)
+                name = re.sub(r"(?![0-9_]).","",name)
+                #頭と尻に残った_を削除
+                name = re.sub(r"^_+","",name)
+                name = re.sub(r"_+$","",name)
+
+                destdir = parent_dir + os.sep + name
+                if os.path.exists(destdir):
+                    continue
+
+                shutil.copytree(self_dir, destdir)
+
+                #background.pngのコピー
+                if re.search("png", ext, re.IGNORECASE) is not None:
+                    pageimgpath = parent_dir + os.sep + file
+                    destbgimgpath = destdir + os.sep + "background.png"
+                    shutil.copy(pageimgpath, destbgimgpath)
+                pass
 
 class tocell(bpy.types.Operator):
     """コマへ"""
