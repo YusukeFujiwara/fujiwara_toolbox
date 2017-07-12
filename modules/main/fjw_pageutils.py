@@ -327,28 +327,42 @@ class deploy_pages(bpy.types.Operator):
     def execute(self,context):
         self_dir = os.path.dirname(bpy.data.filepath)
         parent_dir = os.path.dirname(self_dir)
+        #self.report({"INFO"},parent_dir + ":" + self_dir )
+
         files = os.listdir(parent_dir)
+
+        done = []
         for file in files:
             name, ext = os.path.splitext(file)
-            if re.search("bmp,jpg,jpeg,png", ext, re.IGNORECASE) is not None:
-                #ファイル名から連番を抽出 _は残しておく(見開きのため)
-                name = re.sub(r"(?![0-9_]).","",name)
-                #頭と尻に残った_を削除
-                name = re.sub(r"^_+","",name)
-                name = re.sub(r"_+$","",name)
+            if re.search("bmp|jpg|jpeg|png", ext, re.IGNORECASE) is None:
+                continue
 
-                destdir = parent_dir + os.sep + name
-                if os.path.exists(destdir):
-                    continue
+            #ファイル名から連番を抽出 _は残しておく(見開きのため)
+            name = re.sub(r"(?![0-9_]).","",name)
+            #頭と尻に残った_を削除
+            name = re.sub(r"^_+","",name)
+            name = re.sub(r"_+$","",name)
 
-                shutil.copytree(self_dir, destdir)
+            destdir = parent_dir + os.sep + name + os.sep
 
-                #background.pngのコピー
-                if re.search("png", ext, re.IGNORECASE) is not None:
-                    pageimgpath = parent_dir + os.sep + file
-                    destbgimgpath = destdir + os.sep + "background.png"
-                    shutil.copy(pageimgpath, destbgimgpath)
-                pass
+            if os.path.exists(destdir):
+                continue
+
+            shutil.copytree(self_dir, destdir)
+
+            #background.pngのコピー
+            if re.search("png", ext, re.IGNORECASE) is not None:
+                pageimgpath = parent_dir + os.sep + file
+                destbgimgpath = destdir + os.sep + "background.png"
+                shutil.copy(pageimgpath, destbgimgpath)
+            
+            done.append(name)
+
+        if len(done) == 0:
+            self.report({"INFO"},"新規作成フォルダはありません")
+        else:
+            self.report({"INFO"},",".join(done)+"を作成しました")
+        return {"FINISHED"}
 
 class tocell(bpy.types.Operator):
     """コマへ"""
