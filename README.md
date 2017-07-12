@@ -9,6 +9,8 @@ Blender用漫画addon群です。
 Blenderを漫画製作に使う方は、まずこちらを参照してください→[ページユーティリティ](documents/pageutils.md)
 
 
-作者twitter:https://twitter.com/GhostBrain3dex
+作者twitter:https://twitter.com/GhostBrain3dex  
+Fujiwara Tool Boxはどなたも無料でお使いいただけますが、便利に思った方やお仕事で利用できる！と思った方はご支援くださるとありがたいです。
+→[Enty](https://enty.jp/GhostBrain3dex)
 
 開発環境：Windows 10
