@@ -5,12 +5,17 @@ Blender用漫画addon群です。
 
 ご利用は自己責任で。藤原佑介は本addonを使用して発生したいかなる損害の責任も負いません。
 
-## [ドキュメント](documents/README.md)
+## 使い方
+→[ドキュメント](documents/README.md)  
+
 Blenderを漫画製作に使う方は、まずこちらを参照してください→[ページユーティリティ](documents/pageutils.md)
 
+## 作者
+藤原佑介  
+twitter:https://twitter.com/GhostBrain3dex  
+開発環境：Windows 10, Blender 2.78c~
 
-作者twitter:https://twitter.com/GhostBrain3dex  
+## ご支援
 Fujiwara Tool Boxはどなたも無料でお使いいただけますが、便利に思った方やお仕事で利用できる！と思った方はご支援くださるとありがたいです。
 →[Enty](https://enty.jp/GhostBrain3dex)
 
-開発環境：Windows 10
