@@ -17,4 +17,4 @@ twitter:https://twitter.com/GhostBrain3dex
 
 ## ご支援
 Fujiwara Tool Boxはどなたも無料でお使いいただけますが、便利に思った方やお仕事で利用できる！と思った方はご支援くださるとありがたいです。
-→[Enty](https://enty.jp/GhostBrain3dex)
+→~~Enty~~現在代替サービス模索中
