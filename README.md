@@ -19,3 +19,4 @@ twitter:https://twitter.com/GhostBrain3dex
 Fujiwara Tool Boxはどなたも無料でお使いいただけますが、便利に思った方やお仕事で利用できる！と思った方はご支援くださるとありがたいです。
 →[Enty](https://enty.jp/GhostBrain3dex)
 
+<a href="https://twitter.com/share" class="twitter-share-button" data-via="GhostBrain3dex">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
