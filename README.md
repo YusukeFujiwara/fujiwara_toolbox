@@ -17,4 +17,7 @@ twitter:https://twitter.com/GhostBrain3dex
 
 ## ご支援
 Fujiwara Tool Boxはどなたも無料でお使いいただけますが、便利に思った方やお仕事で利用できる！と思った方はご支援くださるとありがたいです。
-→~~Enty~~現在代替サービス模索中
+
+[fantia](https://fantia.jp/fanclubs/2320)  
+[Amazonギフト券(Eメールタイプ)  ](https://www.amazon.co.jp/Amazon%E3%82%AE%E3%83%95%E3%83%88%E5%88%B8-1-JP-Email-Amazon%E3%82%AE%E3%83%95%E3%83%88%E5%88%B8-E%E3%83%A1%E3%83%BC%E3%83%AB%E3%82%BF%E3%82%A4%E3%83%97-Amazon%E3%83%99%E3%83%BC%E3%82%B7%E3%83%83%E3%82%AF/dp/B004N3APGO/)  
+宛先:yusuke.fujiwara.3dex@gmail.com
