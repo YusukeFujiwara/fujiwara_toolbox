@@ -6,7 +6,7 @@ Blender用漫画addon群です。
 ご利用は自己責任で。藤原佑介は本addonを使用して発生したいかなる損害の責任も負いません。
 
 ## 使い方
-→[**ドキュメント**](documents/README.md)  
+→[**ドキュメント・インストール方法**](documents/README.md)  
 
 Blenderを漫画製作に使う方は、まずこちらを参照してください→[ページユーティリティ](documents/pageutils.md)
 

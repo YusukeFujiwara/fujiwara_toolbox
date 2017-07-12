@@ -2,7 +2,7 @@
 
 ## インストール方法
 Fujiwara Tool Boxの[トップページ](https://github.com/YusukeFujiwara/fujiwara_toolbox)にある、
-"Clone or download"から"Download Zip"して解凍してできた中身の"fujiwara_toolbox-master"を、"fujiwara_toolbox"にリネームしてBlenderのaddonフォルダにおいてください。  
+"Clone or download"から"Download Zip"して解凍してできた中身の"**fujiwara_toolbox-master**"を、"**fujiwara_toolbox**"に**リネームして**Blenderのaddonフォルダにおいてください。  
 ユーザー設定で"Tools:Fujiwara Tool Box"にチェックを入れると使えます。  
 別の名前だとエラーが出るので注意してください。
 
