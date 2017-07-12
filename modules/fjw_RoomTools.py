@@ -41,7 +41,7 @@ bl_info = {
 
 ############################################################################################################################
 ############################################################################################################################
-#パネル部分　メインパネル登録
+#パネル部分 メインパネル登録
 ############################################################################################################################
 ############################################################################################################################
 
@@ -309,9 +309,8 @@ uiitem().horizontal_sep()
 #---------------------------------------------
 
 ############################################################################################################################
-uiitem("グリッドツール").icon="GRID"
+uiitem("グリッドツール").icon = "GRID"
 ############################################################################################################################
-
 def place_grid(target):
     obj = target
     deselect()
@@ -389,7 +388,7 @@ def place_grid(target):
 grid_unit = 1
 griddirection = 2
 
-ShakuScale = 3*10/33
+ShakuScale = 3 * 10 / 33
 #尺とかメートルの単位をチェックしてunitきりかえる
 def update_grid_unit():
     global grid_unit
@@ -628,20 +627,19 @@ uiitem().vertical()
 #---------------------------------------------
 uiitem().horizontal()
 #---------------------------------------------
-
 def scale_grid(target,div):
     grid = target
     if grid == None:
         return False
 
-    scale = 1/div
+    scale = 1 / div
     grid.scale = (scale,scale,scale)
 
 
     #配列数をスケールにあわせて変える
     global array_count
     for mod in grid.modifiers:
-        if mod.type=="ARRAY":
+        if mod.type == "ARRAY":
             mod.count = array_count * div
 
 
@@ -817,7 +815,7 @@ class MYOBJECT_565778(bpy.types.Operator):#グリッドサイズ化
         bpy.ops.object.origin_set(type='ORIGIN_CENTER_OF_MASS')
 
         obj = active()
-        obj.dimensions = (grid_unit*gridscale,grid_unit*gridscale,grid_unit*gridscale)
+        obj.dimensions = (grid_unit * gridscale,grid_unit * gridscale,grid_unit * gridscale)
 
             #適当な角に原点設定
         bpy.ops.object.mode_set(mode='EDIT', toggle=False)
@@ -851,8 +849,10 @@ class MYOBJECT_565778(bpy.types.Operator):#グリッドサイズ化
 
         #for obj in bpy.context.selected_objects:
         #   if obj.type == "MESH":
-        #       obj.dimensions = (grid_unit*gridscale,grid_unit*gridscale,grid_unit*gridscale)
-        #       #obj.dimensions = (grid_unit*2*gridscale,grid_unit*2*gridscale,grid_unit*2*gridscale)
+        #       obj.dimensions =
+        #       (grid_unit*gridscale,grid_unit*gridscale,grid_unit*gridscale)
+        #       #obj.dimensions =
+        #       (grid_unit*2*gridscale,grid_unit*2*gridscale,grid_unit*2*gridscale)
 
         bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 
@@ -886,7 +886,7 @@ class MYOBJECT_929148(bpy.types.Operator):#床面積
     def execute(self, context):
         #メッシュ以外除外
         if(reject_notmesh() == False):
-            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:"+self.bl_idname)
+            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
 
         area = 0.0
@@ -912,7 +912,7 @@ class MYOBJECT_929148(bpy.types.Operator):#床面積
                 if f.normal.z == 1.0:
                     #self.report({"INFO"},"上向き")
                     #self.report({"INFO"},str(f.calc_area()))
-                    area += f.calc_area()*obj.scale[0]*obj.scale[1]
+                    area += f.calc_area() * obj.scale[0] * obj.scale[1]
             
 
             bmesh.update_edit_mesh(data)
@@ -921,7 +921,7 @@ class MYOBJECT_929148(bpy.types.Operator):#床面積
 
         
         global ShakuScale
-        self.report({"INFO"},str(math.floor(area*100)/100) + "㎡ / " + str(math.floor(area / ShakuScale / ShakuScale *10/2)/10) + "畳")
+        self.report({"INFO"},str(math.floor(area * 100) / 100) + "㎡ / " + str(math.floor(area / ShakuScale / ShakuScale * 10 / 2) / 10) + "畳")
         
         return {'FINISHED'}
 ########################################
@@ -1054,10 +1054,11 @@ class MYOBJECT_692152(bpy.types.Operator):#カーソルの高さに移動
         #grid.location[2] = bpy.context.space_data.cursor_location[2]
         global grid_unit
         c = bpy.context.space_data.cursor_location
-        #grid.location = (c[0]//grid_unit*grid_unit,c[1]//grid_unit*grid_unit,c[2]//grid_unit*grid_unit)
+        #grid.location =
+        #(c[0]//grid_unit*grid_unit,c[1]//grid_unit*grid_unit,c[2]//grid_unit*grid_unit)
         #↓Z位置はカーソルからそのままとらないと非常に不便！
-        grid.location = (c[0]//grid_unit*grid_unit,c[1]//grid_unit*grid_unit,c[2])
-        #位置をグリッドで割る　あまりなしで　を、グリッドでかければいい！
+        grid.location = (c[0] // grid_unit * grid_unit,c[1] // grid_unit * grid_unit,c[2])
+        #位置をグリッドで割る あまりなしで を、グリッドでかければいい！
 
 
 
@@ -1345,7 +1346,7 @@ class MYOBJECT_947695rt(bpy.types.Operator):#原点を下に（選択物）
     def execute(self, context):
         #メッシュ以外除外
         if(reject_notmesh() == False):
-            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:"+self.bl_idname)
+            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
 
         objlist = []
@@ -1474,7 +1475,7 @@ uiitem().horizontal_sep()
 #---------------------------------------------
 
 ############################################################################################################################
-uiitem("床ツール").icon="NLA_PUSHDOWN"
+uiitem("床ツール").icon = "NLA_PUSHDOWN"
 ############################################################################################################################
 
 
@@ -1567,7 +1568,7 @@ class MYOBJECT_456812(bpy.types.Operator):#床面化（選択物）
     def execute(self, context):
         #メッシュ以外除外
         if(reject_notmesh() == False):
-            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:"+self.bl_idname)
+            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
  
         if "ConstructionArea" not in bpy.data.objects:
@@ -1600,7 +1601,7 @@ class MYOBJECT_456812(bpy.types.Operator):#床面化（選択物）
            if obj.type == "MESH":
                bpy.context.scene.objects.active = obj
                for mod in obj.modifiers:
-                    bpy.ops.object.modifier_apply (modifier=mod.name)
+                    bpy.ops.object.modifier_apply(modifier=mod.name)
 
         boolbase.select = False
         bpy.context.scene.objects.active = boolbase
@@ -1613,7 +1614,7 @@ class MYOBJECT_456812(bpy.types.Operator):#床面化（選択物）
                 mod = getnewmod(boolbase)
                 mod.operation = 'UNION'
                 mod.object = obj
-                bpy.ops.object.modifier_apply (modifier=mod.name)
+                bpy.ops.object.modifier_apply(modifier=mod.name)
 
         #統合が終わったら他のを削除
         bpy.ops.object.delete(use_global=False)
@@ -1627,7 +1628,7 @@ class MYOBJECT_456812(bpy.types.Operator):#床面化（選択物）
         mod = getnewmod(boolbase)
         mod.operation = 'INTERSECT'
         mod.object = ConstructionArea
-        bpy.ops.object.modifier_apply (modifier=mod.name)
+        bpy.ops.object.modifier_apply(modifier=mod.name)
 
 
         #z位置がゼロじゃない頂点を全て削除
@@ -1650,7 +1651,7 @@ class MYOBJECT_456812(bpy.types.Operator):#床面化（選択物）
         bpy.ops.mesh.delete(type='VERT')
 
         bpy.ops.object.mode_set(mode = 'OBJECT')
-        bpy.context.scene.objects.active.name = "room_"+bpy.context.scene.objects.active.name
+        bpy.context.scene.objects.active.name = "room_" + bpy.context.scene.objects.active.name
         bpy.ops.object.origin_set(type='ORIGIN_CENTER_OF_MASS')
 
 
@@ -1708,7 +1709,6 @@ uiitem().vertical()
 #---------------------------------------------
 uiitem().horizontal()
 #---------------------------------------------
-
 def make_room():
     floor = bpy.context.scene.objects.active
     bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
@@ -1760,7 +1760,7 @@ class MYOBJECT_295847(bpy.types.Operator):#Make Room
     def execute(self, context):
         #メッシュ以外除外
         if(reject_notmesh() == False):
-            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:"+self.bl_idname)
+            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
 
         targets = get_selected_list()
@@ -1781,7 +1781,6 @@ class MYOBJECT_295847(bpy.types.Operator):#Make Room
         return {'FINISHED'}
 ########################################
 
-
 def apply_room(self):
     for obj in bpy.data.objects:
         obj.select = False
@@ -1800,7 +1799,7 @@ def apply_room(self):
 
     #modの適用
     for mod in obj.modifiers:
-        bpy.ops.object.modifier_apply (modifier=mod.name)
+        bpy.ops.object.modifier_apply(modifier=mod.name)
 
     #厚みだけつける
     bpy.ops.object.modifier_add(type='SOLIDIFY')
@@ -1895,7 +1894,7 @@ class MYOBJECT_851083(bpy.types.Operator):#Apply Room
     def execute(self, context):
         #メッシュ以外除外
         if(reject_notmesh() == False):
-            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:"+self.bl_idname)
+            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
 
         targets = get_selected_list()
@@ -1931,7 +1930,7 @@ class MYOBJECT_899191(bpy.types.Operator):#壁をマージ
     def execute(self, context):
        #メッシュ以外除外
         if(reject_notmesh() == False):
-            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:"+self.bl_idname)
+            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
  
         #結合する
@@ -1972,7 +1971,7 @@ class MYOBJECT_736006(bpy.types.Operator):#フチ生成
     def execute(self, context):
        #メッシュ以外除外
         if(reject_notmesh() == False):
-            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:"+self.bl_idname)
+            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
  
 
@@ -2003,7 +2002,8 @@ class MYOBJECT_736006(bpy.types.Operator):#フチ生成
             bpy.ops.object.modifier_add(type='SOLIDIFY')
             mod = getnewmod(dup)
             dup.dimensions[2] = 0.1
-            #bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+            #bpy.ops.object.transform_apply(location=False, rotation=False,
+            #scale=True)
             mod.thickness = 0.02
 
             #親子づけ
@@ -2042,7 +2042,7 @@ class MYOBJECT_404091(bpy.types.Operator):#床を壁の上の階に
     def execute(self, context):
        #メッシュ以外除外
         if(reject_notmesh() == False):
-            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:"+self.bl_idname)
+            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
 
         room = None
@@ -2090,7 +2090,7 @@ uiitem().horizontal_sep()
 #---------------------------------------------
 
 ############################################################################################################################
-uiitem("バウンド穴あけツール").icon="MOD_BOOLEAN"
+uiitem("バウンド穴あけツール").icon = "MOD_BOOLEAN"
 ############################################################################################################################
 ########################################
 #
@@ -2121,7 +2121,6 @@ class MYOBJECT_675998(bpy.types.Operator):#
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
-
 
 def makehole(self,direction):
     base = bpy.context.scene.objects.active
@@ -2159,7 +2158,7 @@ def makehole(self,direction):
     #バウンド用立方体を追加
     bpy.ops.mesh.primitive_cube_add(view_align=False, enter_editmode=False, location=dup.location, layers=dup.layers)
     bound = bpy.context.active_object
-    bound.name = "BoundHole_"+strdir[direction]
+    bound.name = "BoundHole_" + strdir[direction]
 
     #表示・レンダ設定
     bound.hide_render = True
@@ -2241,7 +2240,7 @@ class MYOBJECT_363285(bpy.types.Operator):#X方向
     def execute(self, context):
        #メッシュ以外除外
         if(reject_notmesh() == False):
-            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:"+self.bl_idname)
+            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
  
         X = 0
@@ -2276,7 +2275,7 @@ class MYOBJECT_598811(bpy.types.Operator):#Y方向
     def execute(self, context):
        #メッシュ以外除外
         if(reject_notmesh() == False):
-            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:"+self.bl_idname)
+            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
  
         X = 0
@@ -2307,7 +2306,7 @@ class MYOBJECT_709032(bpy.types.Operator):#Z方向
     def execute(self, context):
        #メッシュ以外除外
         if(reject_notmesh() == False):
-            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:"+self.bl_idname)
+            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
  
         X = 0
@@ -2347,7 +2346,7 @@ class MYOBJECT_4695(bpy.types.Operator):#バウンドで穴を追加
     def execute(self, context):
         #メッシュ以外除外
         if(reject_notmesh() == False):
-            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:"+self.bl_idname)
+            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
         
         bound = active()
@@ -2474,7 +2473,7 @@ class MYOBJECT_916367(bpy.types.Operator):#バウンドからフチ作成
         dirnormal[direction] = 1.0
 
         for f in bm.faces:
-            if f.normal == dirnormal or f.normal == dirnormal*-1:
+            if f.normal == dirnormal or f.normal == dirnormal * -1:
                 f.select = True
 
         bmesh.update_edit_mesh(data)
@@ -2519,7 +2518,7 @@ class MYOBJECT_786035(bpy.types.Operator):#X+フチ
     def execute(self, context):
        #メッシュ以外除外
         if(reject_notmesh() == False):
-            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:"+self.bl_idname)
+            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
  
         X = 0
@@ -2564,7 +2563,7 @@ class MYOBJECT_689631(bpy.types.Operator):#Y+フチ
     def execute(self, context):
        #メッシュ以外除外
         if(reject_notmesh() == False):
-            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:"+self.bl_idname)
+            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
  
         X = 0
@@ -2606,7 +2605,7 @@ class MYOBJECT_917716(bpy.types.Operator):#Z+フチ
     def execute(self, context):
        #メッシュ以外除外
         if(reject_notmesh() == False):
-            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:"+self.bl_idname)
+            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
  
         X = 0
@@ -2657,14 +2656,14 @@ class MYOBJECT_120963(bpy.types.Operator):#選択物の穴をクリア
     def execute(self, context):
         #メッシュ以外除外
         if(reject_notmesh() == False):
-            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:"+self.bl_idname)
+            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
 
         for obj in bpy.context.selected_objects:
            if obj.type == "MESH":
                bpy.context.scene.objects.active = obj
                for mod in obj.modifiers:
-                   if mod.type=="BOOLEAN":
+                   if mod.type == "BOOLEAN":
                        bpy.ops.object.modifier_remove(modifier=mod.name)
         
         return {'FINISHED'}
@@ -2694,7 +2693,7 @@ uiitem().horizontal_sep()
 #---------------------------------------------
 
 ############################################################################################################################
-uiitem("屋根ツール").icon="TRIA_UP"
+uiitem("屋根ツール").icon = "TRIA_UP"
 ############################################################################################################################
 
 ########################################
@@ -2726,7 +2725,6 @@ class MYOBJECT_318882(bpy.types.Operator):#
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
-
 roofbase = None
 
 ########################################
@@ -2747,7 +2745,7 @@ class MYOBJECT_722997(bpy.types.Operator):#基部指定
     def execute(self, context):
        #メッシュ以外除外
         if(reject_notmesh() == False):
-            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:"+self.bl_idname)
+            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
 
         obj = bpy.context.scene.objects.active
@@ -2779,11 +2777,11 @@ class MYOBJECT_832778(bpy.types.Operator):#選択した壁に屋根を設置
         global roofbase
        #メッシュ以外除外
         if(reject_notmesh() == False):
-            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:"+self.bl_idname)
+            self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
 
         if roofbase == None:
-            self.report({"WARNING"},"屋根の基部が未指定です:"+self.bl_idname)
+            self.report({"WARNING"},"屋根の基部が未指定です:" + self.bl_idname)
             return {'CANCELLED'}
 
         #ターゲットの確保
@@ -2857,7 +2855,7 @@ class MYOBJECT_832778(bpy.types.Operator):#選択した壁に屋根を設置
 
         room = None
         for obj in bpy.context.selected_objects:
-            if "room"in obj.name:
+            if "room" in obj.name:
                 room = obj
 
         #ないのでここで終わり
@@ -2873,7 +2871,6 @@ class MYOBJECT_832778(bpy.types.Operator):#選択した壁に屋根を設置
 
         return {'FINISHED'}
 ########################################
-
 
 
 
@@ -2930,7 +2927,6 @@ class MYOBJECT_824647(bpy.types.Operator):#
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
-
 """
 メモ
 MapControllerの作成
@@ -3024,7 +3020,7 @@ class MYOBJECT_660859(bpy.types.Operator):#コントローラの追加
             bpy.ops.object.mode_set(mode='EDIT', toggle=False)
             #bpy.ops.armature.bone_primitive_add()
 
-            #ここが問題　プリミティブ追加してもそれがアクティブボーンになるわけじゃない
+            #ここが問題 プリミティブ追加してもそれがアクティブボーンになるわけじゃない
             #bone = mc.data.bones.active
             #https://blenderartists.org/forum/showthread.php?382277-creating-armature-from-script
 
@@ -3051,7 +3047,7 @@ class MYOBJECT_660859(bpy.types.Operator):#コントローラの追加
 
                 if b.name not in already:
                     bone = b
-                    break;
+                    break
 
             bone.name = target_active.name
 
@@ -3211,7 +3207,6 @@ uiitem().vertical()
 #---------------------------------------------
 uiitem().horizontal()
 #---------------------------------------------
-
 def maputil_ungroup_target(target):
     if target in bpy.data.groups:
         group = bpy.data.groups[target]
@@ -3342,9 +3337,9 @@ def maputil_group(name):
 
 
 ########################################
-#　
+#
 ########################################
-class MYOBJECT_998900(bpy.types.Operator):#　
+class MYOBJECT_998900(bpy.types.Operator):#
     """　"""
     bl_idname = "object.myobject_998900"
     bl_label = "　"
@@ -3442,7 +3437,7 @@ class MYOBJECT_787053(bpy.types.Operator):#西
 ########################################
 # 解除
 ########################################
-class MYOBJECT_826128(bpy.types.Operator):# 
+class MYOBJECT_826128(bpy.types.Operator):#
     """ """
     bl_idname = "object.myobject_826128"
     bl_label = "解除"
@@ -3539,9 +3534,9 @@ uiitem().horizontal()
 #---------------------------------------------
 
 ########################################
-# 
+#
 ########################################
-class MYOBJECT_618798(bpy.types.Operator):# 
+class MYOBJECT_618798(bpy.types.Operator):#
     """ """
     bl_idname = "object.myobject_618798"
     bl_label = "床上"
@@ -3730,7 +3725,6 @@ uiitem().vertical()
 ############################################################################################################################
 uiitem("イージーデコツール（α）")
 ############################################################################################################################
-
 """
 
 スイープツール
@@ -3815,7 +3809,11 @@ class MYOBJECT_741025(bpy.types.Operator):#イージーデコ
             #obj.data.vertices[0].select = True
             #obj.data.vertices[len(obj.data.vertices)-1].select = True
             #skinsize = 0.001
-            #bpy.ops.transform.skin_resize(value=(skinsize, skinsize, skinsize), constraint_axis=(False, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1)
+            #bpy.ops.transform.skin_resize(value=(skinsize, skinsize,
+            #skinsize), constraint_axis=(False, False, False),
+            #constraint_orientation='GLOBAL', mirror=False,
+            #proportional='DISABLED', proportional_edit_falloff='SMOOTH',
+            #proportional_size=1)
             #bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
 
 

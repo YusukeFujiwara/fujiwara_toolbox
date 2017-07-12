@@ -31,8 +31,8 @@ class setshifttobordercenter(bpy.types.Operator):
     bl_label = "ボーダーにシフト"
 
     def execute(self, context):
-        res_x = bpy.context.scene.render.resolution_x;
-        res_y = bpy.context.scene.render.resolution_y;
+        res_x = bpy.context.scene.render.resolution_x
+        res_y = bpy.context.scene.render.resolution_y
         
         bdelta_x = bpy.context.scene.render.border_max_x - bpy.context.scene.render.border_min_x
         bdelta_y = bpy.context.scene.render.border_max_y - bpy.context.scene.render.border_min_y
@@ -98,13 +98,13 @@ class fromfile(bpy.types.Operator):
             self.report({"INFO"},data)
             f.close()
             
-            res_x = bpy.context.scene.render.resolution_x;
-            res_y = bpy.context.scene.render.resolution_y;
+            res_x = bpy.context.scene.render.resolution_x
+            res_y = bpy.context.scene.render.resolution_y
             
-            x0 = int(data.split(",")[0])/res_x
-            y1 = 1-int(data.split(",")[1])/res_y
-            x1 = int(data.split(",")[2])/res_x
-            y0 = 1-int(data.split(",")[3])/res_y
+            x0 = int(data.split(",")[0]) / res_x
+            y1 = 1 - int(data.split(",")[1]) / res_y
+            x1 = int(data.split(",")[2]) / res_x
+            y0 = 1 - int(data.split(",")[3]) / res_y
             
 
             bpy.context.scene.render.border_min_x = x0
@@ -402,7 +402,7 @@ uiitem().horizontal()
 #    IconList.append("")
 #    #モードの追加
 #    ModeList.append("")
-#    
+#
 #    ###################################
 #    #処理部分
 #    ###################################
@@ -410,10 +410,10 @@ uiitem().horizontal()
 ##        bpy.context.scene.objects.active = bpy.data.objects["トラックターゲット"]
 #        for obj in bpy.context.selected_objects:
 #            obj.select = False
-#        
+#
 #        bpy.data.objects["トラックターゲット"].select = True
 #        bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
-#        
+#
 #        return {'FINISHED'}
 #########################################
 
@@ -813,11 +813,13 @@ class MYOBJECT_116309(bpy.types.Operator):#200cm
 #    ###################################
 #    def execute(self, context):
 #        loc = bpy.context.space_data.cursor_location
-#        bpy.ops.object.empty_add(type='PLAIN_AXES', view_align=False, location=loc, layers=(True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False))
+#        bpy.ops.object.empty_add(type='PLAIN_AXES', view_align=False,
+#        location=loc, layers=(True, False, False, False, False, False, False,
+#        False, False, False, False, False, False, False, False, False, False,
+#        False, False, False))
         
 #        return {'FINISHED'}
 #########################################
-
 
 
 """

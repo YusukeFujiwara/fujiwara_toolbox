@@ -146,16 +146,17 @@ def render(renderpath, komarender=False):
 
         if komarender:
             #プレビューレンダをバックグラウンドに投げとく
-            #↓コレじゃダメ　abspathが特にマズい
+            #↓コレじゃダメ abspathが特にマズい
             blenderpath = sys.argv[0]
-            #scrpath = sys.argv[0] + os.sep + "" + os.sep + "utils" + os.sep +  "pagerender.py"
-            scrpath = get_dir(__file__) + "utils" + os.sep +  "pagerender.py"
+            #scrpath = sys.argv[0] + os.sep + "" + os.sep + "utils" + os.sep +
+            #"pagerender.py"
+            scrpath = get_dir(__file__) + "utils" + os.sep + "pagerender.py"
             cmdstr = qq(blenderpath) + " " + qq(bpy.data.filepath) + " -b " + " -P " + qq(scrpath)
             #cmdstr = qq(cmdstr)
             print("********************")
-            print("__file__:"+__file__)
-            print("scrpath:"+scrpath)
-            print("cmdstr:"+cmdstr)
+            print("__file__:" + __file__)
+            print("scrpath:" + scrpath)
+            print("cmdstr:" + cmdstr)
             print("********************")
             subprocess.Popen(cmdstr)
 
@@ -253,7 +254,7 @@ class refresh(bpy.types.Operator):
             obj.name = fname
             obj.show_wire = True
 
-            #UVマップ　変形する前に展開しておくべき
+            #UVマップ 変形する前に展開しておくべき
             bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
             bpy.ops.object.mode_set(mode='EDIT', toggle=False)
             #bpy.ops.uv.smart_project()
@@ -274,7 +275,7 @@ class refresh(bpy.types.Operator):
             #obj.scale[0] = obj.scale[2]
             #比率が1以上＝横長
             if wr > 1:
-                obj.scale = (1/wr,1/wr,1/wr)
+                obj.scale = (1 / wr,1 / wr,1 / wr)
                 #トランスフォームのアプライ
                 bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
 
@@ -300,9 +301,9 @@ class refresh(bpy.types.Operator):
 
             #テクスチャ
             tex = bpy.data.textures.new(file, "IMAGE")
-            load_img(imgdir+file)
+            load_img(imgdir + file)
 
-            tex.image = load_img(imgdir+file)
+            tex.image = load_img(imgdir + file)
 
             texture_slot = mat.texture_slots.add()
             texture_slot.texture = tex
@@ -361,7 +362,7 @@ class deploy_pages(bpy.types.Operator):
         if len(done) == 0:
             self.report({"INFO"},"新規作成フォルダはありません")
         else:
-            self.report({"INFO"},",".join(done)+"を作成しました")
+            self.report({"INFO"},",".join(done) + "を作成しました")
         return {"FINISHED"}
 
 class tocell(bpy.types.Operator):
@@ -469,7 +470,9 @@ class newcell_copy(bpy.types.Operator):
     bl_label = "コピーして新規コマ"
     def execute(self,context):
         dir = os.path.dirname(bpy.data.filepath)
-        #templatepath = r"Z:\Google Drive\C#\VS2015projects\3D作業セットアップ\3D作業セットアップ\bin\Debug\単ページ Z固定 レイ影 簡略化オン.blend"
+        #templatepath = r"Z:\Google
+        #Drive\C#\VS2015projects\3D作業セットアップ\3D作業セットアップ\bin\Debug\単ページ Z固定 レイ影
+        #簡略化オン.blend"
         templatepath = dir + os.sep + bpy.context.scene.objects.active.name + ".blend"
 
         #保存
@@ -588,7 +591,7 @@ class openprevcell(bpy.types.Operator):
         #http://uxmilk.jp/8662
         selfcellindex = int(re.sub(r"[a-z]+", "", filename))
 
-        index = selfcellindex-1
+        index = selfcellindex - 1
 
         target = selfdir + os.sep + str(index) + ".blend"
         if not os.path.exists(target):
@@ -611,7 +614,7 @@ class opennextcell(bpy.types.Operator):
         #http://uxmilk.jp/8662
         selfcellindex = int(re.sub(r"[a-z]+", "", filename))
 
-        index = selfcellindex+1
+        index = selfcellindex + 1
 
         target = selfdir + os.sep + str(index) + ".blend"
         if not os.path.exists(target):
@@ -691,7 +694,6 @@ def scene_update_pre(context):
 def load_post(context):
     bpy.app.handlers.scene_update_pre.append(scene_update_pre)
     #bpy.ops.pageutils.refresh()
-
 @persistent
 def save_pre(context):
     #カメラにキー入らんでどうしようもないからこれでいれる！！！
@@ -701,14 +703,14 @@ def save_pre(context):
             if not in_localview():
                 current = active()
                 current_mode = "OBJECT"
-                if current  != None:
+                if current != None:
                     current_mode = active().mode
                 mode("OBJECT")
                 selection = get_selected_list()
                 deselect()
                 activate(bpy.context.scene.camera)
                 bpy.ops.anim.keyframe_insert_menu(type='LocRotScale')
-                if current  != None:
+                if current != None:
                     deselect()
                     select(selection)
                     activate(current)

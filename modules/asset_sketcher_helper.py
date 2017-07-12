@@ -52,7 +52,7 @@ class cls(bpy.types.Operator):
 #AssetSketcherでいろいろ撒いたあとに、選択オブジェクトに物理つける。
 class AS_addphis(bpy.types.Operator):
     """選択スケッチオブジェクトに物理追加"""
-    bl_idname="assetsketcherhelper.addphis"
+    bl_idname = "assetsketcherhelper.addphis"
     bl_label = "物理追加"
     def execute(self,context):
         reject_notmesh()
@@ -90,7 +90,7 @@ class AS_addphis(bpy.types.Operator):
 
 class AS_delphis(bpy.types.Operator):
     """物理削除"""
-    bl_idname="assetsketcherhelper.delphis"
+    bl_idname = "assetsketcherhelper.delphis"
     bl_label = "削除"
     def execute(self,context):
         reject_notmesh()
@@ -118,7 +118,7 @@ class AS_delphis(bpy.types.Operator):
 
 class AS_applyphis(bpy.types.Operator):
     """物理確定"""
-    bl_idname="assetsketcherhelper.applyphis"
+    bl_idname = "assetsketcherhelper.applyphis"
     bl_label = "確定"
     def execute(self,context):
         reject_notmesh()

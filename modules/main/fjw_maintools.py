@@ -48,7 +48,6 @@ assetdir = fujiwara_toolbox.conf.assetdir
 #info出力はself.report({"INFO"},str)で！
 
 #http://matosus304.blog106.fc2.com/blog-entry-257.html
-
 bl_info = {
     "name": "FJW_Myaddon",
     "description": "スクリプトの概要",
@@ -79,12 +78,12 @@ def load_handler(context):
 def exec_externalutils(scriptname):
     #プレビューレンダをバックグラウンドに投げとく
     blenderpath = sys.argv[0]
-    scrpath = get_dir(__file__) + "utils" + os.sep +  scriptname
+    scrpath = get_dir(__file__) + "utils" + os.sep + scriptname
     cmdstr = qq(blenderpath) + " " + qq(bpy.data.filepath) + " -b " + " -P " + qq(scrpath)
     print("********************")
-    print("__file__:"+__file__)
-    print("scrpath:"+scrpath)
-    print("cmdstr:"+cmdstr)
+    print("__file__:" + __file__)
+    print("scrpath:" + scrpath)
+    print("cmdstr:" + cmdstr)
     print("********************")
     subprocess.Popen(cmdstr)
     pass
@@ -177,7 +176,6 @@ def FileBrouserExec(exefunc):
 #ui表示上の各種コンフィグを記述するクラス。ボタンリストに代替。
 #これをリスト化すればいい！
 #途中でこのコンフィグだけのやつ挟めばラベルとか挿入できる
-
 """
 uicategory{}
 みたいのを用意して[]をいれていく
@@ -248,7 +246,7 @@ class DialogPanel(bpy.types.Operator):
 
     def invoke(self, context, event):
         #メニューのペンディングに使えるぞ！？
-        #return context.window_manager.invoke_props_dialog(self) 
+        #return context.window_manager.invoke_props_dialog(self)
         return context.window_manager.invoke_popup(self,width=500) 
 
 
@@ -499,7 +497,7 @@ class MYOBJECT_114105(bpy.types.Operator):#クリア
     bl_idname = "object.myobject_114105"
     bl_label = "クリア"
     bl_options = {'REGISTER', 'UNDO'}
-    icon="UNPINNED"
+    icon = "UNPINNED"
 
     #ui自動登録はなし
 
@@ -512,7 +510,6 @@ class MYOBJECT_114105(bpy.types.Operator):#クリア
         
         return {'FINISHED'}
 ########################################
-
 
 
 
@@ -639,7 +636,7 @@ class MYOBJECT_960554(bpy.types.Operator):#BGレンダ
         blendname = os.path.splitext(os.path.basename(blendfilepath))[0]
         renderdir = os.path.dirname(blendfilepath) + os.sep + "tmp_render" + os.sep
         binpath = bpy.app.binary_path
-        command = qq(binpath) + " -b " + qq(blendfilepath) + " -o " + qq(renderdir+blendname+"_") + " -F PNG -x 1 -f " + str(bpy.context.scene.frame_current)
+        command = qq(binpath) + " -b " + qq(blendfilepath) + " -o " + qq(renderdir + blendname + "_") + " -F PNG -x 1 -f " + str(bpy.context.scene.frame_current)
         self.report({"INFO"},command)
         #os.system(command)
         #subprocess.call(command, shell=True)
@@ -673,7 +670,7 @@ class MYOBJECT_420416(bpy.types.Operator):#+辺
         blendname = os.path.splitext(os.path.basename(blendfilepath))[0]
         renderdir = os.path.dirname(blendfilepath) + os.sep + "tmp_render" + os.sep
         binpath = bpy.app.binary_path
-        command = qq(binpath) + " -b " + qq(blendfilepath) + " -o " + qq(renderdir+blendname+"_") + " -F PNG -x 1 -f " + str(bpy.context.scene.frame_current)
+        command = qq(binpath) + " -b " + qq(blendfilepath) + " -o " + qq(renderdir + blendname + "_") + " -F PNG -x 1 -f " + str(bpy.context.scene.frame_current)
         self.report({"INFO"},command)
         #os.system(command)
         #subprocess.call(command, shell=True)
@@ -750,7 +747,7 @@ class MYOBJECT_559881(bpy.types.Operator):#保存して開き直す
         #    bpy.ops.wm.save_mainfile()
         #    bpy.ops.wm.revert_mainfile(use_scripts=True)
         #    pass
-        #except  :
+        #except :
         #    pass
         #bpy.ops.wm.revert_mainfile(use_scripts=True)
         #if bpy.ops.wm.save_mainfile() == {"FINISHED"}:
@@ -1041,7 +1038,7 @@ class MYOBJECT_317755(bpy.types.Operator):#カルテレンダ
         
         #左側
         #cam.data.shift_x = 0.125
-        geo.rotation_euler[2] = -1.5708/2
+        geo.rotation_euler[2] = -1.5708 / 2
         bpy.ops.object.location_clear()
         bpy.context.scene.render.filepath = pathbase + "left.png"
         bpy.ops.render.render(write_still=True)
@@ -1049,7 +1046,7 @@ class MYOBJECT_317755(bpy.types.Operator):#カルテレンダ
         
         #右側
         #cam.data.shift_x = -0.125
-        geo.rotation_euler[2] = 1.5708/2
+        geo.rotation_euler[2] = 1.5708 / 2
         bpy.ops.object.location_clear()
         bpy.context.scene.render.filepath = pathbase + "right.png"
         bpy.ops.render.render(write_still=True)
@@ -1148,7 +1145,8 @@ class MYOBJECT_871849(bpy.types.Operator):#VRExport
 
         #bpy.ops.object.select_all(action='SELECT')
         #reject_notmesh()
-        #bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+        #bpy.ops.object.transform_apply(location=True, rotation=True,
+        #scale=True)
 
 
         #deselect()
@@ -1162,8 +1160,8 @@ class MYOBJECT_871849(bpy.types.Operator):#VRExport
         #        if obj.draw_type == "WIRE" or obj.draw_type == "BOUNDS":
         #            obj.select = True
         #    #if obj.hide == True:
-        #    #    obj.hide = False
-        #    #    obj.select = True
+        #    # obj.hide = False
+        #    # obj.select = True
 
 
 
@@ -2476,7 +2474,6 @@ class CATEGORYBUTTON_413853(bpy.types.Operator):#スーパー視点
 
 
 
-
 def super_view(direction):
         base = active()
 
@@ -2942,7 +2939,7 @@ class MYOBJECT_998634(bpy.types.Operator):#無マテリアルに白を割り当�
                 else:
                     #substance上で.が_に変換されて都合が悪いので除去しておく
                     mat = bpy.data.materials.new(name=matname)#substanceとの連携用にオブジェクト名でマテリアル作る
-                    mat.diffuse_color=(1,1,1)
+                    mat.diffuse_color = (1,1,1)
                 #マテリアルスロットがゼロだった
                 obj.data.materials.append(mat)
         return {'FINISHED'}
@@ -3037,7 +3034,7 @@ class MYOBJECT_266402(bpy.types.Operator):#ベースセットアップ
 #            for mat in obj.data.materials:
 #                #既にノードがオンの場合データ消えるとマズいから警告だして終了する
 #                #if mat.use_nodes:
-#                #    continue
+#                # continue
 #                #→破棄でいいや
 #                #裏ポリはスキップ！！
 #                if "裏ポリエッジ" in mat.name:
@@ -3075,12 +3072,15 @@ class MYOBJECT_266402(bpy.types.Operator):#ベースセットアップ
 #                #マテリアル→グレー
 #                tree.links.new(n_mat.outputs["Color"], ng_mono.inputs["グレー化"])
 #                #マテリアル→ベタ影
-#                tree.links.new(n_mat.outputs["Color"], ng_beta.inputs["Color"])
+#                tree.links.new(n_mat.outputs["Color"],
+#                ng_beta.inputs["Color"])
 #                #ベタ影→二値
-#                tree.links.new(ng_beta.outputs["Color"], ng_mono.inputs["二値化"])
+#                tree.links.new(ng_beta.outputs["Color"],
+#                ng_mono.inputs["二値化"])
                 
 #                #二値→アウトプット
-#                tree.links.new(ng_mono.outputs["Color"], n_out.inputs["Color"])
+#                tree.links.new(ng_mono.outputs["Color"],
+#                n_out.inputs["Color"])
 
 #                #アルファ
 #                tree.links.new(n_mat.outputs["Alpha"], n_out.inputs["Alpha"])
@@ -3232,7 +3232,8 @@ uiitem().vertical()
 #    ###################################
 #    def execute(self, context):
 #        for obj in get_selected_list():
-#            if not checkLocationisinCameraView(obj.matrix_world * obj.matrix_basis.inverted() * obj.location):
+#            if not checkLocationisinCameraView(obj.matrix_world *
+#            obj.matrix_basis.inverted() * obj.location):
 #                if "hide_render_basestate" not in obj:
 #                    obj["hide_render_basestate"] = obj.hide_render
 #                obj.hide_render = True
@@ -3249,12 +3250,12 @@ uiitem("OpenGLレンダ")
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
-
 def active_gpbrush():
     return bpy.context.scene.tool_settings.gpencil_brushes.active
 
 def gpline_change(gplayer, value):
-    #linewidth = bpy.context.scene.tool_settings.gpencil_brushes.active.line_width
+    #linewidth =
+    #bpy.context.scene.tool_settings.gpencil_brushes.active.line_width
     f = bpy.context.scene.frame_current
 
     if len(gplayer.frames) == 0:
@@ -3440,7 +3441,6 @@ class MYOBJECT_347064(bpy.types.Operator):#線幅を戻す
 uiitem().vertical()
 #---------------------------------------------
 
-
 def construct_comiccomposit():
     #bpy.context.scene.render.layers["RenderLayer"].use_pass_color = True
     #bpy.context.scene.render.layers["RenderLayer"].use_pass_specular = True
@@ -3584,7 +3584,6 @@ uiitem().vertical()
 ############################################################################################################################
 uiitem("RenderGroup")
 ############################################################################################################################
-
 
 
 
@@ -3879,7 +3878,6 @@ uiitem().vertical()
 uiitem().horizontal()
 #---------------------------------------------
 
-
 """
     リンクのパスに該当文字列があったら、特定レイヤーに割り振る、というかんじ。
     5-9
@@ -3980,7 +3978,7 @@ class LayerCategory():
         for i in objlayers:
             if i in self.LayerConstitution[category]:
                 incategory = True
-                break;
+                break
 
         outofcategory = False
         #全レンジから適合カテゴリを除外したのがアウトレンジ
@@ -3996,10 +3994,10 @@ class LayerCategory():
 
         if blendops is not None:
             if not incategory:
-                blendops.report({"ERROR"},"カテゴリ範囲内に不在："+category)
+                blendops.report({"ERROR"},"カテゴリ範囲内に不在：" + category)
                 blendops.report({"ERROR"},obj.name)
             elif outrange:
-                blendops.report({"WARNING"},"カテゴリ範囲外に発見："+category)
+                blendops.report({"WARNING"},"カテゴリ範囲外に発見：" + category)
                 blendops.report({"WARNING"},obj.name)
 
         return (incategory, outrange)
@@ -4034,8 +4032,8 @@ class LayerCategory():
 
         index = self.LayerConstitution[category][0]
 
-        if index+offset in self.LayerConstitution[category]:
-            index = index+offset
+        if index + offset in self.LayerConstitution[category]:
+            index = index + offset
 
         indexlist = [index]
         obj.layers = self.layersfromIndexList(indexlist)
@@ -5094,7 +5092,7 @@ class SPIFileBrowser(bpy.types.Operator):
         sobj.location = dobj.location
         sobj.rotation_euler = dobj.rotation_euler
 
-        self.report({"INFO"},"sobj:"+sobj.name+" dobj:"+dobj.name)
+        self.report({"INFO"},"sobj:" + sobj.name + " dobj:" + dobj.name)
 
         if sobj.type == "ARMATURE" and dobj.type == "ARMATURE":
             #ポーズのコピー
@@ -5279,7 +5277,6 @@ class MYOBJECT_157507(bpy.types.Operator):#スワップ削除
 
         return {'FINISHED'}
 ########################################
-
 
 
 
@@ -5561,7 +5558,7 @@ class MYOBJECT_68972(bpy.types.Operator):#カメラ目線
     #処理部分
     ###################################
     def execute(self, context):
-        #ヘアトラッカーがカメラと同じ位置なのを利用　ってあー3Dカーソルでもよかった？
+        #ヘアトラッカーがカメラと同じ位置なのを利用 ってあー3Dカーソルでもよかった？
         obj = active()
         if obj.type == "ARMATURE":
             bpy.ops.object.mode_set(mode='POSE', toggle=False)
@@ -6145,7 +6142,8 @@ def SetLocalTransformRotation(context):
   
         if amount_selected > 1:
         
-            # bpy.ops.object.transform_apply works on all the selected objects, but we
+            # bpy.ops.object.transform_apply works on all the selected objects,
+            # but we
             # don't want that.
             #So deselect all first, and later reselect all again.
             original_selected_objects = bpy.context.selected_objects
@@ -6156,7 +6154,8 @@ def SetLocalTransformRotation(context):
             #Loop through all the objects which were previously selected
             for i in original_selected_objects:
 
-                #Only set the object if the current object is not the active object at the
+                #Only set the object if the current object is not the active
+                #object at the
                 #same time
                 if context.active_object != i:
                 
@@ -6167,21 +6166,26 @@ def SetLocalTransformRotation(context):
                     #Store the start rotation of the selected object
                     rotation_before = i.matrix_world.to_quaternion()
                     
-                    #Remove any parents.  If an Object is a child of another object, the
+                    #Remove any parents.  If an Object is a child of another
+                    #object, the
                     #Local Transform orientation settings will be messed up
                     RemoveParent(context, i)
 
-                    #Align the rotation of the selected object with the rotation of the active
+                    #Align the rotation of the selected object with the
+                    #rotation of the active
                     #object
                     bpy.ops.transform.transform(mode='ALIGN')
                     
-                    #Store the rotation of the selected object after it has been rotated
+                    #Store the rotation of the selected object after it has
+                    #been rotated
                     rotation_after = i.matrix_world.to_quaternion()
                     
-                    #Calculate the difference in rotation from before to after the rotation
+                    #Calculate the difference in rotation from before to after
+                    #the rotation
                     rotation_difference = rotation_before.rotation_difference(rotation_after)
 
-                    #Rotate the object the opposite way as done with the ALIGN function
+                    #Rotate the object the opposite way as done with the ALIGN
+                    #function
                     i.rotation_quaternion = rotation_difference.inverted()
                     
                     
@@ -6190,14 +6194,16 @@ def SetLocalTransformRotation(context):
                     obj.select = False
                     
                    
-                    #Align the local rotation of all the selected objects with the global
+                    #Align the local rotation of all the selected objects with
+                    #the global
                     #world orientation
                     bpy.ops.object.transform_apply(rotation = True)
                     
                     obj.select = True
                     context.scene.objects.active = obj
                     
-                    #Set the roation of the selected object to the rotation of the active
+                    #Set the roation of the selected object to the rotation of
+                    #the active
                     #object
                     i.rotation_quaternion = context.active_object.matrix_world.to_quaternion()
                     
@@ -6221,7 +6227,8 @@ def SetLocalTransformRotation(context):
             source_empty.select = True 
             context.scene.objects.active = source_empty
             
-            #Align the rotation of the selected object with the rotation of the active
+            #Align the rotation of the selected object with the rotation of the
+            #active
             #object
             bpy.ops.transform.transform(mode='ALIGN')
             
@@ -6229,20 +6236,24 @@ def SetLocalTransformRotation(context):
             source_empty.select = False
             context.scene.objects.active = obj 
             
-            #Store the rotation of the selected object after it has been rotated
+            #Store the rotation of the selected object after it has been
+            #rotated
             rotation_after = context.active_object.matrix_world.to_quaternion()
             
-            #Calculate the difference in rotation from before to after the rotation
+            #Calculate the difference in rotation from before to after the
+            #rotation
             rotation_difference = rotation_before.rotation_difference(rotation_after)
 
             #Rotate the object the opposite way as done with the ALIGN function
             context.active_object.rotation_quaternion = rotation_difference.inverted()
 
-            #Align the local rotation of the selected object with the global world
+            #Align the local rotation of the selected object with the global
+            #world
             #orientation
             bpy.ops.object.transform_apply(rotation = True)
 
-            #Set the rotation of the selected object to the rotation of the active
+            #Set the rotation of the selected object to the rotation of the
+            #active
             #object
             context.active_object.rotation_quaternion = source_empty.matrix_world.to_quaternion()
 
@@ -6309,7 +6320,8 @@ class RAlignOrientationToSelection(bpy.types.Operator):
     def poll(cls, context):
         obj = context.active_object
         obj_type = obj.type
-        # return(obj and obj_type in {'MESH', 'CURVE', 'SURFACE', 'ARMATURE', 'FONT',
+        # return(obj and obj_type in {'MESH', 'CURVE', 'SURFACE', 'ARMATURE',
+        # 'FONT',
         # 'LATTICE'} and context.mode == 'OBJECT')
         return(obj and obj_type in {'MESH'})
 
@@ -6553,7 +6565,8 @@ class MYOBJECT_234815(bpy.types.Operator):#適用・隠す
             if (obj.type == "MESH"):
                 bpy.context.scene.objects.active = obj
                 for mod in obj.modifiers:
-                    #if (mod.type == "MIRROR")||(mod.type == "SUBSURF")||(mod.type ==
+                    #if (mod.type == "MIRROR")||(mod.type ==
+                    #"SUBSURF")||(mod.type ==
                     #"SHRINKWRAP")||(mod.type == "ARRAY"):
                     bpy.ops.object.modifier_apply(modifier=mod.name)
                 obj.hide = True
@@ -7829,7 +7842,6 @@ class MYOBJECT_793633(bpy.types.Operator):#エッジ適用
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
-
 
 
 
@@ -9488,7 +9500,11 @@ class MYOBJECT_698300(bpy.types.Operator):#ミラーリング
         #for obj in selection:
         #    deselect()
         #    activate(obj)
-        #    bpy.ops.transform.resize(value=(-1, -1, -1), constraint_axis=(True, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1, release_confirm=True)
+        #    bpy.ops.transform.resize(value=(-1, -1, -1),
+        #    constraint_axis=(True, False, False),
+        #    constraint_orientation='GLOBAL', mirror=False,
+        #    proportional='DISABLED', proportional_edit_falloff='SMOOTH',
+        #    proportional_size=1, release_confirm=True)
         #原点は3Dカーソル使って移動する！！
 
         #各オブジェクトを編集モードで反転
@@ -9525,7 +9541,7 @@ class MYOBJECT_698300(bpy.types.Operator):#ミラーリング
             activate(obj)
             bpy.ops.view3d.snap_cursor_to_selected()
             c = bpy.context.space_data.cursor_location
-            bpy.context.space_data.cursor_location = (c[0]*-1,c[1],c[2])
+            bpy.context.space_data.cursor_location = (c[0] * -1,c[1],c[2])
             bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
 
 
@@ -9543,7 +9559,8 @@ class MYOBJECT_698300(bpy.types.Operator):#ミラーリング
         #selection = get_selected_list()
 
         #current_pivot_point = bpy.context.space_data.pivot_point
-        #current_cursor = (bpy.context.space_data.cursor_location[0],bpy.context.space_data.cursor_location[1],bpy.context.space_data.cursor_location[2])
+        #current_cursor =
+        #(bpy.context.space_data.cursor_location[0],bpy.context.space_data.cursor_location[1],bpy.context.space_data.cursor_location[2])
         #use_pivot_point_align = bpy.context.space_data.use_pivot_point_align
 
         #bpy.context.space_data.cursor_location = (0,0,0)
@@ -9551,7 +9568,10 @@ class MYOBJECT_698300(bpy.types.Operator):#ミラーリング
 
         ##位置を反転
         #bpy.context.space_data.use_pivot_point_align = True
-        #bpy.ops.transform.resize(value=(-1, -1, -1), constraint_axis=(True, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1, release_confirm=True)
+        #bpy.ops.transform.resize(value=(-1, -1, -1), constraint_axis=(True,
+        #False, False), constraint_orientation='GLOBAL', mirror=False,
+        #proportional='DISABLED', proportional_edit_falloff='SMOOTH',
+        #proportional_size=1, release_confirm=True)
 
         ##各オブジェクトを編集モードで反転
         ##編集リスト
@@ -9573,12 +9593,16 @@ class MYOBJECT_698300(bpy.types.Operator):#ミラーリング
         #            bpy.ops.curve.select_all(action="SELECT")
 
         #        #反転
-        #        bpy.ops.transform.resize(value=(-1, -1, -1), constraint_axis=(True, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1, release_confirm=True)
+        #        bpy.ops.transform.resize(value=(-1, -1, -1),
+        #        constraint_axis=(True, False, False),
+        #        constraint_orientation='GLOBAL', mirror=False,
+        #        proportional='DISABLED', proportional_edit_falloff='SMOOTH',
+        #        proportional_size=1, release_confirm=True)
         #        mode("OBJECT")
         #select(selection)
 
         ##ピボット戻す
-        #bpy.context.space_data.pivot_point = current_pivot_point        
+        #bpy.context.space_data.pivot_point = current_pivot_point
         #bpy.context.space_data.cursor_location = current_cursor
         #bpy.context.space_data.use_pivot_point_align = use_pivot_point_align
         
@@ -9657,7 +9681,10 @@ class MYOBJECT_83454(bpy.types.Operator):#global X
         #bpy.context.space_data.pivot_point = 'CURSOR'
         #bpy.context.space_data.cursor_location = (0,0,0)
         #bpy.ops.object.duplicate(linked=False, mode='TRANSLATION')
-        #bpy.ops.transform.resize(value=(-1, 1, 1), constraint_axis=(True, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1, release_confirm=True)
+        #bpy.ops.transform.resize(value=(-1, 1, 1), constraint_axis=(True,
+        #False, False), constraint_orientation='GLOBAL', mirror=False,
+        #proportional='DISABLED', proportional_edit_falloff='SMOOTH',
+        #proportional_size=1, release_confirm=True)
 
         #ピボット戻す
         bpy.context.space_data.pivot_point = current_pivot_point        
@@ -11301,7 +11328,6 @@ class MYOBJECT_314879(bpy.types.Operator):#ポーズミラーリング
 #########################################
 
 
-
 def update_armaturesystem(self, context, mute_consraints):
     """
     シングルなアーマチュアとオブジェクトのペアではこれでよい、が、
@@ -11348,7 +11374,7 @@ def update_armaturesystem(self, context, mute_consraints):
                     targetobjects.append(obj)
 
     deformedobjects = []
-    #! armature.childrenの中にcageの子とか含まれてない！
+    #!  armature.childrenの中にcageの子とか含まれてない！
     for obj in childrenall:
         activate(obj)
         #self.report({"INFO"},obj.name)
@@ -11561,7 +11587,10 @@ class MYOBJECT_164873a(bpy.types.Operator):#アップデート(C有効)
 #        bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
 
 #        bpy.ops.object.select_all(action='SELECT')
-#        bpy.ops.transform.translate(value=(0, 0, 0), constraint_axis=(True, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1, release_confirm=True)
+#        bpy.ops.transform.translate(value=(0, 0, 0), constraint_axis=(True,
+#        False, False), constraint_orientation='GLOBAL', mirror=False,
+#        proportional='DISABLED', proportional_edit_falloff='SMOOTH',
+#        proportional_size=1, release_confirm=True)
 #        bpy.ops.object.select_all(action='DESELECT')
 
 #        targetobjects = []
@@ -11628,7 +11657,8 @@ class MYOBJECT_164873a(bpy.types.Operator):#アップデート(C有効)
 #        #アーマチュアをアクティブオブジェクトに
 #        bpy.context.scene.objects.active = armature
 #        #空のウェイトでペアレント
-#        bpy.ops.object.parent_set(type='ARMATURE_NAME', xmirror=False, keep_transform=False)
+#        bpy.ops.object.parent_set(type='ARMATURE_NAME', xmirror=False,
+#        keep_transform=False)
 ##        bpy.ops.object.parent_set(type='ARMATURE_AUTO', xmirror=False,
 ##        keep_transform=False)
 #        #オブジェクト側：アーマチュアを一番上にもってく
@@ -11665,7 +11695,10 @@ class MYOBJECT_164873a(bpy.types.Operator):#アップデート(C有効)
 #                    constraint.mute = False
         
 #        #空移動でアップデート
-#        bpy.ops.transform.translate(value=(0, 0, 0), constraint_axis=(False, False, False), constraint_orientation='LOCAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1)
+#        bpy.ops.transform.translate(value=(0, 0, 0), constraint_axis=(False,
+#        False, False), constraint_orientation='LOCAL', mirror=False,
+#        proportional='DISABLED', proportional_edit_falloff='SMOOTH',
+#        proportional_size=1)
 
 #        return {'FINISHED'}
 
@@ -11943,7 +11976,6 @@ uiitem().vertical()
 ############################################################################################################################
 uiitem("標準ボーンリネーマ（Rigify準拠）")
 ############################################################################################################################
-
 
 
 
@@ -12620,7 +12652,7 @@ class MYOBJECT_729233(bpy.types.Operator):#選択の形状をアクティブに�
         source_data = {}
         for bone in source_arm.data.edit_bones:
             source_data[bone.name] = [copy.deepcopy(bone.head),copy.deepcopy(bone.tail)]
-            self.report({"INFO"},"src:"+bone.name)
+            self.report({"INFO"},"src:" + bone.name)
 
         mode("OBJECT")
         activate(target_arm)
@@ -12642,7 +12674,7 @@ class MYOBJECT_729233(bpy.types.Operator):#選択の形状をアクティブに�
             ebone.head = source_data[bone_name][0]
             ebone.tail = source_data[bone_name][1]
 
-            self.report({"INFO"},"move:"+ebone.name+" 予定地名:"+bone_name+" 予定地:"+str(source_data[bone_name][0])+" 現在地:"+str(ebone.head))
+            self.report({"INFO"},"move:" + ebone.name + " 予定地名:" + bone_name + " 予定地:" + str(source_data[bone_name][0]) + " 現在地:" + str(ebone.head))
 
         #Xミラー
         target_arm.data.use_mirror_x = True
@@ -13110,7 +13142,7 @@ class MYOBJECT_859280(bpy.types.Operator):#完了
                         bpy.ops.object.modifier_apply(modifier=mod.name)
                         pass
                     except  :
-                        self.report({"INFO"},"mod適用エラー："+obj.name+"/"+mod.name)
+                        self.report({"INFO"},"mod適用エラー：" + obj.name + "/" + mod.name)
                         pass
         
         for obj in targetobjects:
@@ -13187,7 +13219,7 @@ class MYOBJECT_859280(bpy.types.Operator):#完了
                 self.report({"INFO"},bones.active.basename)
 
                 mode("POSE")
-                self.report({"INFO"},"active:"+active().data.bones.active.basename)
+                self.report({"INFO"},"active:" + active().data.bones.active.basename)
                 
 
                 #オブジェクトレイヤーを全表示に
@@ -13209,7 +13241,8 @@ class MYOBJECT_859280(bpy.types.Operator):#完了
         #armature.select = True
         ##select(targetobjects)
         #activate(armature)
-        #bpy.ops.object.parent_set(type='ARMATURE_NAME', xmirror=False, keep_transform=False)
+        #bpy.ops.object.parent_set(type='ARMATURE_NAME', xmirror=False,
+        #keep_transform=False)
 
         #アーマチュアを一番上に
         for obj in targetobjects:
@@ -13299,7 +13332,6 @@ uiitem().vertical()
 ############################################################################################################################
 uiitem("ケージ")
 ############################################################################################################################
-
 """
 ケージ編集
 ベイク
@@ -13485,7 +13517,8 @@ class MYOBJECT_475352(bpy.types.Operator):#セミオートインポート・セ�
         
         
         #テクスチャの読み込み
-        #dir = bpy.data.filepath.replace(bpy.path.basename(bpy.data.filepath), "") + os.sep + "textures" + os.sep
+        #dir = bpy.data.filepath.replace(bpy.path.basename(bpy.data.filepath),
+        #"") + os.sep + "textures" + os.sep
         #やっぱtexturesめんどくさかった
         dir = bpy.data.filepath.replace(bpy.path.basename(bpy.data.filepath), "") + os.sep
         
@@ -13685,7 +13718,7 @@ class MYOBJECT_302662(bpy.types.Operator):#オートアバター
         #個々に別ラインでバックグラウンドやらせてもいいかも
 
         #ターゲットになるプロクシアーマチュアを選択している、という前提
-        #dataを見ればいい　同一のアーマチュアデータを参照している、で同定する
+        #dataを見ればいい 同一のアーマチュアデータを参照している、で同定する
         #selection = get_selected_list()
 
         #armdata = []
@@ -13763,7 +13796,7 @@ class MYOBJECT_302662(bpy.types.Operator):#オートアバター
         
         ##元ファイルを開き直してdone
         #    #subprocess.Popen("EXPLORER " + bpy.data.filepath)
-        #    #ばーっとひらいてつぎつぎ、というやり方にする　ただとじる
+        #    #ばーっとひらいてつぎつぎ、というやり方にする ただとじる
         #    bpy.ops.wm.quit_blender()
 
         #終了
@@ -13817,7 +13850,7 @@ class MYOBJECT_487662(bpy.types.Operator):#オートインポート
                     mode("POSE")
 
                     #インポート
-                    import_mdresult(self,dir+file+os.sep+"result.obj")
+                    import_mdresult(self,dir + file + os.sep + "result.obj")
 
         ##存在確認
         #dir = os.path.dirname(bpy.data.filepath) + os.sep + "MDData" + os.sep
@@ -13906,7 +13939,7 @@ class MYOBJECT_902822(bpy.types.Operator):#MD作業ファイル準備
 
             bpy.context.scene.layers[0] = True
             for i in range(19):
-                bpy.context.scene.layers[i+1] = False
+                bpy.context.scene.layers[i + 1] = False
             for i in range(5):
                 bpy.context.scene.layers[i] = True
 
@@ -14082,7 +14115,6 @@ uiitem().vertical()
 uiitem("obj+PointCache")
 ############################################################################################################################
 
-
 def export_mdavatar(self, dir, name, openfolder=True):
         #アクティブオブジェクトのみ。
         #メッシュ以外だったら戻る
@@ -14111,11 +14143,13 @@ def export_mdavatar(self, dir, name, openfolder=True):
         bpy.ops.export_scene.obj(filepath= dir + name + ".obj", use_selection=True)
 
         #PointCache出力
-        #bpy.ops.export_shape.pc2(filepath= dir + "avatar.pc2", check_existing=False, rot_x90=True, world_space=True, apply_modifiers=True, range_start=1, range_end=10, sampling='1')
+        #bpy.ops.export_shape.pc2(filepath= dir + "avatar.pc2",
+        #check_existing=False, rot_x90=True, world_space=True,
+        #apply_modifiers=True, range_start=1, range_end=10, sampling='1')
         bpy.ops.export_shape.mdd(filepath= dir + name + ".mdd", fps=6,frame_start=1,frame_end=10)
 
         #結果用の空ファイルを作っておく
-        f = open(dir+"result.obj","w")
+        f = open(dir + "result.obj","w")
         f.close()
 
         #出力フォルダを開く
@@ -14587,7 +14621,6 @@ class MYOBJECT_178092(bpy.types.Operator):#poseTo出力
         return {'FINISHED'}
 ########################################
 
-
 def import_mdresult(self,resultpath):
         current = active()
 
@@ -14602,8 +14635,8 @@ def import_mdresult(self,resultpath):
             qrot = pbone.rotation_quaternion
 
             #boneはYupなので入れ替え
-            loc = Vector((loc.x,loc.z*-1,loc.y))
-            qrot = Quaternion((qrot.w, qrot.x, qrot.z*-1, qrot.y))
+            loc = Vector((loc.x,loc.z * -1,loc.y))
+            qrot = Quaternion((qrot.w, qrot.x, qrot.z * -1, qrot.y))
 
         mode("OBJECT")
 
@@ -14620,7 +14653,7 @@ def import_mdresult(self,resultpath):
                 bpy.ops.mesh.remove_doubles()
                 bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
                 
-                #服はエッジ出ない方がいい　裏ポリで十分
+                #服はエッジ出ない方がいい 裏ポリで十分
                 for slot in obj.material_slots:
                     mat = slot.material
                     mat.use_transparency = True
@@ -14679,7 +14712,7 @@ class MYOBJECT_86482(bpy.types.Operator):#インポート
 #        ##loc = current.location
 #        #rot = current.rotation_euler
         
-#        #append_nodetree("服　汎用システム")
+#        #append_nodetree("服 汎用システム")
 #        #append_nodetree("二値・グレー化")
 
 #        mode("OBJECT")
@@ -14688,7 +14721,8 @@ class MYOBJECT_86482(bpy.types.Operator):#インポート
 #        bpy.ops.import_scene.obj(filepath=dir + "result.obj")
 #        #インポート後処理
 #        #回転を適用
-#        bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
+#        bpy.ops.object.transform_apply(location=False, rotation=True,
+#        scale=False)
 
 #        selection = get_selected_list()
 #        for obj in selection:
@@ -14716,47 +14750,51 @@ class MYOBJECT_86482(bpy.types.Operator):#インポート
         
 #        #いらんかも。
 #        #for obj in selection:
-#        #    if obj.type == "MESH":
-#        #        activate(obj)
+#        # if obj.type == "MESH":
+#        # activate(obj)
 
-#        #        #マテリアルに服シェーダをアタッチする
-#        #        if "服　汎用システム" in bpy.data.node_groups:
-#        #            for mat in obj.data.materials:
-#        #                ng_clothshader = bpy.data.node_groups["服　汎用システム"]
+#        # #マテリアルに服シェーダをアタッチする
+#        # if "服 汎用システム" in bpy.data.node_groups:
+#        # for mat in obj.data.materials:
+#        # ng_clothshader = bpy.data.node_groups["服 汎用システム"]
 
-#        #                mat.use_nodes = True
-#        #                mat.use_shadeless = True
-#        #                tree = mat.node_tree
-#        #                links = tree.links
+#        # mat.use_nodes = True
+#        # mat.use_shadeless = True
+#        # tree = mat.node_tree
+#        # links = tree.links
 
-#        #                #ノードのクリア
-#        #                for node in tree.nodes:
-#        #                    tree.nodes.remove(node)
+#        # #ノードのクリア
+#        # for node in tree.nodes:
+#        # tree.nodes.remove(node)
 
-#        #                #マテリアルノード
-#        #                n_mat = tree.nodes.new("ShaderNodeMaterial")
-#        #                #自身のマテリアルを指定
-#        #                n_mat.material = mat
-#        #                n_mat.location = (0,200)
+#        # #マテリアルノード
+#        # n_mat = tree.nodes.new("ShaderNodeMaterial")
+#        # #自身のマテリアルを指定
+#        # n_mat.material = mat
+#        # n_mat.location = (0,200)
 
-#        #                n_group = tree.nodes.new("ShaderNodeGroup")
-#        #                n_group.node_tree = ng_clothshader
+#        # n_group = tree.nodes.new("ShaderNodeGroup")
+#        # n_group.node_tree = ng_clothshader
 
-#        #                #出力
-#        #                n_out = tree.nodes.new("ShaderNodeOutput")
-#        #                n_out.location = (500,200)
+#        # #出力
+#        # n_out = tree.nodes.new("ShaderNodeOutput")
+#        # n_out.location = (500,200)
 
 
-#        #                #接続
-#        #                tree.links.new(n_mat.outputs["Color"], n_group.inputs["Color1"])
-#        #                tree.links.new(n_group.outputs["Color"], n_out.inputs["Color"])
+#        # #接続
+#        # tree.links.new(n_mat.outputs["Color"], n_group.inputs["Color1"])
+#        # tree.links.new(n_group.outputs["Color"], n_out.inputs["Color"])
 
 
 #                #回転をあわせる
 ##                obj.rotation_euler = rot
 #                #位置をあわせる
-#                #bpy.ops.transform.translate(value=(loc[0], loc[1], loc[2]), constraint_axis=(False, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1)
-#                #原点位置であってる　シミュレーションで問題でる？が、どうしようもない
+#                #bpy.ops.transform.translate(value=(loc[0], loc[1], loc[2]),
+#                constraint_axis=(False, False, False),
+#                constraint_orientation='GLOBAL', mirror=False,
+#                proportional='DISABLED', proportional_edit_falloff='SMOOTH',
+#                proportional_size=1)
+#                #原点位置であってる シミュレーションで問題でる？が、どうしようもない
         
         
 #        #裏ポリエッジ付加
@@ -14777,8 +14815,8 @@ class MYOBJECT_86482(bpy.types.Operator):#インポート
 #        #オブジェクトを単一レイヤー化する
 #        #for obj in bpy.data.objects:
 #        #for obj in selection:
-#        #    for l in range(19,0,-1):
-#        #            obj.layers[l] = False
+#        # for l in range(19,0,-1):
+#        # obj.layers[l] = False
         
         return {'FINISHED'}
 ########################################
@@ -15183,7 +15221,6 @@ class MYOBJECT_849795(bpy.types.Operator):#base出力
 #
 
 
-
 """
 よくよく考えたらどうすんのこれ問題。
 
@@ -15203,7 +15240,7 @@ class MYOBJECT_849795(bpy.types.Operator):#base出力
 """
 
 #ポーズ登録
-def regist_pose(pose_name="Pose", objects = None):
+def regist_pose(pose_name="Pose", objects=None):
     if objects == None:
         obj = active()
         if obj.type != "ARMATURE":
@@ -15212,7 +15249,7 @@ def regist_pose(pose_name="Pose", objects = None):
         mode("POSE")
         bpy.ops.pose.select_all(action='SELECT')
         try:
-            newframe = obj.pose_library.frame_range[1]+1
+            newframe = obj.pose_library.frame_range[1] + 1
             bpy.ops.poselib.pose_add(frame=newframe, name=pose_name)
         except:
             pass
@@ -15225,7 +15262,7 @@ def regist_pose(pose_name="Pose", objects = None):
             mode("POSE")
             bpy.ops.pose.select_all(action='SELECT')
             try:
-                newframe = obj.pose_library.frame_range[1]+1
+                newframe = obj.pose_library.frame_range[1] + 1
                 bpy.ops.poselib.pose_add(frame=newframe, name=pose_name)
             except:
                 pass
@@ -15863,7 +15900,6 @@ def sbsname(basename):
 #        for index,use_texture in mat.use_textures:
 #            mat.use_textures[index] = flag
 
-
 def remove_tex_identifier(name):
     name = re.sub("_curvature|_ambient_occlusion|_baseColor|_color|_diffuse|_Height|_Normal|_AO|_ambient_occlusion|_metallic|_roughness|_shadow","",name,0,re.IGNORECASE)
     return name
@@ -15886,7 +15922,8 @@ def saveall_dirtyimages():
                 img.filepath = imgdir + img.name
             img.save()
 
-#type: https://docs.blender.org/api/blender_python_api_2_78c_release/bpy.types.RenderSettings.html#bpy.types.RenderSettings.bake_type
+#type:
+#https://docs.blender.org/api/blender_python_api_2_78c_release/bpy.types.RenderSettings.html#bpy.types.RenderSettings.bake_type
 def texture_bake(filepath, size, type, identifier):
     filename = os.path.basename(filepath)
     bakeobj = active()
@@ -15924,7 +15961,7 @@ def bake_setup():
     bakeobj.data.materials.clear()
 
     objname = sbsname(bakeobj.name)
-    bakedir = os.path.dirname(bpy.data.filepath)+os.sep+objname+"_textures"+os.sep
+    bakedir = os.path.dirname(bpy.data.filepath) + os.sep + objname + "_textures" + os.sep
 
     #UV展開
     if len(bakeobj.data.uv_textures) == 0:
@@ -15937,7 +15974,7 @@ def bake_setup():
 
 def autobake(size,type,identifier):
     objname,bakedir = bake_setup()
-    bakepath = bakedir+objname+"_"+identifier+".png"
+    bakepath = bakedir + objname + "_" + identifier + ".png"
     texture_bake(bakepath,size,type,identifier)
 
 def bake_ModelAppearance(size):
@@ -16009,7 +16046,6 @@ uiitem().vertical()
 ############################################################################################################################
 uiitem("影をベイク")
 ############################################################################################################################
-
 def set_sun_shadow(value):
     for lamp in bpy.data.lamps:
         if lamp.type == "SUN":
@@ -16145,7 +16181,7 @@ class MYOBJECT_596924(bpy.types.Operator):#Substance Output
             if not os.path.exists(imgdir):
                 os.makedirs(imgdir)
 
-            #sbsファイルのコピー　あったらしない
+            #sbsファイルのコピー あったらしない
             sbsdestpath = imgdir + name + ".sbs"
             if not os.path.exists(sbsdestpath):
                 shutil.copyfile(sbssourcepath, sbsdestpath)
@@ -16157,7 +16193,7 @@ class MYOBJECT_596924(bpy.types.Operator):#Substance Output
                 bpy.ops.uv.smart_project()
                 mode("OBJECT")
 
-            bpy.ops.export_scene.obj(filepath=imgdir+name + ".obj",check_existing=False,use_selection=True,use_mesh_modifiers=False)
+            bpy.ops.export_scene.obj(filepath=imgdir + name + ".obj",check_existing=False,use_selection=True,use_mesh_modifiers=False)
             #出力フォルダを開く
             os.system("EXPLORER " + imgdir)
 
@@ -16189,7 +16225,7 @@ class MYOBJECT_539212(bpy.types.Operator):#分離してSubstance Output
 
         for obj in get_selected_list():
             mat = bpy.data.materials.new(name=sbsname(obj.name))#substanceとの連携用にオブジェクト名でマテリアル作る
-            mat.diffuse_color=(1,1,1)
+            mat.diffuse_color = (1,1,1)
             if len(obj.material_slots) == 0:
                 obj.data.materials.append(mat)
             else:
@@ -16237,7 +16273,7 @@ class MYOBJECT_358608(bpy.types.Operator):#テクスチャ回収
             for file in files:
                 name,ext = os.path.splitext(file)
                 if re.search("bmp|png|jpg|jpeg", ext, re.IGNORECASE) is not None:
-                    texfiles.append(dirpath+os.sep+file)
+                    texfiles.append(dirpath + os.sep + file)
 
         images = []
         for texfile in texfiles:
@@ -16336,7 +16372,6 @@ uiitem().vertical()
 #---------------------------------------------
 uiitem().horizontal()
 #---------------------------------------------
-
 def settexdepth(value,objects):
     for obj in objects:
         for mat in obj.data.materials:
@@ -16996,7 +17031,7 @@ class MYOBJECT_718267(bpy.types.Operator):#DPIを揃える
         #縦横比をあわせる
         scaletargets = []
         for target in targets:
-            self.report({"INFO"},"target:"+target.name)
+            self.report({"INFO"},"target:" + target.name)
 
             #modオフ
             for mod in target.modifiers:
@@ -17037,7 +17072,7 @@ class MYOBJECT_718267(bpy.types.Operator):#DPIを揃える
             if target == obj_active:
                 base_density = density
 
-            self.report({"INFO"},target.name +str(target.dimensions[X])+ "|" + " img" + str(img.size[width]) + " density" + str(density))
+            self.report({"INFO"},target.name + str(target.dimensions[X]) + "|" + " img" + str(img.size[width]) + " density" + str(density))
 
             ox = target.dimensions[X]
             if V == Y:
@@ -17277,7 +17312,7 @@ class MYOBJECT_847775(bpy.types.Operator):#モデル確定
         for obj in selected:
             activate(obj)
             for mod in obj.modifiers:
-                if mod.type=="BOOLEAN":
+                if mod.type == "BOOLEAN":
                     mod.show_viewport = False
 
         bpy.context.scene.render.use_simplify = False
@@ -17285,7 +17320,7 @@ class MYOBJECT_847775(bpy.types.Operator):#モデル確定
 
 
         elapsed_time = time.time() - start
-        self.report({"INFO"},("elapsed_time:{0}".format(elapsed_time/60)) + "[min]")
+        self.report({"INFO"},("elapsed_time:{0}".format(elapsed_time / 60)) + "[min]")
 
 
         return {'FINISHED'}
@@ -17328,10 +17363,10 @@ class MYOBJECT_809008(bpy.types.Operator):#ポリゴン密度
         polys = len(obj.data.polygons)
         for mod in obj.modifiers:
             if mod.type == "SUBSURF":
-                a = 4**mod.levels
+                a = 4 ** mod.levels
                 polys *= a
 
-        self.report({"INFO"}, obj.name+"面："+str(polys)+" 密度："+str(polys/vol))
+        self.report({"INFO"}, obj.name + "面：" + str(polys) + " 密度：" + str(polys / vol))
 
         
         return {'FINISHED'}
@@ -17391,7 +17426,6 @@ class MYOBJECT_704935(bpy.types.Operator):#カメラとランプをレイヤ1に
 ############################################################################################################################
 uiitem("ネームツール")
 ############################################################################################################################
-
 
 
 
@@ -17693,7 +17727,9 @@ uiitem("テキスト")
 #    #処理部分
 #    ###################################
 #    def execute(self, context):
-#        bpy.ops.object.text_add(radius=1, view_align=False, enter_editmode=False, location=bpy.context.space_data.cursor_location, layers=layers(put_visible_last=True))
+#        bpy.ops.object.text_add(radius=1, view_align=False,
+#        enter_editmode=False, location=bpy.context.space_data.cursor_location,
+#        layers=layers(put_visible_last=True))
 #        bpy.ops.object.myobject_757107()
 #        return {'FINISHED'}
 #########################################
@@ -17889,7 +17925,7 @@ class MYOBJECT_46615(bpy.types.Operator):#流し込み
             dup = active()
             deselect()
 
-            dup.location[1] -= obj.dimensions[1]+obj.data.size
+            dup.location[1] -= obj.dimensions[1] + obj.data.size
 
         deselect()
         delete(active())
@@ -18373,14 +18409,14 @@ class MYOBJECT_248120(bpy.types.Operator):#プロクシ作成（全）
             obj.lock_rotation = (True,True,True)
             obj.lock_scale = (True,True,True)
 
-            basename = obj.name.replace("_proxy", "").replace(get_linkedfilename(linkobj)+"/", "")
+            basename = obj.name.replace("_proxy", "").replace(get_linkedfilename(linkobj) + "/", "")
             baseobj = None
             if basename in linked_objects:
                 baseobj = linked_objects[basename]
             else:
                 continue
 
-            self.report({"INFO"},"basename"+basename)
+            self.report({"INFO"},"basename" + basename)
 
             if baseobj.parent == None:
                 continue
@@ -18395,7 +18431,7 @@ class MYOBJECT_248120(bpy.types.Operator):#プロクシ作成（全）
             #if targetname not in objects:
             #    continue
 
-            self.report({"INFO"},"targetname"+targetname)
+            self.report({"INFO"},"targetname" + targetname)
 
             targetobj = bpy.data.objects[targetname]
 
@@ -18469,7 +18505,6 @@ class MYOBJECT_199238(bpy.types.Operator):#Lamp Proxy
         bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
         return {'FINISHED'}
 ########################################
-
 
 
 
@@ -18713,7 +18748,6 @@ class MYOBJECT_823369(bpy.types.Operator):#AssetManager用キャラリンク後�
 
 
 
-
 class fjw_set_key(bpy.types.Operator):
     """キーフレーム挿入"""
     bl_idname = "object.fjw_set_key"
@@ -18778,8 +18812,10 @@ class fjw_set_key(bpy.types.Operator):
                     if "Body" in child.name:
                         activate(child)
 
-                        #dir = os.path.dirname(bpy.data.filepath) + os.sep + "MDData" + os.sep
-                        #blendname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
+                        #dir = os.path.dirname(bpy.data.filepath) + os.sep +
+                        #"MDData" + os.sep
+                        #blendname =
+                        #os.path.splitext(os.path.basename(bpy.data.filepath))[0]
                         #name = "avatar_" + blendname + "_" + rootname
                         #name = name.replace("_MDWork","")
                         name = rootname
@@ -18788,7 +18824,7 @@ class fjw_set_key(bpy.types.Operator):
                         dir = os.path.dirname(bpy.data.filepath) + os.sep + "MDData" + os.sep
                         dir += blendname + os.sep + name + os.sep
                         export_mdavatar(self, dir, name, False)
-                        self.report({"INFO"},dir+name);
+                        self.report({"INFO"},dir + name)
                         break
             framejump(10)
             pass
@@ -18936,7 +18972,8 @@ def menu_func_VIEW3D_HT_header(self, context):
     active.prop(bpy.context.space_data, "lock_camera", icon="CAMERA_DATA", text="")
     active.prop(bpy.context.space_data, "show_only_render", icon="RESTRICT_RENDER_OFF", text="")
     #active = layout.row(align = True)
-    #active.operator("screen.region_quadview",icon="OUTLINER_OB_LATTICE", text="")
+    #active.operator("screen.region_quadview",icon="OUTLINER_OB_LATTICE",
+    #text="")
     active = layout.row(align = True)
     active.prop(bpy.context.tool_settings, "use_keyframe_insert_auto", icon="REC", text="")
     active.operator("object.framejump_1",icon="REW", text="")
@@ -18945,7 +18982,8 @@ def menu_func_VIEW3D_HT_header(self, context):
     #active.operator("object.framejump_15",icon="TRIA_RIGHT_BAR", text="")
     active.operator("object.fjw_set_key", icon="KEYINGSET", text="")
     active = layout.row(align = True)
-    #active.operator("view3d.hops_helper_popup", text = "Mod", icon="SCRIPTPLUGINS").tab = "MODIFIERS"
+    #active.operator("view3d.hops_helper_popup", text = "Mod",
+    #icon="SCRIPTPLUGINS").tab = "MODIFIERS"
     active.operator("object.myobject_979047", text="GL",icon="RENDER_STILL")
     active.operator("object.myobject_171760", text="MASK")
     active.operator("object.myobject_242623", text="",icon="GREASEPENCIL")
@@ -18959,7 +18997,6 @@ def menu_func_VIEW3D_HT_header(self, context):
 #オペレータークラスやUIボタンの登録
 ############################################################################################################################
 ############################################################################################################################
-
 def sub_registration():
     bpy.app.handlers.load_post.append(load_handler)
 

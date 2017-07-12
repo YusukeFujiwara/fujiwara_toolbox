@@ -283,7 +283,7 @@ class MYOBJECT_242623(bpy.types.Operator):#セットアップ
 
         #bpy.ops.gpencil.palette_add()
 
-        ##メイン　白消し　黒フチ白地
+        ##メイン 白消し 黒フチ白地
         #palettes = grease_pencil.palettes
         #pmainname = "メイン"
         #if pmainname not in palettes:
@@ -306,8 +306,8 @@ class MYOBJECT_242623(bpy.types.Operator):#セットアップ
 
         #        #regions = area.regions
         #        #for region in regions:
-        #        #    #'TOOLS''TOOL_PROPS'
-        #        #    if region
+        #        # #'TOOLS''TOOL_PROPS'
+        #        # if region
 
         #線幅を戻す
         bpy.ops.object.myobject_347064()
@@ -396,7 +396,6 @@ uiitem().horizontal()
         
 #        return {'FINISHED'}
 #########################################
-
 
 
 

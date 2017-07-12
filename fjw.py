@@ -26,7 +26,7 @@ import fujiwara_toolbox.conf
 
 #ダブルクォーテーション
 def qq(str):
-    return '"'+str+'"'
+    return '"' + str + '"'
 
 def get_resourcesdir():
     scrdir = os.path.dirname(__file__)
@@ -44,7 +44,7 @@ def get_dir(path):
     dirlist = path.split(os.sep)
 
     result = ""
-    for i in range(len(dirlist)-1):
+    for i in range(len(dirlist) - 1):
         result += dirlist[i] + os.sep
     return result
 
@@ -438,7 +438,7 @@ class MeshUtils():
                 co = v.co
                 if world:
                     co = self.toworld_cordinate(co)
-                if(co[axs]*direction < basepoint[axs]):
+                if(co[axs] * direction < basepoint[axs]):
                     face.select = True
                     selectflag = True
                     continue
@@ -447,7 +447,7 @@ class MeshUtils():
                 co = v.co
                 if world:
                     co = self.toworld_cordinate(co)
-                if(co[axs]*direction < basepoint[axs]):
+                if(co[axs] * direction < basepoint[axs]):
                     edge.select = True
                     selectflag = True
                     continue
@@ -455,14 +455,14 @@ class MeshUtils():
                 co = v.co
                 if world:
                     co = self.toworld_cordinate(co)
-                if(co[axs]*direction < basepoint[axs]):
+                if(co[axs] * direction < basepoint[axs]):
                     v.select = True
                     selectflag = True
                     continue
         self.update()
         mode("OBJECT")
         
-    def delete(self, deltype = "FACE"):
+    def delete(self, deltype="FACE"):
         mode("EDIT")
         bpy.ops.mesh.delete(type=deltype)
         mode("OBJECT")
@@ -674,7 +674,7 @@ def layers(put_layer=-1,put_visible_last=False,not_visible=False):
 
     return ls
 
-def get_selected_list(type = "ALL"):
+def get_selected_list(type="ALL"):
     list = []
     for obj in bpy.context.selected_objects:
         if type == "ALL":
@@ -759,10 +759,10 @@ def make_proxy_all():
 #        _filename = name + ".blend"
 #        _directory = dir + os.sep + _filename + os.sep + "NodeTree" + os.sep
 #        _filepath = _directory + _filename
-#        bpy.ops.wm.link(filepath=_filepath, filename=_dataname, directory=_directory)
+#        bpy.ops.wm.link(filepath=_filepath, filename=_dataname,
+#        directory=_directory)
     
 #    return bpy.data.node_groups[name]
-
 def append_nodetree(name):
     if name not in bpy.data.node_groups:
         dir = get_resourcesdir() + "nodes"
@@ -867,18 +867,19 @@ def group(group_name):
 #        count = len(src.pose.bones)
 #        for i in range(count):
 #            dest.pose.bones[i].location = src.pose.bones[i].location
-#            dest.pose.bones[i].rotation_axis_angle = src.pose.bones[i].rotation_axis_angle
-#            dest.pose.bones[i].rotation_euler = src.pose.bones[i].rotation_euler
-#            dest.pose.bones[i].rotation_quaternion = src.pose.bones[i].rotation_quaternion
+#            dest.pose.bones[i].rotation_axis_angle =
+#            src.pose.bones[i].rotation_axis_angle
+#            dest.pose.bones[i].rotation_euler =
+#            src.pose.bones[i].rotation_euler
+#            dest.pose.bones[i].rotation_quaternion =
+#            src.pose.bones[i].rotation_quaternion
 #            dest.pose.bones[i].scale = src.pose.bones[i].scale
 
 #        bpy.ops.anim.keyframe_insert_menu(type='WholeCharacter')
 #        mode("OBJECT")
-
-
 def framejump(frameto):
     bpy.ops.screen.frame_jump(end=False)
-    bpy.ops.screen.frame_offset(delta=frameto-1)
+    bpy.ops.screen.frame_offset(delta=frameto - 1)
 
 
 def get_freezed_mesh(obj):
@@ -915,7 +916,8 @@ def checkIfIsInCameraView(obj,freeze=True,camera_extend=False):
     #else:
     #    mesh = obj.data
     #for v in mesh.vertices:
-    #    x, y, z = world_to_camera_view(bpy.context.scene, cam, obj.matrix_world * v.co)
+    #    x, y, z = world_to_camera_view(bpy.context.scene, cam,
+    #    obj.matrix_world * v.co)
 
     #    min = 0.0
     #    max = 1.0

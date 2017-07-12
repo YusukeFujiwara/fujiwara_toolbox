@@ -27,7 +27,6 @@ bl_info = {
 #ユーティリティ
 ############################################################################################################################
 ############################################################################################################################
-
 def dummy():
     return
 
@@ -37,7 +36,7 @@ FileBrouserExecute = dummy
 
 ############################################################################################################################
 ############################################################################################################################
-#パネル部分　メインパネル登録
+#パネル部分 メインパネル登録
 ############################################################################################################################
 ############################################################################################################################
 #ボタン登録リスト
@@ -90,7 +89,7 @@ class create_msscube(bpy.types.Operator):#ミラーCUBE作成
     #メインパネルのボタンリストに登録
     ButtonList.append(bl_idname)
     #テキストラベルの追加
-    LabelList.append("Subsurfモデリング");
+    LabelList.append("Subsurfモデリング")
     
     
     ###################################
@@ -149,7 +148,7 @@ class addmss(bpy.types.Operator):#Mirror・SS追加（選択物）
     #メインパネルのボタンリストに登録
     ButtonList.append(bl_idname)
     #テキストラベルの追加
-    LabelList.append("");
+    LabelList.append("")
     
     
     ###################################
@@ -162,7 +161,7 @@ class addmss(bpy.types.Operator):#Mirror・SS追加（選択物）
                 bpy.ops.object.modifier_add(type='MIRROR')
                 bpy.ops.object.modifier_add(type='SUBSURF')
                 for mod in obj.modifiers:
-                    if mod.type=="SUBSURF":
+                    if mod.type == "SUBSURF":
                         mod.levels = 4
         
         return {'FINISHED'}
@@ -180,7 +179,7 @@ class MYOBJECT_860996(bpy.types.Operator):#平面削減
     #メインパネルのボタンリストに登録
     ButtonList.append(bl_idname)
     #テキストラベルの追加
-    LabelList.append("");
+    LabelList.append("")
     
     
     ###################################
@@ -212,7 +211,7 @@ class MYOBJECT_130218(bpy.types.Operator):#SSのみ追加（選択物）
     #メインパネルのボタンリストに登録
     ButtonList.append(bl_idname)
     #テキストラベルの追加
-    LabelList.append("");
+    LabelList.append("")
     
     
     ###################################
@@ -248,7 +247,7 @@ class MYOBJECT_655300(bpy.types.Operator):#SSのみ追加→隠す（選択物�
     #メインパネルのボタンリストに登録
     ButtonList.append(bl_idname)
     #テキストラベルの追加
-    LabelList.append("");
+    LabelList.append("")
     
     
     ###################################
@@ -287,7 +286,7 @@ class MYOBJECT_590395(bpy.types.Operator):#ノーマルを整える（選択物�
     #メインパネルのボタンリストに登録
     ButtonList.append(bl_idname)
     #テキストラベルの追加
-    LabelList.append("");
+    LabelList.append("")
     
     
     ###################################
@@ -323,7 +322,7 @@ class toggle_crease(bpy.types.Operator):#クリーストグル
     #メインパネルのボタンリストに登録
     ButtonList.append(bl_idname)
     #テキストラベルの追加
-    LabelList.append("");
+    LabelList.append("")
     
     
     ###################################
@@ -358,7 +357,7 @@ class toggle_crease(bpy.types.Operator):#クリーストグル
 #                else:
 #                    edge[crease_layer] = 0
         #選択リフレッシュ
-#        for v  in bm.verts:
+#        for v in bm.verts:
 #        	v.select = False
 #        for e in bm.edges:
 #        	e.select = False
@@ -385,7 +384,7 @@ class connectv(bpy.types.Operator):#頂点連結
     #メインパネルのボタンリストに登録
     ButtonList.append(bl_idname)
     #テキストラベルの追加
-    LabelList.append("");
+    LabelList.append("")
     
     
     ###################################
@@ -438,7 +437,7 @@ class auto_dissolve(bpy.types.Operator):#溶解
     #メインパネルのボタンリストに登録
     ButtonList.append(bl_idname)
     #テキストラベルの追加
-    LabelList.append("");
+    LabelList.append("")
     
     
     ###################################
@@ -485,7 +484,7 @@ class auto_delete(bpy.types.Operator):#自動削除
     #メインパネルのボタンリストに登録
     ButtonList.append(bl_idname)
     #テキストラベルの追加
-    LabelList.append("");
+    LabelList.append("")
     
     
     ###################################
@@ -532,7 +531,7 @@ class quick_deldis(bpy.types.Operator):#クイック削除・溶解
     #メインパネルのボタンリストに登録
     ButtonList.append(bl_idname)
     #テキストラベルの追加
-    LabelList.append("");
+    LabelList.append("")
     
     
     ###################################
@@ -581,7 +580,7 @@ class MYOBJECT_927033(bpy.types.Operator):#選択トグル
     #メインパネルのボタンリストに登録
     ButtonList.append(bl_idname)
     #テキストラベルの追加
-    LabelList.append("");
+    LabelList.append("")
     
     ###################################
     #処理部分
