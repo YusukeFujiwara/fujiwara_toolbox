@@ -781,7 +781,7 @@ def append_nodetree(name):
 
 def append_material(name):
     if name not in bpy.data.materials:
-        dir = fujiwara_toolbox.conf.assetdir + os.sep + "マテリアル"
+        dir = get_resourcesdir() + "materials"
 
         _dataname = name
         _filename = name + ".blend"
