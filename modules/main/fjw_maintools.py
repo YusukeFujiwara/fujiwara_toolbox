@@ -280,7 +280,7 @@ class DialogPanel(bpy.types.Operator):
         #active.label(text="")
         active = active.row(align=True)
         #active.label(text="")
-        active.operator("object.myobject_30808",icon="PINNED",text="")
+        active.operator("fujiwara_toolbox.command_30808",icon="PINNED",text="")
 
         #縦並び
         #cols = b.column(align=True)
@@ -344,26 +344,26 @@ class MyaddonView3DPanel(bpy.types.Panel):#メインパネル
         active = cols.column(align=True)
         active.label(text="クイック")
         active = active.row(align=True)
-        active.operator("object.myobject_490317",text="保存",icon="FILE_TICK")
-        active.operator("object.myobject_960554",text="BGレンダ")
+        active.operator("fujiwara_toolbox.command_490317",text="保存",icon="FILE_TICK")
+        active.operator("fujiwara_toolbox.command_960554",text="BGレンダ")
         active.operator("pageutils.topage",text="ページに戻る")
-        #active.operator("object.myobject_420416",text="+辺")
+        #active.operator("fujiwara_toolbox.command_420416",text="+辺")
         active = cols.column(align=True)
         active = active.row(align=True)
         #roomtools
-        active.operator("object.myobject_288056",text="Grp化")#グループ化
+        active.operator("fujiwara_toolbox.command_288056",text="Grp化")#グループ化
         #maintools内
-        active.operator("object.myobject_b424289a",text="Proxy")#プロクシ作成
-        active.operator("object.myobject_248120",text="Full Proxy")#プロクシ作成
+        active.operator("fujiwara_toolbox.command_b424289a",text="Proxy")#プロクシ作成
+        active.operator("fujiwara_toolbox.command_248120",text="Full Proxy")#プロクシ作成
         active = cols.row(align=True)
-        active.operator("object.myobject_199238",text="Lamp Proxy")#Lamp Proxy
+        active.operator("fujiwara_toolbox.command_199238",text="Lamp Proxy")#Lamp Proxy
         active = cols.row(align=True)
-        active.operator("object.myobject_286013",text="複製を実体化")#複製を実体化
+        active.operator("fujiwara_toolbox.command_286013",text="複製を実体化")#複製を実体化
         active = cols.row(align=True)
-        active.operator("object.myobject_759926",icon="MESH_TORUS")
-        active.operator("object.myobject_700665",icon="MESH_ICOSPHERE")
-        active.operator("object.myobject_194057",icon="MESH_ICOSPHERE")
-        active.operator("object.myobject_286488",icon="MESH_ICOSPHERE")
+        active.operator("fujiwara_toolbox.command_759926",icon="MESH_TORUS")
+        active.operator("fujiwara_toolbox.command_700665",icon="MESH_ICOSPHERE")
+        active.operator("fujiwara_toolbox.command_194057",icon="MESH_ICOSPHERE")
+        active.operator("fujiwara_toolbox.command_286488",icon="MESH_ICOSPHERE")
 
 
         active = cols.row(align=True)
@@ -372,7 +372,7 @@ class MyaddonView3DPanel(bpy.types.Panel):#メインパネル
         active = cols.row(align=True)
         active.label(text="ペンディング",icon="PINNED")
         #クリアボタン
-        active.operator("object.myobject_114105",icon="UNPINNED",text="")
+        active.operator("fujiwara_toolbox.command_114105",icon="UNPINNED",text="")
         active = cols.column(align=True)
 
         #ペンディングされたUIの描画
@@ -477,9 +477,9 @@ pendings = []
 ########################################
 #ペンディング
 ########################################
-class MYOBJECT_30808(bpy.types.Operator):#ペンディング
+class FUJIWARATOOLBOX_30808(bpy.types.Operator):#ペンディング
     """ペンディング"""
-    bl_idname = "object.myobject_30808"
+    bl_idname = "fujiwara_toolbox.command_30808"
     bl_label = "ペンディング"
     bl_options = {'REGISTER', 'UNDO'}
     icon = "PINNED"
@@ -499,9 +499,9 @@ class MYOBJECT_30808(bpy.types.Operator):#ペンディング
 ########################################
 #クリア
 ########################################
-class MYOBJECT_114105(bpy.types.Operator):#クリア
+class FUJIWARATOOLBOX_114105(bpy.types.Operator):#クリア
     """クリア"""
-    bl_idname = "object.myobject_114105"
+    bl_idname = "fujiwara_toolbox.command_114105"
     bl_label = "クリア"
     bl_options = {'REGISTER', 'UNDO'}
     icon = "UNPINNED"
@@ -568,7 +568,7 @@ uiitem().vertical()
 ########################################
 class CATEGORYBUTTON_111115(bpy.types.Operator):#ファイル
     """ファイル"""
-    bl_idname = "object.categorybutton_111115"
+    bl_idname = "fujiwara_toolbox.categorybutton_111115"
     bl_label = "ファイル"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -596,9 +596,9 @@ uiitem().horizontal()
 ########################################
 #保存
 ########################################
-class MYOBJECT_490317(bpy.types.Operator):#保存
+class FUJIWARATOOLBOX_490317(bpy.types.Operator):#保存
     """保存"""
-    bl_idname = "object.myobject_490317"
+    bl_idname = "fujiwara_toolbox.command_490317"
     bl_label = "保存"
     bl_options = {'REGISTER', 'UNDO'}
     
@@ -621,9 +621,9 @@ class MYOBJECT_490317(bpy.types.Operator):#保存
 ########################################
 #BGレンダ
 ########################################
-class MYOBJECT_960554(bpy.types.Operator):#BGレンダ
+class FUJIWARATOOLBOX_960554(bpy.types.Operator):#BGレンダ
     """BGレンダ"""
-    bl_idname = "object.myobject_960554"
+    bl_idname = "fujiwara_toolbox.command_960554"
     bl_label = "BGレンダ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -655,9 +655,9 @@ class MYOBJECT_960554(bpy.types.Operator):#BGレンダ
 ########################################
 #+辺
 ########################################
-class MYOBJECT_420416(bpy.types.Operator):#+辺
+class FUJIWARATOOLBOX_420416(bpy.types.Operator):#+辺
     """+辺"""
-    bl_idname = "object.myobject_420416"
+    bl_idname = "fujiwara_toolbox.command_420416"
     bl_label = "+辺"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -707,9 +707,9 @@ uiitem().horizontal()
 ########################################
 #保存して閉じる
 ########################################
-class MYOBJECT_669544(bpy.types.Operator):#保存して閉じる
+class FUJIWARATOOLBOX_669544(bpy.types.Operator):#保存して閉じる
     """保存して閉じる"""
-    bl_idname = "object.myobject_669544"
+    bl_idname = "fujiwara_toolbox.command_669544"
     bl_label = "保存して閉じる"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -737,9 +737,9 @@ class MYOBJECT_669544(bpy.types.Operator):#保存して閉じる
 ########################################
 #保存して開き直す
 ########################################
-class MYOBJECT_559881(bpy.types.Operator):#保存して開き直す
+class FUJIWARATOOLBOX_559881(bpy.types.Operator):#保存して開き直す
     """保存して開き直す"""
-    bl_idname = "object.myobject_559881"
+    bl_idname = "fujiwara_toolbox.command_559881"
     bl_label = "保存して開き直す"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -783,9 +783,9 @@ uiitem().horizontal()
 ########################################
 #100倍とか
 ########################################
-class MYOBJECT_463064(bpy.types.Operator):#100倍
+class FUJIWARATOOLBOX_463064(bpy.types.Operator):#100倍
     """100倍"""
-    bl_idname = "object.myobject_463064"
+    bl_idname = "fujiwara_toolbox.command_463064"
     bl_label = "100倍とか"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -812,9 +812,9 @@ class MYOBJECT_463064(bpy.types.Operator):#100倍
 ########################################
 #0.01倍
 ########################################
-class MYOBJECT_159343(bpy.types.Operator):#0.01倍
+class FUJIWARATOOLBOX_159343(bpy.types.Operator):#0.01倍
     """0.0001倍"""
-    bl_idname = "object.myobject_159343"
+    bl_idname = "fujiwara_toolbox.command_159343"
     bl_label = "0.01倍"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -840,9 +840,9 @@ class MYOBJECT_159343(bpy.types.Operator):#0.01倍
 ########################################
 #カメラだけ
 ########################################
-class MYOBJECT_607395(bpy.types.Operator):#カメラだけ
+class FUJIWARATOOLBOX_607395(bpy.types.Operator):#カメラだけ
     """カメラだけ"""
-    bl_idname = "object.myobject_607395"
+    bl_idname = "fujiwara_toolbox.command_607395"
     bl_label = "カメラだけ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -869,9 +869,9 @@ class MYOBJECT_607395(bpy.types.Operator):#カメラだけ
 ########################################
 #いろいろ処理
 ########################################
-class MYOBJECT_227575(bpy.types.Operator):#いろいろ処理
+class FUJIWARATOOLBOX_227575(bpy.types.Operator):#いろいろ処理
     """いろいろ処理"""
-    bl_idname = "object.myobject_227575"
+    bl_idname = "fujiwara_toolbox.command_227575"
     bl_label = "いろいろ処理"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -911,9 +911,9 @@ uiitem().horizontal()
 ########################################
 #メモ設置
 ########################################
-class MYOBJECT_350101(bpy.types.Operator):#メモ設置
+class FUJIWARATOOLBOX_350101(bpy.types.Operator):#メモ設置
     """メモ設置"""
-    bl_idname = "object.myobject_350101"
+    bl_idname = "fujiwara_toolbox.command_350101"
     bl_label = "メモ設置"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -968,9 +968,9 @@ uiitem().horizontal()
 ########################################
 #カルテレンダ
 ########################################
-class MYOBJECT_317755(bpy.types.Operator):#カルテレンダ
+class FUJIWARATOOLBOX_317755(bpy.types.Operator):#カルテレンダ
     """カルテレンダ"""
-    bl_idname = "object.myobject_317755"
+    bl_idname = "fujiwara_toolbox.command_317755"
     bl_label = "カルテレンダ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -1086,9 +1086,9 @@ class MYOBJECT_317755(bpy.types.Operator):#カルテレンダ
 ########################################
 #VRExport
 ########################################
-class MYOBJECT_871849(bpy.types.Operator):#VRExport
+class FUJIWARATOOLBOX_871849(bpy.types.Operator):#VRExport
     """VRExport"""
-    bl_idname = "object.myobject_871849"
+    bl_idname = "fujiwara_toolbox.command_871849"
     bl_label = "VRExport"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -1219,9 +1219,9 @@ uiitem().horizontal()
 ########################################
 #インポート
 ########################################
-class MYOBJECT_174609(bpy.types.Operator):#fbxインポート
+class FUJIWARATOOLBOX_174609(bpy.types.Operator):#fbxインポート
     """fbxインポート"""
-    bl_idname = "object.myobject_174609"
+    bl_idname = "fujiwara_toolbox.command_174609"
     bl_label = "fbxインポート"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -1238,9 +1238,9 @@ class MYOBJECT_174609(bpy.types.Operator):#fbxインポート
 ########################################
 #fbxエクスポート（選択メッシュ）
 ########################################
-class MYOBJECT_87061(bpy.types.Operator):#fbxエクスポート（選択メッシュ）
+class FUJIWARATOOLBOX_87061(bpy.types.Operator):#fbxエクスポート（選択メッシュ）
     """fbxエクスポート（選択メッシュ）"""
-    bl_idname = "object.myobject_87061"
+    bl_idname = "fujiwara_toolbox.command_87061"
     bl_label = "fbxエクスポート（選択メッシュ）"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -1274,9 +1274,9 @@ uiitem().horizontal()
 ########################################
 #3dcoatエクスポート
 ########################################
-class MYOBJECT_822477(bpy.types.Operator):#3dcoatエクスポート
+class FUJIWARATOOLBOX_822477(bpy.types.Operator):#3dcoatエクスポート
     """3dcoatエクスポート"""
-    bl_idname = "object.myobject_822477"
+    bl_idname = "fujiwara_toolbox.command_822477"
     bl_label = "3dcoatエクスポート"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -1325,9 +1325,9 @@ class MYOBJECT_822477(bpy.types.Operator):#3dcoatエクスポート
 ########################################
 #3dcoatインポート
 ########################################
-class MYOBJECT_189112(bpy.types.Operator):#3dcoatインポート
+class FUJIWARATOOLBOX_189112(bpy.types.Operator):#3dcoatインポート
     """3dcoatインポート"""
-    bl_idname = "object.myobject_189112"
+    bl_idname = "fujiwara_toolbox.command_189112"
     bl_label = "3dcoatインポート"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -1403,9 +1403,9 @@ uiitem().horizontal()
 ########################################
 #posi.objエクスポート
 ########################################
-class MYOBJECT_505642(bpy.types.Operator):#posi.objエクスポート
+class FUJIWARATOOLBOX_505642(bpy.types.Operator):#posi.objエクスポート
     """posi.objエクスポート"""
-    bl_idname = "object.myobject_505642"
+    bl_idname = "fujiwara_toolbox.command_505642"
     bl_label = "posi.objエクスポート"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -1425,9 +1425,9 @@ class MYOBJECT_505642(bpy.types.Operator):#posi.objエクスポート
 ########################################
 #nega.objエクスポート
 ########################################
-class MYOBJECT_896828(bpy.types.Operator):#nega.objエクスポート
+class FUJIWARATOOLBOX_896828(bpy.types.Operator):#nega.objエクスポート
     """nega.objエクスポート"""
-    bl_idname = "object.myobject_896828"
+    bl_idname = "fujiwara_toolbox.command_896828"
     bl_label = "nega.objエクスポート"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -1447,9 +1447,9 @@ class MYOBJECT_896828(bpy.types.Operator):#nega.objエクスポート
 ########################################
 #posi.objインポート
 ########################################
-class MYOBJECT_229893(bpy.types.Operator):#posi.objインポート
+class FUJIWARATOOLBOX_229893(bpy.types.Operator):#posi.objインポート
     """posi.objインポート"""
-    bl_idname = "object.myobject_229893"
+    bl_idname = "fujiwara_toolbox.command_229893"
     bl_label = "posi.objインポート"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -1480,7 +1480,7 @@ uiitem().vertical()
 ########################################
 class CATEGORYBUTTON_520749(bpy.types.Operator):#簡略化
     """簡略化"""
-    bl_idname = "object.categorybutton_520749"
+    bl_idname = "fujiwara_toolbox.categorybutton_520749"
     bl_label = "簡略化"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -1507,9 +1507,9 @@ uiitem().horizontal()
 ########################################
 #オフ
 ########################################
-class MYOBJECT_759926(bpy.types.Operator):#オフ
+class FUJIWARATOOLBOX_759926(bpy.types.Operator):#オフ
     """オフ"""
-    bl_idname = "object.myobject_759926"
+    bl_idname = "fujiwara_toolbox.command_759926"
     bl_label = "オフ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -1529,9 +1529,9 @@ class MYOBJECT_759926(bpy.types.Operator):#オフ
 ########################################
 #Subdiv 2
 ########################################
-class MYOBJECT_700665(bpy.types.Operator):#Subdiv 2
+class FUJIWARATOOLBOX_700665(bpy.types.Operator):#Subdiv 2
     """Subdiv 2"""
-    bl_idname = "object.myobject_700665"
+    bl_idname = "fujiwara_toolbox.command_700665"
     bl_label = "2"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -1553,9 +1553,9 @@ class MYOBJECT_700665(bpy.types.Operator):#Subdiv 2
 ########################################
 #Subdiv 1
 ########################################
-class MYOBJECT_194057(bpy.types.Operator):#Subdiv 1
+class FUJIWARATOOLBOX_194057(bpy.types.Operator):#Subdiv 1
     """Subdiv 1"""
-    bl_idname = "object.myobject_194057"
+    bl_idname = "fujiwara_toolbox.command_194057"
     bl_label = "1"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -1577,9 +1577,9 @@ class MYOBJECT_194057(bpy.types.Operator):#Subdiv 1
 ########################################
 #Subdiv 0
 ########################################
-class MYOBJECT_286488(bpy.types.Operator):#Subdiv 0
+class FUJIWARATOOLBOX_286488(bpy.types.Operator):#Subdiv 0
     """Subdiv 0"""
-    bl_idname = "object.myobject_286488"
+    bl_idname = "fujiwara_toolbox.command_286488"
     bl_label = "0"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -1604,9 +1604,9 @@ uiitem().vertical()
 ########################################
 #レンダ解像度化
 ########################################
-class MYOBJECT_69698(bpy.types.Operator):#レンダ解像度化
+class FUJIWARATOOLBOX_69698(bpy.types.Operator):#レンダ解像度化
     """レンダ解像度化"""
-    bl_idname = "object.myobject_69698"
+    bl_idname = "fujiwara_toolbox.command_69698"
     bl_label = "レンダ解像度化"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -1663,7 +1663,7 @@ uiitem().vertical()
 ########################################
 class CATEGORYBUTTON_200803(bpy.types.Operator):#選択・操作
     """選択・操作"""
-    bl_idname = "object.categorybutton_200803"
+    bl_idname = "fujiwara_toolbox.categorybutton_200803"
     bl_label = "選択・操作"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -1692,9 +1692,9 @@ uiitem().horizontal()
 ########################################
 #親子
 ########################################
-class MYOBJECT_24259(bpy.types.Operator):#親子
+class FUJIWARATOOLBOX_24259(bpy.types.Operator):#親子
     """親子"""
-    bl_idname = "object.myobject_24259"
+    bl_idname = "fujiwara_toolbox.command_24259"
     bl_label = "親子"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -1729,9 +1729,9 @@ class MYOBJECT_24259(bpy.types.Operator):#親子
 ########################################
 #親子→ローカルビュー
 ########################################
-class MYOBJECT_96321(bpy.types.Operator):#親子→ローカルビュー
+class FUJIWARATOOLBOX_96321(bpy.types.Operator):#親子→ローカルビュー
     """親子→ローカルビュー"""
-    bl_idname = "object.myobject_96321"
+    bl_idname = "fujiwara_toolbox.command_96321"
     bl_label = "親子→ローカルビュー"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -1747,7 +1747,7 @@ class MYOBJECT_96321(bpy.types.Operator):#親子→ローカルビュー
         #obj = bpy.context.scene.objects.active
         #bpy.ops.object.select_grouped(type='CHILDREN_RECURSIVE')
         #obj.select = True
-        bpy.ops.object.myobject_24259()
+        bpy.ops.fujiwara_toolbox.command_24259()
 
         bpy.ops.view3d.localview()
         return {'FINISHED'}
@@ -1765,9 +1765,9 @@ uiitem().horizontal()
 ########################################
 #親子コピー
 ########################################
-class MYOBJECT_55567(bpy.types.Operator):#親子コピー
+class FUJIWARATOOLBOX_55567(bpy.types.Operator):#親子コピー
     """親子コピー"""
-    bl_idname = "object.myobject_55567"
+    bl_idname = "fujiwara_toolbox.command_55567"
     bl_label = "親子コピー"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -1778,7 +1778,7 @@ class MYOBJECT_55567(bpy.types.Operator):#親子コピー
     #処理部分
     ###################################
     def execute(self, context):
-        bpy.ops.object.myobject_24259()
+        bpy.ops.fujiwara_toolbox.command_24259()
         bpy.ops.view3d.copybuffer()
         
         return {'FINISHED'}
@@ -1787,9 +1787,9 @@ class MYOBJECT_55567(bpy.types.Operator):#親子コピー
 ########################################
 #＆ペースト
 ########################################
-class MYOBJECT_971178(bpy.types.Operator):#＆ペースト
+class FUJIWARATOOLBOX_971178(bpy.types.Operator):#＆ペースト
     """＆ペースト"""
-    bl_idname = "object.myobject_971178"
+    bl_idname = "fujiwara_toolbox.command_971178"
     bl_label = "＆ペースト"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -1800,7 +1800,7 @@ class MYOBJECT_971178(bpy.types.Operator):#＆ペースト
     #処理部分
     ###################################
     def execute(self, context):
-        bpy.ops.object.myobject_55567()
+        bpy.ops.fujiwara_toolbox.command_55567()
         bpy.ops.view3d.pastebuffer()
 
 
@@ -1819,9 +1819,9 @@ uiitem().vertical()
 ########################################
 #親子削除
 ########################################
-class MYOBJECT_975985(bpy.types.Operator):#親子削除
+class FUJIWARATOOLBOX_975985(bpy.types.Operator):#親子削除
     """親子削除"""
-    bl_idname = "object.myobject_975985"
+    bl_idname = "fujiwara_toolbox.command_975985"
     bl_label = "親子削除"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -1832,7 +1832,7 @@ class MYOBJECT_975985(bpy.types.Operator):#親子削除
     #処理部分
     ###################################
     def execute(self, context):
-        bpy.ops.object.myobject_24259()
+        bpy.ops.fujiwara_toolbox.command_24259()
         bpy.ops.object.delete(use_global=False)
         
         return {'FINISHED'}
@@ -1846,9 +1846,9 @@ uiitem().horizontal()
 ########################################
 #グループ
 ########################################
-class MYOBJECT_764181(bpy.types.Operator):#グループ
+class FUJIWARATOOLBOX_764181(bpy.types.Operator):#グループ
     """グループ"""
-    bl_idname = "object.myobject_764181"
+    bl_idname = "fujiwara_toolbox.command_764181"
     bl_label = "グループ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -1867,9 +1867,9 @@ class MYOBJECT_764181(bpy.types.Operator):#グループ
 ########################################
 #マテリアル未割り当て
 ########################################
-class MYOBJECT_490584(bpy.types.Operator):#マテリアル未割り当て
+class FUJIWARATOOLBOX_490584(bpy.types.Operator):#マテリアル未割り当て
     """マテリアル未割り当て"""
-    bl_idname = "object.myobject_490584"
+    bl_idname = "fujiwara_toolbox.command_490584"
     bl_label = "マテリアル未割り当て"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -1909,9 +1909,9 @@ uiitem().horizontal()
 ########################################
 #選択物のレイヤーだけ表示してコピー
 ########################################
-class MYOBJECT_129690(bpy.types.Operator):#選択物のレイヤーだけ表示してコピー
+class FUJIWARATOOLBOX_129690(bpy.types.Operator):#選択物のレイヤーだけ表示してコピー
     """選択物のレイヤーだけ表示してコピー"""
-    bl_idname = "object.myobject_129690"
+    bl_idname = "fujiwara_toolbox.command_129690"
     bl_label = "選択物のレイヤーだけ表示してコピー"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -1950,9 +1950,9 @@ class MYOBJECT_129690(bpy.types.Operator):#選択物のレイヤーだけ表示�
 ########################################
 #なにかあるレイヤーだけを全表示
 ########################################
-class MYOBJECT_124884(bpy.types.Operator):#なにかあるレイヤーだけを全表示
+class FUJIWARATOOLBOX_124884(bpy.types.Operator):#なにかあるレイヤーだけを全表示
     """なにかあるレイヤーだけを全表示"""
-    bl_idname = "object.myobject_124884"
+    bl_idname = "fujiwara_toolbox.command_124884"
     bl_label = "なにかあるレイヤーだけを全表示"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -1985,9 +1985,9 @@ uiitem().vertical()
 ########################################
 #ペースト・表示
 ########################################
-class MYOBJECT_47465(bpy.types.Operator):#ペースト・表示
+class FUJIWARATOOLBOX_47465(bpy.types.Operator):#ペースト・表示
     """ペースト・表示"""
-    bl_idname = "object.myobject_47465"
+    bl_idname = "fujiwara_toolbox.command_47465"
     bl_label = "ペースト・表示"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2014,9 +2014,9 @@ uiitem().vertical()
 ########################################
 #カメラ範囲外を選択
 ########################################
-class MYOBJECT_770418(bpy.types.Operator):#カメラ範囲外を選択
+class FUJIWARATOOLBOX_770418(bpy.types.Operator):#カメラ範囲外を選択
     """カメラ範囲外を選択"""
-    bl_idname = "object.myobject_770418"
+    bl_idname = "fujiwara_toolbox.command_770418"
     bl_label = "カメラ範囲外を選択"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2055,7 +2055,7 @@ uiitem().vertical()
 ########################################
 class CATEGORYBUTTON_421353(bpy.types.Operator):#原点ツール
     """原点ツール"""
-    bl_idname = "object.categorybutton_421353"
+    bl_idname = "fujiwara_toolbox.categorybutton_421353"
     bl_label = "原点ツール"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2083,9 +2083,9 @@ uiitem().horizontal()
 ########################################
 #カーソルに設置
 ########################################
-class MYOBJECT_551555(bpy.types.Operator):#カーソルに設置
+class FUJIWARATOOLBOX_551555(bpy.types.Operator):#カーソルに設置
     """カーソルに設置"""
-    bl_idname = "object.myobject_551555"
+    bl_idname = "fujiwara_toolbox.command_551555"
     bl_label = "カーソルに設置"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2122,9 +2122,9 @@ class MYOBJECT_551555(bpy.types.Operator):#カーソルに設置
 ########################################
 #オブジェクトに設置
 ########################################
-class MYOBJECT_980669(bpy.types.Operator):#オブジェクトに設置
+class FUJIWARATOOLBOX_980669(bpy.types.Operator):#オブジェクトに設置
     """オブジェクトに設置"""
-    bl_idname = "object.myobject_980669"
+    bl_idname = "fujiwara_toolbox.command_980669"
     bl_label = "オブジェクトに設置"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2173,9 +2173,9 @@ uiitem().horizontal()
 ########################################
 #オブジェクトをピボットに移動
 ########################################
-class MYOBJECT_145460(bpy.types.Operator):#オブジェクトをピボットに移動
+class FUJIWARATOOLBOX_145460(bpy.types.Operator):#オブジェクトをピボットに移動
     """オブジェクトをピボットに移動"""
-    bl_idname = "object.myobject_145460"
+    bl_idname = "fujiwara_toolbox.command_145460"
     bl_label = "オブジェクトをピボットに移動"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2197,9 +2197,9 @@ class MYOBJECT_145460(bpy.types.Operator):#オブジェクトをピボットに�
 ########################################
 #ピボットに原点を移動
 ########################################
-class MYOBJECT_808575(bpy.types.Operator):#ピボットに原点を移動
+class FUJIWARATOOLBOX_808575(bpy.types.Operator):#ピボットに原点を移動
     """ピボットに原点を移動"""
-    bl_idname = "object.myobject_808575"
+    bl_idname = "fujiwara_toolbox.command_808575"
     bl_label = "ピボットに原点を移動"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2230,9 +2230,9 @@ uiitem().horizontal()
 ########################################
 #原点を下に（選択物）
 ########################################
-class MYOBJECT_947695(bpy.types.Operator):#原点を下に（選択物）
+class FUJIWARATOOLBOX_947695(bpy.types.Operator):#原点を下に（選択物）
     """原点を下に（選択物）"""
-    bl_idname = "object.myobject_947695"
+    bl_idname = "fujiwara_toolbox.command_947695"
     bl_label = "原点を下に（選択物）"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2272,9 +2272,9 @@ class MYOBJECT_947695(bpy.types.Operator):#原点を下に（選択物）
 ########################################
 #重心下に
 ########################################
-class MYOBJECT_183554(bpy.types.Operator):#重心下に
+class FUJIWARATOOLBOX_183554(bpy.types.Operator):#重心下に
     """重心下に"""
-    bl_idname = "object.myobject_183554"
+    bl_idname = "fujiwara_toolbox.command_183554"
     bl_label = "重心下に"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2324,9 +2324,9 @@ uiitem().vertical()
 ########################################
 #原点X=0
 ########################################
-class MYOBJECT_463922(bpy.types.Operator):#原点X=0
+class FUJIWARATOOLBOX_463922(bpy.types.Operator):#原点X=0
     """原点X=0"""
-    bl_idname = "object.myobject_463922"
+    bl_idname = "fujiwara_toolbox.command_463922"
     bl_label = "原点X=0"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2363,9 +2363,9 @@ uiitem().horizontal()
 ########################################
 #カーソルZを0に
 ########################################
-class MYOBJECT_98727(bpy.types.Operator):#カーソルZを0に
+class FUJIWARATOOLBOX_98727(bpy.types.Operator):#カーソルZを0に
     """カーソルZを0に"""
-    bl_idname = "object.myobject_98727"
+    bl_idname = "fujiwara_toolbox.command_98727"
     bl_label = "Zを0に"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2388,9 +2388,9 @@ class MYOBJECT_98727(bpy.types.Operator):#カーソルZを0に
 ########################################
 #オブジェクトのZを0に
 ########################################
-class MYOBJECT_109728(bpy.types.Operator):#オブジェクトのZを0に
+class FUJIWARATOOLBOX_109728(bpy.types.Operator):#オブジェクトのZを0に
     """オブジェクトのZを0に"""
-    bl_idname = "object.myobject_109728"
+    bl_idname = "fujiwara_toolbox.command_109728"
     bl_label = "Zを0に"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2416,9 +2416,9 @@ uiitem().vertical()
 ########################################
 #選択頂点を原点に
 ########################################
-class MYOBJECT_753369(bpy.types.Operator):#選択頂点を原点に
+class FUJIWARATOOLBOX_753369(bpy.types.Operator):#選択頂点を原点に
     """選択頂点を原点に"""
-    bl_idname = "object.myobject_753369"
+    bl_idname = "fujiwara_toolbox.command_753369"
     bl_label = "選択頂点を原点に"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2462,7 +2462,7 @@ uiitem().vertical()
 ########################################
 class CATEGORYBUTTON_413853(bpy.types.Operator):#スーパー視点
     """スーパー視点"""
-    bl_idname = "object.categorybutton_413853"
+    bl_idname = "fujiwara_toolbox.categorybutton_413853"
     bl_label = "スーパー視点"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2508,9 +2508,9 @@ uiitem().horizontal()
 ########################################
 #
 ########################################
-class MYOBJECT_202399a(bpy.types.Operator):#
+class FUJIWARATOOLBOX_202399a(bpy.types.Operator):#
     """"""
-    bl_idname = "object.myobject_202399a"
+    bl_idname = "fujiwara_toolbox.command_202399a"
     bl_label = ""
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2528,9 +2528,9 @@ class MYOBJECT_202399a(bpy.types.Operator):#
 ########################################
 #
 ########################################
-class MYOBJECT_202399b(bpy.types.Operator):#
+class FUJIWARATOOLBOX_202399b(bpy.types.Operator):#
     """"""
-    bl_idname = "object.myobject_202399b"
+    bl_idname = "fujiwara_toolbox.command_202399b"
     bl_label = "上"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2549,9 +2549,9 @@ class MYOBJECT_202399b(bpy.types.Operator):#
 ########################################
 #
 ########################################
-class MYOBJECT_202399c(bpy.types.Operator):#
+class FUJIWARATOOLBOX_202399c(bpy.types.Operator):#
     """"""
-    bl_idname = "object.myobject_202399c"
+    bl_idname = "fujiwara_toolbox.command_202399c"
     bl_label = ""
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2583,9 +2583,9 @@ uiitem().horizontal()
 ########################################
 #左
 ########################################
-class MYOBJECT_248412d(bpy.types.Operator):#サイド
+class FUJIWARATOOLBOX_248412d(bpy.types.Operator):#サイド
     """一番上の階層のオブジェクトに対してビューを設定"""
-    bl_idname = "object.myobject_248412d"
+    bl_idname = "fujiwara_toolbox.command_248412d"
     bl_label = "左"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2603,9 +2603,9 @@ class MYOBJECT_248412d(bpy.types.Operator):#サイド
 ########################################
 #
 ########################################
-class MYOBJECT_779140e(bpy.types.Operator):#
+class FUJIWARATOOLBOX_779140e(bpy.types.Operator):#
     """"""
-    bl_idname = "object.myobject_779140e"
+    bl_idname = "fujiwara_toolbox.command_779140e"
     bl_label = ""
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2623,9 +2623,9 @@ class MYOBJECT_779140e(bpy.types.Operator):#
 ########################################
 #
 ########################################
-class MYOBJECT_779140f(bpy.types.Operator):#
+class FUJIWARATOOLBOX_779140f(bpy.types.Operator):#
     """"""
-    bl_idname = "object.myobject_779140f"
+    bl_idname = "fujiwara_toolbox.command_779140f"
     bl_label = "右"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2652,9 +2652,9 @@ uiitem().horizontal()
 ########################################
 #
 ########################################
-class MYOBJECT_309675g(bpy.types.Operator):#
+class FUJIWARATOOLBOX_309675g(bpy.types.Operator):#
     """"""
-    bl_idname = "object.myobject_309675g"
+    bl_idname = "fujiwara_toolbox.command_309675g"
     bl_label = "前"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2673,9 +2673,9 @@ class MYOBJECT_309675g(bpy.types.Operator):#
 ########################################
 #
 ########################################
-class MYOBJECT_309675h(bpy.types.Operator):#
+class FUJIWARATOOLBOX_309675h(bpy.types.Operator):#
     """"""
-    bl_idname = "object.myobject_309675h"
+    bl_idname = "fujiwara_toolbox.command_309675h"
     bl_label = "下"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2694,9 +2694,9 @@ class MYOBJECT_309675h(bpy.types.Operator):#
 ########################################
 #
 ########################################
-class MYOBJECT_309675i(bpy.types.Operator):#
+class FUJIWARATOOLBOX_309675i(bpy.types.Operator):#
     """"""
-    bl_idname = "object.myobject_309675i"
+    bl_idname = "fujiwara_toolbox.command_309675i"
     bl_label = "後"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2725,7 +2725,7 @@ uiitem().vertical()
 ########################################
 class CATEGORYBUTTON_798012(bpy.types.Operator):#マテリアル
     """マテリアル"""
-    bl_idname = "object.categorybutton_798012"
+    bl_idname = "fujiwara_toolbox.categorybutton_798012"
     bl_label = "マテリアル"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2752,9 +2752,9 @@ uiitem().horizontal()
 ########################################
 #全て影なし
 ########################################
-class MYOBJECT_134463(bpy.types.Operator):#全て影なし
+class FUJIWARATOOLBOX_134463(bpy.types.Operator):#全て影なし
     """全て影なし"""
-    bl_idname = "object.myobject_134463"
+    bl_idname = "fujiwara_toolbox.command_134463"
     bl_label = "全て影なし"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2779,9 +2779,9 @@ class MYOBJECT_134463(bpy.types.Operator):#全て影なし
 ########################################
 #全て影あり
 ########################################
-class MYOBJECT_594225(bpy.types.Operator):#全て影あり
+class FUJIWARATOOLBOX_594225(bpy.types.Operator):#全て影あり
     """全て影あり"""
-    bl_idname = "object.myobject_594225"
+    bl_idname = "fujiwara_toolbox.command_594225"
     bl_label = "全て影あり"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2809,9 +2809,9 @@ uiitem().horizontal()
 ########################################
 #全てシングル化
 ########################################
-class MYOBJECT_386533(bpy.types.Operator):#全てシングル化
+class FUJIWARATOOLBOX_386533(bpy.types.Operator):#全てシングル化
     """全てシングル化"""
-    bl_idname = "object.myobject_386533"
+    bl_idname = "fujiwara_toolbox.command_386533"
     bl_label = "全てシングル化"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2832,9 +2832,9 @@ class MYOBJECT_386533(bpy.types.Operator):#全てシングル化
 ########################################
 #透過無効化（選択物）
 ########################################
-class MYOBJECT_867349(bpy.types.Operator):#透過無効化（選択物）
+class FUJIWARATOOLBOX_867349(bpy.types.Operator):#透過無効化（選択物）
     """透過無効化（選択物）"""
-    bl_idname = "object.myobject_867349"
+    bl_idname = "fujiwara_toolbox.command_867349"
     bl_label = "透過無効化（選択物）"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2858,9 +2858,9 @@ class MYOBJECT_867349(bpy.types.Operator):#透過無効化（選択物）
 ########################################
 #有効化（選択物）
 ########################################
-class MYOBJECT_748672(bpy.types.Operator):#有効化（選択物）
+class FUJIWARATOOLBOX_748672(bpy.types.Operator):#有効化（選択物）
     """有効化（選択物）"""
-    bl_idname = "object.myobject_748672"
+    bl_idname = "fujiwara_toolbox.command_748672"
     bl_label = "有効化（選択物）"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2897,9 +2897,9 @@ uiitem().vertical()
 ########################################
 #Material Utils
 ########################################
-class MYOBJECT_110074(bpy.types.Operator):#Material Utils
+class FUJIWARATOOLBOX_110074(bpy.types.Operator):#Material Utils
     """Materials Utilsの呼び出し"""
-    bl_idname = "object.myobject_110074"
+    bl_idname = "fujiwara_toolbox.command_110074"
     bl_label = "Materials Utils"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2917,9 +2917,9 @@ class MYOBJECT_110074(bpy.types.Operator):#Material Utils
 ########################################
 #無マテリアルに白を割り当て
 ########################################
-class MYOBJECT_998634(bpy.types.Operator):#無マテリアルに白を割り当て
+class FUJIWARATOOLBOX_998634(bpy.types.Operator):#無マテリアルに白を割り当て
     """無マテリアルに白を割り当て"""
-    bl_idname = "object.myobject_998634"
+    bl_idname = "fujiwara_toolbox.command_998634"
     bl_label = "無マテリアルに白を割り当て"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -2966,9 +2966,9 @@ uiitem("ノード")
 ########################################
 #ベースセットアップ
 ########################################
-class MYOBJECT_266402(bpy.types.Operator):#ベースセットアップ
+class FUJIWARATOOLBOX_266402(bpy.types.Operator):#ベースセットアップ
     """ベースセットアップ"""
-    bl_idname = "object.myobject_266402"
+    bl_idname = "fujiwara_toolbox.command_266402"
     bl_label = "ベースセットアップ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -3017,9 +3017,9 @@ class MYOBJECT_266402(bpy.types.Operator):#ベースセットアップ
 #########################################
 ##モノクロ化
 #########################################
-#class MYOBJECT_324645(bpy.types.Operator):#モノクロ化
+#class FUJIWARATOOLBOX_324645(bpy.types.Operator):#モノクロ化
 #    """モノクロ化"""
-#    bl_idname = "object.myobject_324645"
+#    bl_idname = "fujiwara_toolbox.command_324645"
 #    bl_label = "モノクロ化"
 #    bl_options = {'REGISTER', 'UNDO'}
 
@@ -3101,9 +3101,9 @@ class MYOBJECT_266402(bpy.types.Operator):#ベースセットアップ
 ########################################
 #漫画シェーダ
 ########################################
-class MYOBJECT_117769(bpy.types.Operator):#漫画シェーダ
+class FUJIWARATOOLBOX_117769(bpy.types.Operator):#漫画シェーダ
     """漫画シェーダ"""
-    bl_idname = "object.myobject_117769"
+    bl_idname = "fujiwara_toolbox.command_117769"
     bl_label = "漫画シェーダ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -3191,7 +3191,7 @@ uiitem().vertical()
 ########################################
 class CATEGORYBUTTON_959029(bpy.types.Operator):#Render
     """Render"""
-    bl_idname = "object.categorybutton_959029"
+    bl_idname = "fujiwara_toolbox.categorybutton_959029"
     bl_label = "Render"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -3224,9 +3224,9 @@ uiitem().vertical()
 #########################################
 ##カメラ外を非レンダ化
 #########################################
-#class MYOBJECT_881058(bpy.types.Operator):#カメラ外を非レンダ化
+#class FUJIWARATOOLBOX_881058(bpy.types.Operator):#カメラ外を非レンダ化
 #    """カメラ外を非レンダ化*テスト"""
-#    bl_idname = "object.myobject_881058"
+#    bl_idname = "fujiwara_toolbox.command_881058"
 #    bl_label = "カメラ外を非レンダ化*テスト"
 #    bl_options = {'REGISTER', 'UNDO'}
 
@@ -3284,9 +3284,9 @@ def gpline_change(gplayer, value):
 ########################################
 #GLレンダ（ビューポート）
 ########################################
-class MYOBJECT_979047(bpy.types.Operator):#GLレンダ（ビューポート）
+class FUJIWARATOOLBOX_979047(bpy.types.Operator):#GLレンダ（ビューポート）
     """GLレンダ（ビューポート）"""
-    bl_idname = "object.myobject_979047"
+    bl_idname = "fujiwara_toolbox.command_979047"
     bl_label = "GLレンダ（ビューポート）"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -3351,9 +3351,9 @@ class MYOBJECT_979047(bpy.types.Operator):#GLレンダ（ビューポート）
 ########################################
 #GLレンダMASK
 ########################################
-class MYOBJECT_171760(bpy.types.Operator):#GLレンダMASK
+class FUJIWARATOOLBOX_171760(bpy.types.Operator):#GLレンダMASK
     """GLレンダMASK用"""
-    bl_idname = "object.myobject_171760"
+    bl_idname = "fujiwara_toolbox.command_171760"
     bl_label = "GLレンダMASK"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -3409,9 +3409,9 @@ class MYOBJECT_171760(bpy.types.Operator):#GLレンダMASK
 ########################################
 #線幅を戻す
 ########################################
-class MYOBJECT_347064(bpy.types.Operator):#線幅を戻す
+class FUJIWARATOOLBOX_347064(bpy.types.Operator):#線幅を戻す
     """線幅を戻す"""
-    bl_idname = "object.myobject_347064"
+    bl_idname = "fujiwara_toolbox.command_347064"
     bl_label = "線幅を戻す"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -3499,9 +3499,9 @@ uiitem().vertical()
 ########################################
 #コンポジット構築のみ
 ########################################
-class MYOBJECT_505834(bpy.types.Operator):#コンポジット構築のみ
+class FUJIWARATOOLBOX_505834(bpy.types.Operator):#コンポジット構築のみ
     """コンポジット構築のみ"""
-    bl_idname = "object.myobject_505834"
+    bl_idname = "fujiwara_toolbox.command_505834"
     bl_label = "コンポジット構築のみ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -3533,9 +3533,9 @@ uiitem().horizontal()
 ########################################
 #プレビュー
 ########################################
-class MYOBJECT_258524(bpy.types.Operator):#プレビュー
+class FUJIWARATOOLBOX_258524(bpy.types.Operator):#プレビュー
     """ビューポートでプレビュー"""
-    bl_idname = "object.myobject_258524"
+    bl_idname = "fujiwara_toolbox.command_258524"
     bl_label = "プレビュー"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -3559,9 +3559,9 @@ class MYOBJECT_258524(bpy.types.Operator):#プレビュー
 #########################################
 ##フルレンダ
 #########################################
-#class MYOBJECT_185402(bpy.types.Operator):#フルレンダ
+#class FUJIWARATOOLBOX_185402(bpy.types.Operator):#フルレンダ
 #    """バックグラウンドでフルレンダ"""
-#    bl_idname = "object.myobject_185402"
+#    bl_idname = "fujiwara_toolbox.command_185402"
 #    bl_label = "フルレンダ"
 #    bl_options = {'REGISTER', 'UNDO'}
 
@@ -3659,9 +3659,9 @@ uiitem().horizontal()
 ########################################
 #RenderGroup
 ########################################
-class MYOBJECT_716795(bpy.types.Operator):#RenderGroup
+class FUJIWARATOOLBOX_716795(bpy.types.Operator):#RenderGroup
     """RenderGroup"""
-    bl_idname = "object.myobject_716795"
+    bl_idname = "fujiwara_toolbox.command_716795"
     bl_label = "RenderGroup"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -3697,9 +3697,9 @@ class MYOBJECT_716795(bpy.types.Operator):#RenderGroup
 ########################################
 #親子・連続指定用
 ########################################
-class MYOBJECT_985143(bpy.types.Operator):#親子・連続指定用
+class FUJIWARATOOLBOX_985143(bpy.types.Operator):#親子・連続指定用
     """親子・連続指定用"""
-    bl_idname = "object.myobject_985143"
+    bl_idname = "fujiwara_toolbox.command_985143"
     bl_label = "親子・連続指定用"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -3710,8 +3710,8 @@ class MYOBJECT_985143(bpy.types.Operator):#親子・連続指定用
     #処理部分
     ###################################
     def execute(self, context):
-        bpy.ops.object.myobject_24259()
-        bpy.ops.object.myobject_716795()
+        bpy.ops.fujiwara_toolbox.command_24259()
+        bpy.ops.fujiwara_toolbox.command_716795()
         #隠す
         for obj in bpy.context.selected_objects:
             obj.hide = True
@@ -3728,9 +3728,9 @@ uiitem().vertical()
 ########################################
 #プロパティから再構成
 ########################################
-class MYOBJECT_880927(bpy.types.Operator):#プロパティから再構成
+class FUJIWARATOOLBOX_880927(bpy.types.Operator):#プロパティから再構成
     """プロパティから再構成"""
-    bl_idname = "object.myobject_880927"
+    bl_idname = "fujiwara_toolbox.command_880927"
     bl_label = "プロパティから再構成"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -3743,7 +3743,7 @@ class MYOBJECT_880927(bpy.types.Operator):#プロパティから再構成
     def execute(self, context):
         targets = fjw.get_selected_list()
         #親子選択
-        bpy.ops.object.myobject_24259()
+        bpy.ops.fujiwara_toolbox.command_24259()
         for obj in targets:
             obj.select = True
         targets = fjw.get_selected_list()
@@ -3768,7 +3768,7 @@ class MYOBJECT_880927(bpy.types.Operator):#プロパティから再構成
                 except  :
                     pass
             #レンダグループ
-            bpy.ops.object.myobject_716795()
+            bpy.ops.fujiwara_toolbox.command_716795()
             pass
 
         return {'FINISHED'}
@@ -3795,9 +3795,9 @@ uiitem().horizontal()
 ########################################
 #クリア
 ########################################
-class MYOBJECT_275643(bpy.types.Operator):#クリア
+class FUJIWARATOOLBOX_275643(bpy.types.Operator):#クリア
     """クリア"""
-    bl_idname = "object.myobject_275643"
+    bl_idname = "fujiwara_toolbox.command_275643"
     bl_label = "クリア"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -3818,9 +3818,9 @@ class MYOBJECT_275643(bpy.types.Operator):#クリア
 ########################################
 #割り当て済みを隠す
 ########################################
-class MYOBJECT_824105(bpy.types.Operator):#割り当て済みを隠す
+class FUJIWARATOOLBOX_824105(bpy.types.Operator):#割り当て済みを隠す
     """割り当て済みを隠す"""
-    bl_idname = "object.myobject_824105"
+    bl_idname = "fujiwara_toolbox.command_824105"
     bl_label = "割り当て済みを隠す"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -3859,7 +3859,7 @@ uiitem().vertical()
 ########################################
 class CATEGORYBUTTON_845862(bpy.types.Operator):#レイヤー
     """レイヤー"""
-    bl_idname = "object.categorybutton_845862"
+    bl_idname = "fujiwara_toolbox.categorybutton_845862"
     bl_label = "レイヤー"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4086,9 +4086,9 @@ class LayerCategory():
 ########################################
 #構成チェック
 ########################################
-class MYOBJECT_822286(bpy.types.Operator):#構成チェック
+class FUJIWARATOOLBOX_822286(bpy.types.Operator):#構成チェック
     """構成チェック"""
-    bl_idname = "object.myobject_822286"
+    bl_idname = "fujiwara_toolbox.command_822286"
     bl_label = "構成チェック"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4110,9 +4110,9 @@ class MYOBJECT_822286(bpy.types.Operator):#構成チェック
 ########################################
 #カテゴリに移動（選択物）
 ########################################
-class MYOBJECT_630218(bpy.types.Operator):#カテゴリに移動（選択物）
+class FUJIWARATOOLBOX_630218(bpy.types.Operator):#カテゴリに移動（選択物）
     """カテゴリに移動（選択物）"""
-    bl_idname = "object.myobject_630218"
+    bl_idname = "fujiwara_toolbox.command_630218"
     bl_label = "カテゴリに移動（選択物）"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4136,9 +4136,9 @@ class MYOBJECT_630218(bpy.types.Operator):#カテゴリに移動（選択物）
 ########################################
 #カテゴリに移動（表示全部）
 ########################################
-class MYOBJECT_113350(bpy.types.Operator):#カテゴリに移動（表示全部）
+class FUJIWARATOOLBOX_113350(bpy.types.Operator):#カテゴリに移動（表示全部）
     """カテゴリに移動（表示全部）"""
-    bl_idname = "object.myobject_113350"
+    bl_idname = "fujiwara_toolbox.command_113350"
     bl_label = "カテゴリに移動（表示全部）"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4181,9 +4181,9 @@ uiitem().horizontal()
 ########################################
 #キャラ手前
 ########################################
-class MYOBJECT_748000(bpy.types.Operator):#キャラ手前
+class FUJIWARATOOLBOX_748000(bpy.types.Operator):#キャラ手前
     """キャラ手前"""
-    bl_idname = "object.myobject_748000"
+    bl_idname = "fujiwara_toolbox.command_748000"
     bl_label = "手前"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4202,9 +4202,9 @@ class MYOBJECT_748000(bpy.types.Operator):#キャラ手前
 ########################################
 #キャラ
 ########################################
-class MYOBJECT_547202(bpy.types.Operator):#キャラ
+class FUJIWARATOOLBOX_547202(bpy.types.Operator):#キャラ
     """キャラ"""
-    bl_idname = "object.myobject_547202"
+    bl_idname = "fujiwara_toolbox.command_547202"
     bl_label = "2"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4223,9 +4223,9 @@ class MYOBJECT_547202(bpy.types.Operator):#キャラ
 ########################################
 #キャラ
 ########################################
-class MYOBJECT_892615(bpy.types.Operator):#キャラ
+class FUJIWARATOOLBOX_892615(bpy.types.Operator):#キャラ
     """キャラ"""
-    bl_idname = "object.myobject_892615"
+    bl_idname = "fujiwara_toolbox.command_892615"
     bl_label = "3"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4244,9 +4244,9 @@ class MYOBJECT_892615(bpy.types.Operator):#キャラ
 ########################################
 #キャラ
 ########################################
-class MYOBJECT_60203(bpy.types.Operator):#キャラ
+class FUJIWARATOOLBOX_60203(bpy.types.Operator):#キャラ
     """キャラ"""
-    bl_idname = "object.myobject_60203"
+    bl_idname = "fujiwara_toolbox.command_60203"
     bl_label = "4"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4265,9 +4265,9 @@ class MYOBJECT_60203(bpy.types.Operator):#キャラ
 ########################################
 #キャラ奥
 ########################################
-class MYOBJECT_951016(bpy.types.Operator):#キャラ奥
+class FUJIWARATOOLBOX_951016(bpy.types.Operator):#キャラ奥
     """キャラ奥"""
-    bl_idname = "object.myobject_951016"
+    bl_idname = "fujiwara_toolbox.command_951016"
     bl_label = "奥"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4296,9 +4296,9 @@ uiitem().horizontal()
 ########################################
 #背景手前
 ########################################
-class MYOBJECT_977845(bpy.types.Operator):#背景手前
+class FUJIWARATOOLBOX_977845(bpy.types.Operator):#背景手前
     """背景手前"""
-    bl_idname = "object.myobject_977845"
+    bl_idname = "fujiwara_toolbox.command_977845"
     bl_label = "手前"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4317,9 +4317,9 @@ class MYOBJECT_977845(bpy.types.Operator):#背景手前
 ########################################
 #背景
 ########################################
-class MYOBJECT_782024(bpy.types.Operator):#背景
+class FUJIWARATOOLBOX_782024(bpy.types.Operator):#背景
     """背景"""
-    bl_idname = "object.myobject_782024"
+    bl_idname = "fujiwara_toolbox.command_782024"
     bl_label = "2"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4338,9 +4338,9 @@ class MYOBJECT_782024(bpy.types.Operator):#背景
 ########################################
 #背景
 ########################################
-class MYOBJECT_288468(bpy.types.Operator):#背景
+class FUJIWARATOOLBOX_288468(bpy.types.Operator):#背景
     """背景"""
-    bl_idname = "object.myobject_288468"
+    bl_idname = "fujiwara_toolbox.command_288468"
     bl_label = "3"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4359,9 +4359,9 @@ class MYOBJECT_288468(bpy.types.Operator):#背景
 ########################################
 #背景
 ########################################
-class MYOBJECT_546419(bpy.types.Operator):#背景
+class FUJIWARATOOLBOX_546419(bpy.types.Operator):#背景
     """背景"""
-    bl_idname = "object.myobject_546419"
+    bl_idname = "fujiwara_toolbox.command_546419"
     bl_label = "4"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4380,9 +4380,9 @@ class MYOBJECT_546419(bpy.types.Operator):#背景
 ########################################
 #背景奥
 ########################################
-class MYOBJECT_844075(bpy.types.Operator):#背景奥
+class FUJIWARATOOLBOX_844075(bpy.types.Operator):#背景奥
     """背景奥"""
-    bl_idname = "object.myobject_844075"
+    bl_idname = "fujiwara_toolbox.command_844075"
     bl_label = "奥"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4410,9 +4410,9 @@ uiitem().horizontal()
 ########################################
 #ストック
 ########################################
-class MYOBJECT_165238(bpy.types.Operator):#ストック
+class FUJIWARATOOLBOX_165238(bpy.types.Operator):#ストック
     """ストック"""
-    bl_idname = "object.myobject_165238"
+    bl_idname = "fujiwara_toolbox.command_165238"
     bl_label = "ストック"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4433,9 +4433,9 @@ class MYOBJECT_165238(bpy.types.Operator):#ストック
 ########################################
 #2
 ########################################
-class MYOBJECT_377137(bpy.types.Operator):#2
+class FUJIWARATOOLBOX_377137(bpy.types.Operator):#2
     """2"""
-    bl_idname = "object.myobject_377137"
+    bl_idname = "fujiwara_toolbox.command_377137"
     bl_label = "2"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4455,9 +4455,9 @@ class MYOBJECT_377137(bpy.types.Operator):#2
 ########################################
 #3
 ########################################
-class MYOBJECT_21253(bpy.types.Operator):#3
+class FUJIWARATOOLBOX_21253(bpy.types.Operator):#3
     """3"""
-    bl_idname = "object.myobject_21253"
+    bl_idname = "fujiwara_toolbox.command_21253"
     bl_label = "3"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4477,9 +4477,9 @@ class MYOBJECT_21253(bpy.types.Operator):#3
 ########################################
 #4
 ########################################
-class MYOBJECT_870290(bpy.types.Operator):#4
+class FUJIWARATOOLBOX_870290(bpy.types.Operator):#4
     """4"""
-    bl_idname = "object.myobject_870290"
+    bl_idname = "fujiwara_toolbox.command_870290"
     bl_label = "4"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4499,9 +4499,9 @@ class MYOBJECT_870290(bpy.types.Operator):#4
 ########################################
 #5
 ########################################
-class MYOBJECT_255842(bpy.types.Operator):#5
+class FUJIWARATOOLBOX_255842(bpy.types.Operator):#5
     """5"""
-    bl_idname = "object.myobject_255842"
+    bl_idname = "fujiwara_toolbox.command_255842"
     bl_label = "5"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4540,9 +4540,9 @@ uiitem().horizontal()
 ########################################
 #1
 ########################################
-class MYOBJECT_720458(bpy.types.Operator):#1
+class FUJIWARATOOLBOX_720458(bpy.types.Operator):#1
     """1"""
-    bl_idname = "object.myobject_720458"
+    bl_idname = "fujiwara_toolbox.command_720458"
     bl_label = "1"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4571,9 +4571,9 @@ class MYOBJECT_720458(bpy.types.Operator):#1
 ########################################
 #2
 ########################################
-class MYOBJECT_756530(bpy.types.Operator):#2
+class FUJIWARATOOLBOX_756530(bpy.types.Operator):#2
     """2"""
-    bl_idname = "object.myobject_756530"
+    bl_idname = "fujiwara_toolbox.command_756530"
     bl_label = "2"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4599,9 +4599,9 @@ class MYOBJECT_756530(bpy.types.Operator):#2
 ########################################
 #3
 ########################################
-class MYOBJECT_589552(bpy.types.Operator):#3
+class FUJIWARATOOLBOX_589552(bpy.types.Operator):#3
     """3"""
-    bl_idname = "object.myobject_589552"
+    bl_idname = "fujiwara_toolbox.command_589552"
     bl_label = "3"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4626,9 +4626,9 @@ class MYOBJECT_589552(bpy.types.Operator):#3
 ########################################
 #4
 ########################################
-class MYOBJECT_352073(bpy.types.Operator):#4
+class FUJIWARATOOLBOX_352073(bpy.types.Operator):#4
     """4"""
-    bl_idname = "object.myobject_352073"
+    bl_idname = "fujiwara_toolbox.command_352073"
     bl_label = "4"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4654,9 +4654,9 @@ class MYOBJECT_352073(bpy.types.Operator):#4
 ########################################
 #5
 ########################################
-class MYOBJECT_283776(bpy.types.Operator):#5
+class FUJIWARATOOLBOX_283776(bpy.types.Operator):#5
     """5"""
-    bl_idname = "object.myobject_283776"
+    bl_idname = "fujiwara_toolbox.command_283776"
     bl_label = "5"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4702,9 +4702,9 @@ uiitem().horizontal()
 ########################################
 #分離
 ########################################
-class MYOBJECT_436578(bpy.types.Operator):#分離
+class FUJIWARATOOLBOX_436578(bpy.types.Operator):#分離
     """分離"""
-    bl_idname = "object.myobject_436578"
+    bl_idname = "fujiwara_toolbox.command_436578"
     bl_label = "分離"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4784,9 +4784,9 @@ uiitem().horizontal()
 ########################################
 #本体を開く
 ########################################
-class MYOBJECT_857359(bpy.types.Operator):#本体を開く
+class FUJIWARATOOLBOX_857359(bpy.types.Operator):#本体を開く
     """本体を開く"""
-    bl_idname = "object.myobject_857359"
+    bl_idname = "fujiwara_toolbox.command_857359"
     bl_label = "本体を開く"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4822,9 +4822,9 @@ class MYOBJECT_857359(bpy.types.Operator):#本体を開く
 ########################################
 #背景を開く
 ########################################
-class MYOBJECT_348653(bpy.types.Operator):#背景を開く
+class FUJIWARATOOLBOX_348653(bpy.types.Operator):#背景を開く
     """背景を開く"""
-    bl_idname = "object.myobject_348653"
+    bl_idname = "fujiwara_toolbox.command_348653"
     bl_label = "背景を開く"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4875,9 +4875,9 @@ class MYOBJECT_348653(bpy.types.Operator):#背景を開く
 ########################################
 #中点
 ########################################
-class MYOBJECT_995874(bpy.types.Operator):#中点
+class FUJIWARATOOLBOX_995874(bpy.types.Operator):#中点
     """変形中心を中点"""
-    bl_idname = "object.myobject_995874"
+    bl_idname = "fujiwara_toolbox.command_995874"
     bl_label = ""
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4890,7 +4890,7 @@ class MYOBJECT_995874(bpy.types.Operator):#中点
     def execute(self, context):
         bpy.context.space_data.pivot_point = 'MEDIAN_POINT'
         #グリッドスナップ
-        bpy.ops.object.myobject_357169()
+        bpy.ops.fujiwara_toolbox.command_357169()
         
         return {'FINISHED'}
 ########################################
@@ -4899,9 +4899,9 @@ class MYOBJECT_995874(bpy.types.Operator):#中点
 ########################################
 #頂点に
 ########################################
-class MYOBJECT_59910(bpy.types.Operator):#頂点に
+class FUJIWARATOOLBOX_59910(bpy.types.Operator):#頂点に
     """3Dカーソルを設置して変形の中心に"""
-    bl_idname = "object.myobject_59910"
+    bl_idname = "fujiwara_toolbox.command_59910"
     bl_label = ""
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4951,7 +4951,7 @@ uiitem().vertical()
 ########################################
 class CATEGORYBUTTON_861028(bpy.types.Operator):#素体
     """素体"""
-    bl_idname = "object.categorybutton_861028"
+    bl_idname = "fujiwara_toolbox.categorybutton_861028"
     bl_label = "素体"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -4985,9 +4985,9 @@ uiitem().horizontal()
 ########################################
 #素体追加
 ########################################
-class MYOBJECT_707900(bpy.types.Operator):#素体追加
+class FUJIWARATOOLBOX_707900(bpy.types.Operator):#素体追加
     """素体追加"""
-    bl_idname = "object.myobject_707900"
+    bl_idname = "fujiwara_toolbox.command_707900"
     bl_label = "追加"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -5237,7 +5237,7 @@ class SPIFileBrowser(bpy.types.Operator):
         #    self.report({"INFO"},obj.name)
 
         #ヘアトラッカ設定
-        bpy.ops.object.myobject_815238()
+        bpy.ops.fujiwara_toolbox.command_815238()
 
         return {'FINISHED'}
 
@@ -5251,9 +5251,9 @@ bpy.utils.register_class(SPIFileBrowser)
 ########################################
 #素体置換
 ########################################
-class MYOBJECT_157507(bpy.types.Operator):#スワップ削除
+class FUJIWARATOOLBOX_157507(bpy.types.Operator):#スワップ削除
     """素体置換"""
-    bl_idname = "object.myobject_157507"
+    bl_idname = "fujiwara_toolbox.command_157507"
     bl_label = "素体置換"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -5373,9 +5373,9 @@ bpy.utils.register_class(LPIFileBrowser)
 ########################################
 #Libポーズ適用
 ########################################
-class MYOBJECT_940955(bpy.types.Operator):#Libポーズ適用
+class FUJIWARATOOLBOX_940955(bpy.types.Operator):#Libポーズ適用
     """Libポーズ適用"""
-    bl_idname = "object.myobject_940955"
+    bl_idname = "fujiwara_toolbox.command_940955"
     bl_label = "Libポーズ適用"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -5416,9 +5416,9 @@ uiitem().vertical()
 ########################################
 #素体抽出
 ########################################
-class MYOBJECT_319683(bpy.types.Operator):#素体抽出
+class FUJIWARATOOLBOX_319683(bpy.types.Operator):#素体抽出
     """素体抽出"""
-    bl_idname = "object.myobject_319683"
+    bl_idname = "fujiwara_toolbox.command_319683"
     bl_label = "ポーズ抽出展開"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -5523,9 +5523,9 @@ uiitem().horizontal()
 ########################################
 #ヘアトラッカ設定
 ########################################
-class MYOBJECT_815238(bpy.types.Operator):#ヘアトラッカ設定
+class FUJIWARATOOLBOX_815238(bpy.types.Operator):#ヘアトラッカ設定
     """ヘアトラッカ設定"""
-    bl_idname = "object.myobject_815238"
+    bl_idname = "fujiwara_toolbox.command_815238"
     bl_label = "ヘアトラッカ設定"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -5552,9 +5552,9 @@ class MYOBJECT_815238(bpy.types.Operator):#ヘアトラッカ設定
 ########################################
 #カメラ目線
 ########################################
-class MYOBJECT_68972(bpy.types.Operator):#カメラ目線
+class FUJIWARATOOLBOX_68972(bpy.types.Operator):#カメラ目線
     """カメラ目線"""
-    bl_idname = "object.myobject_68972"
+    bl_idname = "fujiwara_toolbox.command_68972"
     bl_label = "カメラ目線"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -5598,7 +5598,7 @@ uiitem().vertical()
 ########################################
 class CATEGORYBUTTON_14843(bpy.types.Operator):#ランプ
     """ランプ"""
-    bl_idname = "object.categorybutton_14843"
+    bl_idname = "fujiwara_toolbox.categorybutton_14843"
     bl_label = "ランプ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -5626,9 +5626,9 @@ uiitem().horizontal()
 ########################################
 #SUN設置
 ########################################
-class MYOBJECT_96315(bpy.types.Operator):#SUN設置
+class FUJIWARATOOLBOX_96315(bpy.types.Operator):#SUN設置
     """SUN設置"""
-    bl_idname = "object.myobject_96315"
+    bl_idname = "fujiwara_toolbox.command_96315"
     bl_label = "SUN設置"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -5656,9 +5656,9 @@ class MYOBJECT_96315(bpy.types.Operator):#SUN設置
 ########################################
 #屋内用ロングランプ
 ########################################
-class MYOBJECT_831406(bpy.types.Operator):#屋内用ロングランプ
+class FUJIWARATOOLBOX_831406(bpy.types.Operator):#屋内用ロングランプ
     """屋内用ロングランプ"""
-    bl_idname = "object.myobject_831406"
+    bl_idname = "fujiwara_toolbox.command_831406"
     bl_label = "屋内用ロングランプ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -5684,9 +5684,9 @@ class MYOBJECT_831406(bpy.types.Operator):#屋内用ロングランプ
 ########################################
 #カメラにポイント設置
 ########################################
-class MYOBJECT_47170(bpy.types.Operator):#カメラにポイント設置
+class FUJIWARATOOLBOX_47170(bpy.types.Operator):#カメラにポイント設置
     """カメラにポイント設置"""
-    bl_idname = "object.myobject_47170"
+    bl_idname = "fujiwara_toolbox.command_47170"
     bl_label = "カメラにポイント設置"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -5713,9 +5713,9 @@ uiitem().horizontal()
 ########################################
 #ボトムバックライト
 ########################################
-class MYOBJECT_770473(bpy.types.Operator):#ボトムバックライト
+class FUJIWARATOOLBOX_770473(bpy.types.Operator):#ボトムバックライト
     """ボトムバックライト"""
-    bl_idname = "object.myobject_770473"
+    bl_idname = "fujiwara_toolbox.command_770473"
     bl_label = "ボトムバックライト"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -5749,9 +5749,9 @@ uiitem().vertical()
 ########################################
 #環境照明
 ########################################
-class MYOBJECT_648653(bpy.types.Operator):#環境照明
+class FUJIWARATOOLBOX_648653(bpy.types.Operator):#環境照明
     """環境照明"""
-    bl_idname = "object.myobject_648653"
+    bl_idname = "fujiwara_toolbox.command_648653"
     bl_label = "環境照明"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -5789,9 +5789,9 @@ uiitem().horizontal()
 ########################################
 #ライト正規化
 ########################################
-class MYOBJECT_550719(bpy.types.Operator):#ライト正規化
+class FUJIWARATOOLBOX_550719(bpy.types.Operator):#ライト正規化
     """ライト正規化　+アクティブオブジェクトのみドロップシャドウをつける"""
-    bl_idname = "object.myobject_550719"
+    bl_idname = "fujiwara_toolbox.command_550719"
     bl_label = "ライト正規化"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -5822,9 +5822,9 @@ class MYOBJECT_550719(bpy.types.Operator):#ライト正規化
 ########################################
 #ランプ全レイヤ化
 ########################################
-class MYOBJECT_682004(bpy.types.Operator):#ランプ全レイヤ化
+class FUJIWARATOOLBOX_682004(bpy.types.Operator):#ランプ全レイヤ化
     """ランプ全レイヤ化"""
-    bl_idname = "object.myobject_682004"
+    bl_idname = "fujiwara_toolbox.command_682004"
     bl_label = "ランプ全レイヤ化"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -5868,7 +5868,7 @@ uiitem().vertical()
 ########################################
 class CATEGORYBUTTON_712442(bpy.types.Operator):#カスタムプロパティ
     """カスタムプロパティ"""
-    bl_idname = "object.categorybutton_712442"
+    bl_idname = "fujiwara_toolbox.categorybutton_712442"
     bl_label = "カスタムプロパティ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -5899,9 +5899,9 @@ uiitem().horizontal()
 ########################################
 #グループ情報を回収
 ########################################
-class MYOBJECT_454471(bpy.types.Operator):#グループ情報を回収
+class FUJIWARATOOLBOX_454471(bpy.types.Operator):#グループ情報を回収
     """グループ情報を回収"""
-    bl_idname = "object.myobject_454471"
+    bl_idname = "fujiwara_toolbox.command_454471"
     bl_label = "グループ情報を回収"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -5933,9 +5933,9 @@ class MYOBJECT_454471(bpy.types.Operator):#グループ情報を回収
 ########################################
 #グループ再生
 ########################################
-class MYOBJECT_490616(bpy.types.Operator):#グループ再生
+class FUJIWARATOOLBOX_490616(bpy.types.Operator):#グループ再生
     """グループ再生"""
-    bl_idname = "object.myobject_490616"
+    bl_idname = "fujiwara_toolbox.command_490616"
     bl_label = "グループ再生"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -5966,9 +5966,9 @@ uiitem().vertical()
 ########################################
 #Trackto:CAMERA
 ########################################
-class MYOBJECT_372481(bpy.types.Operator):#Trackto:CAMERA
+class FUJIWARATOOLBOX_372481(bpy.types.Operator):#Trackto:CAMERA
     """カスタムプロパティでTrackto:CAMERAをもつものに-Yのカメラトラックをつける"""
-    bl_idname = "object.myobject_372481"
+    bl_idname = "fujiwara_toolbox.command_372481"
     bl_label = "Trackto:CAMERA"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -6034,9 +6034,9 @@ uiitem().vertical()
 ########################################
 #グリッドスナップ
 ########################################
-class MYOBJECT_357169(bpy.types.Operator):#グリッドスナップ
+class FUJIWARATOOLBOX_357169(bpy.types.Operator):#グリッドスナップ
     """グリッドスナップ"""
-    bl_idname = "object.myobject_357169"
+    bl_idname = "fujiwara_toolbox.command_357169"
     bl_label = ""
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -6057,9 +6057,9 @@ class MYOBJECT_357169(bpy.types.Operator):#グリッドスナップ
 ########################################
 #面スナップ
 ########################################
-class MYOBJECT_911158(bpy.types.Operator):#面スナップ
+class FUJIWARATOOLBOX_911158(bpy.types.Operator):#面スナップ
     """面スナップ"""
-    bl_idname = "object.myobject_911158"
+    bl_idname = "fujiwara_toolbox.command_911158"
     bl_label = ""
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -6081,9 +6081,9 @@ class MYOBJECT_911158(bpy.types.Operator):#面スナップ
 ########################################
 #辺スナップ
 ########################################
-class MYOBJECT_993743(bpy.types.Operator):#辺スナップ
+class FUJIWARATOOLBOX_993743(bpy.types.Operator):#辺スナップ
     """辺スナップ"""
-    bl_idname = "object.myobject_993743"
+    bl_idname = "fujiwara_toolbox.command_993743"
     bl_label = ""
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -6107,9 +6107,9 @@ class MYOBJECT_993743(bpy.types.Operator):#辺スナップ
 ########################################
 #頂点スナップ
 ########################################
-class MYOBJECT_33358(bpy.types.Operator):#頂点スナップ
+class FUJIWARATOOLBOX_33358(bpy.types.Operator):#頂点スナップ
     """頂点スナップ"""
-    bl_idname = "object.myobject_33358"
+    bl_idname = "fujiwara_toolbox.command_33358"
     bl_label = ""
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -6448,7 +6448,7 @@ uiitem().vertical()
 ########################################
 class CATEGORYBUTTON_812057(bpy.types.Operator):#MOD
     """MOD"""
-    bl_idname = "object.categorybutton_812057"
+    bl_idname = "fujiwara_toolbox.categorybutton_812057"
     bl_label = "MOD"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -6481,9 +6481,9 @@ uiitem().horizontal()
 ########################################
 #適用（選択物）
 ########################################
-class MYOBJECT_557231(bpy.types.Operator):#適用（選択物）
+class FUJIWARATOOLBOX_557231(bpy.types.Operator):#適用（選択物）
     """適用（選択物）"""
-    bl_idname = "object.myobject_557231"
+    bl_idname = "fujiwara_toolbox.command_557231"
     bl_label = "mod適用（選択物）"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -6527,9 +6527,9 @@ class MYOBJECT_557231(bpy.types.Operator):#適用（選択物）
 ########################################
 #複製系だけ適用（選択物）
 ########################################
-class MYOBJECT_661107(bpy.types.Operator):#複製系だけ適用（選択物）
+class FUJIWARATOOLBOX_661107(bpy.types.Operator):#複製系だけ適用（選択物）
     """複製系だけ適用（選択物）"""
-    bl_idname = "object.myobject_661107"
+    bl_idname = "fujiwara_toolbox.command_661107"
     bl_label = "複製系だけ適用（選択物）"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -6554,9 +6554,9 @@ class MYOBJECT_661107(bpy.types.Operator):#複製系だけ適用（選択物）
 ########################################
 #適用・隠す
 ########################################
-class MYOBJECT_234815(bpy.types.Operator):#適用・隠す
+class FUJIWARATOOLBOX_234815(bpy.types.Operator):#適用・隠す
     """適用・隠す"""
-    bl_idname = "object.myobject_234815"
+    bl_idname = "fujiwara_toolbox.command_234815"
     bl_label = "適用・隠す"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -6590,9 +6590,9 @@ uiitem().vertical()
 ########################################
 #厚み用拡縮適用
 ########################################
-class MYOBJECT_474026(bpy.types.Operator):#厚み用拡縮適用
+class FUJIWARATOOLBOX_474026(bpy.types.Operator):#厚み用拡縮適用
     """厚み用拡縮適用"""
-    bl_idname = "object.myobject_474026"
+    bl_idname = "fujiwara_toolbox.command_474026"
     bl_label = "厚み用拡縮適用"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -6639,9 +6639,9 @@ uiitem("ミラー")
 ########################################
 #ミラー左右分離（選択物）
 ########################################
-class MYOBJECT_757415(bpy.types.Operator):#ミラー左右分離（選択物）
+class FUJIWARATOOLBOX_757415(bpy.types.Operator):#ミラー左右分離（選択物）
     """ミラー左右分離（選択物）"""
-    bl_idname = "object.myobject_757415"
+    bl_idname = "fujiwara_toolbox.command_757415"
     bl_label = "ミラー左右分離（選択物）"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -6738,9 +6738,9 @@ uiitem().horizontal()
 ########################################
 #X-でミラー化
 ########################################
-class MYOBJECT_900279(bpy.types.Operator):#X-でミラー化
+class FUJIWARATOOLBOX_900279(bpy.types.Operator):#X-でミラー化
     """X-でミラー化"""
-    bl_idname = "object.myobject_900279"
+    bl_idname = "fujiwara_toolbox.command_900279"
     bl_label = "X-でミラー化"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -6770,9 +6770,9 @@ class MYOBJECT_900279(bpy.types.Operator):#X-でミラー化
 ########################################
 #X+でミラー化
 ########################################
-class MYOBJECT_734909(bpy.types.Operator):#X+でミラー化
+class FUJIWARATOOLBOX_734909(bpy.types.Operator):#X+でミラー化
     """X+でミラー化"""
-    bl_idname = "object.myobject_734909"
+    bl_idname = "fujiwara_toolbox.command_734909"
     bl_label = "X+でミラー化"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -6819,9 +6819,9 @@ uiitem().horizontal()
 ########################################
 #ペアレントミラー
 ########################################
-class MYOBJECT_892110(bpy.types.Operator):#ペアレントミラー
+class FUJIWARATOOLBOX_892110(bpy.types.Operator):#ペアレントミラー
     """ペアレントミラー"""
-    bl_idname = "object.myobject_892110"
+    bl_idname = "fujiwara_toolbox.command_892110"
     bl_label = "ペアレントミラー"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -6868,9 +6868,9 @@ class MYOBJECT_892110(bpy.types.Operator):#ペアレントミラー
 ########################################
 #ターゲットミラー
 ########################################
-class MYOBJECT_553492(bpy.types.Operator):#ターゲットミラー
+class FUJIWARATOOLBOX_553492(bpy.types.Operator):#ターゲットミラー
     """ターゲットミラー"""
-    bl_idname = "object.myobject_553492"
+    bl_idname = "fujiwara_toolbox.command_553492"
     bl_label = "ターゲットミラー"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -6912,9 +6912,9 @@ class MYOBJECT_553492(bpy.types.Operator):#ターゲットミラー
 ########################################
 #P・Tミラー除去
 ########################################
-class MYOBJECT_17104(bpy.types.Operator):#ターゲットミラー除去
+class FUJIWARATOOLBOX_17104(bpy.types.Operator):#ターゲットミラー除去
     """P・Tミラー除去"""
-    bl_idname = "object.myobject_17104"
+    bl_idname = "fujiwara_toolbox.command_17104"
     bl_label = "P・Tミラー除去"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -6938,9 +6938,9 @@ class MYOBJECT_17104(bpy.types.Operator):#ターゲットミラー除去
 ########################################
 #ミラー適用
 ########################################
-class MYOBJECT_239793(bpy.types.Operator):#ミラー適用
+class FUJIWARATOOLBOX_239793(bpy.types.Operator):#ミラー適用
     """ミラー適用"""
-    bl_idname = "object.myobject_239793"
+    bl_idname = "fujiwara_toolbox.command_239793"
     bl_label = "ミラー適用"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -6993,9 +6993,9 @@ uiitem("ペアレントmod")
 ########################################
 #ペアレントラップ
 ########################################
-class MYOBJECT_519944(bpy.types.Operator):#ペアレントラップ
+class FUJIWARATOOLBOX_519944(bpy.types.Operator):#ペアレントラップ
     """ペアレントラップ"""
-    bl_idname = "object.myobject_519944"
+    bl_idname = "fujiwara_toolbox.command_519944"
     bl_label = "ペアレントラップ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -7036,9 +7036,9 @@ class MYOBJECT_519944(bpy.types.Operator):#ペアレントラップ
 ########################################
 #ペアレント装甲
 ########################################
-class MYOBJECT_907335(bpy.types.Operator):#ペアレント装甲
+class FUJIWARATOOLBOX_907335(bpy.types.Operator):#ペアレント装甲
     """ペアレント装甲"""
-    bl_idname = "object.myobject_907335"
+    bl_idname = "fujiwara_toolbox.command_907335"
     bl_label = "ペアレント装甲"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -7094,9 +7094,9 @@ uiitem().horizontal()
 ########################################
 #ペアレントメッシュデフォーム
 ########################################
-class MYOBJECT_449421(bpy.types.Operator):#ペアレントメッシュデフォーム
+class FUJIWARATOOLBOX_449421(bpy.types.Operator):#ペアレントメッシュデフォーム
     """シュリンクラップは適用。"""
-    bl_idname = "object.myobject_449421"
+    bl_idname = "fujiwara_toolbox.command_449421"
     bl_label = "ペアレントメッシュデフォーム6"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -7170,9 +7170,9 @@ class MYOBJECT_449421(bpy.types.Operator):#ペアレントメッシュデフォ�
 ########################################
 #5
 ########################################
-class MYOBJECT_384891(bpy.types.Operator):#5
+class FUJIWARATOOLBOX_384891(bpy.types.Operator):#5
     """5"""
-    bl_idname = "object.myobject_384891"
+    bl_idname = "fujiwara_toolbox.command_384891"
     bl_label = "精度5"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -7250,9 +7250,9 @@ uiitem().horizontal()
 ########################################
 #バインド解除
 ########################################
-class MYOBJECT_44204(bpy.types.Operator):#バインド解除
+class FUJIWARATOOLBOX_44204(bpy.types.Operator):#バインド解除
     """バインド解除"""
-    bl_idname = "object.myobject_44204"
+    bl_idname = "fujiwara_toolbox.command_44204"
     bl_label = "バインド解除"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -7280,9 +7280,9 @@ class MYOBJECT_44204(bpy.types.Operator):#バインド解除
 ########################################
 #デフォーム適用
 ########################################
-class MYOBJECT_766913(bpy.types.Operator):#デフォーム適用
+class FUJIWARATOOLBOX_766913(bpy.types.Operator):#デフォーム適用
     """デフォーム適用"""
-    bl_idname = "object.myobject_766913"
+    bl_idname = "fujiwara_toolbox.command_766913"
     bl_label = "デフォーム適用"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -7315,9 +7315,9 @@ class MYOBJECT_766913(bpy.types.Operator):#デフォーム適用
 ########################################
 #全て再バインド
 ########################################
-class MYOBJECT_860977(bpy.types.Operator):#全て再バインド
+class FUJIWARATOOLBOX_860977(bpy.types.Operator):#全て再バインド
     """メッシュデフォーム全て再バインド"""
-    bl_idname = "object.myobject_860977"
+    bl_idname = "fujiwara_toolbox.command_860977"
     bl_label = "再バインド"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -7360,9 +7360,9 @@ uiitem("その他")
 ########################################
 #カーブにアタッチ
 ########################################
-class MYOBJECT_531573(bpy.types.Operator):#カーブにアタッチ
+class FUJIWARATOOLBOX_531573(bpy.types.Operator):#カーブにアタッチ
     """カーブにアタッチ"""
-    bl_idname = "object.myobject_531573"
+    bl_idname = "fujiwara_toolbox.command_531573"
     bl_label = "カーブにアタッチ（シングル）"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -7484,9 +7484,9 @@ uiitem().vertical()
 ########################################
 #オープンエッジの線画化
 ########################################
-class MYOBJECT_141722(bpy.types.Operator):#オープンエッジの線画化
+class FUJIWARATOOLBOX_141722(bpy.types.Operator):#オープンエッジの線画化
     """オープンエッジの線画化"""
-    bl_idname = "object.myobject_141722"
+    bl_idname = "fujiwara_toolbox.command_141722"
     bl_label = "オープンエッジの線画化"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -7557,9 +7557,9 @@ uiitem().vertical()
 ########################################
 #MOD整列
 ########################################
-class MYOBJECT_288910(bpy.types.Operator):#MOD整列
+class FUJIWARATOOLBOX_288910(bpy.types.Operator):#MOD整列
     """MOD整列"""
-    bl_idname = "object.myobject_288910"
+    bl_idname = "fujiwara_toolbox.command_288910"
     bl_label = "MOD整列"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -7611,9 +7611,9 @@ uiitem().horizontal()
 ########################################
 #Differnce
 ########################################
-class MYOBJECT_476244(bpy.types.Operator):#Differnce
+class FUJIWARATOOLBOX_476244(bpy.types.Operator):#Differnce
     """Differnce"""
-    bl_idname = "object.myobject_476244"
+    bl_idname = "fujiwara_toolbox.command_476244"
     bl_label = "Differnce"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -7638,9 +7638,9 @@ class MYOBJECT_476244(bpy.types.Operator):#Differnce
 ########################################
 #Differnce→隠す
 ########################################
-class MYOBJECT_691601(bpy.types.Operator):#Differnce→隠す
+class FUJIWARATOOLBOX_691601(bpy.types.Operator):#Differnce→隠す
     """Differnce→隠す"""
-    bl_idname = "object.myobject_691601"
+    bl_idname = "fujiwara_toolbox.command_691601"
     bl_label = "Differnce→隠す"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -7665,9 +7665,9 @@ class MYOBJECT_691601(bpy.types.Operator):#Differnce→隠す
 ########################################
 #Union(Direct)
 ########################################
-class MYOBJECT_69194(bpy.types.Operator):#Union(Direct)
+class FUJIWARATOOLBOX_69194(bpy.types.Operator):#Union(Direct)
     """Union(Direct)"""
-    bl_idname = "object.myobject_69194"
+    bl_idname = "fujiwara_toolbox.command_69194"
     bl_label = "Union(Direct)"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -7692,9 +7692,9 @@ uiitem().horizontal()
 ########################################
 #バウンド非表示
 ########################################
-class MYOBJECT_757208(bpy.types.Operator):#バウンド非表示
+class FUJIWARATOOLBOX_757208(bpy.types.Operator):#バウンド非表示
     """バウンド非表示"""
-    bl_idname = "object.myobject_757208"
+    bl_idname = "fujiwara_toolbox.command_757208"
     bl_label = "バウンド非表示"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -7718,9 +7718,9 @@ class MYOBJECT_757208(bpy.types.Operator):#バウンド非表示
 ########################################
 #bool再計算
 ########################################
-class MYOBJECT_6352(bpy.types.Operator):#bool再計算
+class FUJIWARATOOLBOX_6352(bpy.types.Operator):#bool再計算
     """bool再計算"""
-    bl_idname = "object.myobject_6352"
+    bl_idname = "fujiwara_toolbox.command_6352"
     bl_label = "bool再計算"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -7752,9 +7752,9 @@ uiitem().horizontal()
 ########################################
 #裏ポリ+ベベルエッジ
 ########################################
-class MYOBJECT_972011(bpy.types.Operator):#裏ポリ+ベベルエッジ
+class FUJIWARATOOLBOX_972011(bpy.types.Operator):#裏ポリ+ベベルエッジ
     """裏ポリ+ベベルエッジ"""
-    bl_idname = "object.myobject_972011"
+    bl_idname = "fujiwara_toolbox.command_972011"
     bl_label = "裏ポリ+ベベルエッジ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -7766,8 +7766,8 @@ class MYOBJECT_972011(bpy.types.Operator):#裏ポリ+ベベルエッジ
     #処理部分
     ###################################
     def execute(self, context):
-        bpy.ops.object.myobject_318722()
-        bpy.ops.object.myobject_60327()
+        bpy.ops.fujiwara_toolbox.command_318722()
+        bpy.ops.fujiwara_toolbox.command_60327()
         
         return {'FINISHED'}
 ########################################
@@ -7775,9 +7775,9 @@ class MYOBJECT_972011(bpy.types.Operator):#裏ポリ+ベベルエッジ
 ########################################
 #オノマトペ白フチ
 ########################################
-class MYOBJECT_357209(bpy.types.Operator):#オノマトペ白フチ
+class FUJIWARATOOLBOX_357209(bpy.types.Operator):#オノマトペ白フチ
     """オノマトペ白フチ"""
-    bl_idname = "object.myobject_357209"
+    bl_idname = "fujiwara_toolbox.command_357209"
     bl_label = "オノマトペ白フチ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -7789,8 +7789,8 @@ class MYOBJECT_357209(bpy.types.Operator):#オノマトペ白フチ
     #処理部分
     ###################################
     def execute(self, context):
-        bpy.ops.object.myobject_737497()
-        bpy.ops.object.myobject_788766()
+        bpy.ops.fujiwara_toolbox.command_737497()
+        bpy.ops.fujiwara_toolbox.command_788766()
         selection = fjw.get_selected_list()
         for obj in selection:
             mat = obj.material_slots[0].material
@@ -7807,9 +7807,9 @@ uiitem().vertical()
 ########################################
 #エッジ適用
 ########################################
-class MYOBJECT_793633(bpy.types.Operator):#エッジ適用
+class FUJIWARATOOLBOX_793633(bpy.types.Operator):#エッジ適用
     """エッジ適用"""
-    bl_idname = "object.myobject_793633"
+    bl_idname = "fujiwara_toolbox.command_793633"
     bl_label = "エッジ適用"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -7891,9 +7891,9 @@ uiitem().horizontal()
 ########################################
 #裏ポリエッジ付加
 ########################################
-class MYOBJECT_318722(bpy.types.Operator):#裏ポリエッジ付加
+class FUJIWARATOOLBOX_318722(bpy.types.Operator):#裏ポリエッジ付加
     """裏ポリエッジ付加"""
-    bl_idname = "object.myobject_318722"
+    bl_idname = "fujiwara_toolbox.command_318722"
     bl_label = "裏ポリエッジ付加"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -7934,9 +7934,9 @@ class MYOBJECT_318722(bpy.types.Operator):#裏ポリエッジ付加
 ########################################
 #裏ポリ白
 ########################################
-class MYOBJECT_737497(bpy.types.Operator):#裏ポリ白
+class FUJIWARATOOLBOX_737497(bpy.types.Operator):#裏ポリ白
     """裏ポリ白"""
-    bl_idname = "object.myobject_737497"
+    bl_idname = "fujiwara_toolbox.command_737497"
     bl_label = "裏ポリ白"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -7991,9 +7991,9 @@ uiitem().horizontal()
 #########################################
 ##1/2
 #########################################
-#class MYOBJECT_791523(bpy.types.Operator):#1/2
+#class FUJIWARATOOLBOX_791523(bpy.types.Operator):#1/2
 #    """1/2"""
-#    bl_idname = "object.myobject_791523"
+#    bl_idname = "fujiwara_toolbox.command_791523"
 #    bl_label = "1/2"
 #    bl_options = {'REGISTER', 'UNDO'}
 
@@ -8020,9 +8020,9 @@ uiitem().horizontal()
 ########################################
 #1mm
 ########################################
-class MYOBJECT_892991(bpy.types.Operator):#1mm
+class FUJIWARATOOLBOX_892991(bpy.types.Operator):#1mm
     """1mm"""
-    bl_idname = "object.myobject_892991"
+    bl_idname = "fujiwara_toolbox.command_892991"
     bl_label = "1mm"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -8048,9 +8048,9 @@ class MYOBJECT_892991(bpy.types.Operator):#1mm
 ########################################
 #2mm
 ########################################
-class MYOBJECT_793908(bpy.types.Operator):#2mm
+class FUJIWARATOOLBOX_793908(bpy.types.Operator):#2mm
     """2mm"""
-    bl_idname = "object.myobject_793908"
+    bl_idname = "fujiwara_toolbox.command_793908"
     bl_label = "2mm"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -8086,9 +8086,9 @@ class MYOBJECT_793908(bpy.types.Operator):#2mm
 ########################################
 #5mm
 ########################################
-class MYOBJECT_401033(bpy.types.Operator):#5mm
+class FUJIWARATOOLBOX_401033(bpy.types.Operator):#5mm
     """5mm"""
-    bl_idname = "object.myobject_401033"
+    bl_idname = "fujiwara_toolbox.command_401033"
     bl_label = "5mm"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -8120,9 +8120,9 @@ class MYOBJECT_401033(bpy.types.Operator):#5mm
 ########################################
 #1cm
 ########################################
-class MYOBJECT_788766(bpy.types.Operator):#1cm
+class FUJIWARATOOLBOX_788766(bpy.types.Operator):#1cm
     """1cm"""
-    bl_idname = "object.myobject_788766"
+    bl_idname = "fujiwara_toolbox.command_788766"
     bl_label = "1cm"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -8158,9 +8158,9 @@ class MYOBJECT_788766(bpy.types.Operator):#1cm
 #########################################
 ##*2
 #########################################
-#class MYOBJECT_886958(bpy.types.Operator):#*2
+#class FUJIWARATOOLBOX_886958(bpy.types.Operator):#*2
 #    """*2"""
-#    bl_idname = "object.myobject_886958"
+#    bl_idname = "fujiwara_toolbox.command_886958"
 #    bl_label = "*2"
 #    bl_options = {'REGISTER', 'UNDO'}
 
@@ -8195,9 +8195,9 @@ uiitem().horizontal()
 ########################################
 #表示
 ########################################
-class MYOBJECT_513603(bpy.types.Operator):#表示
+class FUJIWARATOOLBOX_513603(bpy.types.Operator):#表示
     """表示"""
-    bl_idname = "object.myobject_513603"
+    bl_idname = "fujiwara_toolbox.command_513603"
     bl_label = "表示"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -8230,9 +8230,9 @@ class MYOBJECT_513603(bpy.types.Operator):#表示
 ########################################
 #非表示
 ########################################
-class MYOBJECT_14967(bpy.types.Operator):#非表示
+class FUJIWARATOOLBOX_14967(bpy.types.Operator):#非表示
     """非表示"""
-    bl_idname = "object.myobject_14967"
+    bl_idname = "fujiwara_toolbox.command_14967"
     bl_label = "非表示"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -8268,9 +8268,9 @@ uiitem().vertical()
 ########################################
 #除去
 ########################################
-class MYOBJECT_290695(bpy.types.Operator):#除去
+class FUJIWARATOOLBOX_290695(bpy.types.Operator):#除去
     """除去"""
-    bl_idname = "object.myobject_290695"
+    bl_idname = "fujiwara_toolbox.command_290695"
     bl_label = "除去"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -8316,9 +8316,9 @@ uiitem().horizontal()
 ########################################
 #ベベルエッジ
 ########################################
-class MYOBJECT_60327(bpy.types.Operator):#ベベルエッジ
+class FUJIWARATOOLBOX_60327(bpy.types.Operator):#ベベルエッジ
     """ベベルエッジ"""
-    bl_idname = "object.myobject_60327"
+    bl_idname = "fujiwara_toolbox.command_60327"
     bl_label = "ベベルエッジ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -8351,9 +8351,9 @@ class MYOBJECT_60327(bpy.types.Operator):#ベベルエッジ
 ########################################
 #除去
 ########################################
-class MYOBJECT_312642(bpy.types.Operator):#除去
+class FUJIWARATOOLBOX_312642(bpy.types.Operator):#除去
     """除去"""
-    bl_idname = "object.myobject_312642"
+    bl_idname = "fujiwara_toolbox.command_312642"
     bl_label = "除去"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -8399,9 +8399,9 @@ uiitem().horizontal()
 ########################################
 #分離エッジ
 ########################################
-class MYOBJECT_115887(bpy.types.Operator):#辺分離ソリッド
+class FUJIWARATOOLBOX_115887(bpy.types.Operator):#辺分離ソリッド
     """分離エッジ"""
-    bl_idname = "object.myobject_115887"
+    bl_idname = "fujiwara_toolbox.command_115887"
     bl_label = "分離エッジ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -8432,9 +8432,9 @@ class MYOBJECT_115887(bpy.types.Operator):#辺分離ソリッド
 ########################################
 #除去
 ########################################
-class MYOBJECT_693073(bpy.types.Operator):#除去
+class FUJIWARATOOLBOX_693073(bpy.types.Operator):#除去
     """除去"""
-    bl_idname = "object.myobject_693073"
+    bl_idname = "fujiwara_toolbox.command_693073"
     bl_label = "除去"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -8484,9 +8484,9 @@ uiitem().horizontal()
 ########################################
 #低subsurf化（選択物）
 ########################################
-class MYOBJECT_962587(bpy.types.Operator):#低subsurf化（選択物）
+class FUJIWARATOOLBOX_962587(bpy.types.Operator):#低subsurf化（選択物）
     """低subsurf化（選択物）"""
-    bl_idname = "object.myobject_962587"
+    bl_idname = "fujiwara_toolbox.command_962587"
     bl_label = "低subsurf化（選択物）"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -8553,7 +8553,7 @@ uiitem().vertical()
 ########################################
 class CATEGORYBUTTON_813381(bpy.types.Operator):#メッシュ
     """メッシュ"""
-    bl_idname = "object.categorybutton_813381"
+    bl_idname = "fujiwara_toolbox.categorybutton_813381"
     bl_label = "メッシュ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -8589,9 +8589,9 @@ uiitem().horizontal()
 ########################################
 #バウンド
 ########################################
-class MYOBJECT_630367(bpy.types.Operator):#バウンド
+class FUJIWARATOOLBOX_630367(bpy.types.Operator):#バウンド
     """バウンド"""
-    bl_idname = "object.myobject_630367"
+    bl_idname = "fujiwara_toolbox.command_630367"
     bl_label = "バウンド"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -8615,9 +8615,9 @@ class MYOBJECT_630367(bpy.types.Operator):#バウンド
 ########################################
 #ワイヤー
 ########################################
-class MYOBJECT_65984(bpy.types.Operator):#ワイヤー
+class FUJIWARATOOLBOX_65984(bpy.types.Operator):#ワイヤー
     """ワイヤー"""
-    bl_idname = "object.myobject_65984"
+    bl_idname = "fujiwara_toolbox.command_65984"
     bl_label = "ワイヤー"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -8641,9 +8641,9 @@ class MYOBJECT_65984(bpy.types.Operator):#ワイヤー
 ########################################
 #テクスチャ
 ########################################
-class MYOBJECT_691590(bpy.types.Operator):#テクスチャ
+class FUJIWARATOOLBOX_691590(bpy.types.Operator):#テクスチャ
     """テクスチャ"""
-    bl_idname = "object.myobject_691590"
+    bl_idname = "fujiwara_toolbox.command_691590"
     bl_label = "テクスチャ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -8679,9 +8679,9 @@ uiitem("UV")
 ########################################
 #スマートUV投影（各選択物）
 ########################################
-class MYOBJECT_339338(bpy.types.Operator):#スマートUV投影（各選択物）
+class FUJIWARATOOLBOX_339338(bpy.types.Operator):#スマートUV投影（各選択物）
     """スマートUV投影（各選択物）"""
-    bl_idname = "object.myobject_339338"
+    bl_idname = "fujiwara_toolbox.command_339338"
     bl_label = "スマートUV投影（各選択物）"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -8712,9 +8712,9 @@ class MYOBJECT_339338(bpy.types.Operator):#スマートUV投影（各選択物�
 ########################################
 #ライトマップパック展開（各選択物）
 ########################################
-class MYOBJECT_719855(bpy.types.Operator):#ライトマップパック展開（各選択物）
+class FUJIWARATOOLBOX_719855(bpy.types.Operator):#ライトマップパック展開（各選択物）
     """ライトマップパック展開（各選択物）"""
-    bl_idname = "object.myobject_719855"
+    bl_idname = "fujiwara_toolbox.command_719855"
     bl_label = "ライトマップパック展開（各選択物）"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -8744,9 +8744,9 @@ uiitem("メッシュ")
 ########################################
 #境界クリース
 ########################################
-class MYOBJECT_676177(bpy.types.Operator):#境界クリース
+class FUJIWARATOOLBOX_676177(bpy.types.Operator):#境界クリース
     """境界クリース"""
-    bl_idname = "object.myobject_676177"
+    bl_idname = "fujiwara_toolbox.command_676177"
     bl_label = "境界クリース"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -8776,9 +8776,9 @@ uiitem().horizontal()
 ########################################
 #自動スムーズ
 ########################################
-class MYOBJECT_31891(bpy.types.Operator):#自動スムーズ
+class FUJIWARATOOLBOX_31891(bpy.types.Operator):#自動スムーズ
     """自動スムーズ"""
-    bl_idname = "object.myobject_31891"
+    bl_idname = "fujiwara_toolbox.command_31891"
     bl_label = "自動スムーズ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -8805,9 +8805,9 @@ class MYOBJECT_31891(bpy.types.Operator):#自動スムーズ
 ########################################
 #法線を反転
 ########################################
-class MYOBJECT_795120(bpy.types.Operator):#法線を反転
+class FUJIWARATOOLBOX_795120(bpy.types.Operator):#法線を反転
     """法線を反転"""
-    bl_idname = "object.myobject_795120"
+    bl_idname = "fujiwara_toolbox.command_795120"
     bl_label = "法線を反転"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -8837,9 +8837,9 @@ uiitem().vertical()
 ########################################
 #ペラポリ準備
 ########################################
-class MYOBJECT_996345(bpy.types.Operator):#ペラポリ準備
+class FUJIWARATOOLBOX_996345(bpy.types.Operator):#ペラポリ準備
     """ペラポリ準備"""
-    bl_idname = "object.myobject_996345"
+    bl_idname = "fujiwara_toolbox.command_996345"
     bl_label = "ペラポリ準備"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -8893,9 +8893,9 @@ uiitem("メッシュアクション")
 ########################################
 #複製分離
 ########################################
-class MYOBJECT_635930(bpy.types.Operator):#複製分離
+class FUJIWARATOOLBOX_635930(bpy.types.Operator):#複製分離
     """複製分離"""
-    bl_idname = "object.myobject_635930"
+    bl_idname = "fujiwara_toolbox.command_635930"
     bl_label = "複製分離"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -8932,9 +8932,9 @@ uiitem().horizontal()
 ########################################
 #装甲化
 ########################################
-class MYOBJECT_273555(bpy.types.Operator):#装甲化
+class FUJIWARATOOLBOX_273555(bpy.types.Operator):#装甲化
     """装甲化"""
-    bl_idname = "object.myobject_273555"
+    bl_idname = "fujiwara_toolbox.command_273555"
     bl_label = "装甲化"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -9025,9 +9025,9 @@ class MYOBJECT_273555(bpy.types.Operator):#装甲化
 ########################################
 #装甲化（内側）
 ########################################
-class MYOBJECT_338159(bpy.types.Operator):#装甲化（内側）
+class FUJIWARATOOLBOX_338159(bpy.types.Operator):#装甲化（内側）
     """装甲化（内側）"""
-    bl_idname = "object.myobject_338159"
+    bl_idname = "fujiwara_toolbox.command_338159"
     bl_label = "装甲化（内側）"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -9118,9 +9118,9 @@ class MYOBJECT_338159(bpy.types.Operator):#装甲化（内側）
 ########################################
 #厚み反転
 ########################################
-class MYOBJECT_351222(bpy.types.Operator):#厚み反転
+class FUJIWARATOOLBOX_351222(bpy.types.Operator):#厚み反転
     """厚み反転"""
-    bl_idname = "object.myobject_351222"
+    bl_idname = "fujiwara_toolbox.command_351222"
     bl_label = "厚み反転"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -9164,9 +9164,9 @@ uiitem().horizontal()
 ########################################
 #フチ厚み化
 ########################################
-class MYOBJECT_813387(bpy.types.Operator):#フチ厚み化
+class FUJIWARATOOLBOX_813387(bpy.types.Operator):#フチ厚み化
     """フチ厚み化"""
-    bl_idname = "object.myobject_813387"
+    bl_idname = "fujiwara_toolbox.command_813387"
     bl_label = "フチ厚み化"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -9206,9 +9206,9 @@ class MYOBJECT_813387(bpy.types.Operator):#フチ厚み化
 ########################################
 #スキン化
 ########################################
-class MYOBJECT_994469(bpy.types.Operator):#スキン化
+class FUJIWARATOOLBOX_994469(bpy.types.Operator):#スキン化
     """スキン化"""
-    bl_idname = "object.myobject_994469"
+    bl_idname = "fujiwara_toolbox.command_994469"
     bl_label = "スキン化"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -9219,7 +9219,7 @@ class MYOBJECT_994469(bpy.types.Operator):#スキン化
     #処理部分
     ###################################
     def execute(self, context):
-        bpy.ops.object.myobject_635930()
+        bpy.ops.fujiwara_toolbox.command_635930()
         bpy.ops.mesh.select_all(action='TOGGLE')
         bpy.ops.object.modifier_add(type='SKIN')
         bpy.ops.transform.skin_resize(value=(0.1, 0.1, 0.1), constraint_axis=(False, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1)
@@ -9241,9 +9241,9 @@ uiitem().horizontal()
 ########################################
 #x*-1
 ########################################
-class MYOBJECT_467890(bpy.types.Operator):#x*-1
+class FUJIWARATOOLBOX_467890(bpy.types.Operator):#x*-1
     """x*-1"""
-    bl_idname = "object.myobject_467890"
+    bl_idname = "fujiwara_toolbox.command_467890"
     bl_label = "x*-1"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -9279,9 +9279,9 @@ class MYOBJECT_467890(bpy.types.Operator):#x*-1
 ########################################
 #gMirror
 ########################################
-class MYOBJECT_681921(bpy.types.Operator):#gMirror
+class FUJIWARATOOLBOX_681921(bpy.types.Operator):#gMirror
     """グループ化してミラーにする"""
-    bl_idname = "object.myobject_681921"
+    bl_idname = "fujiwara_toolbox.command_681921"
     bl_label = "gMirror"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -9325,9 +9325,9 @@ uiitem().horizontal()
 ########################################
 #重複頂点を削除（選択物）
 ########################################
-class MYOBJECT_559336(bpy.types.Operator):#重複頂点を削除（選択物）
+class FUJIWARATOOLBOX_559336(bpy.types.Operator):#重複頂点を削除（選択物）
     """重複頂点を削除（選択物）"""
-    bl_idname = "object.myobject_559336"
+    bl_idname = "fujiwara_toolbox.command_559336"
     bl_label = "重複頂点を削除（選択物）"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -9371,7 +9371,7 @@ uiitem().vertical()
 ########################################
 class CATEGORYBUTTON_561346(bpy.types.Operator):#トランスフォーム
     """トランスフォーム"""
-    bl_idname = "object.categorybutton_561346"
+    bl_idname = "fujiwara_toolbox.categorybutton_561346"
     bl_label = "トランスフォーム"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -9395,9 +9395,9 @@ class CATEGORYBUTTON_561346(bpy.types.Operator):#トランスフォーム
 ########################################
 #面に回転をあわせる
 ########################################
-class MYOBJECT_272822(bpy.types.Operator):#面に回転をあわせる
+class FUJIWARATOOLBOX_272822(bpy.types.Operator):#面に回転をあわせる
     """面に回転をあわせる"""
-    bl_idname = "object.myobject_272822"
+    bl_idname = "fujiwara_toolbox.command_272822"
     bl_label = "rRMB 面に回転をあわせる"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -9431,9 +9431,9 @@ class MYOBJECT_272822(bpy.types.Operator):#面に回転をあわせる
 #########################################
 ##角度をきっちり
 #########################################
-#class MYOBJECT_908924(bpy.types.Operator):#角度をきっちり
+#class FUJIWARATOOLBOX_908924(bpy.types.Operator):#角度をきっちり
 #    """角度をきっちり"""
-#    bl_idname = "object.myobject_908924"
+#    bl_idname = "fujiwara_toolbox.command_908924"
 #    bl_label = "角度をきっちり"
 #    bl_options = {'REGISTER', 'UNDO'}
 #
@@ -9477,9 +9477,9 @@ uiitem("複製反転")
 ########################################
 #ミラーリング
 ########################################
-class MYOBJECT_698300(bpy.types.Operator):#ミラーリング
+class FUJIWARATOOLBOX_698300(bpy.types.Operator):#ミラーリング
     """ミラーリング"""
-    bl_idname = "object.myobject_698300"
+    bl_idname = "fujiwara_toolbox.command_698300"
     bl_label = "ミラーリング"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -9629,9 +9629,9 @@ uiitem().horizontal()
 ########################################
 #グローバル X
 ########################################
-class MYOBJECT_83454(bpy.types.Operator):#global X
+class FUJIWARATOOLBOX_83454(bpy.types.Operator):#global X
     """グローバル X"""
-    bl_idname = "object.myobject_83454"
+    bl_idname = "fujiwara_toolbox.command_83454"
     bl_label = "global X"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -9712,9 +9712,9 @@ uiitem().horizontal()
 ########################################
 #カーソル X
 ########################################
-class MYOBJECT_334794(bpy.types.Operator):#カーソル X
+class FUJIWARATOOLBOX_334794(bpy.types.Operator):#カーソル X
     """カーソル X"""
-    bl_idname = "object.myobject_334794"
+    bl_idname = "fujiwara_toolbox.command_334794"
     bl_label = "カーソル X"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -9778,9 +9778,9 @@ class MYOBJECT_334794(bpy.types.Operator):#カーソル X
 ########################################
 #Y
 ########################################
-class MYOBJECT_168959(bpy.types.Operator):#Y
+class FUJIWARATOOLBOX_168959(bpy.types.Operator):#Y
     """Y"""
-    bl_idname = "object.myobject_168959"
+    bl_idname = "fujiwara_toolbox.command_168959"
     bl_label = "Y"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -9846,9 +9846,9 @@ class MYOBJECT_168959(bpy.types.Operator):#Y
 ########################################
 #Z
 ########################################
-class MYOBJECT_68739(bpy.types.Operator):#Z
+class FUJIWARATOOLBOX_68739(bpy.types.Operator):#Z
     """Z"""
-    bl_idname = "object.myobject_68739"
+    bl_idname = "fujiwara_toolbox.command_68739"
     bl_label = "Z"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -9946,9 +9946,9 @@ uiitem().vertical()
 #########################################
 ##アウトプット
 #########################################
-#class MYOBJECT_879787(bpy.types.Operator):#アウトプット
+#class FUJIWARATOOLBOX_879787(bpy.types.Operator):#アウトプット
 #    """アウトプット"""
-#    bl_idname = "object.myobject_879787"
+#    bl_idname = "fujiwara_toolbox.command_879787"
 #    bl_label = "アウトプット"
 #    bl_options = {'REGISTER', 'UNDO'}
 #
@@ -10020,9 +10020,9 @@ uiitem().vertical()
 #########################################
 ##グローバル
 #########################################
-#class MYOBJECT_538468(bpy.types.Operator):#グローバル
+#class FUJIWARATOOLBOX_538468(bpy.types.Operator):#グローバル
 #    """グローバル"""
-#    bl_idname = "object.myobject_538468"
+#    bl_idname = "fujiwara_toolbox.command_538468"
 #    bl_label = "グローバル"
 #    bl_options = {'REGISTER', 'UNDO'}
 #
@@ -10044,9 +10044,9 @@ uiitem().vertical()
 #########################################
 ##ローカル
 #########################################
-#class MYOBJECT_550536(bpy.types.Operator):#ローカル
+#class FUJIWARATOOLBOX_550536(bpy.types.Operator):#ローカル
 #    """Sample Operator"""
-#    bl_idname = "object.myobject_550536"
+#    bl_idname = "fujiwara_toolbox.command_550536"
 #    bl_label = "ローカル"
 #    bl_options = {'REGISTER', 'UNDO'}
 #
@@ -10068,9 +10068,9 @@ uiitem().vertical()
 #########################################
 ##ノーマル
 #########################################
-#class MYOBJECT_265618(bpy.types.Operator):#ノーマル
+#class FUJIWARATOOLBOX_265618(bpy.types.Operator):#ノーマル
 #    """ノーマル"""
-#    bl_idname = "object.myobject_265618"
+#    bl_idname = "fujiwara_toolbox.command_265618"
 #    bl_label = "ノーマル"
 #    bl_options = {'REGISTER', 'UNDO'}
 #
@@ -10121,9 +10121,9 @@ uiitem().vertical()
 #########################################
 ##表示シーンを揃える
 #########################################
-#class MYOBJECT_708885(bpy.types.Operator):#表示シーンを揃える
+#class FUJIWARATOOLBOX_708885(bpy.types.Operator):#表示シーンを揃える
 #    """表示シーンを揃える"""
-#    bl_idname = "object.myobject_708885"
+#    bl_idname = "fujiwara_toolbox.command_708885"
 #    bl_label = "表示シーンを揃える"
 #    bl_options = {'REGISTER', 'UNDO'}
 #
@@ -10189,9 +10189,9 @@ uiitem().vertical()
 #########################################
 ##選択→3Dカーソル
 #########################################
-#class MYOBJECT_553638(bpy.types.Operator):#選択→3Dカーソル
+#class FUJIWARATOOLBOX_553638(bpy.types.Operator):#選択→3Dカーソル
 #    """選択→3Dカーソル"""
-#    bl_idname = "object.myobject_553638"
+#    bl_idname = "fujiwara_toolbox.command_553638"
 #    bl_label = "選択→3Dカーソル"
 #    bl_options = {'REGISTER', 'UNDO'}
 #
@@ -10214,9 +10214,9 @@ uiitem().vertical()
 #########################################
 ##3Dカーソル→選択
 #########################################
-#class MYOBJECT_670764(bpy.types.Operator):#3Dカーソル→選択
+#class FUJIWARATOOLBOX_670764(bpy.types.Operator):#3Dカーソル→選択
 #    """3Dカーソル→選択"""
-#    bl_idname = "object.myobject_670764"
+#    bl_idname = "fujiwara_toolbox.command_670764"
 #    bl_label = "3Dカーソル→選択"
 #    bl_options = {'REGISTER', 'UNDO'}
 #
@@ -10293,7 +10293,7 @@ uiitem().vertical()
 ########################################
 class CATEGORYBUTTON_445538(bpy.types.Operator):#ペアレント
     """ペアレント"""
-    bl_idname = "object.categorybutton_445538"
+    bl_idname = "fujiwara_toolbox.categorybutton_445538"
     bl_label = "ペアレント"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -10321,9 +10321,9 @@ uiitem().horizontal()
 ########################################
 #オブジェクト
 ########################################
-class MYOBJECT_227300(bpy.types.Operator):#オブジェクト
+class FUJIWARATOOLBOX_227300(bpy.types.Operator):#オブジェクト
     """オブジェクト"""
-    bl_idname = "object.myobject_227300"
+    bl_idname = "fujiwara_toolbox.command_227300"
     bl_label = "オブジェクト"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -10346,9 +10346,9 @@ class MYOBJECT_227300(bpy.types.Operator):#オブジェクト
 ########################################
 #オブジェクト（Trans維持）
 ########################################
-class MYOBJECT_413331(bpy.types.Operator):#オブジェクト（Trans維持）
+class FUJIWARATOOLBOX_413331(bpy.types.Operator):#オブジェクト（Trans維持）
     """オブジェクト（Trans維持）"""
-    bl_idname = "object.myobject_413331"
+    bl_idname = "fujiwara_toolbox.command_413331"
     bl_label = "Trans維持"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -10383,9 +10383,9 @@ uiitem().horizontal()
 ########################################
 #ボーン相対
 ########################################
-class MYOBJECT_454489(bpy.types.Operator):#ボーン相対
+class FUJIWARATOOLBOX_454489(bpy.types.Operator):#ボーン相対
     """ボーン相対"""
-    bl_idname = "object.myobject_454489"
+    bl_idname = "fujiwara_toolbox.command_454489"
     bl_label = "ボーン相対"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -10407,9 +10407,9 @@ class MYOBJECT_454489(bpy.types.Operator):#ボーン相対
 ########################################
 #ボーン相対→隠す
 ########################################
-class MYOBJECT_182276(bpy.types.Operator):#ボーン相対→隠す
+class FUJIWARATOOLBOX_182276(bpy.types.Operator):#ボーン相対→隠す
     """ボーン相対→隠す"""
-    bl_idname = "object.myobject_182276"
+    bl_idname = "fujiwara_toolbox.command_182276"
     bl_label = "→隠す"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -10448,9 +10448,9 @@ uiitem().horizontal()
 ########################################
 #自動のウェイトで
 ########################################
-class MYOBJECT_214836(bpy.types.Operator):#自動のウェイトで
+class FUJIWARATOOLBOX_214836(bpy.types.Operator):#自動のウェイトで
     """自動のウェイトで"""
-    bl_idname = "object.myobject_214836"
+    bl_idname = "fujiwara_toolbox.command_214836"
     bl_label = "自動のウェイトで"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -10489,9 +10489,9 @@ class MYOBJECT_214836(bpy.types.Operator):#自動のウェイトで
 ########################################
 #自動のウェイトで→隠す
 ########################################
-class MYOBJECT_214836a(bpy.types.Operator):#自動のウェイトで→隠す
+class FUJIWARATOOLBOX_214836a(bpy.types.Operator):#自動のウェイトで→隠す
     """自動のウェイトで→隠す"""
-    bl_idname = "object.myobject_214836a"
+    bl_idname = "fujiwara_toolbox.command_214836a"
     bl_label = "→隠す"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -10534,9 +10534,9 @@ uiitem().horizontal()
 ########################################
 #クリア
 ########################################
-class MYOBJECT_307216(bpy.types.Operator):#クリア
+class FUJIWARATOOLBOX_307216(bpy.types.Operator):#クリア
     """クリア"""
-    bl_idname = "object.myobject_307216"
+    bl_idname = "fujiwara_toolbox.command_307216"
     bl_label = "クリア"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -10555,9 +10555,9 @@ class MYOBJECT_307216(bpy.types.Operator):#クリア
 ########################################
 #クリア（Trans維持）
 ########################################
-class MYOBJECT_855470(bpy.types.Operator):#クリア（Trans維持）
+class FUJIWARATOOLBOX_855470(bpy.types.Operator):#クリア（Trans維持）
     """クリア（Trans維持）"""
-    bl_idname = "object.myobject_855470"
+    bl_idname = "fujiwara_toolbox.command_855470"
     bl_label = "Trans維持"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -10585,9 +10585,9 @@ uiitem().vertical()
 #########################################
 ##X位置 0
 #########################################
-#class MYOBJECT_562777(bpy.types.Operator):#X位置 0
+#class FUJIWARATOOLBOX_562777(bpy.types.Operator):#X位置 0
 #    """トランスフォーム"""
-#    bl_idname = "object.myobject_562777"
+#    bl_idname = "fujiwara_toolbox.command_562777"
 #    bl_label = "X位置 0"
 #    bl_options = {'REGISTER', 'UNDO'}
 #
@@ -10615,9 +10615,9 @@ uiitem().vertical()
 #########################################
 ##回転X 90
 #########################################
-#class MYOBJECT_487092(bpy.types.Operator):#回転X 90
+#class FUJIWARATOOLBOX_487092(bpy.types.Operator):#回転X 90
 #    """回転X 90"""
-#    bl_idname = "object.myobject_487092"
+#    bl_idname = "fujiwara_toolbox.command_487092"
 #    bl_label = "回転X 90"
 #    bl_options = {'REGISTER', 'UNDO'}
 #
@@ -10643,9 +10643,9 @@ uiitem().vertical()
 #########################################
 ##-X位置コピー
 #########################################
-#class MYOBJECT_589282(bpy.types.Operator):#-X位置コピー
+#class FUJIWARATOOLBOX_589282(bpy.types.Operator):#-X位置コピー
 #    """-X位置コピー"""
-#    bl_idname = "object.myobject_589282"
+#    bl_idname = "fujiwara_toolbox.command_589282"
 #    bl_label = "-X位置コピー"
 #    bl_options = {'REGISTER', 'UNDO'}
 #
@@ -10785,9 +10785,9 @@ def refreshlayer():
 #########################################
 ##プレビュー
 #########################################
-#class MYOBJECT_913578(bpy.types.Operator):#プレビュー
+#class FUJIWARATOOLBOX_913578(bpy.types.Operator):#プレビュー
 #    """プレビュー"""
-#    bl_idname = "object.myobject_913578"
+#    bl_idname = "fujiwara_toolbox.command_913578"
 #    bl_label = "プレビュー"
 #    bl_options = {'REGISTER', 'UNDO'}
 #
@@ -10814,9 +10814,9 @@ def refreshlayer():
 #########################################
 ##フル
 #########################################
-#class MYOBJECT_852389(bpy.types.Operator):#フル
+#class FUJIWARATOOLBOX_852389(bpy.types.Operator):#フル
 #    """フル"""
-#    bl_idname = "object.myobject_852389"
+#    bl_idname = "fujiwara_toolbox.command_852389"
 #    bl_label = "フル"
 #    bl_options = {'REGISTER', 'UNDO'}
 #
@@ -10852,7 +10852,7 @@ def refreshlayer():
 ########################################
 class CATEGORYBUTTON_446957(bpy.types.Operator):#アーマチュア
     """アーマチュア"""
-    bl_idname = "object.categorybutton_446957"
+    bl_idname = "fujiwara_toolbox.categorybutton_446957"
     bl_label = "アーマチュア"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -10879,9 +10879,9 @@ uiitem().horizontal()
 ########################################
 #スケール継承解除（選択ボーン）
 ########################################
-class MYOBJECT_84927(bpy.types.Operator):#スケール継承解除（選択ボーン）
+class FUJIWARATOOLBOX_84927(bpy.types.Operator):#スケール継承解除（選択ボーン）
     """スケール継承解除（選択ボーン）"""
-    bl_idname = "object.myobject_84927"
+    bl_idname = "fujiwara_toolbox.command_84927"
     bl_label = "スケール継承解除（選択ボーン）"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -10907,9 +10907,9 @@ class MYOBJECT_84927(bpy.types.Operator):#スケール継承解除（選択ボ�
 ########################################
 #スケール継承有効（選択ボーン）
 ########################################
-class MYOBJECT_516332(bpy.types.Operator):#スケール継承有効（選択ボーン）
+class FUJIWARATOOLBOX_516332(bpy.types.Operator):#スケール継承有効（選択ボーン）
     """スケール継承有効（選択ボーン）"""
-    bl_idname = "object.myobject_516332"
+    bl_idname = "fujiwara_toolbox.command_516332"
     bl_label = "スケール継承有効（選択ボーン）"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -10942,9 +10942,9 @@ uiitem().horizontal()
 ########################################
 #＜●＞コンストレイント
 ########################################
-class MYOBJECT_618823(bpy.types.Operator):#＜●＞コンストレイント
+class FUJIWARATOOLBOX_618823(bpy.types.Operator):#＜●＞コンストレイント
     """＜●＞コンストレイント"""
-    bl_idname = "object.myobject_618823"
+    bl_idname = "fujiwara_toolbox.command_618823"
     bl_label = "コンストレイント"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -10966,9 +10966,9 @@ class MYOBJECT_618823(bpy.types.Operator):#＜●＞コンストレイント
 ########################################
 #＜＿＞コンストレイント
 ########################################
-class MYOBJECT_898623(bpy.types.Operator):#＜＿＞コンストレイント
+class FUJIWARATOOLBOX_898623(bpy.types.Operator):#＜＿＞コンストレイント
     """＜＿＞コンストレイント"""
-    bl_idname = "object.myobject_898623"
+    bl_idname = "fujiwara_toolbox.command_898623"
     bl_label = "コンストレイント"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -10999,9 +10999,9 @@ uiitem().horizontal()
 ########################################
 #アーマチュアからスキンを作成
 ########################################
-class MYOBJECT_742340(bpy.types.Operator):#アーマチュアからスキンを作成
+class FUJIWARATOOLBOX_742340(bpy.types.Operator):#アーマチュアからスキンを作成
     """アーマチュアからスキンを作成"""
-    bl_idname = "object.myobject_742340"
+    bl_idname = "fujiwara_toolbox.command_742340"
     bl_label = "アーマチュアからスキンを作成"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -11111,9 +11111,9 @@ class MYOBJECT_742340(bpy.types.Operator):#アーマチュアからスキンを�
 ########################################
 #選択ボーン以外のウェイトを削除
 ########################################
-class MYOBJECT_166889(bpy.types.Operator):#選択ボーン以外のウェイトを削除
+class FUJIWARATOOLBOX_166889(bpy.types.Operator):#選択ボーン以外のウェイトを削除
     """選択ボーン以外のウェイトを削除"""
-    bl_idname = "object.myobject_166889"
+    bl_idname = "fujiwara_toolbox.command_166889"
     bl_label = "選択ボーン以外のウェイトを削除"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -11173,9 +11173,9 @@ class MYOBJECT_166889(bpy.types.Operator):#選択ボーン以外のウェイト�
 ########################################
 #ウェイトボーン相対
 ########################################
-class MYOBJECT_273078(bpy.types.Operator):#ウェイトボーン相対
+class FUJIWARATOOLBOX_273078(bpy.types.Operator):#ウェイトボーン相対
     """ウェイトボーン相対"""
-    bl_idname = "object.myobject_273078"
+    bl_idname = "fujiwara_toolbox.command_273078"
     bl_label = "ウェイトボーン相対"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -11273,9 +11273,9 @@ uiitem().horizontal()
 ########################################
 #準備
 ########################################
-class MYOBJECT_964581(bpy.types.Operator):#準備
+class FUJIWARATOOLBOX_964581(bpy.types.Operator):#準備
     """準備"""
-    bl_idname = "object.myobject_964581"
+    bl_idname = "fujiwara_toolbox.command_964581"
     bl_label = "準備"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -11315,9 +11315,9 @@ class MYOBJECT_964581(bpy.types.Operator):#準備
 #########################################
 ##ポーズミラーリング
 #########################################
-class MYOBJECT_314879(bpy.types.Operator):#ポーズミラーリング
+class FUJIWARATOOLBOX_314879(bpy.types.Operator):#ポーズミラーリング
     """選択ボーンのポーズをミラーリング"""
-    bl_idname = "object.myobject_314879"
+    bl_idname = "fujiwara_toolbox.command_314879"
     bl_label = "ポーズミラーリング"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -11517,9 +11517,9 @@ def update_armaturesystem(self, context, mute_consraints):
 ########################################
 #アップデート
 ########################################
-class MYOBJECT_164873(bpy.types.Operator):#アップデート
+class FUJIWARATOOLBOX_164873(bpy.types.Operator):#アップデート
     """アップデート"""
-    bl_idname = "object.myobject_164873"
+    bl_idname = "fujiwara_toolbox.command_164873"
     bl_label = "アップデート"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -11541,9 +11541,9 @@ class MYOBJECT_164873(bpy.types.Operator):#アップデート
 ########################################
 #アップデート(C有効)
 ########################################
-class MYOBJECT_164873a(bpy.types.Operator):#アップデート(C有効)
+class FUJIWARATOOLBOX_164873a(bpy.types.Operator):#アップデート(C有効)
     """アップデート(コンストレイント有効)"""
-    bl_idname = "object.myobject_164873a"
+    bl_idname = "fujiwara_toolbox.command_164873a"
     bl_label = "アップデート(C有効)"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -11725,7 +11725,7 @@ uiitem().vertical()
 ########################################
 class CATEGORYBUTTON_744202(bpy.types.Operator):#アーマチュアユーティリティ
     """アーマチュアユーティリティ"""
-    bl_idname = "object.categorybutton_744202"
+    bl_idname = "fujiwara_toolbox.categorybutton_744202"
     bl_label = "アーマチュアユーティリティ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -11754,9 +11754,9 @@ uiitem("素体システム用リネーマ")
 ########################################
 #ジオメトリ
 ########################################
-class MYOBJECT_244616(bpy.types.Operator):#ジオメトリ
+class FUJIWARATOOLBOX_244616(bpy.types.Operator):#ジオメトリ
     """素体ジオメトリ"""
-    bl_idname = "object.myobject_244616"
+    bl_idname = "fujiwara_toolbox.command_244616"
     bl_label = "素体ジオメトリ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -11776,9 +11776,9 @@ class MYOBJECT_244616(bpy.types.Operator):#ジオメトリ
 ########################################
 #素体アーマチュア
 ########################################
-class MYOBJECT_589321(bpy.types.Operator):#素体アーマチュア
+class FUJIWARATOOLBOX_589321(bpy.types.Operator):#素体アーマチュア
     """素体アーマチュア"""
-    bl_idname = "object.myobject_589321"
+    bl_idname = "fujiwara_toolbox.command_589321"
     bl_label = "素体アーマチュア"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -11798,9 +11798,9 @@ class MYOBJECT_589321(bpy.types.Operator):#素体アーマチュア
 ########################################
 #ArmatureController
 ########################################
-class MYOBJECT_573567(bpy.types.Operator):#ArmatureController
+class FUJIWARATOOLBOX_573567(bpy.types.Operator):#ArmatureController
     """ArmatureController"""
-    bl_idname = "object.myobject_573567"
+    bl_idname = "fujiwara_toolbox.command_573567"
     bl_label = "ArmatureController"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -11829,9 +11829,9 @@ uiitem().horizontal()
 ########################################
 #手コントローラ右
 ########################################
-class MYOBJECT_285809(bpy.types.Operator):#手コントローラ右
+class FUJIWARATOOLBOX_285809(bpy.types.Operator):#手コントローラ右
     """手コントローラ右"""
-    bl_idname = "object.myobject_285809"
+    bl_idname = "fujiwara_toolbox.command_285809"
     bl_label = "手コントローラ右"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -11851,9 +11851,9 @@ class MYOBJECT_285809(bpy.types.Operator):#手コントローラ右
 ########################################
 #手コントローラ左
 ########################################
-class MYOBJECT_431070(bpy.types.Operator):#手コントローラ左
+class FUJIWARATOOLBOX_431070(bpy.types.Operator):#手コントローラ左
     """手コントローラ左"""
-    bl_idname = "object.myobject_431070"
+    bl_idname = "fujiwara_toolbox.command_431070"
     bl_label = "手コントローラ左"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -11881,9 +11881,9 @@ uiitem().horizontal()
 ########################################
 #右手
 ########################################
-class MYOBJECT_116809(bpy.types.Operator):#右手
+class FUJIWARATOOLBOX_116809(bpy.types.Operator):#右手
     """右手"""
-    bl_idname = "object.myobject_116809"
+    bl_idname = "fujiwara_toolbox.command_116809"
     bl_label = "右手"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -11903,9 +11903,9 @@ class MYOBJECT_116809(bpy.types.Operator):#右手
 ########################################
 #左手
 ########################################
-class MYOBJECT_694161(bpy.types.Operator):#左手
+class FUJIWARATOOLBOX_694161(bpy.types.Operator):#左手
     """左手"""
-    bl_idname = "object.myobject_694161"
+    bl_idname = "fujiwara_toolbox.command_694161"
     bl_label = "左手"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -11933,9 +11933,9 @@ uiitem().horizontal()
 ########################################
 #右足
 ########################################
-class MYOBJECT_424374(bpy.types.Operator):#右足
+class FUJIWARATOOLBOX_424374(bpy.types.Operator):#右足
     """右足"""
-    bl_idname = "object.myobject_424374"
+    bl_idname = "fujiwara_toolbox.command_424374"
     bl_label = "右足"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -11955,9 +11955,9 @@ class MYOBJECT_424374(bpy.types.Operator):#右足
 ########################################
 #左足
 ########################################
-class MYOBJECT_372755(bpy.types.Operator):#左足
+class FUJIWARATOOLBOX_372755(bpy.types.Operator):#左足
     """左足"""
-    bl_idname = "object.myobject_372755"
+    bl_idname = "fujiwara_toolbox.command_372755"
     bl_label = "左足"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12004,9 +12004,9 @@ uiitem().vertical()
 ########################################
 #head
 ########################################
-class MYOBJECT_851815(bpy.types.Operator):#head
+class FUJIWARATOOLBOX_851815(bpy.types.Operator):#head
     """head"""
-    bl_idname = "object.myobject_851815"
+    bl_idname = "fujiwara_toolbox.command_851815"
     bl_label = "head"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12024,9 +12024,9 @@ class MYOBJECT_851815(bpy.types.Operator):#head
 ########################################
 #neck
 ########################################
-class MYOBJECT_862554(bpy.types.Operator):#neck
+class FUJIWARATOOLBOX_862554(bpy.types.Operator):#neck
     """neck"""
-    bl_idname = "object.myobject_862554"
+    bl_idname = "fujiwara_toolbox.command_862554"
     bl_label = "neck"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12044,9 +12044,9 @@ class MYOBJECT_862554(bpy.types.Operator):#neck
 ########################################
 #chest
 ########################################
-class MYOBJECT_632665(bpy.types.Operator):#chest
+class FUJIWARATOOLBOX_632665(bpy.types.Operator):#chest
     """chest"""
-    bl_idname = "object.myobject_632665"
+    bl_idname = "fujiwara_toolbox.command_632665"
     bl_label = "chest"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12064,9 +12064,9 @@ class MYOBJECT_632665(bpy.types.Operator):#chest
 ########################################
 #spine
 ########################################
-class MYOBJECT_886883(bpy.types.Operator):#spine
+class FUJIWARATOOLBOX_886883(bpy.types.Operator):#spine
     """spine"""
-    bl_idname = "object.myobject_886883"
+    bl_idname = "fujiwara_toolbox.command_886883"
     bl_label = "spine"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12084,9 +12084,9 @@ class MYOBJECT_886883(bpy.types.Operator):#spine
 ########################################
 #hips
 ########################################
-class MYOBJECT_916888(bpy.types.Operator):#hips
+class FUJIWARATOOLBOX_916888(bpy.types.Operator):#hips
     """hips"""
-    bl_idname = "object.myobject_916888"
+    bl_idname = "fujiwara_toolbox.command_916888"
     bl_label = "hips"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12104,9 +12104,9 @@ class MYOBJECT_916888(bpy.types.Operator):#hips
 ########################################
 #root
 ########################################
-class MYOBJECT_324118(bpy.types.Operator):#root
+class FUJIWARATOOLBOX_324118(bpy.types.Operator):#root
     """root"""
-    bl_idname = "object.myobject_324118"
+    bl_idname = "fujiwara_toolbox.command_324118"
     bl_label = "root"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12134,9 +12134,9 @@ uiitem().horizontal()
 ########################################
 #shoulder.R
 ########################################
-class MYOBJECT_403000(bpy.types.Operator):#shoulder.R
+class FUJIWARATOOLBOX_403000(bpy.types.Operator):#shoulder.R
     """shoulder.R"""
-    bl_idname = "object.myobject_403000"
+    bl_idname = "fujiwara_toolbox.command_403000"
     bl_label = "shoulder.R"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12155,9 +12155,9 @@ class MYOBJECT_403000(bpy.types.Operator):#shoulder.R
 ########################################
 #shoulder.L
 ########################################
-class MYOBJECT_779120(bpy.types.Operator):#shoulder.L
+class FUJIWARATOOLBOX_779120(bpy.types.Operator):#shoulder.L
     """shoulder.L"""
-    bl_idname = "object.myobject_779120"
+    bl_idname = "fujiwara_toolbox.command_779120"
     bl_label = "shoulder.L"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12183,9 +12183,9 @@ uiitem().horizontal()
 ########################################
 #upper_arm.R
 ########################################
-class MYOBJECT_148790(bpy.types.Operator):#upper_arm.R
+class FUJIWARATOOLBOX_148790(bpy.types.Operator):#upper_arm.R
     """upper_arm.R"""
-    bl_idname = "object.myobject_148790"
+    bl_idname = "fujiwara_toolbox.command_148790"
     bl_label = "upper_arm.R"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12203,9 +12203,9 @@ class MYOBJECT_148790(bpy.types.Operator):#upper_arm.R
 ########################################
 #upper_arm.L
 ########################################
-class MYOBJECT_598468(bpy.types.Operator):#upper_arm.L
+class FUJIWARATOOLBOX_598468(bpy.types.Operator):#upper_arm.L
     """upper_arm.L"""
-    bl_idname = "object.myobject_598468"
+    bl_idname = "fujiwara_toolbox.command_598468"
     bl_label = "upper_arm.L"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12232,9 +12232,9 @@ uiitem().horizontal()
 ########################################
 #forearm.R
 ########################################
-class MYOBJECT_148513(bpy.types.Operator):#forearm.R
+class FUJIWARATOOLBOX_148513(bpy.types.Operator):#forearm.R
     """forearm.R"""
-    bl_idname = "object.myobject_148513"
+    bl_idname = "fujiwara_toolbox.command_148513"
     bl_label = "forearm.R"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12253,9 +12253,9 @@ class MYOBJECT_148513(bpy.types.Operator):#forearm.R
 ########################################
 #forearm.L
 ########################################
-class MYOBJECT_928612(bpy.types.Operator):#forearm.L
+class FUJIWARATOOLBOX_928612(bpy.types.Operator):#forearm.L
     """forearm.L"""
-    bl_idname = "object.myobject_928612"
+    bl_idname = "fujiwara_toolbox.command_928612"
     bl_label = "forearm.L"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12280,9 +12280,9 @@ uiitem().horizontal()
 ########################################
 #hand.R
 ########################################
-class MYOBJECT_43548(bpy.types.Operator):#hand.R
+class FUJIWARATOOLBOX_43548(bpy.types.Operator):#hand.R
     """hand.R"""
-    bl_idname = "object.myobject_43548"
+    bl_idname = "fujiwara_toolbox.command_43548"
     bl_label = "hand.R"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12300,9 +12300,9 @@ class MYOBJECT_43548(bpy.types.Operator):#hand.R
 ########################################
 #hand.L
 ########################################
-class MYOBJECT_862708(bpy.types.Operator):#hand.L
+class FUJIWARATOOLBOX_862708(bpy.types.Operator):#hand.L
     """hand.L"""
-    bl_idname = "object.myobject_862708"
+    bl_idname = "fujiwara_toolbox.command_862708"
     bl_label = "hand.L"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12332,9 +12332,9 @@ uiitem().horizontal()
 ########################################
 #thigh.R
 ########################################
-class MYOBJECT_474630(bpy.types.Operator):#thigh.R
+class FUJIWARATOOLBOX_474630(bpy.types.Operator):#thigh.R
     """thigh.R"""
-    bl_idname = "object.myobject_474630"
+    bl_idname = "fujiwara_toolbox.command_474630"
     bl_label = "thigh.R"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12351,9 +12351,9 @@ class MYOBJECT_474630(bpy.types.Operator):#thigh.R
 ########################################
 #thigh.L
 ########################################
-class MYOBJECT_550261(bpy.types.Operator):#thigh.L
+class FUJIWARATOOLBOX_550261(bpy.types.Operator):#thigh.L
     """thigh.L"""
-    bl_idname = "object.myobject_550261"
+    bl_idname = "fujiwara_toolbox.command_550261"
     bl_label = "thigh.L"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12378,9 +12378,9 @@ uiitem().horizontal()
 ########################################
 #shin.R
 ########################################
-class MYOBJECT_371561(bpy.types.Operator):#shin.R
+class FUJIWARATOOLBOX_371561(bpy.types.Operator):#shin.R
     """shin.R"""
-    bl_idname = "object.myobject_371561"
+    bl_idname = "fujiwara_toolbox.command_371561"
     bl_label = "shin.R"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12398,9 +12398,9 @@ class MYOBJECT_371561(bpy.types.Operator):#shin.R
 ########################################
 #shin.L
 ########################################
-class MYOBJECT_348617(bpy.types.Operator):#shin.L
+class FUJIWARATOOLBOX_348617(bpy.types.Operator):#shin.L
     """shin.L"""
-    bl_idname = "object.myobject_348617"
+    bl_idname = "fujiwara_toolbox.command_348617"
     bl_label = "shin.L"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12425,9 +12425,9 @@ uiitem().horizontal()
 ########################################
 #heel.R
 ########################################
-class MYOBJECT_420903(bpy.types.Operator):#heel.R
+class FUJIWARATOOLBOX_420903(bpy.types.Operator):#heel.R
     """heel.R"""
-    bl_idname = "object.myobject_420903"
+    bl_idname = "fujiwara_toolbox.command_420903"
     bl_label = "heel.R"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12445,9 +12445,9 @@ class MYOBJECT_420903(bpy.types.Operator):#heel.R
 ########################################
 #heel.L
 ########################################
-class MYOBJECT_559040(bpy.types.Operator):#heel.L
+class FUJIWARATOOLBOX_559040(bpy.types.Operator):#heel.L
     """heel.L"""
-    bl_idname = "object.myobject_559040"
+    bl_idname = "fujiwara_toolbox.command_559040"
     bl_label = "heel.L"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12474,9 +12474,9 @@ uiitem().horizontal()
 ########################################
 #foot.R
 ########################################
-class MYOBJECT_505403(bpy.types.Operator):#foot.R
+class FUJIWARATOOLBOX_505403(bpy.types.Operator):#foot.R
     """foot.R"""
-    bl_idname = "object.myobject_505403"
+    bl_idname = "fujiwara_toolbox.command_505403"
     bl_label = "foot.R"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12494,9 +12494,9 @@ class MYOBJECT_505403(bpy.types.Operator):#foot.R
 ########################################
 #foot.L
 ########################################
-class MYOBJECT_120526(bpy.types.Operator):#foot.L
+class FUJIWARATOOLBOX_120526(bpy.types.Operator):#foot.L
     """foot.L"""
-    bl_idname = "object.myobject_120526"
+    bl_idname = "fujiwara_toolbox.command_120526"
     bl_label = "foot.L"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12520,9 +12520,9 @@ uiitem().horizontal()
 ########################################
 #toe.R
 ########################################
-class MYOBJECT_288663(bpy.types.Operator):#toe.R
+class FUJIWARATOOLBOX_288663(bpy.types.Operator):#toe.R
     """toe.R"""
-    bl_idname = "object.myobject_288663"
+    bl_idname = "fujiwara_toolbox.command_288663"
     bl_label = "toe.R"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12540,9 +12540,9 @@ class MYOBJECT_288663(bpy.types.Operator):#toe.R
 ########################################
 #toe.L
 ########################################
-class MYOBJECT_135779(bpy.types.Operator):#toe.L
+class FUJIWARATOOLBOX_135779(bpy.types.Operator):#toe.L
     """toe.L"""
-    bl_idname = "object.myobject_135779"
+    bl_idname = "fujiwara_toolbox.command_135779"
     bl_label = "toe.L"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12584,9 +12584,9 @@ uiitem("アーマチュア差し替え")
 ########################################
 #選択の形状をアクティブにあわせる
 ########################################
-class MYOBJECT_729233(bpy.types.Operator):#選択の形状をアクティブにあわせる
+class FUJIWARATOOLBOX_729233(bpy.types.Operator):#選択の形状をアクティブにあわせる
     """選択の形状をアクティブにあわせる"""
-    bl_idname = "object.myobject_729233"
+    bl_idname = "fujiwara_toolbox.command_729233"
     bl_label = "選択の形状をアクティブにあわせる"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12692,9 +12692,9 @@ class MYOBJECT_729233(bpy.types.Operator):#選択の形状をアクティブに�
 ########################################
 #選択からアクティブへリターゲット
 ########################################
-class MYOBJECT_546712(bpy.types.Operator):#選択からアクティブへリターゲット
+class FUJIWARATOOLBOX_546712(bpy.types.Operator):#選択からアクティブへリターゲット
     """選択からアクティブへリターゲット"""
-    bl_idname = "object.myobject_546712"
+    bl_idname = "fujiwara_toolbox.command_546712"
     bl_label = "選択からアクティブへリターゲット"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12827,7 +12827,7 @@ uiitem().vertical()
 ########################################
 class CATEGORYBUTTON_456539(bpy.types.Operator):#BlenRigヘルパー
     """BlenRigヘルパー"""
-    bl_idname = "object.categorybutton_456539"
+    bl_idname = "fujiwara_toolbox.categorybutton_456539"
     bl_label = "BlenRigヘルパー"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12876,9 +12876,9 @@ uiitem().horizontal()
 ########################################
 #体型編集
 ########################################
-class MYOBJECT_545067(bpy.types.Operator):#体型編集
+class FUJIWARATOOLBOX_545067(bpy.types.Operator):#体型編集
     """体型編集"""
-    bl_idname = "object.myobject_545067"
+    bl_idname = "fujiwara_toolbox.command_545067"
     bl_label = "体型編集"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12925,9 +12925,9 @@ uiitem().horizontal()
 ########################################
 #右側選択
 ########################################
-class MYOBJECT_942054(bpy.types.Operator):#右側選択
+class FUJIWARATOOLBOX_942054(bpy.types.Operator):#右側選択
     """右側選択"""
-    bl_idname = "object.myobject_942054"
+    bl_idname = "fujiwara_toolbox.command_942054"
     bl_label = "右側選択"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12952,9 +12952,9 @@ class MYOBJECT_942054(bpy.types.Operator):#右側選択
 ########################################
 #ミラーリング
 ########################################
-class MYOBJECT_734967(bpy.types.Operator):#ミラーリング
+class FUJIWARATOOLBOX_734967(bpy.types.Operator):#ミラーリング
     """ミラーリング"""
-    bl_idname = "object.myobject_734967"
+    bl_idname = "fujiwara_toolbox.command_734967"
     bl_label = "ミラーリング"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -12975,9 +12975,9 @@ class MYOBJECT_734967(bpy.types.Operator):#ミラーリング
 ########################################
 #左側選択
 ########################################
-class MYOBJECT_384660(bpy.types.Operator):#左側選択
+class FUJIWARATOOLBOX_384660(bpy.types.Operator):#左側選択
     """左側選択"""
-    bl_idname = "object.myobject_384660"
+    bl_idname = "fujiwara_toolbox.command_384660"
     bl_label = "左側選択"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -13010,9 +13010,9 @@ uiitem().horizontal()
 ########################################
 #アクティブのグループのみ表示
 ########################################
-class MYOBJECT_315193(bpy.types.Operator):#アクティブのグループのみ表示
+class FUJIWARATOOLBOX_315193(bpy.types.Operator):#アクティブのグループのみ表示
     """アクティブのグループのみ表示"""
-    bl_idname = "object.myobject_315193"
+    bl_idname = "fujiwara_toolbox.command_315193"
     bl_label = "アクティブのグループのみ表示"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -13035,9 +13035,9 @@ class MYOBJECT_315193(bpy.types.Operator):#アクティブのグループのみ�
 ########################################
 #全て表示
 ########################################
-class MYOBJECT_705250(bpy.types.Operator):#全て表示
+class FUJIWARATOOLBOX_705250(bpy.types.Operator):#全て表示
     """全て表示"""
-    bl_idname = "object.myobject_705250"
+    bl_idname = "fujiwara_toolbox.command_705250"
     bl_label = "全て表示"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -13073,9 +13073,9 @@ uiitem().horizontal()
 ########################################
 #完了
 ########################################
-class MYOBJECT_859280(bpy.types.Operator):#完了
+class FUJIWARATOOLBOX_859280(bpy.types.Operator):#完了
     """完了"""
-    bl_idname = "object.myobject_859280"
+    bl_idname = "fujiwara_toolbox.command_859280"
     bl_label = "完了"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -13302,9 +13302,9 @@ class MYOBJECT_859280(bpy.types.Operator):#完了
 ########################################
 #再バインド
 ########################################
-class MYOBJECT_115485(bpy.types.Operator):#再バインド
+class FUJIWARATOOLBOX_115485(bpy.types.Operator):#再バインド
     """再バインド"""
-    bl_idname = "object.myobject_115485"
+    bl_idname = "fujiwara_toolbox.command_115485"
     bl_label = "再バインド"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -13354,9 +13354,9 @@ uiitem().horizontal()
 ########################################
 #ケージスカルプト
 ########################################
-class MYOBJECT_724488(bpy.types.Operator):#ケージスカルプト
+class FUJIWARATOOLBOX_724488(bpy.types.Operator):#ケージスカルプト
     """ケージスカルプト。バインド操作は選択物のみ。"""
-    bl_idname = "object.myobject_724488"
+    bl_idname = "fujiwara_toolbox.command_724488"
     bl_label = "ケージスカルプト"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -13396,9 +13396,9 @@ class MYOBJECT_724488(bpy.types.Operator):#ケージスカルプト
 ########################################
 #完了
 ########################################
-class MYOBJECT_371121(bpy.types.Operator):#完了
+class FUJIWARATOOLBOX_371121(bpy.types.Operator):#完了
     """完了"""
-    bl_idname = "object.myobject_371121"
+    bl_idname = "fujiwara_toolbox.command_371121"
     bl_label = "完了"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -13456,7 +13456,7 @@ uiitem().vertical()
 ########################################
 class CATEGORYBUTTON_290440(bpy.types.Operator):#VectorDisplacementモデル
     """VectorDisplacementモデル"""
-    bl_idname = "object.categorybutton_290440"
+    bl_idname = "fujiwara_toolbox.categorybutton_290440"
     bl_label = "VectorDisplacementモデル"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -13479,9 +13479,9 @@ class CATEGORYBUTTON_290440(bpy.types.Operator):#VectorDisplacementモデル
 ########################################
 #セミオートインポート・セットアップ
 ########################################
-class MYOBJECT_475352(bpy.types.Operator):#セミオートインポート・セットアップ
+class FUJIWARATOOLBOX_475352(bpy.types.Operator):#セミオートインポート・セットアップ
     """マップはtexturesにいれること"""
-    bl_idname = "object.myobject_475352"
+    bl_idname = "fujiwara_toolbox.command_475352"
     bl_label = "オートインポート・セットアップ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -13569,9 +13569,9 @@ class MYOBJECT_475352(bpy.types.Operator):#セミオートインポート・セ�
 ########################################
 #多重解像度モデル化
 ########################################
-class MYOBJECT_954427(bpy.types.Operator):#多重解像度モデル化
+class FUJIWARATOOLBOX_954427(bpy.types.Operator):#多重解像度モデル化
     """多重解像度モデル化"""
-    bl_idname = "object.myobject_954427"
+    bl_idname = "fujiwara_toolbox.command_954427"
     bl_label = "多重解像度モデル化"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -13644,7 +13644,7 @@ uiitem().vertical()
 ########################################
 class CATEGORYBUTTON_425599(bpy.types.Operator):#MarvelousDesigner
     """MarvelousDesigner"""
-    bl_idname = "object.categorybutton_425599"
+    bl_idname = "fujiwara_toolbox.categorybutton_425599"
     bl_label = "MarvelousDesigner"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -13679,9 +13679,9 @@ uiitem().horizontal()
 #########################################
 ##オートアバターBG
 #########################################
-#class MYOBJECT_747942(bpy.types.Operator):#オートアバターBG
+#class FUJIWARATOOLBOX_747942(bpy.types.Operator):#オートアバターBG
 #    """オートアバターBG"""
-#    bl_idname = "object.myobject_747942"
+#    bl_idname = "fujiwara_toolbox.command_747942"
 #    bl_label = "オートアバターBG"
 #    bl_options = {'REGISTER', 'UNDO'}
 
@@ -13707,9 +13707,9 @@ uiitem().horizontal()
 ########################################
 #オートアバター
 ########################################
-class MYOBJECT_302662(bpy.types.Operator):#オートアバター
+class FUJIWARATOOLBOX_302662(bpy.types.Operator):#オートアバター
     """カメラ範囲内のbodyを自動でアバター出力して終了する"""
-    bl_idname = "object.myobject_302662"
+    bl_idname = "fujiwara_toolbox.command_302662"
     bl_label = "オートアバター"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -13741,7 +13741,7 @@ class MYOBJECT_302662(bpy.types.Operator):#オートアバター
 
 
         #MD作業ファイル準備
-        bpy.ops.object.myobject_902822()
+        bpy.ops.fujiwara_toolbox.command_902822()
 
         #bpy.context.scene.layers[0] = True
         #for i in range(19):
@@ -13799,7 +13799,7 @@ class MYOBJECT_302662(bpy.types.Operator):#オートアバター
                 bpy.ops.object.framejump_10()
                 bpy.ops.object.set_key()
             #MDDataに出力
-            #bpy.ops.object.myobject_347662()
+            #bpy.ops.fujiwara_toolbox.command_347662()
         
         ##元ファイルを開き直してdone
         #    #subprocess.Popen("EXPLORER " + bpy.data.filepath)
@@ -13807,7 +13807,7 @@ class MYOBJECT_302662(bpy.types.Operator):#オートアバター
         #    bpy.ops.wm.quit_blender()
 
         #終了
-        bpy.ops.object.myobject_628306()
+        bpy.ops.fujiwara_toolbox.command_628306()
 
         return {'FINISHED'}
 ########################################
@@ -13817,9 +13817,9 @@ class MYOBJECT_302662(bpy.types.Operator):#オートアバター
 ########################################
 #オートインポート
 ########################################
-class MYOBJECT_487662(bpy.types.Operator):#オートインポート
+class FUJIWARATOOLBOX_487662(bpy.types.Operator):#オートインポート
     """オートインポート"""
-    bl_idname = "object.myobject_487662"
+    bl_idname = "fujiwara_toolbox.command_487662"
     bl_label = "オートインポート"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -13920,9 +13920,9 @@ uiitem().horizontal()
 ########################################
 #MD作業ファイル準備
 ########################################
-class MYOBJECT_902822(bpy.types.Operator):#MD作業ファイル準備
+class FUJIWARATOOLBOX_902822(bpy.types.Operator):#MD作業ファイル準備
     """MD作業ファイル準備"""
-    bl_idname = "object.myobject_902822"
+    bl_idname = "fujiwara_toolbox.command_902822"
     bl_label = "MD作業ファイル準備"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -13964,9 +13964,9 @@ class MYOBJECT_902822(bpy.types.Operator):#MD作業ファイル準備
 ########################################
 #元を開く（別窓）
 ########################################
-class MYOBJECT_179920(bpy.types.Operator):#元を開く（別窓）
+class FUJIWARATOOLBOX_179920(bpy.types.Operator):#元を開く（別窓）
     """元を開く（別窓）"""
-    bl_idname = "object.myobject_179920"
+    bl_idname = "fujiwara_toolbox.command_179920"
     bl_label = "元を開く（別窓）"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -13993,9 +13993,9 @@ class MYOBJECT_179920(bpy.types.Operator):#元を開く（別窓）
 ########################################
 #戻る
 ########################################
-class MYOBJECT_401078(bpy.types.Operator):#戻る
+class FUJIWARATOOLBOX_401078(bpy.types.Operator):#戻る
     """戻る"""
-    bl_idname = "object.myobject_401078"
+    bl_idname = "fujiwara_toolbox.command_401078"
     bl_label = "戻る"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -14021,9 +14021,9 @@ class MYOBJECT_401078(bpy.types.Operator):#戻る
 ########################################
 #終了
 ########################################
-class MYOBJECT_628306(bpy.types.Operator):#終了
+class FUJIWARATOOLBOX_628306(bpy.types.Operator):#終了
     """終了"""
-    bl_idname = "object.myobject_628306"
+    bl_idname = "fujiwara_toolbox.command_628306"
     bl_label = "終了"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -14055,9 +14055,9 @@ uiitem().vertical()
 ########################################
 #選択プロクシから転送
 ########################################
-class MYOBJECT_360702(bpy.types.Operator):#選択プロクシから転送
+class FUJIWARATOOLBOX_360702(bpy.types.Operator):#選択プロクシから転送
     """選択プロクシから転送"""
-    bl_idname = "object.myobject_360702"
+    bl_idname = "fujiwara_toolbox.command_360702"
     bl_label = "選択プロクシから転送"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -14167,9 +14167,9 @@ def export_mdavatar(self, dir, name, openfolder=True):
 ########################################
 #アバター出力
 ########################################
-class MYOBJECT_738210(bpy.types.Operator):#アバター出力
+class FUJIWARATOOLBOX_738210(bpy.types.Operator):#アバター出力
     """アバター出力"""
-    bl_idname = "object.myobject_738210"
+    bl_idname = "fujiwara_toolbox.command_738210"
     bl_label = "アバター出力"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -14189,9 +14189,9 @@ class MYOBJECT_738210(bpy.types.Operator):#アバター出力
 ########################################
 #MDDataに出力
 ########################################
-class MYOBJECT_347662(bpy.types.Operator):#MDDataに出力
+class FUJIWARATOOLBOX_347662(bpy.types.Operator):#MDDataに出力
     """MDDataに出力"""
-    bl_idname = "object.myobject_347662"
+    bl_idname = "fujiwara_toolbox.command_347662"
     bl_label = "MDDataに出力"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -14223,9 +14223,9 @@ class MYOBJECT_347662(bpy.types.Operator):#MDDataに出力
 ########################################
 #アバターのみ
 ########################################
-class MYOBJECT_287546(bpy.types.Operator):#アバターのみ
+class FUJIWARATOOLBOX_287546(bpy.types.Operator):#アバターのみ
     """アバターのみ"""
-    bl_idname = "object.myobject_287546"
+    bl_idname = "fujiwara_toolbox.command_287546"
     bl_label = "アバターのみ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -14271,9 +14271,9 @@ class MYOBJECT_287546(bpy.types.Operator):#アバターのみ
 ########################################
 #プロップ出力
 ########################################
-class MYOBJECT_341922(bpy.types.Operator):#プロップ出力
+class FUJIWARATOOLBOX_341922(bpy.types.Operator):#プロップ出力
     """プロップ出力"""
-    bl_idname = "object.myobject_341922"
+    bl_idname = "fujiwara_toolbox.command_341922"
     bl_label = "プロップ出力"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -14329,9 +14329,9 @@ uiitem("フレーム毎obj")
 ########################################
 #アバター出力
 ########################################
-class MYOBJECT_501373(bpy.types.Operator):#アバター出力
+class FUJIWARATOOLBOX_501373(bpy.types.Operator):#アバター出力
     """アバター出力"""
-    bl_idname = "object.myobject_501373"
+    bl_idname = "fujiwara_toolbox.command_501373"
     bl_label = "アバター出力"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -14411,9 +14411,9 @@ uiitem("ジェネラル")
 ########################################
 #base出力
 ########################################
-class MYOBJECT_518498(bpy.types.Operator):#base出力
+class FUJIWARATOOLBOX_518498(bpy.types.Operator):#base出力
     """base出力"""
-    bl_idname = "object.myobject_518498"
+    bl_idname = "fujiwara_toolbox.command_518498"
     bl_label = "base出力"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -14437,7 +14437,7 @@ class MYOBJECT_518498(bpy.types.Operator):#base出力
         #レイヤー全表示
         bpy.context.scene.layers = [True for n in range(20)]
         #複数親子選択
-        bpy.ops.object.myobject_24259()
+        bpy.ops.fujiwara_toolbox.command_24259()
 
 
         selection = fjw.get_selected_list()
@@ -14485,7 +14485,7 @@ class MYOBJECT_518498(bpy.types.Operator):#base出力
         #トランスフォームのアプライ
         bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
         #ノーマルの再計算
-        bpy.ops.object.myobject_590395()
+        bpy.ops.fujiwara_toolbox.command_590395()
         
         #簡略化2
         bpy.context.scene.render.use_simplify = True
@@ -14522,9 +14522,9 @@ class MYOBJECT_518498(bpy.types.Operator):#base出力
 ########################################
 #poseTo出力
 ########################################
-class MYOBJECT_178092(bpy.types.Operator):#poseTo出力
+class FUJIWARATOOLBOX_178092(bpy.types.Operator):#poseTo出力
     """poseTo出力"""
-    bl_idname = "object.myobject_178092"
+    bl_idname = "fujiwara_toolbox.command_178092"
     bl_label = "poseTo出力"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -14546,7 +14546,7 @@ class MYOBJECT_178092(bpy.types.Operator):#poseTo出力
         #レイヤー全表示
         bpy.context.scene.layers = [True for n in range(20)]
         #複数親子選択
-        bpy.ops.object.myobject_24259()
+        bpy.ops.fujiwara_toolbox.command_24259()
 
 
         selection = fjw.get_selected_list()
@@ -14598,7 +14598,7 @@ class MYOBJECT_178092(bpy.types.Operator):#poseTo出力
         #トランスフォームのアプライ
         bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
         #ノーマルの再計算
-        bpy.ops.object.myobject_590395()
+        bpy.ops.fujiwara_toolbox.command_590395()
         
         #簡略化2
         bpy.context.scene.render.use_simplify = True
@@ -14675,15 +14675,15 @@ def import_mdresult(self,resultpath):
                 obj.layers = current.layers
         
         #裏ポリエッジ付加
-        bpy.ops.object.myobject_318722()
+        bpy.ops.fujiwara_toolbox.command_318722()
 
 
 ########################################
 #インポート
 ########################################
-class MYOBJECT_86482(bpy.types.Operator):#インポート
+class FUJIWARATOOLBOX_86482(bpy.types.Operator):#インポート
     """インポート"""
-    bl_idname = "object.myobject_86482"
+    bl_idname = "fujiwara_toolbox.command_86482"
     bl_label = "インポート"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -14805,14 +14805,14 @@ class MYOBJECT_86482(bpy.types.Operator):#インポート
         
         
 #        #裏ポリエッジ付加
-#        bpy.ops.object.myobject_318722()
+#        bpy.ops.fujiwara_toolbox.command_318722()
 
             
 
 #        #deselect()
 #        #select(selection)
 #        ##オープンエッジの線画化
-#        #bpy.ops.object.myobject_141722()
+#        #bpy.ops.fujiwara_toolbox.command_141722()
 #        #deselect()
 
 #        #ジオメトリの子にする
@@ -14837,9 +14837,9 @@ uiitem("マテリアル")
 ########################################
 #インポート用マテリアルフォルダを開く
 ########################################
-class MYOBJECT_902107(bpy.types.Operator):#インポート用マテリアルフォルダを開く
+class FUJIWARATOOLBOX_902107(bpy.types.Operator):#インポート用マテリアルフォルダを開く
     """インポート用マテリアルフォルダを開く"""
-    bl_idname = "object.myobject_902107"
+    bl_idname = "fujiwara_toolbox.command_902107"
     bl_label = "インポート用マテリアルフォルダを開く"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -14862,9 +14862,9 @@ class MYOBJECT_902107(bpy.types.Operator):#インポート用マテリアルフ�
 ########################################
 #マテリアル・ノードクリンアップ
 ########################################
-class MYOBJECT_56507(bpy.types.Operator):#マテリアル・ノードクリンアップ
+class FUJIWARATOOLBOX_56507(bpy.types.Operator):#マテリアル・ノードクリンアップ
     """マテリアル・ノードクリンアップ"""
-    bl_idname = "object.myobject_56507"
+    bl_idname = "fujiwara_toolbox.command_56507"
     bl_label = "マテリアル・ノードクリンアップ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -14901,9 +14901,9 @@ uiitem("旧素体システム")
 ########################################
 #base出力
 ########################################
-class MYOBJECT_849795(bpy.types.Operator):#base出力
+class FUJIWARATOOLBOX_849795(bpy.types.Operator):#base出力
     """base出力。保存して開き直すので注意"""
-    bl_idname = "object.myobject_849795"
+    bl_idname = "fujiwara_toolbox.command_849795"
     bl_label = "base出力"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -14994,7 +14994,7 @@ class MYOBJECT_849795(bpy.types.Operator):#base出力
         #トランスフォームのアプライ
         bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
         #ノーマルの再計算
-        bpy.ops.object.myobject_590395()
+        bpy.ops.fujiwara_toolbox.command_590395()
         
         #簡略化2
         bpy.context.scene.render.use_simplify = True
@@ -15014,9 +15014,9 @@ class MYOBJECT_849795(bpy.types.Operator):#base出力
 #########################################
 ##poseRot0出力
 #########################################
-#class MYOBJECT_473205(bpy.types.Operator):#poseRot0出力
+#class FUJIWARATOOLBOX_473205(bpy.types.Operator):#poseRot0出力
 #    """poseRot0出力"""
-#    bl_idname = "object.myobject_473205"
+#    bl_idname = "fujiwara_toolbox.command_473205"
 #    bl_label = "poseRot0出力"
 #    bl_options = {'REGISTER', 'UNDO'}
 #
@@ -15110,7 +15110,7 @@ class MYOBJECT_849795(bpy.types.Operator):#base出力
 #        bpy.ops.object.transform_apply(location=False, rotation=False,
 #        scale=True)
 #        #ノーマルの再計算
-#        bpy.ops.object.myobject_590395()
+#        bpy.ops.fujiwara_toolbox.command_590395()
 #
 #        #簡略化2
 #        bpy.context.scene.render.use_simplify = True
@@ -15131,9 +15131,9 @@ class MYOBJECT_849795(bpy.types.Operator):#base出力
 #########################################
 ##posenoRot出力
 #########################################
-#class MYOBJECT_424197(bpy.types.Operator):#posenoRot出力
+#class FUJIWARATOOLBOX_424197(bpy.types.Operator):#posenoRot出力
 #    """posenoRot出力"""
-#    bl_idname = "object.myobject_424197"
+#    bl_idname = "fujiwara_toolbox.command_424197"
 #    bl_label = "posenoRot出力"
 #    bl_options = {'REGISTER', 'UNDO'}
 #
@@ -15209,7 +15209,7 @@ class MYOBJECT_849795(bpy.types.Operator):#base出力
 #        bpy.ops.object.transform_apply(location=False, rotation=False,
 #        scale=True)
 #        #ノーマルの再計算
-#        bpy.ops.object.myobject_590395()
+#        bpy.ops.fujiwara_toolbox.command_590395()
 #
 #        #簡略化2
 #        bpy.context.scene.render.use_simplify = True
@@ -15283,9 +15283,9 @@ uiitem().horizontal()
 ########################################
 #中間ポーズ
 ########################################
-class MYOBJECT_976064(bpy.types.Operator):#中間ポーズ
+class FUJIWARATOOLBOX_976064(bpy.types.Operator):#中間ポーズ
     """中間ポーズ"""
-    bl_idname = "object.myobject_976064"
+    bl_idname = "fujiwara_toolbox.command_976064"
     bl_label = "中間ポーズ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -15368,7 +15368,7 @@ class MYOBJECT_976064(bpy.types.Operator):#中間ポーズ
         #トランスフォームのアプライ
         bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
         #ノーマルの再計算
-        bpy.ops.object.myobject_590395()
+        bpy.ops.fujiwara_toolbox.command_590395()
         
         #簡略化2
         bpy.context.scene.render.use_simplify = True
@@ -15387,9 +15387,9 @@ class MYOBJECT_976064(bpy.types.Operator):#中間ポーズ
 ########################################
 #反転中間ポーズ
 ########################################
-class MYOBJECT_666595(bpy.types.Operator):#反転中間ポーズ
+class FUJIWARATOOLBOX_666595(bpy.types.Operator):#反転中間ポーズ
     """反転中間ポーズ"""
-    bl_idname = "object.myobject_666595"
+    bl_idname = "fujiwara_toolbox.command_666595"
     bl_label = "反転中間ポーズ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -15471,7 +15471,7 @@ class MYOBJECT_666595(bpy.types.Operator):#反転中間ポーズ
         #トランスフォームのアプライ
         bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
         #ノーマルの再計算
-        bpy.ops.object.myobject_590395()
+        bpy.ops.fujiwara_toolbox.command_590395()
         
         #簡略化2
         bpy.context.scene.render.use_simplify = True
@@ -15503,9 +15503,9 @@ uiitem().horizontal()
 ########################################
 #poseTo出力
 ########################################
-class MYOBJECT_677880(bpy.types.Operator):#poseTo出力
+class FUJIWARATOOLBOX_677880(bpy.types.Operator):#poseTo出力
     """poseTo出力"""
-    bl_idname = "object.myobject_677880"
+    bl_idname = "fujiwara_toolbox.command_677880"
     bl_label = "poseTo出力"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -15588,7 +15588,7 @@ class MYOBJECT_677880(bpy.types.Operator):#poseTo出力
         #トランスフォームのアプライ
         bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
         #ノーマルの再計算
-        bpy.ops.object.myobject_590395()
+        bpy.ops.fujiwara_toolbox.command_590395()
         
         #簡略化2
         bpy.context.scene.render.use_simplify = True
@@ -15607,9 +15607,9 @@ class MYOBJECT_677880(bpy.types.Operator):#poseTo出力
 ########################################
 #反転poseTo出力
 ########################################
-class MYOBJECT_425209(bpy.types.Operator):#反転poseTo出力
+class FUJIWARATOOLBOX_425209(bpy.types.Operator):#反転poseTo出力
     """反転poseTo出力"""
-    bl_idname = "object.myobject_425209"
+    bl_idname = "fujiwara_toolbox.command_425209"
     bl_label = "反転poseTo出力"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -15691,7 +15691,7 @@ class MYOBJECT_425209(bpy.types.Operator):#反転poseTo出力
         #トランスフォームのアプライ
         bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
         #ノーマルの再計算
-        bpy.ops.object.myobject_590395()
+        bpy.ops.fujiwara_toolbox.command_590395()
         
         #簡略化2
         bpy.context.scene.render.use_simplify = True
@@ -15717,9 +15717,9 @@ uiitem().horizontal()
 ########################################
 #インポート
 ########################################
-class MYOBJECT_717368(bpy.types.Operator):#インポート
+class FUJIWARATOOLBOX_717368(bpy.types.Operator):#インポート
     """インポート"""
-    bl_idname = "object.myobject_717368"
+    bl_idname = "fujiwara_toolbox.command_717368"
     bl_label = "インポート"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -15784,9 +15784,9 @@ class MYOBJECT_717368(bpy.types.Operator):#インポート
 ########################################
 #反転インポート
 ########################################
-class MYOBJECT_624042(bpy.types.Operator):#反転インポート
+class FUJIWARATOOLBOX_624042(bpy.types.Operator):#反転インポート
     """反転インポート"""
-    bl_idname = "object.myobject_624042"
+    bl_idname = "fujiwara_toolbox.command_624042"
     bl_label = "反転インポート"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -15871,7 +15871,7 @@ uiitem().vertical()
 ########################################
 class CATEGORYBUTTON_81935(bpy.types.Operator):#Substance/テクスチャ
     """Substance/テクスチャ"""
-    bl_idname = "object.categorybutton_81935"
+    bl_idname = "fujiwara_toolbox.categorybutton_81935"
     bl_label = "Substance/テクスチャ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -15961,7 +15961,7 @@ def texture_bake(filepath, size, type, identifier):
 
 
 def bake_setup():
-    bpy.ops.object.myobject_998634()#無マテリアルに白を割り当て
+    bpy.ops.fujiwara_toolbox.command_998634()#無マテリアルに白を割り当て
     bakeobj = fjw.active()
 
     #複製されてることを考慮して一旦マテリアルを外す
@@ -15996,7 +15996,7 @@ def bake_ModelAppearance(size):
     autobake(size,"DISPLACEMENT","Height")
     autobake(size,"NORMALS","Normal")
 
-    bpy.ops.object.myobject_358608()#テクスチャ回収
+    bpy.ops.fujiwara_toolbox.command_358608()#テクスチャ回収
 
     fjw.deselect()
     fjw.active().select = True
@@ -16006,9 +16006,9 @@ def bake_ModelAppearance(size):
 ########################################
 #2048
 ########################################
-class MYOBJECT_458089(bpy.types.Operator):#2048
+class FUJIWARATOOLBOX_458089(bpy.types.Operator):#2048
     """2048*2048px"""
-    bl_idname = "object.myobject_458089"
+    bl_idname = "fujiwara_toolbox.command_458089"
     bl_label = "2048"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -16027,10 +16027,10 @@ class MYOBJECT_458089(bpy.types.Operator):#2048
 ########################################
 #4096
 ########################################
-#bpy.ops.object.myobject_264050() #4096
-class MYOBJECT_264050(bpy.types.Operator):#4096
+#bpy.ops.fujiwara_toolbox.command_264050() #4096
+class FUJIWARATOOLBOX_264050(bpy.types.Operator):#4096
     """4096*4096px"""
-    bl_idname = "object.myobject_264050"
+    bl_idname = "fujiwara_toolbox.command_264050"
     bl_label = "4096"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -16072,7 +16072,7 @@ def bake_shadow(size):
 
     set_sun_shadow(False)
 
-    bpy.ops.object.myobject_358608()#テクスチャ回収
+    bpy.ops.fujiwara_toolbox.command_358608()#テクスチャ回収
     fjw.deselect()
     fjw.active().select = True
 
@@ -16087,10 +16087,10 @@ uiitem().horizontal()
 ########################################
 #512
 ########################################
-#bpy.ops.object.myobject_401784() #512
-class MYOBJECT_401784(bpy.types.Operator):#512
+#bpy.ops.fujiwara_toolbox.command_401784() #512
+class FUJIWARATOOLBOX_401784(bpy.types.Operator):#512
     """512"""
-    bl_idname = "object.myobject_401784"
+    bl_idname = "fujiwara_toolbox.command_401784"
     bl_label = "512"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -16109,10 +16109,10 @@ class MYOBJECT_401784(bpy.types.Operator):#512
 ########################################
 #1024
 ########################################
-#bpy.ops.object.myobject_442748() #1024
-class MYOBJECT_442748(bpy.types.Operator):#1024
+#bpy.ops.fujiwara_toolbox.command_442748() #1024
+class FUJIWARATOOLBOX_442748(bpy.types.Operator):#1024
     """1024"""
-    bl_idname = "object.myobject_442748"
+    bl_idname = "fujiwara_toolbox.command_442748"
     bl_label = "1024"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -16160,9 +16160,9 @@ uiitem().horizontal()
 ########################################
 #Substance Output
 ########################################
-class MYOBJECT_596924(bpy.types.Operator):#Substance Output
+class FUJIWARATOOLBOX_596924(bpy.types.Operator):#Substance Output
     """Substance Output"""
-    bl_idname = "object.myobject_596924"
+    bl_idname = "fujiwara_toolbox.command_596924"
     bl_label = "Substance Output"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -16210,9 +16210,9 @@ class MYOBJECT_596924(bpy.types.Operator):#Substance Output
 ########################################
 #分離してSubstance Output
 ########################################
-class MYOBJECT_539212(bpy.types.Operator):#分離してSubstance Output
+class FUJIWARATOOLBOX_539212(bpy.types.Operator):#分離してSubstance Output
     """分離してSubstance Output"""
-    bl_idname = "object.myobject_539212"
+    bl_idname = "fujiwara_toolbox.command_539212"
     bl_label = "分離してSubstance Output"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -16228,7 +16228,7 @@ class MYOBJECT_539212(bpy.types.Operator):#分離してSubstance Output
         bpy.ops.mesh.separate(type='SELECTED')
         fjw.mode("OBJECT")
 
-        bpy.ops.object.myobject_339338()#スマートUV投影（各選択物）
+        bpy.ops.fujiwara_toolbox.command_339338()#スマートUV投影（各選択物）
 
         for obj in fjw.get_selected_list():
             mat = bpy.data.materials.new(name=sbsname(obj.name))#substanceとの連携用にオブジェクト名でマテリアル作る
@@ -16238,7 +16238,7 @@ class MYOBJECT_539212(bpy.types.Operator):#分離してSubstance Output
             else:
                 obj.material_slots[0].material = mat
         
-        bpy.ops.object.myobject_596924()#Substance Output
+        bpy.ops.fujiwara_toolbox.command_596924()#Substance Output
 
         return {'FINISHED'}
 ########################################
@@ -16256,9 +16256,9 @@ uiitem().horizontal()
 ########################################
 #テクスチャ回収
 ########################################
-class MYOBJECT_358608(bpy.types.Operator):#テクスチャ回収
+class FUJIWARATOOLBOX_358608(bpy.types.Operator):#テクスチャ回収
     """テクスチャ回収"""
-    bl_idname = "object.myobject_358608"
+    bl_idname = "fujiwara_toolbox.command_358608"
     bl_label = "テクスチャ回収"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -16273,7 +16273,7 @@ class MYOBJECT_358608(bpy.types.Operator):#テクスチャ回収
         basedir = os.path.dirname(bpy.data.filepath)
         texfiles = []
 
-        bpy.ops.object.myobject_998634()#無マテリアルに白を割り当て
+        bpy.ops.fujiwara_toolbox.command_998634()#無マテリアルに白を割り当て
 
         #テクスチャピックアップ
         for dirpath, dirs, files in os.walk(basedir):
@@ -16392,9 +16392,9 @@ def settexdepth(value,objects):
 ########################################
 #デプス0.01
 ########################################
-class MYOBJECT_819234(bpy.types.Operator):#デプス0.01
+class FUJIWARATOOLBOX_819234(bpy.types.Operator):#デプス0.01
     """デプス0.01"""
-    bl_idname = "object.myobject_819234"
+    bl_idname = "fujiwara_toolbox.command_819234"
     bl_label = "デプス0.01"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -16415,9 +16415,9 @@ class MYOBJECT_819234(bpy.types.Operator):#デプス0.01
 ########################################
 #デプス1
 ########################################
-class MYOBJECT_73453(bpy.types.Operator):#デプス1
+class FUJIWARATOOLBOX_73453(bpy.types.Operator):#デプス1
     """デプス1"""
-    bl_idname = "object.myobject_73453"
+    bl_idname = "fujiwara_toolbox.command_73453"
     bl_label = "1"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -16437,9 +16437,9 @@ class MYOBJECT_73453(bpy.types.Operator):#デプス1
 ########################################
 #デプス5
 ########################################
-class MYOBJECT_997104(bpy.types.Operator):#デプス5
+class FUJIWARATOOLBOX_997104(bpy.types.Operator):#デプス5
     """デプス5"""
-    bl_idname = "object.myobject_997104"
+    bl_idname = "fujiwara_toolbox.command_997104"
     bl_label = "5"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -16477,7 +16477,7 @@ uiitem().vertical()
 ########################################
 class CATEGORYBUTTON_739344(bpy.types.Operator):#髪ツール
     """髪ツール"""
-    bl_idname = "object.categorybutton_739344"
+    bl_idname = "fujiwara_toolbox.categorybutton_739344"
     bl_label = "髪ツール"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -16507,9 +16507,9 @@ uiitem().horizontal()
 ########################################
 #開きにする
 ########################################
-class MYOBJECT_521395(bpy.types.Operator):#開きにする
+class FUJIWARATOOLBOX_521395(bpy.types.Operator):#開きにする
     """開きにする"""
-    bl_idname = "object.myobject_521395"
+    bl_idname = "fujiwara_toolbox.command_521395"
     bl_label = "開きにする"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -16541,9 +16541,9 @@ class MYOBJECT_521395(bpy.types.Operator):#開きにする
 ########################################
 #立体化
 ########################################
-class MYOBJECT_17323(bpy.types.Operator):#立体化
+class FUJIWARATOOLBOX_17323(bpy.types.Operator):#立体化
     """立体化"""
-    bl_idname = "object.myobject_17323"
+    bl_idname = "fujiwara_toolbox.command_17323"
     bl_label = "立体化"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -16577,7 +16577,7 @@ uiitem().vertical()
 ########################################
 class CATEGORYBUTTON_335613(bpy.types.Operator):#オブジェクト生成
     """オブジェクト生成"""
-    bl_idname = "object.categorybutton_335613"
+    bl_idname = "fujiwara_toolbox.categorybutton_335613"
     bl_label = "オブジェクト生成"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -16601,9 +16601,9 @@ uiitem().vertical()
 ########################################
 #ランダム石生成
 ########################################
-class MYOBJECT_104686(bpy.types.Operator):#ランダム石生成
+class FUJIWARATOOLBOX_104686(bpy.types.Operator):#ランダム石生成
     """ランダム石生成"""
-    bl_idname = "object.myobject_104686"
+    bl_idname = "fujiwara_toolbox.command_104686"
     bl_label = "ランダム石生成"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -16639,7 +16639,7 @@ class MYOBJECT_104686(bpy.types.Operator):#ランダム石生成
         fjw.mode("OBJECT")
 
         #自動スムーズ
-        bpy.ops.object.myobject_31891()
+        bpy.ops.fujiwara_toolbox.command_31891()
 
 
         
@@ -16666,7 +16666,7 @@ uiitem().vertical()
 ########################################
 class CATEGORYBUTTON_984430(bpy.types.Operator):#物理
     """物理"""
-    bl_idname = "object.categorybutton_984430"
+    bl_idname = "fujiwara_toolbox.categorybutton_984430"
     bl_label = "物理"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -16689,9 +16689,9 @@ class CATEGORYBUTTON_984430(bpy.types.Operator):#物理
 ########################################
 #ベイクリフレッシュ
 ########################################
-class MYOBJECT_245059(bpy.types.Operator):#ベイクリフレッシュ
+class FUJIWARATOOLBOX_245059(bpy.types.Operator):#ベイクリフレッシュ
     """ベイクリフレッシュ"""
-    bl_idname = "object.myobject_245059"
+    bl_idname = "fujiwara_toolbox.command_245059"
     bl_label = "ベイクリフレッシュ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -16718,9 +16718,9 @@ uiitem().horizontal()
 ########################################
 #Pin割当
 ########################################
-class MYOBJECT_823626(bpy.types.Operator):#Pin割当
+class FUJIWARATOOLBOX_823626(bpy.types.Operator):#Pin割当
     """Pin割当"""
-    bl_idname = "object.myobject_823626"
+    bl_idname = "fujiwara_toolbox.command_823626"
     bl_label = "Pin割当"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -16750,9 +16750,9 @@ class MYOBJECT_823626(bpy.types.Operator):#Pin割当
 #########################################
 ##Total割当
 #########################################
-#class MYOBJECT_878504(bpy.types.Operator):#Total割当
+#class FUJIWARATOOLBOX_878504(bpy.types.Operator):#Total割当
 #    """Total割当"""
-#    bl_idname = "object.myobject_878504"
+#    bl_idname = "fujiwara_toolbox.command_878504"
 #    bl_label = "Total割当"
 #    bl_options = {'REGISTER', 'UNDO'}
 #
@@ -16806,9 +16806,9 @@ class MYOBJECT_823626(bpy.types.Operator):#Pin割当
 ########################################
 #コリジョン用複製
 ########################################
-class MYOBJECT_205157(bpy.types.Operator):#コリジョン用複製
+class FUJIWARATOOLBOX_205157(bpy.types.Operator):#コリジョン用複製
     """コリジョン用複製"""
-    bl_idname = "object.myobject_205157"
+    bl_idname = "fujiwara_toolbox.command_205157"
     bl_label = "コリジョン用複製"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -16847,9 +16847,9 @@ class MYOBJECT_205157(bpy.types.Operator):#コリジョン用複製
 ########################################
 #サーフェスのオフセットを作成
 ########################################
-class MYOBJECT_598876(bpy.types.Operator):#サーフェスのオフセットを作成
+class FUJIWARATOOLBOX_598876(bpy.types.Operator):#サーフェスのオフセットを作成
     """サーフェスのオフセットを作成"""
-    bl_idname = "object.myobject_598876"
+    bl_idname = "fujiwara_toolbox.command_598876"
     bl_label = "サーフェスのオフセットを作成"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -16896,9 +16896,9 @@ uiitem("キャラ用")
 ########################################
 #クロスを確定して髪準備
 ########################################
-class MYOBJECT_482428(bpy.types.Operator):#クロスを確定して髪準備
+class FUJIWARATOOLBOX_482428(bpy.types.Operator):#クロスを確定して髪準備
     """クロスを確定して髪準備"""
-    bl_idname = "object.myobject_482428"
+    bl_idname = "fujiwara_toolbox.command_482428"
     bl_label = "クロスを確定して髪準備"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -16974,7 +16974,7 @@ class MYOBJECT_482428(bpy.types.Operator):#クロスを確定して髪準備
 ########################################
 class CATEGORYBUTTON_814784(bpy.types.Operator):#Plane
     """Plane"""
-    bl_idname = "object.categorybutton_814784"
+    bl_idname = "fujiwara_toolbox.categorybutton_814784"
     bl_label = "Plane"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -16999,9 +16999,9 @@ class CATEGORYBUTTON_814784(bpy.types.Operator):#Plane
 ########################################
 #DPIを揃える
 ########################################
-class MYOBJECT_718267(bpy.types.Operator):#DPIを揃える
+class FUJIWARATOOLBOX_718267(bpy.types.Operator):#DPIを揃える
     """DPIを揃える"""
-    bl_idname = "object.myobject_718267"
+    bl_idname = "fujiwara_toolbox.command_718267"
     bl_label = "DPIを揃える"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -17157,7 +17157,7 @@ uiitem().vertical()
 ########################################
 class CATEGORYBUTTON_207003(bpy.types.Operator):#その他
     """その他"""
-    bl_idname = "object.categorybutton_207003"
+    bl_idname = "fujiwara_toolbox.categorybutton_207003"
     bl_label = "その他"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -17182,9 +17182,9 @@ uiitem("開発ヘルパ")
 ########################################
 #アクティブタイプ取得
 ########################################
-class MYOBJECT_468766(bpy.types.Operator):#アクティブタイプ取得
+class FUJIWARATOOLBOX_468766(bpy.types.Operator):#アクティブタイプ取得
     """アクティブタイプ取得"""
-    bl_idname = "object.myobject_468766"
+    bl_idname = "fujiwara_toolbox.command_468766"
     bl_label = "アクティブタイプ取得"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -17216,9 +17216,9 @@ uiitem("フィニッシング")
 ########################################
 #注意事項
 ########################################
-class MYOBJECT_893322(bpy.types.Operator):#注意事項
+class FUJIWARATOOLBOX_893322(bpy.types.Operator):#注意事項
     """バックアップを作ってから行うこと。他の3Dビューはとじること。"""
-    bl_idname = "object.myobject_893322"
+    bl_idname = "fujiwara_toolbox.command_893322"
     bl_label = "注意事項"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -17237,9 +17237,9 @@ class MYOBJECT_893322(bpy.types.Operator):#注意事項
 ########################################
 #nゴンチェック
 ########################################
-class MYOBJECT_342881(bpy.types.Operator):#nゴンチェック
+class FUJIWARATOOLBOX_342881(bpy.types.Operator):#nゴンチェック
     """nゴンチェック"""
-    bl_idname = "object.myobject_342881"
+    bl_idname = "fujiwara_toolbox.command_342881"
     bl_label = "nゴンチェック"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -17288,9 +17288,9 @@ class MYOBJECT_342881(bpy.types.Operator):#nゴンチェック
 ########################################
 #モデル確定
 ########################################
-class MYOBJECT_847775(bpy.types.Operator):#モデル確定
+class FUJIWARATOOLBOX_847775(bpy.types.Operator):#モデル確定
     """モデル確定"""
-    bl_idname = "object.myobject_847775"
+    bl_idname = "fujiwara_toolbox.command_847775"
     bl_label = "モデル確定"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -17349,9 +17349,9 @@ class MYOBJECT_847775(bpy.types.Operator):#モデル確定
 ########################################
 #ポリゴン密度
 ########################################
-class MYOBJECT_809008(bpy.types.Operator):#ポリゴン密度
+class FUJIWARATOOLBOX_809008(bpy.types.Operator):#ポリゴン密度
     """ポリゴン密度"""
-    bl_idname = "object.myobject_809008"
+    bl_idname = "fujiwara_toolbox.command_809008"
     bl_label = "ポリゴン密度"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -17404,9 +17404,9 @@ uiitem("FIX")
 ########################################
 #カメラとランプをレイヤ1に寄せる
 ########################################
-class MYOBJECT_704935(bpy.types.Operator):#カメラとランプをレイヤ1に寄せる
+class FUJIWARATOOLBOX_704935(bpy.types.Operator):#カメラとランプをレイヤ1に寄せる
     """カメラとランプをレイヤ1に寄せる"""
-    bl_idname = "object.myobject_704935"
+    bl_idname = "fujiwara_toolbox.command_704935"
     bl_label = "カメラとランプをレイヤ1に寄せる"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -17448,9 +17448,9 @@ def packimg():
 ########################################
 #シングルユーザー化
 ########################################
-class MYOBJECT_199389(bpy.types.Operator):#シングルユーザー化
+class FUJIWARATOOLBOX_199389(bpy.types.Operator):#シングルユーザー化
     """シングルユーザー化"""
-    bl_idname = "object.myobject_199389"
+    bl_idname = "fujiwara_toolbox.command_199389"
     bl_label = "シングルユーザー化"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -17471,9 +17471,9 @@ class MYOBJECT_199389(bpy.types.Operator):#シングルユーザー化
 ########################################
 #複製
 ########################################
-class MYOBJECT_607832(bpy.types.Operator):#複製
+class FUJIWARATOOLBOX_607832(bpy.types.Operator):#複製
     """複製"""
-    bl_idname = "object.myobject_607832"
+    bl_idname = "fujiwara_toolbox.command_607832"
     bl_label = "複製生成"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -17504,9 +17504,9 @@ class MYOBJECT_607832(bpy.types.Operator):#複製
 ########################################
 #保存
 ########################################
-class MYOBJECT_490317a(bpy.types.Operator):#保存
+class FUJIWARATOOLBOX_490317a(bpy.types.Operator):#保存
     """保存"""
-    bl_idname = "object.myobject_490317a"
+    bl_idname = "fujiwara_toolbox.command_490317a"
     bl_label = "保存"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -17526,9 +17526,9 @@ class MYOBJECT_490317a(bpy.types.Operator):#保存
 ########################################
 #保存して閉じる
 ########################################
-class MYOBJECT_669544a(bpy.types.Operator):#保存して閉じる
+class FUJIWARATOOLBOX_669544a(bpy.types.Operator):#保存して閉じる
     """保存して閉じる"""
-    bl_idname = "object.myobject_669544a"
+    bl_idname = "fujiwara_toolbox.command_669544a"
     bl_label = "保存して閉じる"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -17551,9 +17551,9 @@ class MYOBJECT_669544a(bpy.types.Operator):#保存して閉じる
 ########################################
 #レンダリングのみトグル
 ########################################
-class MYOBJECT_489145(bpy.types.Operator):#レンダリングのみトグル
+class FUJIWARATOOLBOX_489145(bpy.types.Operator):#レンダリングのみトグル
     """レンダリングのみトグル"""
-    bl_idname = "object.myobject_489145"
+    bl_idname = "fujiwara_toolbox.command_489145"
     bl_label = "レンダリングのみトグル"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -17582,9 +17582,9 @@ class MYOBJECT_489145(bpy.types.Operator):#レンダリングのみトグル
 ########################################
 #オブジェクトモード
 ########################################
-class MYOBJECT_334541(bpy.types.Operator):#オブジェクトモード
+class FUJIWARATOOLBOX_334541(bpy.types.Operator):#オブジェクトモード
     """オブジェクトモード"""
-    bl_idname = "object.myobject_334541"
+    bl_idname = "fujiwara_toolbox.command_334541"
     bl_label = "オブジェクトモード"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -17606,9 +17606,9 @@ class MYOBJECT_334541(bpy.types.Operator):#オブジェクトモード
 ########################################
 #通常ペン
 ########################################
-class MYOBJECT_878021(bpy.types.Operator):#通常ペン
+class FUJIWARATOOLBOX_878021(bpy.types.Operator):#通常ペン
     """通常ペン"""
-    bl_idname = "object.myobject_878021"
+    bl_idname = "fujiwara_toolbox.command_878021"
     bl_label = "通常ペン"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -17633,9 +17633,9 @@ class MYOBJECT_878021(bpy.types.Operator):#通常ペン
 ########################################
 #消しゴム アルファ
 ########################################
-class MYOBJECT_114451(bpy.types.Operator):#消しゴム アルファ
+class FUJIWARATOOLBOX_114451(bpy.types.Operator):#消しゴム アルファ
     """消しゴム　アルファ"""
-    bl_idname = "object.myobject_114451"
+    bl_idname = "fujiwara_toolbox.command_114451"
     bl_label = "消しゴム　アルファ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -17658,9 +17658,9 @@ class MYOBJECT_114451(bpy.types.Operator):#消しゴム アルファ
 ########################################
 #消しゴム 白
 ########################################
-class MYOBJECT_125921(bpy.types.Operator):#消しゴム 白
+class FUJIWARATOOLBOX_125921(bpy.types.Operator):#消しゴム 白
     """消しゴム　白"""
-    bl_idname = "object.myobject_125921"
+    bl_idname = "fujiwara_toolbox.command_125921"
     bl_label = "消しゴム　白"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -17683,9 +17683,9 @@ class MYOBJECT_125921(bpy.types.Operator):#消しゴム 白
 ########################################
 #大ブラシ
 ########################################
-class MYOBJECT_960402(bpy.types.Operator):#大ブラシ
+class FUJIWARATOOLBOX_960402(bpy.types.Operator):#大ブラシ
     """大ブラシ"""
-    bl_idname = "object.myobject_960402"
+    bl_idname = "fujiwara_toolbox.command_960402"
     bl_label = "大ブラシ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -17721,9 +17721,9 @@ uiitem("テキスト")
 #########################################
 ##新規テキスト
 #########################################
-#class MYOBJECT_816263(bpy.types.Operator):#新規テキスト
+#class FUJIWARATOOLBOX_816263(bpy.types.Operator):#新規テキスト
 #    """新規テキスト"""
-#    bl_idname = "object.myobject_816263"
+#    bl_idname = "fujiwara_toolbox.command_816263"
 #    bl_label = "新規テキスト"
 #    bl_options = {'REGISTER', 'UNDO'}
 
@@ -17737,7 +17737,7 @@ uiitem("テキスト")
 #        bpy.ops.object.text_add(radius=1, view_align=False,
 #        enter_editmode=False, location=bpy.context.space_data.cursor_location,
 #        layers=layers(put_visible_last=True))
-#        bpy.ops.object.myobject_757107()
+#        bpy.ops.fujiwara_toolbox.command_757107()
 #        return {'FINISHED'}
 #########################################
 
@@ -17746,9 +17746,9 @@ uiitem("テキスト")
 ########################################
 #ヘルパー起動
 ########################################
-class MYOBJECT_757107(bpy.types.Operator):#ヘルパー起動
+class FUJIWARATOOLBOX_757107(bpy.types.Operator):#ヘルパー起動
     """ヘルパー起動"""
-    bl_idname = "object.myobject_757107"
+    bl_idname = "fujiwara_toolbox.command_757107"
     bl_label = "ヘルパー起動"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -17790,9 +17790,9 @@ uiitem().horizontal()
 ########################################
 #日本語入力.txt
 ########################################
-class MYOBJECT_542245(bpy.types.Operator):#日本語入力.txt
+class FUJIWARATOOLBOX_542245(bpy.types.Operator):#日本語入力.txt
     """日本語入力.txt"""
-    bl_idname = "object.myobject_542245"
+    bl_idname = "fujiwara_toolbox.command_542245"
     bl_label = "日本語入力.txt"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -17855,9 +17855,9 @@ class MYOBJECT_542245(bpy.types.Operator):#日本語入力.txt
 ########################################
 #流し込み
 ########################################
-class MYOBJECT_46615(bpy.types.Operator):#流し込み
+class FUJIWARATOOLBOX_46615(bpy.types.Operator):#流し込み
     """流し込み"""
-    bl_idname = "object.myobject_46615"
+    bl_idname = "fujiwara_toolbox.command_46615"
     bl_label = "流し込み"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -17963,9 +17963,9 @@ uiitem().vertical()
 ########################################
 #編集
 ########################################
-class MYOBJECT_665745(bpy.types.Operator):#編集
+class FUJIWARATOOLBOX_665745(bpy.types.Operator):#編集
     """編集"""
-    bl_idname = "object.myobject_665745"
+    bl_idname = "fujiwara_toolbox.command_665745"
     bl_label = "編集"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -18019,9 +18019,9 @@ class MYOBJECT_665745(bpy.types.Operator):#編集
 ########################################
 #アクティブへまとめる
 ########################################
-class MYOBJECT_352627(bpy.types.Operator):#アクティブへまとめる
+class FUJIWARATOOLBOX_352627(bpy.types.Operator):#アクティブへまとめる
     """アクティブへまとめる"""
-    bl_idname = "object.myobject_352627"
+    bl_idname = "fujiwara_toolbox.command_352627"
     bl_label = "アクティブへまとめる"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -18064,9 +18064,9 @@ uiitem("画像ファイル")
 ########################################
 #外部エディタで編集
 ########################################
-class MYOBJECT_381157(bpy.types.Operator):#外部エディタで編集
+class FUJIWARATOOLBOX_381157(bpy.types.Operator):#外部エディタで編集
     """外部エディタで編集"""
-    bl_idname = "object.myobject_381157"
+    bl_idname = "fujiwara_toolbox.command_381157"
     bl_label = "外部エディタで編集"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -18097,9 +18097,9 @@ class MYOBJECT_381157(bpy.types.Operator):#外部エディタで編集
 ########################################
 #選択リロード
 ########################################
-class MYOBJECT_754499(bpy.types.Operator):#選択リロード
+class FUJIWARATOOLBOX_754499(bpy.types.Operator):#選択リロード
     """選択リロード"""
-    bl_idname = "object.myobject_754499"
+    bl_idname = "fujiwara_toolbox.command_754499"
     bl_label = "選択リロード"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -18129,9 +18129,9 @@ class MYOBJECT_754499(bpy.types.Operator):#選択リロード
 ########################################
 #リロード・開く
 ########################################
-class MYOBJECT_980757(bpy.types.Operator):#リロード・開く
+class FUJIWARATOOLBOX_980757(bpy.types.Operator):#リロード・開く
     """リロード・開く"""
-    bl_idname = "object.myobject_980757"
+    bl_idname = "fujiwara_toolbox.command_980757"
     bl_label = "リロード・開く"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -18142,8 +18142,8 @@ class MYOBJECT_980757(bpy.types.Operator):#リロード・開く
     #処理部分
     ###################################
     def execute(self, context):
-        bpy.ops.object.myobject_754499()
-        bpy.ops.object.myobject_381157()
+        bpy.ops.fujiwara_toolbox.command_754499()
+        bpy.ops.fujiwara_toolbox.command_381157()
         
         return {'FINISHED'}
 ########################################
@@ -18159,9 +18159,9 @@ class MYOBJECT_980757(bpy.types.Operator):#リロード・開く
 #########################################
 ##全てリロード
 #########################################
-#class MYOBJECT_821048(bpy.types.Operator):#全てリロード
+#class FUJIWARATOOLBOX_821048(bpy.types.Operator):#全てリロード
 #    """全てリロード"""
-#    bl_idname = "object.myobject_821048"
+#    bl_idname = "fujiwara_toolbox.command_821048"
 #    bl_label = "全てリロード"
 #    bl_options = {'REGISTER', 'UNDO'}
 #
@@ -18212,9 +18212,9 @@ uiitem("その他")
 ########################################
 #ビューロックトグル
 ########################################
-class MYOBJECT_938626(bpy.types.Operator):#ビューロックトグル
+class FUJIWARATOOLBOX_938626(bpy.types.Operator):#ビューロックトグル
     """ビューロックトグル"""
-    bl_idname = "object.myobject_938626"
+    bl_idname = "fujiwara_toolbox.command_938626"
     bl_label = "ロック"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -18236,9 +18236,9 @@ class MYOBJECT_938626(bpy.types.Operator):#ビューロックトグル
 ########################################
 #LSing
 ########################################
-class MYOBJECT_985887(bpy.types.Operator):#LSing
+class FUJIWARATOOLBOX_985887(bpy.types.Operator):#LSing
     """オブジェクトを単一レイヤー化する"""
-    bl_idname = "object.myobject_985887"
+    bl_idname = "fujiwara_toolbox.command_985887"
     bl_label = "単レ化"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -18261,9 +18261,9 @@ class MYOBJECT_985887(bpy.types.Operator):#LSing
 ########################################
 #オブジェクトを統合（グルーピング）
 ########################################
-class MYOBJECT_482619(bpy.types.Operator):#オブジェクトを統合（グルーピング）
+class FUJIWARATOOLBOX_482619(bpy.types.Operator):#オブジェクトを統合（グルーピング）
     """オブジェクトを統合（グルーピング）"""
-    bl_idname = "object.myobject_482619"
+    bl_idname = "fujiwara_toolbox.command_482619"
     bl_label = "オブジェクトを統合（グルーピング）"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -18315,9 +18315,9 @@ uiitem().vertical()
 ########################################
 #プロクシ作成
 ########################################
-class MYOBJECT_b424289a(bpy.types.Operator):#プロクシ作成
+class FUJIWARATOOLBOX_b424289a(bpy.types.Operator):#プロクシ作成
     """プロクシ作成　自動キーフレームオン"""
-    bl_idname = "object.myobject_b424289a"
+    bl_idname = "fujiwara_toolbox.command_b424289a"
     bl_label = "プロクシ作成"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -18331,7 +18331,7 @@ class MYOBJECT_b424289a(bpy.types.Operator):#プロクシ作成
         #blenrig用プロクシの作成
         fjw.make_proxy("biped_blenrig")
         #roomtoolsのプロクシ作成（mapcontroller用）を実行
-        bpy.ops.object.myobject_424289()
+        bpy.ops.fujiwara_toolbox.command_424289()
 
         #make_proxy_all()
 
@@ -18373,9 +18373,9 @@ class MYOBJECT_b424289a(bpy.types.Operator):#プロクシ作成
 ########################################
 #プロクシ作成（全）
 ########################################
-class MYOBJECT_248120(bpy.types.Operator):#プロクシ作成（全）
+class FUJIWARATOOLBOX_248120(bpy.types.Operator):#プロクシ作成（全）
     """プロクシ作成（全）"""
-    bl_idname = "object.myobject_248120"
+    bl_idname = "fujiwara_toolbox.command_248120"
     bl_label = "Full Proxy"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -18476,9 +18476,9 @@ class MYOBJECT_248120(bpy.types.Operator):#プロクシ作成（全）
 ########################################
 #Lamp Proxy
 ########################################
-class MYOBJECT_199238(bpy.types.Operator):#Lamp Proxy
+class FUJIWARATOOLBOX_199238(bpy.types.Operator):#Lamp Proxy
     """Lamp Proxy"""
-    bl_idname = "object.myobject_199238"
+    bl_idname = "fujiwara_toolbox.command_199238"
     bl_label = "Lamp Proxy"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -18567,9 +18567,9 @@ def parentdata_getparentdataall():
 ########################################
 #ペアレントデータビルド
 ########################################
-class MYOBJECT_95038(bpy.types.Operator):#ペアレントデータビルド
+class FUJIWARATOOLBOX_95038(bpy.types.Operator):#ペアレントデータビルド
     """ペアレント情報をカスタムデータに格納する"""
-    bl_idname = "object.myobject_95038"
+    bl_idname = "fujiwara_toolbox.command_95038"
     bl_label = "ペアレントデータビルド"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -18630,9 +18630,9 @@ def parentdata_buildfromparentdata():
 ########################################
 #ビルドフロムペアレントデータ
 ########################################
-class MYOBJECT_349810(bpy.types.Operator):#ビルドフロムペアレントデータ
+class FUJIWARATOOLBOX_349810(bpy.types.Operator):#ビルドフロムペアレントデータ
     """ペアレントデータから親子を構築する"""
-    bl_idname = "object.myobject_349810"
+    bl_idname = "fujiwara_toolbox.command_349810"
     bl_label = "ビルドフロムペアレントデータ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -18660,9 +18660,9 @@ class MYOBJECT_349810(bpy.types.Operator):#ビルドフロムペアレントデ�
 ########################################
 #複製を実体化
 ########################################
-class MYOBJECT_286013(bpy.types.Operator):#複製を実体化
+class FUJIWARATOOLBOX_286013(bpy.types.Operator):#複製を実体化
     """複製を実体化+ローカル化も。"""
-    bl_idname = "object.myobject_286013"
+    bl_idname = "fujiwara_toolbox.command_286013"
     bl_label = "複製を実体化+ローカル化"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -18707,9 +18707,9 @@ class MYOBJECT_286013(bpy.types.Operator):#複製を実体化
 ########################################
 #AssetManager用キャラリンク後ポストプロセス
 ########################################
-class MYOBJECT_823369(bpy.types.Operator):#AssetManager用キャラリンク後ポストプロセス
+class FUJIWARATOOLBOX_823369(bpy.types.Operator):#AssetManager用キャラリンク後ポストプロセス
     """AssetManager用キャラリンク後ポストプロセス"""
-    bl_idname = "object.myobject_823369"
+    bl_idname = "fujiwara_toolbox.command_823369"
     bl_label = "AssetManager用キャラリンク後ポストプロセス"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -18722,7 +18722,7 @@ class MYOBJECT_823369(bpy.types.Operator):#AssetManager用キャラリンク後�
     ###################################
     def execute(self, context):
         #複製を実体化
-        bpy.ops.object.myobject_286013()
+        bpy.ops.fujiwara_toolbox.command_286013()
 
 
         #オートキーフレームオン
@@ -18950,31 +18950,31 @@ uiitem("メモ：T/NパネルはF5で位置入替えできる")
 #https://www.blender.org/api/blender_python_api_2_76b_release/info_tutorial_addon.html
 def menu_func_VIEW3D_MT_object_apply(self, context):
 #    self.layout.operator(,icon="")
-    self.layout.operator("object.myobject_557231",icon="FILE_TICK")
-    self.layout.operator("object.myobject_661107",icon="FILE_TICK")
-    self.layout.operator("object.myobject_234815",icon="RESTRICT_VIEW_ON")
+    self.layout.operator("fujiwara_toolbox.command_557231",icon="FILE_TICK")
+    self.layout.operator("fujiwara_toolbox.command_661107",icon="FILE_TICK")
+    self.layout.operator("fujiwara_toolbox.command_234815",icon="RESTRICT_VIEW_ON")
 
 #http://blender.stackexchange.com/questions/3393/add-custom-menu-at-specific-location-in-the-header
 def menu_func_VIEW3D_HT_header(self, context):
     layout = self.layout
     #単レ化はいらない
     active = layout.row(align = True)
-    #active.operator("object.myobject_985887")
+    #active.operator("fujiwara_toolbox.command_985887")
 
 
     active = layout.row(align = True)
     #active.label(text="",icon="COLLAPSEMENU")
-    active.operator("object.myobject_357169",icon="SNAP_GRID")
-    active.operator("object.myobject_33358",icon="SNAP_VERTEX")
-    #active.operator("object.myobject_993743",icon="SNAP_EDGE")
-    active.operator("object.myobject_911158",icon="SNAP_FACE")
+    active.operator("fujiwara_toolbox.command_357169",icon="SNAP_GRID")
+    active.operator("fujiwara_toolbox.command_33358",icon="SNAP_VERTEX")
+    #active.operator("fujiwara_toolbox.command_993743",icon="SNAP_EDGE")
+    active.operator("fujiwara_toolbox.command_911158",icon="SNAP_FACE")
 
     active = layout.row(align = True)
-    active.operator("object.myobject_59910",icon="CURSOR")
-    active.operator("object.myobject_995874",icon="ROTATECENTER")
+    active.operator("fujiwara_toolbox.command_59910",icon="CURSOR")
+    active.operator("fujiwara_toolbox.command_995874",icon="ROTATECENTER")
 
     active = layout.row(align = True)
-    #row.operator("object.myobject_938626",icon="CAMERA_DATA")
+    #row.operator("fujiwara_toolbox.command_938626",icon="CAMERA_DATA")
     active.prop(bpy.context.space_data, "lock_camera", icon="CAMERA_DATA", text="")
     active.prop(bpy.context.space_data, "show_only_render", icon="RESTRICT_RENDER_OFF", text="")
     #active = layout.row(align = True)
@@ -18990,12 +18990,12 @@ def menu_func_VIEW3D_HT_header(self, context):
     active = layout.row(align = True)
     #active.operator("view3d.hops_helper_popup", text = "Mod",
     #icon="SCRIPTPLUGINS").tab = "MODIFIERS"
-    active.operator("object.myobject_979047", text="GL",icon="RENDER_STILL")
-    active.operator("object.myobject_171760", text="MASK")
-    active.operator("object.myobject_242623", text="",icon="GREASEPENCIL")
+    active.operator("fujiwara_toolbox.command_979047", text="GL",icon="RENDER_STILL")
+    active.operator("fujiwara_toolbox.command_171760", text="MASK")
+    active.operator("fujiwara_toolbox.command_242623", text="",icon="GREASEPENCIL")
     active.operator("object.dialog_mainpanel", text="MAIN")
     active = layout.row(align = True)
-    active.operator("object.myobject_96321", text="",icon="SOLO_ON")
+    active.operator("fujiwara_toolbox.command_96321", text="",icon="SOLO_ON")
 
     
 ############################################################################################################################

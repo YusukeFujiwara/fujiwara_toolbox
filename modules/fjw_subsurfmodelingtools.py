@@ -178,9 +178,9 @@ class addmss(bpy.types.Operator):#Mirror・SS追加（選択物）
 ########################################
 #平面削減
 ########################################
-class MYOBJECT_860996(bpy.types.Operator):#平面削減
+class FUJIWARATOOLBOX_860996(bpy.types.Operator):#平面削減
     """平面削減"""
-    bl_idname = "object.myobject_860996"
+    bl_idname = "fujiwara_toolbox.command_860996"
     bl_label = "平面削減"
     bl_options = {'REGISTER'}
 
@@ -210,9 +210,9 @@ class MYOBJECT_860996(bpy.types.Operator):#平面削減
 ########################################
 #SSのみ追加（選択物）
 ########################################
-class MYOBJECT_130218(bpy.types.Operator):#SSのみ追加（選択物）
+class FUJIWARATOOLBOX_130218(bpy.types.Operator):#SSのみ追加（選択物）
     """SSのみ追加（選択物）"""
-    bl_idname = "object.myobject_130218"
+    bl_idname = "fujiwara_toolbox.command_130218"
     bl_label = "SSのみ追加（選択物）"
     bl_options = {'REGISTER'}
 
@@ -246,9 +246,9 @@ class MYOBJECT_130218(bpy.types.Operator):#SSのみ追加（選択物）
 ########################################
 #SSのみ追加→隠す（選択物）
 ########################################
-class MYOBJECT_655300(bpy.types.Operator):#SSのみ追加→隠す（選択物）
+class FUJIWARATOOLBOX_655300(bpy.types.Operator):#SSのみ追加→隠す（選択物）
     """SSのみ追加→隠す（選択物）"""
-    bl_idname = "object.myobject_655300"
+    bl_idname = "fujiwara_toolbox.command_655300"
     bl_label = "SSのみ追加→隠す（選択物）"
     bl_options = {'REGISTER'}
 
@@ -285,9 +285,9 @@ class MYOBJECT_655300(bpy.types.Operator):#SSのみ追加→隠す（選択物�
 ########################################
 #ノーマルを整える（選択物）
 ########################################
-class MYOBJECT_590395(bpy.types.Operator):#ノーマルを整える（選択物）
+class FUJIWARATOOLBOX_590395(bpy.types.Operator):#ノーマルを整える（選択物）
     """ノーマルを整える（選択物）"""
-    bl_idname = "object.myobject_590395"
+    bl_idname = "fujiwara_toolbox.command_590395"
     bl_label = "ノーマルを整える（選択物）"
     bl_options = {'REGISTER'}
 
@@ -578,9 +578,9 @@ class quick_deldis(bpy.types.Operator):#クイック削除・溶解
 ########################################
 #選択トグル
 ########################################
-class MYOBJECT_927033(bpy.types.Operator):#選択トグル
+class FUJIWARATOOLBOX_927033(bpy.types.Operator):#選択トグル
     """選択トグル"""
-    bl_idname = "object.myobject_927033"
+    bl_idname = "fujiwara_toolbox.command_927033"
     bl_label = "選択トグル"
     bl_options = {'REGISTER', 'UNDO'}
 

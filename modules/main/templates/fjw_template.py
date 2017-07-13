@@ -58,7 +58,7 @@ class TemplateView3DPanel(bpy.types.Panel):#メインパネル
         active = active.row(align=True)
         active.label(text="ペンディング",icon="PINNED")
         #クリアボタン
-        active.operator("object.myobject_114105",icon="UNPINNED",text="")
+        active.operator("fujiwara_toolbox.command_114105",icon="UNPINNED",text="")
         active = cols.column(align=True)
 
         #ペンディングされたUIの描画
@@ -247,7 +247,7 @@ class DialogPanel(bpy.types.Operator):
         #active.label(text="")
         active = active.row(align=True)
         #active.label(text="")
-        active.operator("object.myobject_30808",icon="PINNED",text="")
+        active.operator("fujiwara_toolbox.command_30808",icon="PINNED",text="")
 
         #縦並び
         #cols = b.column(align=True)
@@ -306,9 +306,9 @@ pendings = []
 ########################################
 #ペンディング
 ########################################
-class MYOBJECT_30808(bpy.types.Operator):#ペンディング
+class FUJIWARATOOLBOX_30808(bpy.types.Operator):#ペンディング
     """ペンディング"""
-    bl_idname = "object.myobject_30808"
+    bl_idname = "fujiwara_toolbox.command_30808"
     bl_label = "ペンディング"
     bl_options = {'REGISTER', 'UNDO'}
     icon = "PINNED"
@@ -328,9 +328,9 @@ class MYOBJECT_30808(bpy.types.Operator):#ペンディング
 ########################################
 #クリア
 ########################################
-class MYOBJECT_114105(bpy.types.Operator):#クリア
+class FUJIWARATOOLBOX_114105(bpy.types.Operator):#クリア
     """クリア"""
-    bl_idname = "object.myobject_114105"
+    bl_idname = "fujiwara_toolbox.command_114105"
     bl_label = "クリア"
     bl_options = {'REGISTER', 'UNDO'}
     icon="UNPINNED"
@@ -361,7 +361,7 @@ class MYOBJECT_114105(bpy.types.Operator):#クリア
 ########################################
 class CATEGORYBUTTON_323329(bpy.types.Operator):#test
     """test"""
-    bl_idname = "object.categorybutton_323329"
+    bl_idname = "fujiwara_toolbox.categorybutton_323329"
     bl_label = "test"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -383,9 +383,9 @@ class CATEGORYBUTTON_323329(bpy.types.Operator):#test
 ########################################
 #dummy
 ########################################
-class MYOBJECT_794868(bpy.types.Operator):#dummy
+class FUJIWARATOOLBOX_794868(bpy.types.Operator):#dummy
     """dummy"""
-    bl_idname = "object.myobject_794868"
+    bl_idname = "fujiwara_toolbox.command_794868"
     bl_label = "dummy"
     bl_options = {'REGISTER', 'UNDO'}
 

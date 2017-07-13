@@ -62,39 +62,31 @@ function clear_all(){
 
 function excute(){
 	var ButtonTitle =$("#ButtonTitle").val(); 
-	var Source = $("#SourceArea").val();
 	var BaseCode = $("#BaseCode").text();
 	
-	outtext = "Converted:" + ButtonTitle + "¥n" + Source;
-
-	//10000のランダムな数字を生成
-	var rndnum = Math.round(Math.random() * 1000000);
-
-
-
-	//ソースにインデントつける		二個
+	outtext = "Converted:" + ButtonTitle;
 	outtext = BaseCode;
-	//ソースの置換
-	outtext = outtext.replace(/☆Source/g, indent(Source,2));
-	//ランダム番号の付加
-	outtext = outtext.replace(/☆rndnum/g, rndnum);
 
 
 	//各タグの置換
-//	outtext = IDreplace(outtext, "");
 	outtext = IDreplace(outtext, "ButtonTitle");//.replace(/☆ButtonTitle/g, ButtonTitle);
-	outtext = IDreplace(outtext, "TextLabel");//.replace(/☆TextLabel/g, TextLabel);
 
-	if($("#TextLabel").val() != ""){
-		outtext = "############################################################################################################################\n"+
-				'uiitem("'+$("#TextLabel").val()+'")' + "\n"+
-				"############################################################################################################################\n" +
-				outtext
+	if ($("#Description").val() == ""){
+		$("#Description").val($("#ButtonTitle").val())
 	}
+	outtext = IDreplace(outtext, "Description");//.replace(/☆ButtonTitle/g, ButtonTitle);
+
+	if ($("#idname").val() == ""){
+		var rndnum = Math.round(Math.random() * 1000000);
+		$("#idname").val("command_"+rndnum)
+	}
+	outtext = IDreplace(outtext, "idname");//.replace(/☆ButtonTitle/g, ButtonTitle);
 
 
-	
 	$("#output").val(outtext);
+
+	$("#output").focus()
+	$("#output").select()
 }
 
 
@@ -110,14 +102,14 @@ function excute(){
 
 
 
-テキストラベル<br>
-<textarea id="TextLabel" style="width:800px"></textarea><br>
-タイトル　<a onclick="clear_all()">クリア</a><br>
+ラベル　<a onclick="clear_all()">クリア</a><br>
 <textarea id="ButtonTitle" style="width:800px"></textarea><br>
-Source　<a onclick="excute()">実行</a><br>
-<textarea id="SourceArea" style="width:800px;height:200px">
-</textarea>
+indname<br>
+<textarea id="idname" style="width:800px"></textarea><br>
+ツールチップ<br>
+<textarea id="Description" style="width:800px"></textarea><br>
 <br>
+<button onclick="excute()">実行</button>
 <br><br>
 <textarea id="output" style="width:800px;height:400px"></textarea>
 
@@ -133,22 +125,17 @@ Source　<a onclick="excute()">実行</a><br>
 ########################################
 #☆ButtonTitle
 ########################################
-#bpy.ops.object.myobject_☆rndnum() #☆ButtonTitle
-class MYOBJECT_☆rndnum(bpy.types.Operator):#☆ButtonTitle
-    """☆ButtonTitle"""
-    bl_idname = "object.myobject_☆rndnum"
+#bpy.ops.fjw.☆idname() #☆ButtonTitle
+class FUJIWARATOOLBOX_☆idname(bpy.types.Operator):
+    """☆Description"""
+    bl_idname = "fujiwara_toolbox.☆idname"
     bl_label = "☆ButtonTitle"
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
-☆Source
         return {'FINISHED'}
 ########################################
 

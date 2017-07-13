@@ -129,9 +129,9 @@ uiitem("準備")
 ########################################
 #セットアップ
 ########################################
-class MYOBJECT_242623(bpy.types.Operator):#セットアップ
+class FUJIWARATOOLBOX_242623(bpy.types.Operator):#セットアップ
     """セットアップ"""
-    bl_idname = "object.myobject_242623"
+    bl_idname = "fujiwara_toolbox.command_242623"
     bl_label = "セットアップ"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -318,7 +318,7 @@ class MYOBJECT_242623(bpy.types.Operator):#セットアップ
         #        # if region
 
         #線幅を戻す
-        bpy.ops.object.myobject_347064()
+        bpy.ops.fujiwara_toolbox.command_347064()
         #下書き表示
         gplayers = bpy.context.scene.grease_pencil.layers
         if "下書き" in gplayers:
@@ -352,9 +352,9 @@ uiitem().horizontal()
 #########################################
 ##細く
 #########################################
-#class MYOBJECT_148957(bpy.types.Operator):#細く
+#class FUJIWARATOOLBOX_148957(bpy.types.Operator):#細く
 #    """細く"""
-#    bl_idname = "object.myobject_148957"
+#    bl_idname = "fujiwara_toolbox.command_148957"
 #    bl_label = "細く"
 #    bl_options = {'REGISTER', 'UNDO'}
 
@@ -369,7 +369,7 @@ uiitem().horizontal()
 #        bpy.context.scene.grease_pencil.layers.active.line_change = -20
 #        bpy.ops.gpencil.stroke_apply_thickness()
 #        #GLレンダ
-#        bpy.ops.object.myobject_979047()
+#        bpy.ops.fujiwara_toolbox.command_979047()
 
 #        return {'FINISHED'}
 #########################################
@@ -383,9 +383,9 @@ uiitem().horizontal()
 #########################################
 ##太く
 #########################################
-#class MYOBJECT_279333(bpy.types.Operator):#太く
+#class FUJIWARATOOLBOX_279333(bpy.types.Operator):#太く
 #    """太く"""
-#    bl_idname = "object.myobject_279333"
+#    bl_idname = "fujiwara_toolbox.command_279333"
 #    bl_label = "太く"
 #    bl_options = {'REGISTER', 'UNDO'}
 
@@ -400,7 +400,7 @@ uiitem().horizontal()
 #        bpy.context.scene.grease_pencil.layers.active.line_change = 20
 #        bpy.ops.gpencil.stroke_apply_thickness()
 #        #GLレンダ
-#        bpy.ops.object.myobject_979047()
+#        bpy.ops.fujiwara_toolbox.command_979047()
         
 #        return {'FINISHED'}
 #########################################

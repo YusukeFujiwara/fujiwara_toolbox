@@ -62,39 +62,25 @@ function clear_all(){
 
 function excute(){
 	var ButtonTitle =$("#ButtonTitle").val(); 
-	var Source = $("#SourceArea").val();
 	var BaseCode = $("#BaseCode").text();
 	
-	outtext = "Converted:" + ButtonTitle + "¥n" + Source;
-
-	//10000のランダムな数字を生成
-	var rndnum = Math.round(Math.random() * 1000000);
-
+	outtext = "Converted:" + ButtonTitle;
 
 
 	//ソースにインデントつける		二個
 	outtext = BaseCode;
-	//ソースの置換
-	outtext = outtext.replace(/☆Source/g, indent(Source,2));
 	//ランダム番号の付加
+	var rndnum = Math.round(Math.random() * 1000000);
 	outtext = outtext.replace(/☆rndnum/g, rndnum);
 
 
 	//各タグの置換
-//	outtext = IDreplace(outtext, "");
 	outtext = IDreplace(outtext, "ButtonTitle");//.replace(/☆ButtonTitle/g, ButtonTitle);
-	outtext = IDreplace(outtext, "TextLabel");//.replace(/☆TextLabel/g, TextLabel);
 
-	if($("#TextLabel").val() != ""){
-		outtext = "############################################################################################################################\n"+
-				'uiitem("'+$("#TextLabel").val()+'")' + "\n"+
-				"############################################################################################################################\n" +
-				outtext
-	}
-
-
-	
 	$("#output").val(outtext);
+
+	$("#output").focus()
+	$("#output").select()
 }
 
 
@@ -102,22 +88,12 @@ function excute(){
 
 </head>
 <body>
-通常ボタン<br>
+UIカテゴリ<br>
 <br>
-
-
-
-
-
-
-テキストラベル<br>
-<textarea id="TextLabel" style="width:800px"></textarea><br>
 タイトル　<a onclick="clear_all()">クリア</a><br>
 <textarea id="ButtonTitle" style="width:800px"></textarea><br>
-Source　<a onclick="excute()">実行</a><br>
-<textarea id="SourceArea" style="width:800px;height:200px">
-</textarea>
 <br>
+<button onclick="excute()">実行</button>
 <br><br>
 <textarea id="output" style="width:800px;height:400px"></textarea>
 
@@ -135,9 +111,9 @@ Source　<a onclick="excute()">実行</a><br>
 ########################################
 #☆ButtonTitle
 ########################################
-class CATEGORYBUTTON_☆rndnum(bpy.types.Operator):#☆ButtonTitle
+class CATEGORYBUTTON_☆rndnum(bpy.types.Operator):
     """☆ButtonTitle"""
-    bl_idname = "object.categorybutton_☆rndnum"
+    bl_idname = "fujiwara_toolbox.categorybutton_☆rndnum"
     bl_label = "☆ButtonTitle"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -145,13 +121,9 @@ class CATEGORYBUTTON_☆rndnum(bpy.types.Operator):#☆ButtonTitle
     uiitem.button(bl_idname,bl_label,icon="",mode="")
     uiitem.direction = "vertical"
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         uicategory_execute(self)
         return {'FINISHED'}
-########################################
 ################################################################################
 
 
