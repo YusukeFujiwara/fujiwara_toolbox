@@ -1,6 +1,13 @@
 ﻿import bpy
 import bmesh
-import fujiwara_toolbox.conf
+
+
+try:
+    fujiwara_toolbox = __import__("fujiwara_toolbox")
+except:
+    fujiwara_toolbox = __import__("fujiwara_toolbox-master")
+fjw = fujiwara_toolbox.fjw
+
 
 bl_info = {
     "name": "FJW Quick Mesh Delete/Dissolve",

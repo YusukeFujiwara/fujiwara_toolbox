@@ -14,8 +14,11 @@ import time
 import copy
 from collections import OrderedDict
 from mathutils import *
-import fujiwara_toolbox.conf
 
+try:
+    fujiwara_toolbox = __import__("fujiwara_toolbox")
+except:
+    fujiwara_toolbox = __import__("fujiwara_toolbox-master")
 
 
 ############################################################################################################################
@@ -25,22 +28,22 @@ import fujiwara_toolbox.conf
 ############################################################################################################################
 
 #ダブルクォーテーション
-def fjw_qq(str):
+def qq(str):
     return '"' + str + '"'
 
-def fjw_get_resourcesdir():
+def get_resourcesdir():
     scrdir = os.path.dirname(__file__)
     resourcesdir = scrdir + os.sep + "resources" + os.sep
     return resourcesdir
 
-def fjw_getdirs(path):
+def getdirs(path):
     dirs = []
     for item in os.listdir(path):
         if os.path.isdir(os.path.join(path,item)):
             dirs.append(item)
     return dirs
 
-def fjw_get_dir(path):
+def get_dir(path):
     dirlist = path.split(os.sep)
 
     result = ""
@@ -48,27 +51,27 @@ def fjw_get_dir(path):
         result += dirlist[i] + os.sep
     return result
 
-def fjw_get_root(obj):
+def get_root(obj):
     parent = obj.parent
     if parent == None:
         return obj
 
-    return fjw_get_root(parent)
+    return get_root(parent)
 
-def fjw_cursor():
+def cursor():
     return bpy.context.space_data.cursor_location
-def fjw_set_cursor(pos):
+def set_cursor(pos):
     bpy.context.space_data.cursor_location = pos
 
 
 
-def fjw_find(name):
+def find(name):
     for obj in bpy.data.objects:
         if name in obj.name:
             return obj
     return None
 
-def fjw_find_list(name,targetlist=None):
+def find_list(name,targetlist=None):
     if targetlist == None:
         targetlist = bpy.data.objects
     result = []
@@ -77,18 +80,18 @@ def fjw_find_list(name,targetlist=None):
             result.append(obj)
     return result
 
-def fjw_find_child_bytype(parent,type):
+def find_child_bytype(parent,type):
     for obj in parent.children:
         if obj.type == type:
             return obj
 
     for obj in parent.children:
-        result = fjw_find_child_bytype(obj,type)
+        result = find_child_bytype(obj,type)
         if result is not None:
             return result
     return None
 
-def fjw_object(name):
+def object(name):
     #オブジェクトが突っ込まれたらそのままかえす
     if type(name) == bpy.types.Object:
         return name
@@ -98,36 +101,36 @@ def fjw_object(name):
     else:
         return None
 
-def fjw_in_localview():
+def in_localview():
     #bpy.data.screens[0].areas[1].spaces[0].local_view
     if bpy.context.space_data.local_view == None:
         return False
     else:
         return True
 
-def fjw_localview():
-    if not fjw_in_localview():
+def localview():
+    if not in_localview():
         bpy.ops.view3d.localview()
 
-def fjw_globalview():
-    if fjw_in_localview():
+def globalview():
+    if in_localview():
         bpy.ops.view3d.localview()
 
-def fjw_add_mod(mod_type):
+def add_mod(mod_type):
     result = None
 
-    obj = fjw_active()
+    obj = active()
 
     if obj != None:
         bpy.ops.object.modifier_add(type=mod_type)
 
-        result = fjw_getnewmod(obj)
+        result = getnewmod(obj)
     return result
 
-def fjw_get_mod(mod_type):
+def get_mod(mod_type):
     result = None
 
-    obj = fjw_active()
+    obj = active()
 
     if obj != None:
        for mod in obj.modifiers:
@@ -139,7 +142,7 @@ def fjw_get_mod(mod_type):
 
     return result
 
-class fjw_Modutils():
+class Modutils():
     object = None
     mods = None
 
@@ -162,7 +165,7 @@ class fjw_Modutils():
 
     def apply(self, mod):
         if mod != None:
-            fjw_activate(self.object)
+            activate(self.object)
             bpy.ops.object.modifier_apply(modifier=mod.name)
 
 
@@ -194,19 +197,19 @@ class fjw_Modutils():
 
     def move_up(self,mod):
         if mod != None:
-            fjw_activate(self.object)
+            activate(self.object)
             bpy.ops.object.modifier_move_up(modifier=mod.name)
 
     def move_down(self,mod):
         if mod != None:
-            fjw_activate(self.object)
+            activate(self.object)
             bpy.ops.object.modifier_move_down(modifier=mod.name)
 
     def move_top(self, mod):
         if mod == None:
             return
 
-        fjw_activate(self.object)
+        activate(self.object)
         last = len(self.object.modifiers) - 1
         mod_md = mod
         mod_n = last
@@ -217,7 +220,7 @@ class fjw_Modutils():
         if mod == None:
             return
 
-        fjw_activate(self.object)
+        activate(self.object)
         last = len(self.object.modifiers) - 1
         modi = self.object.modifiers.find(mod.name)
 
@@ -273,7 +276,7 @@ class fjw_Modutils():
     def func(self):
         pass
 
-class fjw_ArmatureUtils():
+class ArmatureUtils():
     armature = None
 
     def __init__(self, obj):
@@ -368,7 +371,7 @@ class fjw_ArmatureUtils():
     def func(self):
         pass
 
-class fjw_MeshUtils():
+class MeshUtils():
     object = None
     def __init__(self, obj):
         if obj.type != "MESH":
@@ -377,13 +380,13 @@ class fjw_MeshUtils():
         self.object = obj
 
     def deselect(self):
-        fjw_activate(self.object)
-        fjw_mode("EDIT")
+        activate(self.object)
+        mode("EDIT")
         bpy.ops.mesh.select_all(action='DESELECT')
 
     def selectall(self):
-        fjw_activate(self.object)
-        fjw_mode("EDIT")
+        activate(self.object)
+        mode("EDIT")
         bpy.ops.mesh.select_all(action='SELECT')
 
 
@@ -402,8 +405,8 @@ class fjw_MeshUtils():
         return self.object.matrix_world * self.object.matrix_basis.inverted() * loc
 
     def select_byaxis(self, axis="+X", world=False, basepoint=(0,0,0)):
-        fjw_activate(self.object)
-        fjw_mode("EDIT")
+        activate(self.object)
+        mode("EDIT")
         bpy.ops.mesh.select_all(action='DESELECT')
 
         axs = 0
@@ -460,27 +463,27 @@ class fjw_MeshUtils():
                     selectflag = True
                     continue
         self.update()
-        fjw_mode("OBJECT")
+        mode("OBJECT")
         
     def delete(self, deltype="FACE"):
-        fjw_mode("EDIT")
+        mode("EDIT")
         bpy.ops.mesh.delete(type=deltype)
-        fjw_mode("OBJECT")
+        mode("OBJECT")
     def duplicate(self):
-        fjw_mode("EDIT")
+        mode("EDIT")
         bpy.ops.mesh.duplicate()
-        fjw_mode("OBJECT")
+        mode("OBJECT")
     def separete(self):
-        fjw_mode("EDIT")
+        mode("EDIT")
         bpy.ops.mesh.separate(type='SELECTED')
-        fjw_mode("OBJECT")
+        mode("OBJECT")
     def remove_doubles(self):
-        fjw_mode("EDIT")
+        mode("EDIT")
         bpy.ops.mesh.remove_doubles()
-        fjw_mode("OBJECT")
+        mode("OBJECT")
 
 
-def fjw_match(name, type="MESH"):
+def match(name, type="MESH"):
     result = None
 
     for obj in bpy.data.objects:
@@ -492,7 +495,7 @@ def fjw_match(name, type="MESH"):
 
     return result
 
-def fjw_matches(name, type="MESH"):
+def matches(name, type="MESH"):
     result = []
 
     for obj in bpy.data.objects:
@@ -503,14 +506,14 @@ def fjw_matches(name, type="MESH"):
             continue
     return result
 
-def fjw_getnewmod(obj):
+def getnewmod(obj):
     mods = obj.modifiers
     if len(mods) == 0:
         return None
     else:
         return mods[len(mods) - 1]
 
-def fjw_removeall_mod():
+def removeall_mod():
     for obj in bpy.context.selected_objects:
        if obj.type == "MESH":
            bpy.context.scene.objects.active = obj
@@ -525,7 +528,7 @@ def fjw_removeall_mod():
             return {'CANCELLED'}
 
 """
-def fjw_reject_notmesh():
+def reject_notmesh():
     #メッシュ以外除外
     for obj in bpy.data.objects:
         if obj.type != "MESH":
@@ -536,24 +539,24 @@ def fjw_reject_notmesh():
         return True
 
 
-def fjw_active_exists():
+def active_exists():
     if bpy.context.scene.objects.active == None:
         return False
     else:
         return True
 
-def fjw_deselect():
+def deselect():
     #選択リフレッシュ
     for obj in bpy.data.objects:
         obj.select = False
 
 
-def fjw_select(objects):
+def select(objects):
     for obj in objects:
         if obj != None:
             obj.select = True
 
-def fjw_delete(objects):
+def delete(objects):
     if objects == None:
         return
 
@@ -566,16 +569,16 @@ def fjw_delete(objects):
         tmp.append(objects)
         objects = tmp
 
-    fjw_deselect()
+    deselect()
 
     for obj in objects:
         obj.hide_select = False
         obj.select = True
-        fjw_activate(obj)
+        activate(obj)
 
     bpy.ops.object.delete(use_global=False)
 
-def fjw_origin_floorize():
+def origin_floorize():
     #原点を下に
     objlist = []
     for obj in bpy.context.selected_objects:
@@ -602,7 +605,7 @@ def fjw_origin_floorize():
         obj.select = True
     return
 
-def fjw_apply_mods():
+def apply_mods():
     active = bpy.context.scene.objects.active
     #bpy.context.window_manager.progress_begin(0,len(bpy.context.selected_objects))
     #prog = 0
@@ -625,32 +628,32 @@ def fjw_apply_mods():
     return
 
 
-def fjw_activate(obj):
+def activate(obj):
     bpy.context.scene.objects.active = obj
     #あんまり意識しない形にするとマズいか？
     obj.select = True
     return obj
 
-def fjw_active():
+def active():
     return bpy.context.scene.objects.active
 
 
-def fjw_objectmode():
-    if fjw_active() != None:
+def objectmode():
+    if active() != None:
         bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
 
-def fjw_editmode():
-    if fjw_active() != None:
+def editmode():
+    if active() != None:
         bpy.ops.object.mode_set(mode='EDIT', toggle=False)
 
-def fjw_mode(modeto):
-    if fjw_active() != None:
+def mode(modeto):
+    if active() != None:
         bpy.ops.object.mode_set(mode=modeto, toggle=False)
 
 
 
 #指定レイヤーをTrueにしたレイヤー群を返す。引数がなければ全部False。
-def fjw_layers(put_layer=-1,put_visible_last=False,not_visible=False):
+def layers(put_layer=-1,put_visible_last=False,not_visible=False):
     ls = [False for i in range(20)]
 
     #対象レイヤーをオン
@@ -674,7 +677,7 @@ def fjw_layers(put_layer=-1,put_visible_last=False,not_visible=False):
 
     return ls
 
-def fjw_get_selected_list(type="ALL"):
+def get_selected_list(type="ALL"):
     list = []
     for obj in bpy.context.selected_objects:
         if type == "ALL":
@@ -686,8 +689,8 @@ def fjw_get_selected_list(type="ALL"):
 
 
 #指定名でプロクシを作成する
-def fjw_make_proxy(name):
-    obj = fjw_active()
+def make_proxy(name):
+    obj = active()
     if obj.type != "EMPTY":
         #self.report({"INFO"},"リンクしたオブジェクトを指定して下さい。")
         return None
@@ -700,7 +703,7 @@ def fjw_make_proxy(name):
 
     #対象のオブジェクトがあった
     bpy.ops.object.proxy_make(object=name)
-    pobj = fjw_active()
+    pobj = active()
     obj.select = True
 
     #元オブジェクトを親子つける
@@ -710,38 +713,38 @@ def fjw_make_proxy(name):
 
     return pobj
 
-def fjw_make_proxy_type(type):
-    linkobj = fjw_active()
+def make_proxy_type(type):
+    linkobj = active()
     result = []
     result.append(linkobj)
     for obj in linkobj.dupli_group.objects:
         if obj.type == type:
             bpy.ops.object.proxy_make(object=obj.name)
-            fjw_active().name = obj.name + "_proxy"
-            result.append(fjw_active())
-            fjw_activate(linkobj)
+            active().name = obj.name + "_proxy"
+            result.append(active())
+            activate(linkobj)
 
 
     return result
 
 
-def fjw_get_linkedfilename(obj):
+def get_linkedfilename(obj):
     linkedpath = bpy.path.abspath(obj.dupli_group.library.filepath)
     linkedfilename = os.path.splitext(os.path.basename(linkedpath))[0]
     return linkedfilename
 
-def fjw_make_proxy_all():
-    linkobj = fjw_active()
+def make_proxy_all():
+    linkobj = active()
     result = []
     result.append(linkobj)
     for obj in linkobj.dupli_group.objects:
         if obj.type == "ARMATURE" or obj.type == "EMPTY":
-            proxyname = fjw_get_linkedfilename(linkobj) + "/" + obj.name + "_proxy"
+            proxyname = get_linkedfilename(linkobj) + "/" + obj.name + "_proxy"
             if proxyname not in bpy.data.objects:
                 bpy.ops.object.proxy_make(object=obj.name)
-                fjw_active().name = proxyname
-                result.append(fjw_active())
-                fjw_activate(linkobj)
+                active().name = proxyname
+                result.append(active())
+                activate(linkobj)
 
 
     return result
@@ -763,9 +766,9 @@ def fjw_make_proxy_all():
 #        directory=_directory)
     
 #    return bpy.data.node_groups[name]
-def fjw_append_nodetree(name):
+def append_nodetree(name):
     if name not in bpy.data.node_groups:
-        dir = fjw_get_resourcesdir() + "nodes"
+        dir = get_resourcesdir() + "nodes"
 
         _dataname = name
         _filename = name + ".blend"
@@ -776,7 +779,7 @@ def fjw_append_nodetree(name):
     return bpy.data.node_groups[name]
 
 
-def fjw_append_material(name):
+def append_material(name):
     if name not in bpy.data.materials:
         dir = fujiwara_toolbox.conf.assetdir + os.sep + "マテリアル"
 
@@ -788,7 +791,7 @@ def fjw_append_material(name):
 
     return bpy.data.materials[name]
 
-def fjw_append_particlesetting(name):
+def append_particlesetting(name):
     if name not in bpy.data.particles:
         dir = fujiwara_toolbox.conf.assetdir + os.sep + "パーティクル設定"
 
@@ -801,18 +804,18 @@ def fjw_append_particlesetting(name):
     return bpy.data.particles[name]
 
 
-def fjw_nodegroup_instance(basetree, group):
+def nodegroup_instance(basetree, group):
     node = basetree.nodes.new("ShaderNodeGroup")
     node.node_tree = group
 
     return node
 
 
-def fjw_ismesh(obj):
+def ismesh(obj):
     return obj.type == "MESH"
 
 #リンクオブジェクトならパスを返す
-def fjw_checkLink(obj):
+def checkLink(obj):
     if obj.type != "EMPTY":
         return None
 
@@ -832,12 +835,12 @@ def fjw_checkLink(obj):
     return None
 
 
-def fjw_group(group_name):
+def group(group_name):
     #グループ化
     if group_name not in bpy.data.groups:
         bpy.ops.group.create(name=group_name)
     else:
-        for obj in fjw_get_selected_list():
+        for obj in get_selected_list():
             if obj.name not in bpy.data.groups[group_name].objects:
                 bpy.data.groups[group_name].objects.link(obj)
     return bpy.data.groups[group_name]
@@ -877,19 +880,19 @@ def fjw_group(group_name):
 
 #        bpy.ops.anim.keyframe_insert_menu(type='WholeCharacter')
 #        mode("OBJECT")
-def fjw_framejump(frameto):
+def framejump(frameto):
     bpy.ops.screen.frame_jump(end=False)
     bpy.ops.screen.frame_offset(delta=frameto - 1)
 
 
-def fjw_get_freezed_mesh(obj):
+def get_freezed_mesh(obj):
     mesh = obj.to_mesh(bpy.context.scene, True, "PREVIEW")
     return mesh
 
 #https://blender.stackexchange.com/questions/38016/stereoscopic-camera-how-to-see-objects-visible-only-from-the-right-and-left-cam
 from bpy_extras.object_utils import world_to_camera_view
 
-def fjw_checkLocationisinCameraView(loc, camera_extend=False):
+def checkLocationisinCameraView(loc, camera_extend=False):
     cam = bpy.context.scene.camera
     x, y, z = world_to_camera_view(bpy.context.scene, cam, loc)
 
@@ -907,7 +910,7 @@ def fjw_checkLocationisinCameraView(loc, camera_extend=False):
         return True
     return False
 
-def fjw_checkIfIsInCameraView(obj,freeze=True,camera_extend=False):
+def checkIfIsInCameraView(obj,freeze=True,camera_extend=False):
     #if obj.type != "MESH":
     #    return False
     #cam = bpy.context.scene.camera
@@ -931,15 +934,15 @@ def fjw_checkIfIsInCameraView(obj,freeze=True,camera_extend=False):
     if obj.type != "MESH":
         return False
     if freeze:
-        mesh = fjw_get_freezed_mesh(obj)
+        mesh = get_freezed_mesh(obj)
     else:
         mesh = obj.data
     for v in mesh.vertices:
-        if fjw_checkLocationisinCameraView(obj.matrix_world * v.co):
+        if checkLocationisinCameraView(obj.matrix_world * v.co):
             return True
     return False
 
-class fjw_NodeUtils():
+class NodeUtils():
     node = None
 
     def __init__(self, node):
@@ -960,7 +963,7 @@ class fjw_NodeUtils():
 
     pass
 
-class fjw_NodetreeUtils():
+class NodetreeUtils():
     treeholder = None
     tree = None
     nodes = None
@@ -1021,13 +1024,13 @@ class fjw_NodetreeUtils():
         self.links.new(output, input)
 
 
-def fjw_load_img(filepath):
+def load_img(filepath):
     filename = os.path.basename(filepath)
     if filename not in bpy.data.images:
         bpy.data.images.load(filepath)
     return bpy.data.images[filename]
 
-def fjw_get_material(matname):
+def get_material(matname):
     if matname not in bpy.data.materials:
         mat = bpy.data.materials.new(name=matname)
         mat.diffuse_color = (1, 1, 1)

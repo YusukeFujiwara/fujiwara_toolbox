@@ -1,7 +1,13 @@
 ﻿import bpy
 import os
 import re
-import fujiwara_toolbox.conf
+
+
+try:
+    fujiwara_toolbox = __import__("fujiwara_toolbox")
+except:
+    fujiwara_toolbox = __import__("fujiwara_toolbox-master")
+fjw = fujiwara_toolbox.fjw
 
 
 bl_info = {
@@ -56,7 +62,7 @@ class uiitem():
 
 
 
-class fjw_GreasePencilToolsPanel(bpy.types.Panel):
+class GreasePencilToolsPanel(bpy.types.Panel):
     bl_label = "グリペンユーティリティ"
     bl_space_type = "VIEW_3D"
     #bl_region_type = "UI"
@@ -412,11 +418,11 @@ def sub_unregistration():
     pass
 """
 def sub_registration():
-    #bpy.types.DATA_PT_lens.append(fjw_greasepenciltools_ui)
+    #bpy.types.DATA_PT_lens.append(fjw.greasepenciltools_ui)
     pass
 
 def sub_unregistration():
-    #bpy.types.DATA_PT_lens.remove(fjw_greasepenciltools_ui)
+    #bpy.types.DATA_PT_lens.remove(fjw.greasepenciltools_ui)
     pass
 
 

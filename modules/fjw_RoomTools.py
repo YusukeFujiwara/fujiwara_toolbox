@@ -10,8 +10,14 @@ import mathutils
 import subprocess
 import shutil
 import webbrowser
-from fujiwara_toolbox.fjw import *
-import fujiwara_toolbox.conf
+
+
+try:
+    fujiwara_toolbox = __import__("fujiwara_toolbox")
+except:
+    fujiwara_toolbox = __import__("fujiwara_toolbox-master")
+fjw = fujiwara_toolbox.fjw
+
 
 
 bl_info = {
@@ -313,12 +319,12 @@ uiitem("グリッドツール").icon = "GRID"
 ############################################################################################################################
 def place_grid(target):
     obj = target
-    fjw_deselect()
+    fjw.deselect()
 
     if obj == None:
         bpy.context.space_data.cursor_location = (0,0,0)
-        bpy.ops.mesh.primitive_plane_add(radius=1, view_align=False, enter_editmode=False, location=(0, 0, 0), layers=fjw_layers(0))
-        obj = fjw_active()
+        bpy.ops.mesh.primitive_plane_add(radius=1, view_align=False, enter_editmode=False, location=(0, 0, 0), layers=fjw.layers(0))
+        obj = fjw.active()
 
     obj.name = "Grid_Notready"
     bpy.context.scene.objects.active = obj
@@ -379,7 +385,7 @@ def place_grid(target):
 
 
     #サイズ設定、、をする前にモディファイアをとらないといけない！
-    fjw_removeall_mod()
+    fjw.removeall_mod()
     obj.dimensions = (grid_unit,grid_unit,0)
     
 
@@ -393,7 +399,7 @@ ShakuScale = 3 * 10 / 33
 def update_grid_unit():
     global grid_unit
     global ShakuScale
-    grid = fjw_match("Grid")
+    grid = fjw.match("Grid")
     for obj in bpy.data.objects:
         if "Grid_Metre" in obj.name:
             grid_unit = 1
@@ -428,7 +434,7 @@ def place_grid_post(target):
     grid.select = True
     
     #サイズ設定、、をする前にモディファイアをとらないといけない！
-    fjw_removeall_mod()
+    fjw.removeall_mod()
     grid.dimensions = (grid_unit,grid_unit,0)
     
     
@@ -438,22 +444,22 @@ def place_grid_post(target):
     global array_count
     #配列mod
     bpy.ops.object.modifier_add(type='ARRAY')
-    mod = fjw_getnewmod(grid)
+    mod = fjw.getnewmod(grid)
     mod.count = array_count
     mod.relative_offset_displace[0] = 1
 
     bpy.ops.object.modifier_add(type='ARRAY')
-    mod = fjw_getnewmod(grid)
+    mod = fjw.getnewmod(grid)
     mod.count = array_count
     mod.relative_offset_displace[0] = 0
     mod.relative_offset_displace[1] = 1
 
     #ミラーmod
     bpy.ops.object.modifier_add(type='MIRROR')
-    mod = fjw_getnewmod(grid)
+    mod = fjw.getnewmod(grid)
     mod.use_y = True
 
-    fjw_deselect()
+    fjw.deselect()
     grid.hide_select = True
     return
 
@@ -502,14 +508,14 @@ class MYOBJECT_919744(bpy.types.Operator):#メートルグリッド
     #処理部分
     ###################################
     def execute(self, context):
-        fjw_objectmode()
-        fjw_deselect()
-        fjw_delete(fjw_matches("Grid_"))
+        fjw.objectmode()
+        fjw.deselect()
+        fjw.delete(fjw.matches("Grid_"))
 
         global grid_unit
 
         name = "Grid_Metre"
-        grid = place_grid(fjw_match(name))
+        grid = place_grid(fjw.match(name))
         grid.name = name
         place_grid_post(grid)
 
@@ -546,15 +552,15 @@ class MYOBJECT_770596(bpy.types.Operator):#尺グリッド
     #処理部分
     ###################################
     def execute(self, context):
-        fjw_objectmode()
-        fjw_deselect()
-        fjw_delete(fjw_matches("Grid_"))
+        fjw.objectmode()
+        fjw.deselect()
+        fjw.delete(fjw.matches("Grid_"))
 
 
         global grid_unit
 
         name = "Grid_Shaku"
-        grid = place_grid(fjw_match(name))
+        grid = place_grid(fjw.match(name))
         grid.name = name
         place_grid_post(grid)
         
@@ -585,14 +591,14 @@ class MYOBJECT_341962(bpy.types.Operator):#撤去
     #処理部分
     ###################################
     def execute(self, context):
-        grid = fjw_match("Grid_")
+        grid = fjw.match("Grid_")
 
         if grid == None:
             self.report({"INFO"},"グリッドがありません")
             return {'CANCELLED'}
 
 
-        fjw_deselect()
+        fjw.deselect()
         
         grid.hide_select = False
         grid.select = True
@@ -666,7 +672,7 @@ class MYOBJECT_56651(bpy.types.Operator):#1/1
     #処理部分
     ###################################
     def execute(self, context):
-        if scale_grid(fjw_match("Grid_"),1) == False:
+        if scale_grid(fjw.match("Grid_"),1) == False:
             self.report({"WARNING"},"グリッドを設置してください")
             return {'CANCELLED'}
         return {'FINISHED'}
@@ -688,7 +694,7 @@ class MYOBJECT_465473(bpy.types.Operator):#1/2
     #処理部分
     ###################################
     def execute(self, context):
-        if scale_grid(fjw_match("Grid_"),2) == False:
+        if scale_grid(fjw.match("Grid_"),2) == False:
             self.report({"WARNING"},"グリッドを設置してください")
             return {'CANCELLED'}
         
@@ -711,7 +717,7 @@ class MYOBJECT_238380(bpy.types.Operator):#1/3
     #処理部分
     ###################################
     def execute(self, context):
-        if scale_grid(fjw_match("Grid_"),3) == False:
+        if scale_grid(fjw.match("Grid_"),3) == False:
             self.report({"WARNING"},"グリッドを設置してください")
             return {'CANCELLED'}
         
@@ -734,7 +740,7 @@ class MYOBJECT_101409(bpy.types.Operator):#1/4
     #処理部分
     ###################################
     def execute(self, context):
-        if scale_grid(fjw_match("Grid_"),4) == False:
+        if scale_grid(fjw.match("Grid_"),4) == False:
             self.report({"WARNING"},"グリッドを設置してください")
             return {'CANCELLED'}
         
@@ -757,7 +763,7 @@ class MYOBJECT_238024(bpy.types.Operator):#1/8
     #処理部分
     ###################################
     def execute(self, context):
-        if scale_grid(fjw_match("Grid_"),8) == False:
+        if scale_grid(fjw.match("Grid_"),8) == False:
             self.report({"WARNING"},"グリッドを設置してください")
             return {'CANCELLED'}
         
@@ -794,17 +800,17 @@ class MYOBJECT_565778(bpy.types.Operator):#グリッドサイズ化
     ###################################
     def execute(self, context):
         global grid_unit
-        grid = fjw_match("Grid_")
+        grid = fjw.match("Grid_")
         if grid == None:
             self.report({"INFO"},"グリッドを設置してください")
             return {'CANCELLED'}
 
 
-        if fjw_active() != None:
+        if fjw.active() != None:
             bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
 
         pos = (bpy.context.space_data.cursor_location[0],bpy.context.space_data.cursor_location[1],bpy.context.space_data.cursor_location[2])
-        bpy.ops.mesh.primitive_cube_add(radius=1, view_align=False, enter_editmode=False, location=pos, layers=fjw_layers(-1,True,False))
+        bpy.ops.mesh.primitive_cube_add(radius=1, view_align=False, enter_editmode=False, location=pos, layers=fjw.layers(-1,True,False))
 
         
 
@@ -814,7 +820,7 @@ class MYOBJECT_565778(bpy.types.Operator):#グリッドサイズ化
         update_grid_unit()
         bpy.ops.object.origin_set(type='ORIGIN_CENTER_OF_MASS')
 
-        obj = fjw_active()
+        obj = fjw.active()
         obj.dimensions = (grid_unit * gridscale,grid_unit * gridscale,grid_unit * gridscale)
 
             #適当な角に原点設定
@@ -885,13 +891,13 @@ class MYOBJECT_929148(bpy.types.Operator):#床面積
     ###################################
     def execute(self, context):
         #メッシュ以外除外
-        if(fjw_reject_notmesh() == False):
+        if(fjw.reject_notmesh() == False):
             self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
 
         area = 0.0
         for obj in bpy.context.selected_objects:
-            fjw_activate(obj)
+            fjw.activate(obj)
 
             bpy.ops.object.mode_set(mode='EDIT', toggle=False)
             bpy.ops.mesh.select_all(action='DESELECT')
@@ -954,7 +960,7 @@ class MYOBJECT_751440(bpy.types.Operator):#Z平面
     #処理部分
     ###################################
     def execute(self, context):
-        grid = fjw_match("Grid_")
+        grid = fjw.match("Grid_")
         if grid == None:
             self.report({"WARNING"},"グリッドを設置してください")
             return {'CANCELLED'}
@@ -981,7 +987,7 @@ class MYOBJECT_469634(bpy.types.Operator):#Y平面
     #処理部分
     ###################################
     def execute(self, context):
-        grid = fjw_match("Grid_")
+        grid = fjw.match("Grid_")
         if grid == None:
             self.report({"WARNING"},"グリッドを設置してください")
             return {'CANCELLED'}
@@ -1009,7 +1015,7 @@ class MYOBJECT_403843(bpy.types.Operator):#X平面
     #処理部分
     ###################################
     def execute(self, context):
-        grid = fjw_match("Grid_")
+        grid = fjw.match("Grid_")
         if grid == None:
             self.report({"WARNING"},"グリッドを設置してください")
             return {'CANCELLED'}
@@ -1046,7 +1052,7 @@ class MYOBJECT_692152(bpy.types.Operator):#カーソルの高さに移動
     #処理部分
     ###################################
     def execute(self, context):
-        grid = fjw_match("Grid_")
+        grid = fjw.match("Grid_")
         if grid == None:
             self.report({"WARNING"},"グリッドを設置してください")
             return {'CANCELLED'}
@@ -1211,7 +1217,7 @@ class MYOBJECT_921750(bpy.types.Operator):#グリッドローカルビュー
     #処理部分
     ###################################
     def execute(self, context):
-        grid = fjw_match("Grid_")
+        grid = fjw.match("Grid_")
         if grid == None:
             self.report({"WARNING"},"グリッドがありません")
             return {'CANCELLED'}
@@ -1345,7 +1351,7 @@ class MYOBJECT_947695rt(bpy.types.Operator):#原点を下に（選択物）
     ###################################
     def execute(self, context):
         #メッシュ以外除外
-        if(fjw_reject_notmesh() == False):
+        if(fjw.reject_notmesh() == False):
             self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
 
@@ -1529,23 +1535,23 @@ class MYOBJECT_778347(bpy.types.Operator):#建築エリア設置
             self.report({"INFO"},"設置済みです")
             return {'CANCELLED'}
 
-        if fjw_active() != None:
+        if fjw.active() != None:
             bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
 
 
         bpy.context.space_data.cursor_location = (0,0,0)
-        bpy.ops.mesh.primitive_plane_add(view_align=False, enter_editmode=False, location=(0, 0, 0), layers=fjw_layers(0))
+        bpy.ops.mesh.primitive_plane_add(view_align=False, enter_editmode=False, location=(0, 0, 0), layers=fjw.layers(0))
         obj = bpy.context.scene.objects.active
         obj.scale = (25,25,25)
         bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
         bpy.ops.object.modifier_add(type='SOLIDIFY')
-        mod = fjw_getnewmod(obj)
+        mod = fjw.getnewmod(obj)
         mod.thickness = 0.5
         obj.draw_type = 'WIRE'
         obj.hide_select = True
         obj.hide_render = True
         obj.name = "ConstructionArea"
-        fjw_deselect()
+        fjw.deselect()
         
         return {'FINISHED'}
 ########################################
@@ -1567,7 +1573,7 @@ class MYOBJECT_456812(bpy.types.Operator):#床面化（選択物）
     ###################################
     def execute(self, context):
         #メッシュ以外除外
-        if(fjw_reject_notmesh() == False):
+        if(fjw.reject_notmesh() == False):
             self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
  
@@ -1611,7 +1617,7 @@ class MYOBJECT_456812(bpy.types.Operator):#床面化（選択物）
                 #位置ゼロにしないとめんどい
                 #obj.location[2] = 0
                 bpy.ops.object.modifier_add(type='BOOLEAN')
-                mod = fjw_getnewmod(boolbase)
+                mod = fjw.getnewmod(boolbase)
                 mod.operation = 'UNION'
                 mod.object = obj
                 bpy.ops.object.modifier_apply(modifier=mod.name)
@@ -1625,7 +1631,7 @@ class MYOBJECT_456812(bpy.types.Operator):#床面化（選択物）
 
         #基準床と統合
         bpy.ops.object.modifier_add(type='BOOLEAN')
-        mod = fjw_getnewmod(boolbase)
+        mod = fjw.getnewmod(boolbase)
         mod.operation = 'INTERSECT'
         mod.object = ConstructionArea
         bpy.ops.object.modifier_apply(modifier=mod.name)
@@ -1725,7 +1731,7 @@ def make_room():
     #厚み
     bpy.ops.object.modifier_add(type='SOLIDIFY')
 
-    mod = fjw_getnewmod(obj)
+    mod = fjw.getnewmod(obj)
     mod.thickness = -2.4
     mod.use_rim = True
     mod.use_rim_only = True
@@ -1737,7 +1743,7 @@ def make_room():
     bpy.context.scene.objects.active = floor
     bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
 
-    fjw_deselect()
+    fjw.deselect()
     bpy.context.scene.objects.active = obj
     obj.select = True
 
@@ -1759,24 +1765,24 @@ class MYOBJECT_295847(bpy.types.Operator):#Make Room
     ###################################
     def execute(self, context):
         #メッシュ以外除外
-        if(fjw_reject_notmesh() == False):
+        if(fjw.reject_notmesh() == False):
             self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
 
-        targets = fjw_get_selected_list()
+        targets = fjw.get_selected_list()
 
         generated = []
 
         for target in targets:
-            fjw_deselect()
+            fjw.deselect()
             target.select = True
-            fjw_activate(target)
+            fjw.activate(target)
             make_room()
-            generated.extend(fjw_get_selected_list())
+            generated.extend(fjw.get_selected_list())
         
-        fjw_deselect()
+        fjw.deselect()
 
-        fjw_select(generated)
+        fjw.select(generated)
 
         return {'FINISHED'}
 ########################################
@@ -1803,7 +1809,7 @@ def apply_room(self):
 
     #厚みだけつける
     bpy.ops.object.modifier_add(type='SOLIDIFY')
-    mod = fjw_getnewmod(fjw_active())
+    mod = fjw.getnewmod(fjw.active())
     mod.thickness = -0.01
 
 
@@ -1893,14 +1899,14 @@ class MYOBJECT_851083(bpy.types.Operator):#Apply Room
     ###################################
     def execute(self, context):
         #メッシュ以外除外
-        if(fjw_reject_notmesh() == False):
+        if(fjw.reject_notmesh() == False):
             self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
 
-        targets = fjw_get_selected_list()
+        targets = fjw.get_selected_list()
         for target in targets:
-            fjw_deselect()
-            fjw_activate(target)
+            fjw.deselect()
+            fjw.activate(target)
             target.select = True
             if not apply_room(self):
                 return {'CANCELLED'}
@@ -1929,7 +1935,7 @@ class MYOBJECT_899191(bpy.types.Operator):#壁をマージ
     ###################################
     def execute(self, context):
        #メッシュ以外除外
-        if(fjw_reject_notmesh() == False):
+        if(fjw.reject_notmesh() == False):
             self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
  
@@ -1970,7 +1976,7 @@ class MYOBJECT_736006(bpy.types.Operator):#フチ生成
     ###################################
     def execute(self, context):
        #メッシュ以外除外
-        if(fjw_reject_notmesh() == False):
+        if(fjw.reject_notmesh() == False):
             self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
  
@@ -2000,7 +2006,7 @@ class MYOBJECT_736006(bpy.types.Operator):#フチ生成
 
             results.append(dup)
             bpy.ops.object.modifier_add(type='SOLIDIFY')
-            mod = fjw_getnewmod(dup)
+            mod = fjw.getnewmod(dup)
             dup.dimensions[2] = 0.1
             #bpy.ops.object.transform_apply(location=False, rotation=False,
             #scale=True)
@@ -2018,7 +2024,7 @@ class MYOBJECT_736006(bpy.types.Operator):#フチ生成
         for obj in results:
             obj.select = True
 
-        fjw_group("rims")
+        fjw.group("rims")
 
         return {'FINISHED'}
 ########################################
@@ -2041,7 +2047,7 @@ class MYOBJECT_404091(bpy.types.Operator):#床を壁の上の階に
     ###################################
     def execute(self, context):
        #メッシュ以外除外
-        if(fjw_reject_notmesh() == False):
+        if(fjw.reject_notmesh() == False):
             self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
 
@@ -2207,7 +2213,7 @@ def makehole(self,direction):
         bpy.context.scene.objects.active = obj
         if obj.type == "MESH":
             bpy.ops.object.modifier_add(type='BOOLEAN')
-            mod = fjw_getnewmod(obj)
+            mod = fjw.getnewmod(obj)
             mod.operation = 'DIFFERENCE'
             mod.object = bound
 
@@ -2239,7 +2245,7 @@ class MYOBJECT_363285(bpy.types.Operator):#X方向
     ###################################
     def execute(self, context):
        #メッシュ以外除外
-        if(fjw_reject_notmesh() == False):
+        if(fjw.reject_notmesh() == False):
             self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
  
@@ -2274,7 +2280,7 @@ class MYOBJECT_598811(bpy.types.Operator):#Y方向
     ###################################
     def execute(self, context):
        #メッシュ以外除外
-        if(fjw_reject_notmesh() == False):
+        if(fjw.reject_notmesh() == False):
             self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
  
@@ -2305,7 +2311,7 @@ class MYOBJECT_709032(bpy.types.Operator):#Z方向
     ###################################
     def execute(self, context):
        #メッシュ以外除外
-        if(fjw_reject_notmesh() == False):
+        if(fjw.reject_notmesh() == False):
             self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
  
@@ -2345,11 +2351,11 @@ class MYOBJECT_4695(bpy.types.Operator):#バウンドで穴を追加
     ###################################
     def execute(self, context):
         #メッシュ以外除外
-        if(fjw_reject_notmesh() == False):
+        if(fjw.reject_notmesh() == False):
             self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
         
-        bound = fjw_active()
+        bound = fjw.active()
         bound.select = False
 
         #ターゲット群に穴あけ
@@ -2357,7 +2363,7 @@ class MYOBJECT_4695(bpy.types.Operator):#バウンドで穴を追加
             bpy.context.scene.objects.active = obj
             if obj.type == "MESH":
                 bpy.ops.object.modifier_add(type='BOOLEAN')
-                mod = fjw_getnewmod(obj)
+                mod = fjw.getnewmod(obj)
                 mod.operation = 'DIFFERENCE'
                 mod.object = bound
 
@@ -2388,7 +2394,7 @@ class MYOBJECT_916367(bpy.types.Operator):#バウンドからフチ作成
     #処理部分
     ###################################
     def execute(self, context):
-        if not fjw_active_exists():
+        if not fjw.active_exists():
             self.report({"WARNING"},"アクティブオブジェクトが存在しません")
             return {'CANCELLED'}
 
@@ -2487,7 +2493,7 @@ class MYOBJECT_916367(bpy.types.Operator):#バウンドからフチ作成
         rim.select = True
         bpy.ops.object.mode_set(mode = 'OBJECT')
         bpy.ops.object.modifier_add(type='SOLIDIFY')
-        fjw_getnewmod(rim).thickness = -0.05
+        fjw.getnewmod(rim).thickness = -0.05
         rim.scale[direction] += 0.005
 
 
@@ -2517,7 +2523,7 @@ class MYOBJECT_786035(bpy.types.Operator):#X+フチ
     ###################################
     def execute(self, context):
        #メッシュ以外除外
-        if(fjw_reject_notmesh() == False):
+        if(fjw.reject_notmesh() == False):
             self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
  
@@ -2562,7 +2568,7 @@ class MYOBJECT_689631(bpy.types.Operator):#Y+フチ
     ###################################
     def execute(self, context):
        #メッシュ以外除外
-        if(fjw_reject_notmesh() == False):
+        if(fjw.reject_notmesh() == False):
             self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
  
@@ -2604,7 +2610,7 @@ class MYOBJECT_917716(bpy.types.Operator):#Z+フチ
     ###################################
     def execute(self, context):
        #メッシュ以外除外
-        if(fjw_reject_notmesh() == False):
+        if(fjw.reject_notmesh() == False):
             self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
  
@@ -2655,7 +2661,7 @@ class MYOBJECT_120963(bpy.types.Operator):#選択物の穴をクリア
     ###################################
     def execute(self, context):
         #メッシュ以外除外
-        if(fjw_reject_notmesh() == False):
+        if(fjw.reject_notmesh() == False):
             self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
 
@@ -2744,7 +2750,7 @@ class MYOBJECT_722997(bpy.types.Operator):#基部指定
     ###################################
     def execute(self, context):
        #メッシュ以外除外
-        if(fjw_reject_notmesh() == False):
+        if(fjw.reject_notmesh() == False):
             self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
 
@@ -2776,7 +2782,7 @@ class MYOBJECT_832778(bpy.types.Operator):#選択した壁に屋根を設置
     def execute(self, context):
         global roofbase
        #メッシュ以外除外
-        if(fjw_reject_notmesh() == False):
+        if(fjw.reject_notmesh() == False):
             self.report({"WARNING"},"メッシュオブジェクトを選択して下さい:" + self.bl_idname)
             return {'CANCELLED'}
 
@@ -2800,11 +2806,11 @@ class MYOBJECT_832778(bpy.types.Operator):#選択した壁に屋根を設置
         #原点をバウンドの中心に移動
         bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY', center='BOUNDS')
         #原点を下に
-        fjw_origin_floorize()
+        fjw.origin_floorize()
 
 
 
-        fjw_deselect()
+        fjw.deselect()
 
 
         #屋根を基部から複製する
@@ -2816,18 +2822,18 @@ class MYOBJECT_832778(bpy.types.Operator):#選択した壁に屋根を設置
         dup_roofbase = bpy.context.active_object
 
         #モディファイア・トランスフォームの適用
-        fjw_apply_mods()
+        fjw.apply_mods()
         bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
 
 
-        fjw_deselect()
+        fjw.deselect()
 
         dup_roofbase.select = True
         #原点をバウンドの中心に移動
         bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY', center='BOUNDS')
 
         #原点を下に
-        fjw_origin_floorize()
+        fjw.origin_floorize()
 
         
 
@@ -2841,12 +2847,12 @@ class MYOBJECT_832778(bpy.types.Operator):#選択した壁に屋根を設置
         #self.report({"INFO"},"dup_roofbase"+str(dup_roofbase.dimensions))
 
         #dupの削除
-        fjw_deselect()
-        fjw_activate(dup)
+        fjw.deselect()
+        fjw.activate(dup)
         dup.select = True
         bpy.ops.object.delete(use_global=False)
 
-        fjw_deselect()
+        fjw.deselect()
         #部屋の床があれば親子づけ
         wall = targets[0]
         bpy.context.scene.objects.active = wall
@@ -2862,12 +2868,12 @@ class MYOBJECT_832778(bpy.types.Operator):#選択した壁に屋根を設置
         if room == None:
             return {'FINISHED'}
 
-        fjw_deselect()
-        fjw_activate(room)
+        fjw.deselect()
+        fjw.activate(room)
         dup_roofbase.select = True
         bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
-        fjw_deselect()
-        fjw_activate(dup_roofbase)
+        fjw.deselect()
+        fjw.activate(dup_roofbase)
 
         return {'FINISHED'}
 ########################################
@@ -2991,7 +2997,7 @@ class MYOBJECT_660859(bpy.types.Operator):#コントローラの追加
             bpy.context.space_data.cursor_location[0] = 0
             bpy.context.space_data.cursor_location[1] = 0
             bpy.context.space_data.cursor_location[2] = 0
-            bpy.ops.object.armature_add(radius=1, view_align=False, enter_editmode=False, location=(0, 0, 0), layers=fjw_layers(0))
+            bpy.ops.object.armature_add(radius=1, view_align=False, enter_editmode=False, location=(0, 0, 0), layers=fjw.layers(0))
             obj = bpy.context.scene.objects.active
             obj.name = "MapController"
             obj.data.show_names = True
@@ -3011,8 +3017,8 @@ class MYOBJECT_660859(bpy.types.Operator):#コントローラの追加
         if target_active.name not in mc.data.bones:
             #なかった
             #カーソル設置
-            fjw_deselect()
-            fjw_activate(target_active)
+            fjw.deselect()
+            fjw.activate(target_active)
             target_active.select = True
             bpy.ops.view3d.snap_cursor_to_selected()
 
@@ -3075,7 +3081,7 @@ class MYOBJECT_660859(bpy.types.Operator):#コントローラの追加
             mc.data.edit_bones[target_active.name].roll = target_active.rotation_euler[2]
 
         #一回ターゲットの親子をトランスフォーム維持して解除しないと位置ズレを起こす
-        fjw_deselect()
+        fjw.deselect()
         for obj in targets:
             obj.select = True
         bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
@@ -3116,11 +3122,11 @@ class MYOBJECT_914007(bpy.types.Operator):#個別に
     ###################################
     def execute(self, context):
         
-        selection = fjw_get_selected_list()
+        selection = fjw.get_selected_list()
 
         for obj in selection:
-            fjw_deselect()
-            fjw_activate(obj)
+            fjw.deselect()
+            fjw.activate(obj)
             bpy.ops.object.myobject_660859()
 
 
@@ -3179,11 +3185,11 @@ class MYOBJECT_910973(bpy.types.Operator):#子を隠す
     def execute(self, context):
         if "MapController" in bpy.data.objects:
             mc = bpy.data.objects["MapController"]
-            fjw_activate(mc)
-            fjw_mode("OBJECT")
+            fjw.activate(mc)
+            fjw.mode("OBJECT")
 
             bpy.ops.object.select_grouped(type='CHILDREN_RECURSIVE')
-            for obj in fjw_get_selected_list():
+            for obj in fjw.get_selected_list():
                 obj.hide = True
 
 
@@ -3262,7 +3268,7 @@ def maputil_group(name):
         flag_geoexists = True
 
     else:
-        bpy.ops.object.empty_add(type='PLAIN_AXES', radius=0.3, view_align=False, location=bpy.context.space_data.cursor_location, layers=fjw_layers(0))
+        bpy.ops.object.empty_add(type='PLAIN_AXES', radius=0.3, view_align=False, location=bpy.context.space_data.cursor_location, layers=fjw.layers(0))
         mapgeo = bpy.context.scene.objects.active
         mapgeo.name = mgname
     mapgeo.show_x_ray = True
@@ -3301,7 +3307,7 @@ def maputil_group(name):
 
     #親子付処理
     children = []
-    selection = fjw_get_selected_list()
+    selection = fjw.get_selected_list()
     for obj in selection:
         pass
         #親がない
@@ -3313,8 +3319,8 @@ def maputil_group(name):
             children.append(obj)
             continue
 
-    fjw_deselect()
-    fjw_select(children)
+    fjw.deselect()
+    fjw.select(children)
 
     #元のアクティブオブジェクトは除外しない
     pos.select = True
@@ -3332,7 +3338,7 @@ def maputil_group(name):
     if not flag_geoexists:
         bpy.ops.object.myobject_660859() #コントローラの追加
 
-    fjw_mode("OBJECT")
+    fjw.mode("OBJECT")
     bpy.context.scene.layers[tolayern] = False
 
 
@@ -3622,11 +3628,11 @@ class MYOBJECT_288056(bpy.types.Operator):#ファイル名でグループ化
     #処理部分
     ###################################
     def execute(self, context):
-        current = fjw_active()
-        fjw_mode("OBJECT")
-        for obj in fjw_get_selected_list():
-            fjw_activate(obj)
-            fjw_mode("OBJECT")
+        current = fjw.active()
+        fjw.mode("OBJECT")
+        for obj in fjw.get_selected_list():
+            fjw.activate(obj)
+            fjw.mode("OBJECT")
 
         #ほぼ全オブジェクトを選択
         #選択オブジェクトのみ。いろいろ除外
@@ -3650,7 +3656,7 @@ class MYOBJECT_288056(bpy.types.Operator):#ファイル名でグループ化
             #してなかった
             bpy.ops.group.create(name=groupname)
         
-        fjw_activate(current)
+        fjw.activate(current)
 
         return {'FINISHED'}
 ########################################
@@ -3672,14 +3678,14 @@ class MYOBJECT_424289(bpy.types.Operator):#プロクシ作成
     #処理部分
     ###################################
     def execute(self, context):
-        map = fjw_active()
+        map = fjw.active()
 
         if map.type != "EMPTY":
             self.report({"INFO"},"リンクしたオブジェクトを指定して下さい。")
             return {'CANCELLED'}
 
 
-        fjw_deselect()
+        fjw.deselect()
         map.select = True
 
         #リンクデータのオブジェクト
@@ -3697,7 +3703,7 @@ class MYOBJECT_424289(bpy.types.Operator):#プロクシ作成
 
         bpy.ops.object.proxy_make(object=mp_name)
 
-        mapcontroller = fjw_active()
+        mapcontroller = fjw.active()
         map.select = True
 
         bpy.ops.object.parent_set(type='OBJECT', keep_transform=False)
@@ -3760,7 +3766,7 @@ class MYOBJECT_741025(bpy.types.Operator):#イージーデコ
     #処理部分
     ###################################
     def execute(self, context):
-        fjw_deselect()
+        fjw.deselect()
         #グリースペンシルのアクティブレイヤーから変換してデコる。
         #gp = bpy.context.scene.grease_pencil
         #gp_layer = gp.layers.active
@@ -3771,9 +3777,9 @@ class MYOBJECT_741025(bpy.types.Operator):#イージーデコ
 
 
         #デコ処理
-        for obj in fjw_get_selected_list():
+        for obj in fjw.get_selected_list():
             bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-            fjw_activate(obj)
+            fjw.activate(obj)
             bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
             if obj.type == "CURVE":
                 bpy.ops.object.convert(target='MESH')
@@ -3843,10 +3849,10 @@ class MYOBJECT_117841(bpy.types.Operator):#細く
     #処理部分
     ###################################
     def execute(self, context):
-        fjw_reject_notmesh()
-        for obj in fjw_get_selected_list():
+        fjw.reject_notmesh()
+        for obj in fjw.get_selected_list():
             bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-            fjw_activate(obj)
+            fjw.activate(obj)
             bpy.ops.object.mode_set(mode='EDIT', toggle=False)
             bpy.ops.mesh.select_all(action='SELECT')
             skinsize = 0.5
@@ -3874,10 +3880,10 @@ class MYOBJECT_961850(bpy.types.Operator):#太く
     #処理部分
     ###################################
     def execute(self, context):
-        fjw_reject_notmesh()
-        for obj in fjw_get_selected_list():
+        fjw.reject_notmesh()
+        for obj in fjw.get_selected_list():
             bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-            fjw_activate(obj)
+            fjw.activate(obj)
             bpy.ops.object.mode_set(mode='EDIT', toggle=False)
             bpy.ops.mesh.select_all(action='SELECT')
             skinsize = 2
@@ -3909,10 +3915,10 @@ class MYOBJECT_352656(bpy.types.Operator):#デシメーション
     #処理部分
     ###################################
     def execute(self, context):
-        fjw_reject_notmesh()
-        for obj in fjw_get_selected_list():
+        fjw.reject_notmesh()
+        for obj in fjw.get_selected_list():
             bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-            fjw_activate(obj)
+            fjw.activate(obj)
 
             bpy.ops.object.mode_set(mode='EDIT', toggle=False)
             bpy.context.scene.tool_settings.mesh_select_mode = [True,False,False]
@@ -3950,10 +3956,10 @@ class MYOBJECT_501038(bpy.types.Operator):#垂直ミラー
     def execute(self, context):
         bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
 
-        for obj in fjw_get_selected_list():
-            fjw_activate(obj)
+        for obj in fjw.get_selected_list():
+            fjw.activate(obj)
             bpy.ops.object.modifier_add(type='MIRROR')
-            mod = fjw_getnewmod(obj)
+            mod = fjw.getnewmod(obj)
             mod.use_z = True
 
 
@@ -3980,10 +3986,10 @@ class MYOBJECT_566394(bpy.types.Operator):#水平ミラー
     def execute(self, context):
         bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
 
-        for obj in fjw_get_selected_list():
-            fjw_activate(obj)
+        for obj in fjw.get_selected_list():
+            fjw.activate(obj)
             bpy.ops.object.modifier_add(type='MIRROR')
-            mod = fjw_getnewmod(obj)
+            mod = fjw.getnewmod(obj)
             mod.use_y = True
         
         return {'FINISHED'}

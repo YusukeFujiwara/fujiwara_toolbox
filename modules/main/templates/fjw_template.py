@@ -18,7 +18,7 @@ import fujiwara_toolbox.conf
 
 
 bl_info = {
-    "name": "FJW_Myaddon",
+    "name": "fjw.Myaddon",
     "description": "スクリプトの概要",
     "author": "作者名",
     "version": (1, 0),
