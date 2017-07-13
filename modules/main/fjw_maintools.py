@@ -15,9 +15,11 @@ from collections import OrderedDict
 
 try:
     fujiwara_toolbox = __import__("fujiwara_toolbox")
+    from fujiwara_toolbox import fjw
 except:
     fujiwara_toolbox = __import__("fujiwara_toolbox-master")
-fjw = fujiwara_toolbox.fjw
+    fjw = fujiwara_toolbox.fjw
+
 
 import random
 from mathutils import *
