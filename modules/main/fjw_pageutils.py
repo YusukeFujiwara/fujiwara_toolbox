@@ -59,29 +59,29 @@ class PageUtils(bpy.types.Panel):#メインパネル
         dir = os.path.dirname(bpy.data.filepath)
 
         layout = self.layout
-        layout.operator("pageutils.popen")
-        layout.operator("pageutils.bgopen")
+        layout.operator("pageutils.popen",icon="FILE_FOLDER")
+        layout.operator("pageutils.bgopen",icon="FILE_IMAGE")
 
         if "page" in filename:
             layout.label("ページセットアップ")
             row = layout.row(align=True)
-            row.operator("pageutils.deploy_pages")
+            row.operator("pageutils.deploy_pages",icon="IMGDISPLAY")
             layout.label("ページモード")
             #layout.operator("pageutils.refresh")
             row = layout.row(align=True)
-            row.operator("pageutils.tocell")
-            row.operator("pageutils.tocell_newwindwow")
+            row.operator("pageutils.tocell",icon="FILE_FOLDER")
+            row.operator("pageutils.tocell_newwindwow",icon="BLENDER")
             row = layout.row(align=True)
             row.prop(bpy.context.scene, "newcell_name",text="")
-            row.operator("pageutils.newcell")
-            row.operator("pageutils.newcell_copy")
+            row.operator("pageutils.newcell",icon="NEW")
+            row.operator("pageutils.newcell_copy",icon="GHOST")
             row = layout.row(align=True)
             col = layout.column(align=True)
             col.label("ページ:" + os.path.splitext(os.path.basename(dir))[0])
             row = col.row(align=True)
             #漫画のとじ順
-            row.operator("pageutils.opennextpage")
-            row.operator("pageutils.openprevpage")
+            row.operator("pageutils.opennextpage",icon="REW")
+            row.operator("pageutils.openprevpage",icon="FF")
             
         else:
             layout.label("コマモード")
@@ -89,10 +89,10 @@ class PageUtils(bpy.types.Panel):#メインパネル
             row.label("ページ:" + os.path.splitext(os.path.basename(dir))[0])
             row.label("コマ:" + filename)
             layout = layout.column(align=True)
-            layout.operator("pageutils.topage")
+            layout.operator("pageutils.topage",icon="FILE_TICK")
             row = layout.row(align=True)
-            row.operator("pageutils.opennextcell")
-            row.operator("pageutils.openprevcell")
+            row.operator("pageutils.opennextcell",icon="FRAME_PREV")
+            row.operator("pageutils.openprevcell",icon="FRAME_NEXT")
 
 
 ############################################################################################################################
@@ -373,7 +373,7 @@ class deploy_pages(bpy.types.Operator):
         return {"FINISHED"}
 
 class tocell(bpy.types.Operator):
-    """コマへ"""
+    """3Dビューで選択しているコマファイルを開く"""
     bl_idname = "pageutils.tocell"
     bl_label = "コマへ"
     def execute(self,context):
@@ -408,9 +408,9 @@ class tocell(bpy.types.Operator):
         return {"FINISHED"}
 
 class tocell_newwindwow(bpy.types.Operator):
-    """コマへ"""
+    """新しいウィンドウでコマファイルを開く"""
     bl_idname = "pageutils.tocell_newwindwow"
-    bl_label = "新窓"
+    bl_label = "新窓でコマへ"
     def execute(self,context):
         obj = bpy.context.scene.objects.active
         if obj.type != "MESH":
