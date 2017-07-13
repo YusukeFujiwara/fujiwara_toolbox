@@ -13797,7 +13797,7 @@ class MYOBJECT_302662(bpy.types.Operator):#オートアバター
             fjw.activate(obj)
             if obj.type == "ARMATURE":
                 bpy.ops.object.framejump_10()
-                bpy.ops.object.fjw.set_key()
+                bpy.ops.object.set_key()
             #MDDataに出力
             #bpy.ops.object.myobject_347662()
         
@@ -18757,7 +18757,7 @@ class MYOBJECT_823369(bpy.types.Operator):#AssetManager用キャラリンク後�
 
 class set_key(bpy.types.Operator):
     """キーフレーム挿入"""
-    bl_idname = "object.fjw.set_key"
+    bl_idname = "object.set_key"
     bl_label = "キーフレーム挿入"
 
     def setkey(self, context):
@@ -18986,7 +18986,7 @@ def menu_func_VIEW3D_HT_header(self, context):
     active.operator("object.framejump_5",icon="SPACE3", text="")
     active.operator("object.framejump_10",icon="FF", text="")
     #active.operator("object.framejump_15",icon="TRIA_RIGHT_BAR", text="")
-    active.operator("object.fjw.set_key", icon="KEYINGSET", text="")
+    active.operator("object.set_key", icon="KEYINGSET", text="")
     active = layout.row(align = True)
     #active.operator("view3d.hops_helper_popup", text = "Mod",
     #icon="SCRIPTPLUGINS").tab = "MODIFIERS"
