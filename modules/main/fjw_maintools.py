@@ -78,8 +78,8 @@ def load_handler(context):
 def exec_externalutils(scriptname):
     #プレビューレンダをバックグラウンドに投げとく
     blenderpath = sys.argv[0]
-    scrpath = get_dir(__file__) + "utils" + os.sep + scriptname
-    cmdstr = qq(blenderpath) + " " + qq(bpy.data.filepath) + " -b " + " -P " + qq(scrpath)
+    scrpath = fjw_get_dir(__file__) + "utils" + os.sep + scriptname
+    cmdstr = fjw_qq(blenderpath) + " " + fjw_qq(bpy.data.filepath) + " -b " + " -P " + fjw_qq(scrpath)
     print("********************")
     print("__file__:" + __file__)
     print("scrpath:" + scrpath)
@@ -636,7 +636,7 @@ class MYOBJECT_960554(bpy.types.Operator):#BGレンダ
         blendname = os.path.splitext(os.path.basename(blendfilepath))[0]
         renderdir = os.path.dirname(blendfilepath) + os.sep + "tmp_render" + os.sep
         binpath = bpy.app.binary_path
-        command = qq(binpath) + " -b " + qq(blendfilepath) + " -o " + qq(renderdir + blendname + "_") + " -F PNG -x 1 -f " + str(bpy.context.scene.frame_current)
+        command = fjw_qq(binpath) + " -b " + fjw_qq(blendfilepath) + " -o " + fjw_qq(renderdir + blendname + "_") + " -F PNG -x 1 -f " + str(bpy.context.scene.frame_current)
         self.report({"INFO"},command)
         #os.system(command)
         #subprocess.call(command, shell=True)
@@ -670,7 +670,7 @@ class MYOBJECT_420416(bpy.types.Operator):#+辺
         blendname = os.path.splitext(os.path.basename(blendfilepath))[0]
         renderdir = os.path.dirname(blendfilepath) + os.sep + "tmp_render" + os.sep
         binpath = bpy.app.binary_path
-        command = qq(binpath) + " -b " + qq(blendfilepath) + " -o " + qq(renderdir + blendname + "_") + " -F PNG -x 1 -f " + str(bpy.context.scene.frame_current)
+        command = fjw_qq(binpath) + " -b " + fjw_qq(blendfilepath) + " -o " + fjw_qq(renderdir + blendname + "_") + " -F PNG -x 1 -f " + str(bpy.context.scene.frame_current)
         self.report({"INFO"},command)
         #os.system(command)
         #subprocess.call(command, shell=True)
@@ -1173,7 +1173,7 @@ class MYOBJECT_871849(bpy.types.Operator):#VRExport
         #####
 
         #非レンダオブジェクトを選択から除外
-        selection = get_selected_list()
+        selection = fjw_get_selected_list()
         for obj in selection:
             if obj.hide_render:
                 obj.select = False
@@ -1698,13 +1698,13 @@ class MYOBJECT_24259(bpy.types.Operator):#親子
     #処理部分
     ###################################
     def execute(self, context):
-        objects = get_selected_list()
+        objects = fjw_get_selected_list()
         targets = []
         for obj in objects:
-            activate(obj)
-            mode("OBJECT")
+            fjw_activate(obj)
+            fjw_mode("OBJECT")
             bpy.ops.object.select_grouped(type='CHILDREN_RECURSIVE')
-            targets.extend(get_selected_list())
+            targets.extend(fjw_get_selected_list())
 
         targets.extend(objects)
 
@@ -2022,9 +2022,9 @@ class MYOBJECT_770418(bpy.types.Operator):#カメラ範囲外を選択
     ###################################
     def execute(self, context):
         bpy.ops.object.select_all(action='SELECT')
-        selection = get_selected_list()
+        selection = fjw_get_selected_list()
         for obj in selection:
-            if checkIfIsInCameraView(obj):
+            if fjw_checkIfIsInCameraView(obj):
                 obj.select = False
 
         return {'FINISHED'}
@@ -2279,9 +2279,9 @@ class MYOBJECT_183554(bpy.types.Operator):#重心下に
     #処理部分
     ###################################
     def execute(self, context):
-        reject_notmesh()
-        objlist = get_selected_list()
-        deselect()
+        fjw_reject_notmesh()
+        objlist = fjw_get_selected_list()
+        fjw_deselect()
         
         for obj in objlist:
             bpy.context.scene.objects.active = obj
@@ -2331,14 +2331,14 @@ class MYOBJECT_463922(bpy.types.Operator):#原点X=0
     #処理部分
     ###################################
     def execute(self, context):
-        targets = get_selected_list()
+        targets = fjw_get_selected_list()
         for obj in targets:
-            deselect()
-            activate(obj)
+            fjw_deselect()
+            fjw_activate(obj)
             bpy.ops.view3d.snap_cursor_to_selected()
             bpy.context.space_data.cursor_location[0] = 0
             bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
-        select(targets)
+        fjw_select(targets)
         
         return {'FINISHED'}
 ########################################
@@ -2475,7 +2475,7 @@ class CATEGORYBUTTON_413853(bpy.types.Operator):#スーパー視点
 
 
 def super_view(direction):
-        base = active()
+        base = fjw_active()
 
         target = base
         super = target
@@ -2487,9 +2487,9 @@ def super_view(direction):
             else:
                 break
 
-        activate(super)
+        fjw_activate(super)
         bpy.ops.view3d.viewnumpad(type=direction, align_active=True)
-        activate(base)
+        fjw_activate(base)
 
 #---------------------------------------------
 uiitem().vertical()
@@ -2973,7 +2973,7 @@ class MYOBJECT_266402(bpy.types.Operator):#ベースセットアップ
     #処理部分
     ###################################
     def execute(self, context):
-        mat = active().active_material
+        mat = fjw_active().active_material
 
         #既にノードがオンの場合データ消えるとマズいから警告だして終了する
         if mat.use_nodes:
@@ -3108,7 +3108,7 @@ class MYOBJECT_117769(bpy.types.Operator):#漫画シェーダ
     #処理部分
     ###################################
     def execute(self, context):
-        objects = get_selected_list()
+        objects = fjw_get_selected_list()
         for obj in objects:
             if obj.type != "MESH":
                 continue
@@ -3125,11 +3125,11 @@ class MYOBJECT_117769(bpy.types.Operator):#漫画シェーダ
                     continue
                 
                 mat.use_shadeless = True
-                ntu = NodetreeUtils(mat)
+                ntu = fjw_NodetreeUtils(mat)
                 ntu.activate()
                 ntu.cleartree()
 
-                ng_comic = ntu.group_instance(append_nodetree("漫画シェーダ"))
+                ng_comic = ntu.group_instance(fjw_append_nodetree("漫画シェーダ"))
 
                 #マテリアルノード
                 n_mat = ntu.add("ShaderNodeMaterial","Material")
@@ -3149,7 +3149,7 @@ class MYOBJECT_117769(bpy.types.Operator):#漫画シェーダ
 
 
                 pass
-        select(objects)
+        fjw_select(objects)
         return {'FINISHED'}
 ########################################
 
@@ -3459,14 +3459,14 @@ def construct_comiccomposit():
     rl.use_edge_enhance = False
 
 
-    ntree = NodetreeUtils(bpy.context.scene)
+    ntree = fjw_NodetreeUtils(bpy.context.scene)
     ntree.activate()
     ntree.cleartree()
 
-    nRenderLayers = NodeUtils(ntree.add("CompositorNodeRLayers","RenderLayers"))
-    nCompositeOutput = NodeUtils(ntree.add("CompositorNodeComposite", "Composite"))
-    ngComic = append_nodetree("漫画コンポジットモノクロ")
-    ngiComic = NodeUtils(ntree.group_instance(ngComic))
+    nRenderLayers = fjw_NodeUtils(ntree.add("CompositorNodeRLayers","RenderLayers"))
+    nCompositeOutput = fjw_NodeUtils(ntree.add("CompositorNodeComposite", "Composite"))
+    ngComic = fjw_append_nodetree("漫画コンポジットモノクロ")
+    ngiComic = fjw_NodeUtils(ntree.group_instance(ngComic))
 
 
     #接続
@@ -3670,7 +3670,7 @@ class MYOBJECT_716795(bpy.types.Operator):#RenderGroup
             if obj.type == "CAMERA" or obj.type == "LAMP":
                 obj.select = False
 
-        objects = get_selected_list()
+        objects = fjw_get_selected_list()
         unlink_RenderGroup(self,objects)
         bpy.ops.group.create(name="RenderGroup")
 
@@ -3709,7 +3709,7 @@ class MYOBJECT_985143(bpy.types.Operator):#親子・連続指定用
         for obj in bpy.context.selected_objects:
             obj.hide = True
 
-        deselect()
+        fjw_deselect()
         return {'FINISHED'}
 ########################################
 
@@ -3734,12 +3734,12 @@ class MYOBJECT_880927(bpy.types.Operator):#プロパティから再構成
     #処理部分
     ###################################
     def execute(self, context):
-        targets = get_selected_list()
+        targets = fjw_get_selected_list()
         #親子選択
         bpy.ops.object.myobject_24259()
         for obj in targets:
             obj.select = True
-        targets = get_selected_list()
+        targets = fjw_get_selected_list()
 
 
         groupnames = set()
@@ -3751,7 +3751,7 @@ class MYOBJECT_880927(bpy.types.Operator):#プロパティから再構成
                 pass
 
         for groupname in groupnames:
-            deselect
+            fjw_deselect
 
             for obj in targets:
                 try:
@@ -3801,7 +3801,7 @@ class MYOBJECT_275643(bpy.types.Operator):#クリア
     #処理部分
     ###################################
     def execute(self, context):
-        objects = get_selected_list()
+        objects = fjw_get_selected_list()
         unlink_RenderGroup(self,objects)
         
         return {'FINISHED'}
@@ -3824,7 +3824,7 @@ class MYOBJECT_824105(bpy.types.Operator):#割り当て済みを隠す
     #処理部分
     ###################################
     def execute(self, context):
-        deselect()
+        fjw_deselect()
         for group in bpy.data.groups:
             if "RenderGroup" in group.name:
                 for obj in group.objects:
@@ -3934,7 +3934,7 @@ class LayerCategory():
         return
 
     def isinCategory(self,obj, category):
-        linkedpath = checkLink(obj)
+        linkedpath = fjw_checkLink(obj)
         if linkedpath is None:
             return False
         if category in linkedpath:
@@ -4010,7 +4010,7 @@ class LayerCategory():
     
     #オブジェクトが所属してるカテゴリを返す
     def get_category(self,obj):
-        if checkLink(obj) == None:
+        if fjw_checkLink(obj) == None:
             return None
         for key in self.LayerConstitution.keys():
             if self.isinCategory(obj,key):
@@ -4067,7 +4067,7 @@ class LayerCategory():
 
         #メッシュオブジェクト用。
         #特定文字列を検索してそれも指定カテゴリに送る
-        meshlist = find_list("result", targetlist)
+        meshlist = fjw_find_list("result", targetlist)
         for obj in meshlist:
             if obj.type == "MESH":
                 self.tocategory(obj, "キャラ")
@@ -4117,7 +4117,7 @@ class MYOBJECT_630218(bpy.types.Operator):#カテゴリに移動（選択物）
     #処理部分
     ###################################
     def execute(self, context):
-        selection = get_selected_list()
+        selection = fjw_get_selected_list()
         lc = LayerCategory()
         lc.correct(selection)
         
@@ -5097,15 +5097,15 @@ class SPIFileBrowser(bpy.types.Operator):
         if sobj.type == "ARMATURE" and dobj.type == "ARMATURE":
             #ポーズのコピー
             #ポーズのコピー
-            mode("OBJECT")
-            activate(dobj)
-            mode("POSE")
+            fjw_mode("OBJECT")
+            fjw_activate(dobj)
+            fjw_mode("POSE")
             bpy.ops.pose.select_all(action='SELECT')
             bpy.ops.pose.copy()
 
-            mode("OBJECT")
-            activate(sobj)
-            mode("POSE")
+            fjw_mode("OBJECT")
+            fjw_activate(sobj)
+            fjw_mode("POSE")
             bpy.ops.pose.select_all(action='SELECT')
             bpy.ops.pose.paste(flipped=False)
 
@@ -5160,7 +5160,7 @@ class SPIFileBrowser(bpy.types.Operator):
             if obj == None:
                 self.report({"INFO"},"不完全なモデルなので結果が異常な可能性があります。:src")
 
-        deselect()
+        fjw_deselect()
 
         #アペンドする
         for file in self.files:
@@ -5189,13 +5189,13 @@ class SPIFileBrowser(bpy.types.Operator):
                 self.report({"INFO"},"不完全なモデルなので結果が異常な可能性があります。:src")
 
 
-        deselect()
+        fjw_deselect()
 
 
         #アペンド終わったので適用していく。
         self.transfer_all()
 
-        deselect()
+        fjw_deselect()
 
 
         #destの削除
@@ -5208,7 +5208,7 @@ class SPIFileBrowser(bpy.types.Operator):
         #self.src["geo"].select = True
         geo = self.get_geo()
         try:
-            activate(geo)
+            fjw_activate(geo)
             geo.select = True
             pass
         except:
@@ -5559,7 +5559,7 @@ class MYOBJECT_68972(bpy.types.Operator):#カメラ目線
     ###################################
     def execute(self, context):
         #ヘアトラッカーがカメラと同じ位置なのを利用 ってあー3Dカーソルでもよかった？
-        obj = active()
+        obj = fjw_active()
         if obj.type == "ARMATURE":
             bpy.ops.object.mode_set(mode='POSE', toggle=False)
             for bone in obj.pose.bones:
@@ -5632,7 +5632,7 @@ class MYOBJECT_96315(bpy.types.Operator):#SUN設置
     #処理部分
     ###################################
     def execute(self, context):
-        mode("OBJECT")
+        fjw_mode("OBJECT")
         bpy.ops.object.lamp_add(type='SUN', radius=1, view_align=False, location=(0, -6, 6), layers=(True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False))
         obj = bpy.context.scene.objects.active
         obj.rotation_euler[0] = 0.691299
@@ -5662,7 +5662,7 @@ class MYOBJECT_831406(bpy.types.Operator):#屋内用ロングランプ
     #処理部分
     ###################################
     def execute(self, context):
-        mode("OBJECT")
+        fjw_mode("OBJECT")
         cursor = bpy.context.space_data.cursor_location
         bpy.ops.object.lamp_add(type='POINT', radius=1, view_align=False, location=cursor, layers=(True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False))
         obj = bpy.context.scene.objects.active
@@ -5690,7 +5690,7 @@ class MYOBJECT_47170(bpy.types.Operator):#カメラにポイント設置
     #処理部分
     ###################################
     def execute(self, context):
-        mode("OBJECT")
+        fjw_mode("OBJECT")
         bpy.ops.object.lamp_add(type='POINT', radius=1, view_align=False, location=bpy.context.scene.camera.location, layers=(True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False))
         
         return {'FINISHED'}
@@ -5720,14 +5720,14 @@ class MYOBJECT_770473(bpy.types.Operator):#ボトムバックライト
     #処理部分
     ###################################
     def execute(self, context):
-        target = active()
-        deselect()
+        target = fjw_active()
+        fjw_deselect()
         bpy.ops.object.lamp_add(type='POINT', radius=1, view_align=False, location=target.location, layers=target.layers)
-        lamp = active()
-        activate(target)
+        lamp = fjw_active()
+        fjw_activate(target)
         bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
-        deselect()
-        activate(lamp)
+        fjw_deselect()
+        fjw_activate(lamp)
         bpy.ops.object.transforms_to_deltas(mode='LOC')
         lamp.location = (0,0.35,-0.35)
 
@@ -6496,8 +6496,8 @@ class MYOBJECT_557231(bpy.types.Operator):#適用（選択物）
         #            except:
         #                #ダメだったのでmod除去
         #                bpy.ops.object.modifier_remove(modifier=mod.name)
-        for obj in get_selected_list():
-            activate(obj)
+        for obj in fjw_get_selected_list():
+            fjw_activate(obj)
             for mod in obj.modifiers:
                 if "裏ポリエッジ" in mod.name:
                     continue
@@ -6597,8 +6597,8 @@ class MYOBJECT_474026(bpy.types.Operator):#厚み用拡縮適用
     #処理部分
     ###################################
     def execute(self, context):
-        for obj in get_selected_list():
-            if not ismesh(obj):
+        for obj in fjw_get_selected_list():
+            if not fjw_ismesh(obj):
                 continue
 
             for mod in obj.modifiers:
@@ -6745,15 +6745,15 @@ class MYOBJECT_900279(bpy.types.Operator):#X-でミラー化
     #処理部分
     ###################################
     def execute(self, context):
-        reject_notmesh()
-        selection = get_selected_list()
+        fjw_reject_notmesh()
+        selection = fjw_get_selected_list()
         for obj in selection:
-            meshu = MeshUtils(obj)
+            meshu = fjw_MeshUtils(obj)
             meshu.select_byaxis("-X")
-            mode("EDIT")
+            fjw_mode("EDIT")
             meshu.delete()
             
-            modu = Modutils(obj)
+            modu = fjw_Modutils(obj)
             modu.add("Local Mirror", "MIRROR")
             modu.sort()
 
@@ -6777,14 +6777,14 @@ class MYOBJECT_734909(bpy.types.Operator):#X+でミラー化
     #処理部分
     ###################################
     def execute(self, context):
-        reject_notmesh()
-        selection = get_selected_list()
+        fjw_reject_notmesh()
+        selection = fjw_get_selected_list()
         for obj in selection:
-            meshu = MeshUtils(obj)
+            meshu = fjw_MeshUtils(obj)
             meshu.select_byaxis("+X")
             meshu.delete()
             
-            modu = Modutils(obj)
+            modu = fjw_Modutils(obj)
             modu.add("Local Mirror", "MIRROR")
             modu.sort()
         
@@ -6881,7 +6881,7 @@ class MYOBJECT_553492(bpy.types.Operator):#ターゲットミラー
             if obj.type == "MESH":
                 bpy.context.scene.objects.active = obj
                 if obj != target:
-                    modu = Modutils(obj)
+                    modu = fjw_Modutils(obj)
                     mod = modu.add("Target Mirror","MIRROR")
                     mod.mirror_object = target
                     modu.move_top(mod)
@@ -6919,8 +6919,8 @@ class MYOBJECT_17104(bpy.types.Operator):#ターゲットミラー除去
     #処理部分
     ###################################
     def execute(self, context):
-        for obj in get_selected_list():
-            modu = Modutils(obj)
+        for obj in fjw_get_selected_list():
+            modu = fjw_Modutils(obj)
             modu.remove_byname("Target Mirror")
             modu.remove_byname("Parented Mirror")
 
@@ -6945,9 +6945,9 @@ class MYOBJECT_239793(bpy.types.Operator):#ミラー適用
     #処理部分
     ###################################
     def execute(self, context):
-        selection = get_selected_list()
+        selection = fjw_get_selected_list()
         for obj in selection:
-            modu = Modutils(obj)
+            modu = fjw_Modutils(obj)
             for n in range(10):
                 mod_mirr = modu.find_bytype("MIRROR")
                 if mod_mirr == None:
@@ -7139,7 +7139,7 @@ class MYOBJECT_449421(bpy.types.Operator):#ペアレントメッシュデフォ�
                                 else:
                                     bpy.ops.object.modifier_move_up(modifier=mod.name)
 
-                        modu = Modutils(obj)
+                        modu = fjw_Modutils(obj)
                         modu.sort()
 
 
@@ -7208,7 +7208,7 @@ class MYOBJECT_384891(bpy.types.Operator):#5
                                 else:
                                     bpy.ops.object.modifier_move_up(modifier=mod.name)
 
-                        modu = Modutils(obj)
+                        modu = fjw_Modutils(obj)
                         modu.sort()
 
                         #バインド
@@ -7329,8 +7329,8 @@ class MYOBJECT_860977(bpy.types.Operator):#全て再バインド
         #                if mod.is_bound:
         #                    bpy.ops.object.meshdeform_bind(modifier=mod.name)
         #                bpy.ops.object.meshdeform_bind(modifier=mod.name)
-        for obj in get_selected_list("MESH"):
-            activate(obj)
+        for obj in fjw_get_selected_list("MESH"):
+            fjw_activate(obj)
             for mod in obj.modifiers:
                 if mod.type == "MESH_DEFORM":
                     if mod.is_bound:
@@ -7369,21 +7369,21 @@ class MYOBJECT_531573(bpy.types.Operator):#カーブにアタッチ
     def execute(self, context):
         curve = None
         mesh = None
-        for obj in get_selected_list():
+        for obj in fjw_get_selected_list():
             if obj.type == "CURVE":
                 curve = obj
             if obj.type == "MESH":
                 mesh = obj
 
         #メッシュの拡縮適用
-        deselect()
-        activate(mesh)
+        fjw_deselect()
+        fjw_activate(mesh)
         bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 
 
         #カーブをスプラインごとに分離する
-        deselect()
-        activate(curve)
+        fjw_deselect()
+        fjw_activate(curve)
 
         #カーブのベベルをゼロに
         curve.data.bevel_depth = 0
@@ -7391,7 +7391,7 @@ class MYOBJECT_531573(bpy.types.Operator):#カーブにアタッチ
         #セパレートするごとにスプラインのインデックスかわってんじゃないの？
         splines = curve.data.splines
         for i in range(len(splines) - 1):
-            mode("EDIT")
+            fjw_mode("EDIT")
             spline = splines[1]
 
             #個別分離
@@ -7402,8 +7402,8 @@ class MYOBJECT_531573(bpy.types.Operator):#カーブにアタッチ
                 for bzp in spline.bezier_points:
                     bzp.select_control_point = True
             bpy.ops.curve.separate()
-            mode("OBJECT")
-            mode("EDIT")
+            fjw_mode("OBJECT")
+            fjw_mode("EDIT")
 
 
 
@@ -7421,11 +7421,11 @@ class MYOBJECT_531573(bpy.types.Operator):#カーブにアタッチ
         #        for bzp in spline.bezier_points:
         #            bzp.select_control_point = True
         #    bpy.ops.curve.separate()
-        mode("OBJECT")
-        curves = get_selected_list()
+        fjw_mode("OBJECT")
+        curves = fjw_get_selected_list()
 
         #元オブジェクト名でグループ化
-        group(curve.name)
+        fjw_group(curve.name)
 
         objs = []
 
@@ -7434,33 +7434,33 @@ class MYOBJECT_531573(bpy.types.Operator):#カーブにアタッチ
             #if index == 0:
             #    objs.append(mesh)
             #    continue
-            deselect()
-            activate(mesh)
+            fjw_deselect()
+            fjw_activate(mesh)
             #リンク複製
             bpy.ops.object.duplicate(linked=True)
-            objs.append(active())
+            objs.append(fjw_active())
 
         #オブジェクトを複製してアタッチしてく
         for index, curve in enumerate(curves):
             obj = objs[index]
 
-            deselect()
+            fjw_deselect()
             #トランスフォームをあわせる
-            activate(obj)
+            fjw_activate(obj)
             obj.location = curve.location
             obj.rotation_euler = curve.rotation_euler
             
-            mod_arr = add_mod("ARRAY")
+            mod_arr = fjw_add_mod("ARRAY")
             mod_arr.fit_type = "FIT_CURVE"
             mod_arr.curve = curve
 
-            mod_crv = add_mod("CURVE")
+            mod_crv = fjw_add_mod("CURVE")
             mod_crv.object = curve
 
             #グループ・ペアレント
-            group(mesh.name)
+            fjw_group(mesh.name)
 
-            activate(curve)
+            fjw_activate(curve)
             bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
 
 
@@ -7491,31 +7491,31 @@ class MYOBJECT_141722(bpy.types.Operator):#オープンエッジの線画化
     #処理部分
     ###################################
     def execute(self, context):
-        selection = get_selected_list()
-        deselect()
+        selection = fjw_get_selected_list()
+        fjw_deselect()
 
         for obj in selection:
             if obj.type != "MESH":
                 continue
             #オープンエッジの分離
-            activate(obj)
-            mode("EDIT")
+            fjw_activate(obj)
+            fjw_mode("EDIT")
             bpy.ops.mesh.select_all(action='SELECT')
             bpy.ops.mesh.region_to_loop()
             bpy.ops.mesh.duplicate()
             bpy.ops.mesh.separate(type='SELECTED')
-            mode("OBJECT")
+            fjw_mode("OBJECT")
 
             target = None
-            for tmp_target in get_selected_list():
+            for tmp_target in fjw_get_selected_list():
                 if tmp_target != obj:
                     target = tmp_target
             target.name = obj.name + "_openedgeline"
 
-            deselect()
+            fjw_deselect()
 
             #スキンで線画化
-            activate(target)
+            fjw_activate(target)
             #モディファイアをすべて除去
             target.modifiers.clear()
             #マテリアルをすべて除去
@@ -7533,12 +7533,12 @@ class MYOBJECT_141722(bpy.types.Operator):#オープンエッジの線画化
 
             #スキンモディファイア
             bpy.ops.object.modifier_add(type='SKIN')
-            mode("EDIT")
+            fjw_mode("EDIT")
             bpy.ops.mesh.select_all(action='SELECT')
             bpy.ops.object.skin_root_mark()
             ssize = 0.0025
             bpy.ops.transform.skin_resize(value=(ssize, ssize, ssize), constraint_axis=(False, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1)
-            mode("OBJECT")
+            fjw_mode("OBJECT")
 
         return {'FINISHED'}
 ########################################
@@ -7564,11 +7564,11 @@ class MYOBJECT_288910(bpy.types.Operator):#MOD整列
     #処理部分
     ###################################
     def execute(self, context):
-        for obj in get_selected_list():
+        for obj in fjw_get_selected_list():
             if obj.type != "MESH":
                 continue
     
-            modu = Modutils(obj)
+            modu = fjw_Modutils(obj)
             modu.sort()
 
 
@@ -7784,7 +7784,7 @@ class MYOBJECT_357209(bpy.types.Operator):#オノマトペ白フチ
     def execute(self, context):
         bpy.ops.object.myobject_737497()
         bpy.ops.object.myobject_788766()
-        selection = get_selected_list()
+        selection = fjw_get_selected_list()
         for obj in selection:
             mat = obj.material_slots[0].material
             mat.diffuse_color = (0,0,0)
@@ -7815,10 +7815,10 @@ class MYOBJECT_793633(bpy.types.Operator):#エッジ適用
     ###################################
     def execute(self, context):
         
-        reject_notmesh()
-        selection = get_selected_list()
+        fjw_reject_notmesh()
+        selection = fjw_get_selected_list()
         for obj in selection:
-            modu = Modutils(obj)
+            modu = fjw_Modutils(obj)
             
             mod = modu.find("ベベルエッジ")
             modu.apply(mod)
@@ -7849,7 +7849,7 @@ uiitem().vertical()
 
 
 def urapolimat_index(obj):
-    mat = append_material("裏ポリエッジ")
+    mat = fjw_append_material("裏ポリエッジ")
     #デフォルトマテリアルの設置
     if len(obj.data.materials) == 0:
         dmat = bpy.data.materials.new("default")
@@ -7861,7 +7861,7 @@ def urapolimat_index(obj):
     return matindex
 
 def urapoliwhitemat_index(obj):
-    mat = append_material("裏ポリエッジ白")
+    mat = fjw_append_material("裏ポリエッジ白")
     #デフォルトマテリアルの設置
     if len(obj.data.materials) == 0:
         dmat = bpy.data.materials.new("default")
@@ -7898,13 +7898,13 @@ class MYOBJECT_318722(bpy.types.Operator):#裏ポリエッジ付加
     #処理部分
     ###################################
     def execute(self, context):
-        reject_notmesh()
-        selection = get_selected_list()
+        fjw_reject_notmesh()
+        selection = fjw_get_selected_list()
 
 
         for obj in selection:
             if "裏ポリエッジ" not in obj.modifiers:
-                modu = Modutils(obj)
+                modu = fjw_Modutils(obj)
                 matindex = urapolimat_index(obj)
 
                 mod = modu.find("裏ポリエッジ")
@@ -7941,13 +7941,13 @@ class MYOBJECT_737497(bpy.types.Operator):#裏ポリ白
     #処理部分
     ###################################
     def execute(self, context):
-        reject_notmesh()
-        selection = get_selected_list()
+        fjw_reject_notmesh()
+        selection = fjw_get_selected_list()
 
 
         for obj in selection:
             if "裏ポリエッジ" not in obj.modifiers:
-                modu = Modutils(obj)
+                modu = fjw_Modutils(obj)
                 matindex = urapoliwhitemat_index(obj)
 
                 mod = modu.find("裏ポリエッジ")
@@ -8027,11 +8027,11 @@ class MYOBJECT_892991(bpy.types.Operator):#1mm
     #処理部分
     ###################################
     def execute(self, context):
-        reject_notmesh()
-        selection = get_selected_list()
+        fjw_reject_notmesh()
+        selection = fjw_get_selected_list()
 
         for obj in selection:
-            modu = Modutils(obj)
+            modu = fjw_Modutils(obj)
             mod = modu.find("裏ポリエッジ")
             if mod is not None:
                 mod.thickness = 0.001
@@ -8055,11 +8055,11 @@ class MYOBJECT_793908(bpy.types.Operator):#2mm
     #処理部分
     ###################################
     def execute(self, context):
-        reject_notmesh()
-        selection = get_selected_list()
+        fjw_reject_notmesh()
+        selection = fjw_get_selected_list()
 
         for obj in selection:
-            modu = Modutils(obj)
+            modu = fjw_Modutils(obj)
             mod = modu.find("裏ポリエッジ")
             if mod is not None:
                 mod.thickness = 0.002
@@ -8093,11 +8093,11 @@ class MYOBJECT_401033(bpy.types.Operator):#5mm
     #処理部分
     ###################################
     def execute(self, context):
-        reject_notmesh()
-        selection = get_selected_list()
+        fjw_reject_notmesh()
+        selection = fjw_get_selected_list()
 
         for obj in selection:
-            modu = Modutils(obj)
+            modu = fjw_Modutils(obj)
             mod = modu.find("裏ポリエッジ")
             if mod is not None:
                 mod.thickness = 0.005
@@ -8127,11 +8127,11 @@ class MYOBJECT_788766(bpy.types.Operator):#1cm
     #処理部分
     ###################################
     def execute(self, context):
-        reject_notmesh()
-        selection = get_selected_list()
+        fjw_reject_notmesh()
+        selection = fjw_get_selected_list()
 
         for obj in selection:
-            modu = Modutils(obj)
+            modu = fjw_Modutils(obj)
             mod = modu.find("裏ポリエッジ")
             if mod is not None:
                 mod.thickness = 0.01
@@ -8202,11 +8202,11 @@ class MYOBJECT_513603(bpy.types.Operator):#表示
     #処理部分
     ###################################
     def execute(self, context):
-        reject_notmesh()
-        selection = get_selected_list()
+        fjw_reject_notmesh()
+        selection = fjw_get_selected_list()
 
         for obj in selection:
-            activate(obj)
+            fjw_activate(obj)
             if "裏ポリエッジ" in obj.modifiers:
                 mod = obj.modifiers["裏ポリエッジ"]
                 mod.show_viewport = True
@@ -8237,11 +8237,11 @@ class MYOBJECT_14967(bpy.types.Operator):#非表示
     #処理部分
     ###################################
     def execute(self, context):
-        reject_notmesh()
-        selection = get_selected_list()
+        fjw_reject_notmesh()
+        selection = fjw_get_selected_list()
 
         for obj in selection:
-            activate(obj)
+            fjw_activate(obj)
             if "裏ポリエッジ" in obj.modifiers:
                 mod = obj.modifiers["裏ポリエッジ"]
                 mod.show_viewport = False
@@ -8275,12 +8275,12 @@ class MYOBJECT_290695(bpy.types.Operator):#除去
     #処理部分
     ###################################
     def execute(self, context):
-        reject_notmesh()
-        selection = get_selected_list()
+        fjw_reject_notmesh()
+        selection = fjw_get_selected_list()
 
 
         for obj in selection:
-            activate(obj)
+            fjw_activate(obj)
             if "裏ポリエッジ" in obj.modifiers:
                 bpy.ops.object.modifier_remove(modifier="裏ポリエッジ")
 
@@ -8323,10 +8323,10 @@ class MYOBJECT_60327(bpy.types.Operator):#ベベルエッジ
     #処理部分
     ###################################
     def execute(self, context):
-        reject_notmesh()
-        selection = get_selected_list()
+        fjw_reject_notmesh()
+        selection = fjw_get_selected_list()
         for obj in selection:
-            modu = Modutils(obj)
+            modu = fjw_Modutils(obj)
             mbevel = modu.find("ベベルエッジ")
             if mbevel is None:
                 mbevel = modu.add("ベベルエッジ", "BEVEL")
@@ -8358,9 +8358,9 @@ class MYOBJECT_312642(bpy.types.Operator):#除去
     #処理部分
     ###################################
     def execute(self, context):
-        selection = get_selected_list()
+        selection = fjw_get_selected_list()
         for obj in selection:
-            modu = Modutils(obj)
+            modu = fjw_Modutils(obj)
             modu.remove_byname("ベベルエッジ")
         
         return {'FINISHED'}
@@ -8406,10 +8406,10 @@ class MYOBJECT_115887(bpy.types.Operator):#辺分離ソリッド
     #処理部分
     ###################################
     def execute(self, context):
-        reject_notmesh()
-        selection = get_selected_list()
+        fjw_reject_notmesh()
+        selection = fjw_get_selected_list()
         for obj in selection:
-            modu = Modutils(obj)
+            modu = fjw_Modutils(obj)
             if modu.find("分離エッジ_EDGE_SPLIT") == None:
                 msplit = modu.add("分離エッジ_EDGE_SPLIT","EDGE_SPLIT")
             if modu.find("分離エッジ_SOLIDIFY") == None:
@@ -8439,9 +8439,9 @@ class MYOBJECT_693073(bpy.types.Operator):#除去
     #処理部分
     ###################################
     def execute(self, context):
-        selection = get_selected_list()
+        selection = fjw_get_selected_list()
         for obj in selection:
-            modu = Modutils(obj)
+            modu = fjw_Modutils(obj)
             modu.remove_byname("分離エッジ_EDGE_SPLIT")
             modu.remove_byname("分離エッジ_SOLIDIFY")
         return {'FINISHED'}
@@ -8491,25 +8491,25 @@ class MYOBJECT_962587(bpy.types.Operator):#低subsurf化（選択物）
     #処理部分
     ###################################
     def execute(self, context):
-        reject_notmesh()
-        selection = get_selected_list()
+        fjw_reject_notmesh()
+        selection = fjw_get_selected_list()
         for obj in selection:
-            deselect()
-            activate(obj)
+            fjw_deselect()
+            fjw_activate(obj)
             bpy.ops.object.shade_smooth()
 
             #自動スムーズはものによってかえたほうがいい
             #obj.data.use_auto_smooth = True
             #obj.data.auto_smooth_angle = 0.523599
 
-            modu = Modutils(obj)
+            modu = fjw_Modutils(obj)
             subsurfs = modu.find_bytype_list("SUBSURF")
 
             for subsurf in subsurfs:
                 subsurf.levels = 2
                 subsurf.render_levels = 2
 
-        select(selection)
+        fjw_select(selection)
         return {'FINISHED'}
 ########################################
 
@@ -8596,8 +8596,8 @@ class MYOBJECT_630367(bpy.types.Operator):#バウンド
     #処理部分
     ###################################
     def execute(self, context):
-        reject_notmesh()
-        objs = get_selected_list()
+        fjw_reject_notmesh()
+        objs = fjw_get_selected_list()
 
         for obj in objs:
             obj.draw_type = "BOUNDS"
@@ -8622,8 +8622,8 @@ class MYOBJECT_65984(bpy.types.Operator):#ワイヤー
     #処理部分
     ###################################
     def execute(self, context):
-        reject_notmesh()
-        objs = get_selected_list()
+        fjw_reject_notmesh()
+        objs = fjw_get_selected_list()
 
         for obj in objs:
             obj.draw_type = "WIRE"
@@ -8648,8 +8648,8 @@ class MYOBJECT_691590(bpy.types.Operator):#テクスチャ
     #処理部分
     ###################################
     def execute(self, context):
-        reject_notmesh()
-        objs = get_selected_list()
+        fjw_reject_notmesh()
+        objs = fjw_get_selected_list()
 
         for obj in objs:
             obj.draw_type = "TEXTURED"
@@ -8686,14 +8686,14 @@ class MYOBJECT_339338(bpy.types.Operator):#スマートUV投影（各選択物�
     #処理部分
     ###################################
     def execute(self, context):
-        reject_notmesh()
-        for obj in get_selected_list():
-            activate(obj)
-            mode("EDIT")
+        fjw_reject_notmesh()
+        for obj in fjw_get_selected_list():
+            fjw_activate(obj)
+            fjw_mode("EDIT")
             bpy.ops.mesh.select_all(action='SELECT')
             bpy.ops.uv.reset()
             bpy.ops.uv.smart_project()
-            mode("OBJECT")
+            fjw_mode("OBJECT")
         return {'FINISHED'}
 ########################################
 
@@ -8719,9 +8719,9 @@ class MYOBJECT_719855(bpy.types.Operator):#ライトマップパック展開（�
     #処理部分
     ###################################
     def execute(self, context):
-        reject_notmesh()
-        for obj in get_selected_list():
-            activate(obj)
+        fjw_reject_notmesh()
+        for obj in fjw_get_selected_list():
+            fjw_activate(obj)
             bpy.ops.uv.lightmap_pack(PREF_CONTEXT='ALL_FACES', PREF_PACK_IN_ONE=True, PREF_NEW_UVLAYER=False, PREF_APPLY_IMAGE=False, PREF_IMG_PX_SIZE=2048, PREF_BOX_DIV=12, PREF_MARGIN_DIV=0.1)
         return {'FINISHED'}
 ########################################
@@ -8785,7 +8785,7 @@ class MYOBJECT_31891(bpy.types.Operator):#自動スムーズ
     def execute(self, context):
         bpy.ops.object.shade_smooth()
 
-        for obj in get_selected_list("MESH"):
+        for obj in fjw_get_selected_list("MESH"):
             obj.data.use_auto_smooth = True
             obj.data.auto_smooth_angle = 0.523599
 
@@ -8846,8 +8846,8 @@ class MYOBJECT_996345(bpy.types.Operator):#ペラポリ準備
     def execute(self, context):
         bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 
-        obj = active()
-        modu = Modutils(obj)
+        obj = fjw_active()
+        modu = fjw_Modutils(obj)
         
         mod = modu.add("Local Mirror", "MIRROR")
         mod.use_clip = True
@@ -8984,12 +8984,12 @@ class MYOBJECT_273555(bpy.types.Operator):#装甲化
                 #mod = add_mod('SHRINKWRAP')
                 #mod.target = target
                 #厚み
-                mod = add_mod('SOLIDIFY')
+                mod = fjw_add_mod('SOLIDIFY')
                 mod.thickness = -0.05
                 mod.use_even_offset = True
                 mod.use_quality_normals = True
                 
-                mod = add_mod('BEVEL')
+                mod = fjw_add_mod('BEVEL')
                 mod.width = 0.01
                 mod.offset_type = 'WIDTH'
 
@@ -8998,7 +8998,7 @@ class MYOBJECT_273555(bpy.types.Operator):#装甲化
                 bpy.ops.mesh.select_all(action='SELECT')
                 bpy.ops.mesh.region_to_loop()
                 bpy.ops.transform.edge_crease(value=1)
-                objectmode()
+                fjw_objectmode()
 
         
         #後処理
@@ -9076,12 +9076,12 @@ class MYOBJECT_338159(bpy.types.Operator):#装甲化（内側）
                 #mod = add_mod('SHRINKWRAP')
                 #mod.target = target
                 #厚み
-                mod = add_mod('SOLIDIFY')
+                mod = fjw_add_mod('SOLIDIFY')
                 mod.thickness = 0.05
                 #mod.use_even_offset = True
                 mod.use_quality_normals = True
                 
-                mod = add_mod('BEVEL')
+                mod = fjw_add_mod('BEVEL')
                 mod.width = 0.01
                 mod.offset_type = 'WIDTH'
 
@@ -9090,7 +9090,7 @@ class MYOBJECT_338159(bpy.types.Operator):#装甲化（内側）
                 bpy.ops.mesh.select_all(action='SELECT')
                 bpy.ops.mesh.region_to_loop()
                 bpy.ops.transform.edge_crease(value=1)
-                objectmode()
+                fjw_objectmode()
 
         
         #後処理
@@ -9124,11 +9124,11 @@ class MYOBJECT_351222(bpy.types.Operator):#厚み反転
     #処理部分
     ###################################
     def execute(self, context):
-        reject_notmesh()
+        fjw_reject_notmesh()
         for obj in bpy.context.selected_objects:
-            activate(obj)
+            fjw_activate(obj)
 
-            mod = get_mod('SOLIDIFY')
+            mod = fjw_get_mod('SOLIDIFY')
             if mod != None:
                 mod.thickness *= -1
 
@@ -9332,15 +9332,15 @@ class MYOBJECT_559336(bpy.types.Operator):#重複頂点を削除（選択物）
     #処理部分
     ###################################
     def execute(self, context):
-        reject_notmesh()
-        selection = get_selected_list()
+        fjw_reject_notmesh()
+        selection = fjw_get_selected_list()
 
         for obj in selection:
-            activate(obj)
-            meshu = MeshUtils(obj)
+            fjw_activate(obj)
+            meshu = fjw_MeshUtils(obj)
             meshu.selectall()
             meshu.remove_doubles()
-        mode("OBJECT")
+        fjw_mode("OBJECT")
         return {'FINISHED'}
 ########################################
 
@@ -9485,7 +9485,7 @@ class MYOBJECT_698300(bpy.types.Operator):#ミラーリング
     ###################################
     def execute(self, context):
         bpy.ops.object.duplicate(linked=False, mode='TRANSLATION')
-        selection = get_selected_list()
+        selection = fjw_get_selected_list()
 
         current_pivot_point = bpy.context.space_data.pivot_point
         current_cursor = (bpy.context.space_data.cursor_location[0],bpy.context.space_data.cursor_location[1],bpy.context.space_data.cursor_location[2])
@@ -9513,12 +9513,12 @@ class MYOBJECT_698300(bpy.types.Operator):#ミラーリング
 
         for obj in selection:
             if obj.type in editable:
-                deselect()
-                activate(obj)
+                fjw_deselect()
+                fjw_activate(obj)
                 obj.active_shape_key_index = 0
 
                 #bpy.ops.view3d.snap_cursor_to_selected()
-                mode("EDIT")
+                fjw_mode("EDIT")
                 
                 #select_allがタイプによって違う
                 if obj.type == "MESH":
@@ -9533,12 +9533,12 @@ class MYOBJECT_698300(bpy.types.Operator):#ミラーリング
                 #法線反転
                 if obj.type == "MESH":
                     bpy.ops.mesh.flip_normals()
-                mode("OBJECT")
+                fjw_mode("OBJECT")
 
         #原点処理
         for obj in selection:
-            deselect()
-            activate(obj)
+            fjw_deselect()
+            fjw_activate(obj)
             bpy.ops.view3d.snap_cursor_to_selected()
             c = bpy.context.space_data.cursor_location
             bpy.context.space_data.cursor_location = (c[0] * -1,c[1],c[2])
@@ -9546,7 +9546,7 @@ class MYOBJECT_698300(bpy.types.Operator):#ミラーリング
 
 
 
-        select(selection)
+        fjw_select(selection)
 
         #ピボット戻す
         bpy.context.space_data.pivot_point = current_pivot_point        
@@ -9636,14 +9636,14 @@ class MYOBJECT_83454(bpy.types.Operator):#global X
     ###################################
     def execute(self, context):
         bpy.ops.object.duplicate(linked=False, mode='TRANSLATION')
-        selection = get_selected_list()
+        selection = fjw_get_selected_list()
 
         current_pivot_point = bpy.context.space_data.pivot_point
         current_cursor = (bpy.context.space_data.cursor_location[0],bpy.context.space_data.cursor_location[1],bpy.context.space_data.cursor_location[2])
 
         bpy.context.space_data.cursor_location = (0,0,0)
         bpy.ops.object.empty_add(type='PLAIN_AXES', view_align=False, location=bpy.context.space_data.cursor_location, layers=[True for i in range(20)])
-        empty = active()
+        empty = fjw_active()
 
 
         #一回Emptyにペアレントして*-1、でトランスフォーム維持して解除
@@ -9656,12 +9656,12 @@ class MYOBJECT_83454(bpy.types.Operator):#global X
             if obj.parent == None or obj.parent not in selection:
                 roots.append(obj)
 
-        deselect()
-        select(roots)
+        fjw_deselect()
+        fjw_select(roots)
         bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
 
-        select(roots)
-        activate(empty)
+        fjw_select(roots)
+        fjw_activate(empty)
         empty.select = True
         #ペアレント
         bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
@@ -9672,10 +9672,10 @@ class MYOBJECT_83454(bpy.types.Operator):#global X
         #親子解除
         bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
 
-        deselect()
-        delete([empty])
+        fjw_deselect()
+        fjw_delete([empty])
 
-        select(selection)
+        fjw_select(selection)
 
 
         #bpy.context.space_data.pivot_point = 'CURSOR'
@@ -9719,14 +9719,14 @@ class MYOBJECT_334794(bpy.types.Operator):#カーソル X
     ###################################
     def execute(self, context):
         bpy.ops.object.duplicate(linked=False, mode='TRANSLATION')
-        selection = get_selected_list()
+        selection = fjw_get_selected_list()
 
         current_pivot_point = bpy.context.space_data.pivot_point
         current_cursor = (bpy.context.space_data.cursor_location[0],bpy.context.space_data.cursor_location[1],bpy.context.space_data.cursor_location[2])
 
         #bpy.context.space_data.cursor_location = (0,0,0)
         bpy.ops.object.empty_add(type='PLAIN_AXES', view_align=False, location=bpy.context.space_data.cursor_location, layers=[True for i in range(20)])
-        empty = active()
+        empty = fjw_active()
 
 
         #一回Emptyにペアレントして*-1、でトランスフォーム維持して解除
@@ -9739,12 +9739,12 @@ class MYOBJECT_334794(bpy.types.Operator):#カーソル X
             if obj.parent == None or obj.parent not in selection:
                 roots.append(obj)
 
-        deselect()
-        select(roots)
+        fjw_deselect()
+        fjw_select(roots)
         bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
 
-        select(roots)
-        activate(empty)
+        fjw_select(roots)
+        fjw_activate(empty)
         empty.select = True
         #ペアレント
         bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
@@ -9755,10 +9755,10 @@ class MYOBJECT_334794(bpy.types.Operator):#カーソル X
         #親子解除
         bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
 
-        deselect()
-        delete([empty])
+        fjw_deselect()
+        fjw_delete([empty])
 
-        select(selection)
+        fjw_select(selection)
 
         #ピボット戻す
         bpy.context.space_data.pivot_point = current_pivot_point        
@@ -9786,14 +9786,14 @@ class MYOBJECT_168959(bpy.types.Operator):#Y
     ###################################
     def execute(self, context):
         bpy.ops.object.duplicate(linked=False, mode='TRANSLATION')
-        selection = get_selected_list()
+        selection = fjw_get_selected_list()
 
         current_pivot_point = bpy.context.space_data.pivot_point
         current_cursor = (bpy.context.space_data.cursor_location[0],bpy.context.space_data.cursor_location[1],bpy.context.space_data.cursor_location[2])
 
         #bpy.context.space_data.cursor_location = (0,0,0)
         bpy.ops.object.empty_add(type='PLAIN_AXES', view_align=False, location=bpy.context.space_data.cursor_location, layers=[True for i in range(20)])
-        empty = active()
+        empty = fjw_active()
 
 
         #一回Emptyにペアレントして*-1、でトランスフォーム維持して解除
@@ -9806,12 +9806,12 @@ class MYOBJECT_168959(bpy.types.Operator):#Y
             if obj.parent == None or obj.parent not in selection:
                 roots.append(obj)
 
-        deselect()
-        select(roots)
+        fjw_deselect()
+        fjw_select(roots)
         bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
 
-        select(roots)
-        activate(empty)
+        fjw_select(roots)
+        fjw_activate(empty)
         empty.select = True
         #ペアレント
         bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
@@ -9822,10 +9822,10 @@ class MYOBJECT_168959(bpy.types.Operator):#Y
         #親子解除
         bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
 
-        deselect()
-        delete([empty])
+        fjw_deselect()
+        fjw_delete([empty])
 
-        select(selection)
+        fjw_select(selection)
 
         #ピボット戻す
         bpy.context.space_data.pivot_point = current_pivot_point        
@@ -9854,14 +9854,14 @@ class MYOBJECT_68739(bpy.types.Operator):#Z
     ###################################
     def execute(self, context):
         bpy.ops.object.duplicate(linked=False, mode='TRANSLATION')
-        selection = get_selected_list()
+        selection = fjw_get_selected_list()
 
         current_pivot_point = bpy.context.space_data.pivot_point
         current_cursor = (bpy.context.space_data.cursor_location[0],bpy.context.space_data.cursor_location[1],bpy.context.space_data.cursor_location[2])
 
         #bpy.context.space_data.cursor_location = (0,0,0)
         bpy.ops.object.empty_add(type='PLAIN_AXES', view_align=False, location=bpy.context.space_data.cursor_location, layers=[True for i in range(20)])
-        empty = active()
+        empty = fjw_active()
 
 
         #一回Emptyにペアレントして*-1、でトランスフォーム維持して解除
@@ -9874,12 +9874,12 @@ class MYOBJECT_68739(bpy.types.Operator):#Z
             if obj.parent == None or obj.parent not in selection:
                 roots.append(obj)
 
-        deselect()
-        select(roots)
+        fjw_deselect()
+        fjw_select(roots)
         bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
 
-        select(roots)
-        activate(empty)
+        fjw_select(roots)
+        fjw_activate(empty)
         empty.select = True
         #ペアレント
         bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
@@ -9890,10 +9890,10 @@ class MYOBJECT_68739(bpy.types.Operator):#Z
         #親子解除
         bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
 
-        deselect()
-        delete([empty])
+        fjw_deselect()
+        fjw_delete([empty])
 
-        select(selection)
+        fjw_select(selection)
 
         #ピボット戻す
         bpy.context.space_data.pivot_point = current_pivot_point        
@@ -11005,11 +11005,11 @@ class MYOBJECT_742340(bpy.types.Operator):#アーマチュアからスキンを�
     #処理部分
     ###################################
     def execute(self, context):
-        if active().type != "ARMATURE":
+        if fjw_active().type != "ARMATURE":
             self.report({"INFO"},"アーマチュアを選択してください")
             return {'CANCELLED'}
 
-        armature_org = active()
+        armature_org = fjw_active()
 
         #############
         #アーマチュアからメッシュを生成
@@ -11018,10 +11018,10 @@ class MYOBJECT_742340(bpy.types.Operator):#アーマチュアからスキンを�
         #トランスフォームを反映するために複製して親子解除する
         bpy.ops.object.duplicate(linked=False, mode='TRANSLATION')
         bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
-        armature = active()
+        armature = fjw_active()
         bonedata = {}
 
-        mode("POSE")
+        fjw_mode("POSE")
 
         #ポーズからとるとやっぱよくなかった。デフォルトから取るべき。
         armature.data.pose_position = 'REST'
@@ -11030,7 +11030,7 @@ class MYOBJECT_742340(bpy.types.Operator):#アーマチュアからスキンを�
         for bone in bones:
             bonedata[bone.name] = {"name":bone.name, "head":bone.head, "tail":bone.tail}
 
-        mode("OBJECT")
+        fjw_mode("OBJECT")
 
 
         bpy.ops.object.add(type='MESH')
@@ -11062,27 +11062,27 @@ class MYOBJECT_742340(bpy.types.Operator):#アーマチュアからスキンを�
             e.vertices[1] = v1
 
         #重複頂点を削除
-        mode("EDIT")
+        fjw_mode("EDIT")
         bpy.ops.mesh.select_all(action='SELECT')
         #5mm
         bpy.ops.mesh.remove_doubles(threshold=0.005)
-        mode("OBJECT")
+        fjw_mode("OBJECT")
 
 
         #複製したアーマチュアを削除
-        delete([armature])
+        fjw_delete([armature])
 
-        deselect()
-        activate(obj)
+        fjw_deselect()
+        fjw_activate(obj)
         obj.select = True
 
         #元アーマチュアにくくりつけておく
-        activate(armature_org)
+        fjw_activate(armature_org)
         bpy.ops.object.parent_set(type='ARMATURE_AUTO')
 
 
         #スキン
-        activate(obj)
+        fjw_activate(obj)
         bpy.ops.object.modifier_add(type='SKIN')
         bpy.ops.object.mode_set(mode='EDIT', toggle=False)
         bpy.ops.mesh.select_all(action='SELECT')
@@ -11119,12 +11119,12 @@ class MYOBJECT_166889(bpy.types.Operator):#選択ボーン以外のウェイト�
     ###################################
     def execute(self, context):
 
-        tmp = get_selected_list("ARMATURE")
+        tmp = fjw_get_selected_list("ARMATURE")
         if tmp.count == 0:
             return {'CANCELLED'}
         armatures = tmp
 
-        tmp = get_selected_list("MESH")
+        tmp = fjw_get_selected_list("MESH")
         if tmp.count == 0:
             return {'CANCELLED'}
         meshes = tmp
@@ -11134,8 +11134,8 @@ class MYOBJECT_166889(bpy.types.Operator):#選択ボーン以外のウェイト�
         armature_data = {}
         for arm in armatures:
             data = {}
-            activate(arm)
-            mode("POSE")
+            fjw_activate(arm)
+            fjw_mode("POSE")
             for posebone in arm.pose.bones:
                 data[posebone.bone.name] = posebone.bone.select
             armature_data[arm.name] = data
@@ -11185,12 +11185,12 @@ class MYOBJECT_273078(bpy.types.Operator):#ウェイトボーン相対
         bpy.ops.object.parent_set(type='ARMATURE_NAME')
 
 
-        tmp = get_selected_list("ARMATURE")
+        tmp = fjw_get_selected_list("ARMATURE")
         if tmp.count == 0:
             return {'CANCELLED'}
         armatures = tmp
 
-        tmp = get_selected_list("MESH")
+        tmp = fjw_get_selected_list("MESH")
         if tmp.count == 0:
             return {'CANCELLED'}
         meshes = tmp
@@ -11200,8 +11200,8 @@ class MYOBJECT_273078(bpy.types.Operator):#ウェイトボーン相対
         armature_data = {}
         for arm in armatures:
             data = {}
-            activate(arm)
-            mode("POSE")
+            fjw_activate(arm)
+            fjw_mode("POSE")
 
             #アクティブ以外のウェイトとかいらないから他を非選択に
             activeposebone = arm.data.bones.active
@@ -11335,20 +11335,20 @@ def update_armaturesystem(self, context, mute_consraints):
     →childrenの中で、Armatureがついてる奴ピックアップすればいい！
     """
     #アーマチュアを選択して、あとは自動でやる
-    if active().type != "ARMATURE":
+    if fjw_active().type != "ARMATURE":
         return
 
-    armature = active()
-    mode("OBJECT")
+    armature = fjw_active()
+    fjw_mode("OBJECT")
     bpy.ops.object.select_grouped(type='CHILDREN_RECURSIVE')
-    childrenall = get_selected_list()
-    deselect()
-    activate(armature)
+    childrenall = fjw_get_selected_list()
+    fjw_deselect()
+    fjw_activate(armature)
 
     #コンストレイントを無効にする
 
-    activate(armature)
-    mode("POSE")
+    fjw_activate(armature)
+    fjw_mode("POSE")
     bpy.ops.pose.select_all(action='SELECT')
     if mute_consraints:
         for bone in armature.pose.bones:
@@ -11357,18 +11357,18 @@ def update_armaturesystem(self, context, mute_consraints):
                     constraint.mute = True
 
         
-    mode("OBJECT")
+    fjw_mode("OBJECT")
 
     bpy.ops.object.select_all(action='SELECT')
     bpy.ops.transform.translate(value=(0, 0, 0), constraint_axis=(True, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1, release_confirm=True)
-    deselect()
+    fjw_deselect()
 
 
     targetobjects = []
     #アーマチュアmodがついている子をターゲットリストにいれる
     for obj in armature.children:
         if obj.type == "MESH":
-            modu = Modutils(obj)
+            modu = fjw_Modutils(obj)
             arm = modu.find_bytype("ARMATURE")
             if arm != None:
                     targetobjects.append(obj)
@@ -11376,9 +11376,9 @@ def update_armaturesystem(self, context, mute_consraints):
     deformedobjects = []
     #!  armature.childrenの中にcageの子とか含まれてない！
     for obj in childrenall:
-        activate(obj)
+        fjw_activate(obj)
         #self.report({"INFO"},obj.name)
-        modu = Modutils(obj)
+        modu = fjw_Modutils(obj)
         #アーマチュアついてないのでミラーとメッシュデフォーム適用する
         meshdeforms = modu.find_bytype_list("MESH_DEFORM")
         for mod in meshdeforms:
@@ -11398,10 +11398,10 @@ def update_armaturesystem(self, context, mute_consraints):
 
 
     ##ターゲット群をペアレント解除する
-    deselect()
+    fjw_deselect()
     for obj in targetobjects:
         obj.hide = False
-    select(targetobjects)
+    fjw_select(targetobjects)
     bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
 
     #for obj in targetobjects:
@@ -11410,14 +11410,14 @@ def update_armaturesystem(self, context, mute_consraints):
     #    self.report({"INFO"},obj.name)
     #    bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
         
-    mode("OBJECT")
+    fjw_mode("OBJECT")
 
     mirrored_objects = []
 
     #オブジェクト側：mod適用
     for obj in targetobjects:
-        activate(obj)
-        modu = Modutils(obj)
+        fjw_activate(obj)
+        modu = fjw_Modutils(obj)
 
         mrrs = modu.find_bytype_list("MIRROR")
         for mod in mrrs:
@@ -11432,30 +11432,30 @@ def update_armaturesystem(self, context, mute_consraints):
     mirrored_objects = list(set(mirrored_objects))
 
     for obj in targetobjects:
-        activate(obj)
+        fjw_activate(obj)
         bpy.ops.object.origin_set(type='ORIGIN_CENTER_OF_MASS')
 
         
     #アーマチュア側：デフォルトのポーズに適用
-    activate(armature)
-    mode("POSE")
+    fjw_activate(armature)
+    fjw_mode("POSE")
     bpy.ops.pose.select_all(action='SELECT')
     bpy.ops.pose.armature_apply()
-    mode("OBJECT")
+    fjw_mode("OBJECT")
     #OK
         
         
         
     #再リンク
     #全部選択解除
-    deselect()
+    fjw_deselect()
         
     #アーマチュアとオブジェクトを選択
-    select(targetobjects)
+    fjw_select(targetobjects)
     armature.select = True
         
     #アーマチュアをアクティブオブジェクトに
-    activate(armature)
+    fjw_activate(armature)
     #空のウェイトでペアレント
     bpy.ops.object.parent_set(type='ARMATURE_NAME', xmirror=False, keep_transform=False)
     #オブジェクト側：アーマチュアを一番上にもってく
@@ -11463,14 +11463,14 @@ def update_armaturesystem(self, context, mute_consraints):
 
     #ミラーのつけなおし
     for obj in mirrored_objects:
-        activate(obj)
-        modu = Modutils(obj)
+        fjw_activate(obj)
+        modu = fjw_Modutils(obj)
         mrr = modu.add("Mirror","MIRROR")
         mrr.mirror_object = armature
 
     #mod順整列
     for obj in targetobjects:
-        modu = Modutils(obj)
+        modu = fjw_Modutils(obj)
         modu.sort()
 
         #activate(obj)
@@ -11485,8 +11485,8 @@ def update_armaturesystem(self, context, mute_consraints):
     
 
     #コンストレイントを有効にする
-    activate(armature)
-    mode("POSE")
+    fjw_activate(armature)
+    fjw_mode("POSE")
     bpy.ops.pose.select_all(action='SELECT')
     for bone in armature.pose.bones:
         if(armature.data.bones[bone.name].select == True):
@@ -11496,8 +11496,8 @@ def update_armaturesystem(self, context, mute_consraints):
     #メッシュデフォームのつけなおし
     for pair in deformedobjects:
         obj = pair[0]
-        activate(obj)
-        modu = Modutils(obj)
+        fjw_activate(obj)
+        modu = fjw_Modutils(obj)
         mod = modu.add("MeshDeform","MESH_DEFORM")
         mod.object = pair[1]
         bpy.ops.object.meshdeform_bind(modifier=mod.name)
@@ -11760,8 +11760,8 @@ class MYOBJECT_244616(bpy.types.Operator):#ジオメトリ
     #処理部分
     ###################################
     def execute(self, context):
-        deselect()
-        active().name = self.bl_label
+        fjw_deselect()
+        fjw_active().name = self.bl_label
 
         return {'FINISHED'}
 ########################################
@@ -11782,8 +11782,8 @@ class MYOBJECT_589321(bpy.types.Operator):#素体アーマチュア
     #処理部分
     ###################################
     def execute(self, context):
-        deselect()
-        active().name = self.bl_label
+        fjw_deselect()
+        fjw_active().name = self.bl_label
         
         return {'FINISHED'}
 ########################################
@@ -11804,8 +11804,8 @@ class MYOBJECT_573567(bpy.types.Operator):#ArmatureController
     #処理部分
     ###################################
     def execute(self, context):
-        deselect()
-        active().name = self.bl_label
+        fjw_deselect()
+        fjw_active().name = self.bl_label
         
         return {'FINISHED'}
 ########################################
@@ -11835,8 +11835,8 @@ class MYOBJECT_285809(bpy.types.Operator):#手コントローラ右
     #処理部分
     ###################################
     def execute(self, context):
-        deselect()
-        active().name = self.bl_label
+        fjw_deselect()
+        fjw_active().name = self.bl_label
         
         return {'FINISHED'}
 ########################################
@@ -11857,8 +11857,8 @@ class MYOBJECT_431070(bpy.types.Operator):#手コントローラ左
     #処理部分
     ###################################
     def execute(self, context):
-        deselect()
-        active().name = self.bl_label
+        fjw_deselect()
+        fjw_active().name = self.bl_label
         
         return {'FINISHED'}
 ########################################
@@ -11887,8 +11887,8 @@ class MYOBJECT_116809(bpy.types.Operator):#右手
     #処理部分
     ###################################
     def execute(self, context):
-        deselect()
-        active().name = self.bl_label
+        fjw_deselect()
+        fjw_active().name = self.bl_label
         
         return {'FINISHED'}
 ########################################
@@ -11909,8 +11909,8 @@ class MYOBJECT_694161(bpy.types.Operator):#左手
     #処理部分
     ###################################
     def execute(self, context):
-        deselect()
-        active().name = self.bl_label
+        fjw_deselect()
+        fjw_active().name = self.bl_label
         
         return {'FINISHED'}
 ########################################
@@ -11939,8 +11939,8 @@ class MYOBJECT_424374(bpy.types.Operator):#右足
     #処理部分
     ###################################
     def execute(self, context):
-        deselect()
-        active().name = self.bl_label
+        fjw_deselect()
+        fjw_active().name = self.bl_label
         
         return {'FINISHED'}
 ########################################
@@ -11961,8 +11961,8 @@ class MYOBJECT_372755(bpy.types.Operator):#左足
     #処理部分
     ###################################
     def execute(self, context):
-        deselect()
-        active().name = self.bl_label
+        fjw_deselect()
+        fjw_active().name = self.bl_label
         
         return {'FINISHED'}
 ########################################
@@ -11980,11 +11980,11 @@ uiitem("標準ボーンリネーマ（Rigify準拠）")
 
 
 def bone_rename(bonename):
-    arm = active()
+    arm = fjw_active()
     if arm.type != "ARMATURE":
         self.report({"INFO"},"アーマチュアを選択してください")
         return {'CANCELLED'}
-    mode("EDIT")
+    fjw_mode("EDIT")
     bone = arm.data.edit_bones.active
     bone.name = bonename
 
@@ -12590,7 +12590,7 @@ class MYOBJECT_729233(bpy.types.Operator):#選択の形状をアクティブに�
     #処理部分
     ###################################
     def execute(self, context):
-        source_arm = active()
+        source_arm = fjw_active()
         target_arm = None
 
         for obj in bpy.context.selected_objects:
@@ -12622,8 +12622,8 @@ class MYOBJECT_729233(bpy.types.Operator):#選択の形状をアクティブに�
         #target_arm.location[1] = source_arm.location[1]
         #target_arm.location[2] = source_arm.location[2]
 
-        activate(target_arm)
-        mode("EDIT")
+        fjw_activate(target_arm)
+        fjw_mode("EDIT")
 
         bone_names = []
 
@@ -12646,17 +12646,17 @@ class MYOBJECT_729233(bpy.types.Operator):#選択の形状をアクティブに�
 
 
         #とりあえず数値をあらかじめ取得してみる
-        mode("OBJECT")
-        activate(source_arm)
-        mode("EDIT")
+        fjw_mode("OBJECT")
+        fjw_activate(source_arm)
+        fjw_mode("EDIT")
         source_data = {}
         for bone in source_arm.data.edit_bones:
             source_data[bone.name] = [copy.deepcopy(bone.head),copy.deepcopy(bone.tail)]
             self.report({"INFO"},"src:" + bone.name)
 
-        mode("OBJECT")
-        activate(target_arm)
-        mode("EDIT")
+        fjw_mode("OBJECT")
+        fjw_activate(target_arm)
+        fjw_mode("EDIT")
         for bone_name in bone_names:
             #mode("OBJECT")
             #mode("EDIT")
@@ -12699,10 +12699,10 @@ class MYOBJECT_546712(bpy.types.Operator):#選択からアクティブへリタ�
     ###################################
     def execute(self, context):
         source_arm = None
-        target_arm = active()
+        target_arm = fjw_active()
         
         #隠れてるものがあるとまずい。
-        mode("OBJECT")
+        fjw_mode("OBJECT")
         bpy.ops.object.hide_view_clear()
 
 
@@ -12716,24 +12716,24 @@ class MYOBJECT_546712(bpy.types.Operator):#選択からアクティブへリタ�
             return {'CANCELLED'}
 
         #ターゲットの子を全て削除
-        deselect()
-        activate(target_arm)
+        fjw_deselect()
+        fjw_activate(target_arm)
         bpy.ops.object.select_grouped(type='CHILDREN_RECURSIVE')
         #メッシュだけ
-        for obj in get_selected_list():
+        for obj in fjw_get_selected_list():
             if obj.type != "MESH":
                 obj.select = False
-        delete(get_selected_list())
+        fjw_delete(fjw_get_selected_list())
 
 
         #ソースの子を取得
-        deselect()
-        activate(source_arm)
+        fjw_deselect()
+        fjw_activate(source_arm)
         bpy.ops.object.select_grouped(type='CHILDREN')
         
         #オブジェクトのペアレント状態を保存する
         source_children_data = {}
-        for obj in get_selected_list():
+        for obj in fjw_get_selected_list():
             #ペアレントはsource_armにきまってんのでペアレントオブジェクトの情報はいらない
             source_children_data[obj.name] = {"name":obj.name,"parent_bone":obj.parent_bone, "parent_type":obj.parent_type}
             #self.report({"INFO"}, str(source_children_data[obj.name]))
@@ -12747,11 +12747,11 @@ class MYOBJECT_546712(bpy.types.Operator):#選択からアクティブへリタ�
         self.report({"INFO"},str(source_children_data))
         for obj_data_name in source_children_data:
             obj_data = source_children_data[obj_data_name]
-            deselect()
+            fjw_deselect()
             #self.report({"INFO"},str(obj_data))
             obj = bpy.data.objects[obj_data["name"]]
             obj.select = True
-            activate(target_arm)
+            fjw_activate(target_arm)
             target_arm.select = True
 
 
@@ -12759,9 +12759,9 @@ class MYOBJECT_546712(bpy.types.Operator):#選択からアクティブへリタ�
                 bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
 
             if obj_data["parent_type"] == "BONE":
-                mode("POSE")
+                fjw_mode("POSE")
                 #アクティブボーンの設定
-                bones = active().data.bones
+                bones = fjw_active().data.bones
                 if obj_data["parent_bone"] not in bones:
                     continue
                 bones.active = bones[obj_data["parent_bone"]]
@@ -12775,9 +12775,9 @@ class MYOBJECT_546712(bpy.types.Operator):#選択からアクティブへリタ�
         #mod設定
         for obj_data_name in source_children_data:
             obj_data = source_children_data[obj_data_name]
-            deselect()
+            fjw_deselect()
             obj = bpy.data.objects[obj_data["name"]]
-            activate(obj)
+            fjw_activate(obj)
             for mod in obj.modifiers:
                 if mod.type == "MIRROR":
                     if mod.mirror_object == source_arm:
@@ -12858,7 +12858,7 @@ def blenrig_mdbinding(objects, bound):
                         if mod.object == cage:
                             #バインド変更
                             if mod.is_bound != bound:
-                                activate(obj)
+                                fjw_activate(obj)
                                 bpy.ops.object.meshdeform_bind(modifier=mod.name)
 
     pass
@@ -12884,12 +12884,12 @@ class MYOBJECT_545067(bpy.types.Operator):#体型編集
     ###################################
     def execute(self, context):
         #バインド解除
-        blenrig_mdbinding(get_selected_list(), False)
+        blenrig_mdbinding(fjw_get_selected_list(), False)
 
         bpy.context.scene.layers[10] = True
         bpy.context.scene.layers[11] = True
 
-        rig = active()
+        rig = fjw_active()
         if rig.type != "ARMATURE":
             return {'CANCELLED'}
 
@@ -12901,8 +12901,8 @@ class MYOBJECT_545067(bpy.types.Operator):#体型編集
         #rig = bpy.data.objects["biped_blenrig"]
         if rig != None:
             rig.show_x_ray = True
-            activate(rig)
-            mode("POSE")
+            fjw_activate(rig)
+            fjw_mode("POSE")
             rig.data.reproportion = True
 
         return {'FINISHED'}
@@ -13080,8 +13080,8 @@ class MYOBJECT_859280(bpy.types.Operator):#完了
     #処理部分
     ###################################
     def execute(self, context):
-        current = active()
-        mode("OBJECT")
+        current = fjw_active()
+        fjw_mode("OBJECT")
         #armature = bpy.data.objects["biped_blenrig"]
         #cage = bpy.data.objects["BlenRig_mdef_cage"]
         #proxy = bpy.data.objects["BlenRig_proxy_model"]
@@ -13089,14 +13089,14 @@ class MYOBJECT_859280(bpy.types.Operator):#完了
         if current.type != "ARMATURE":
             return {'CANCELLED'}
         armature = current
-        cage = find("BlenRig_mdef_cage")
-        proxy = find("BlenRig_proxy_model")
+        cage = fjw_find("BlenRig_mdef_cage")
+        proxy = fjw_find("BlenRig_proxy_model")
 
         ######################################################################
         #Childrenメッシュの下処理
         ######################################################################
 
-        activate(armature)
+        fjw_activate(armature)
         targetobjects = []
         targetobjects_data = {}
         #アーマチュアmodがついている子をターゲットリストにいれる
@@ -13116,8 +13116,8 @@ class MYOBJECT_859280(bpy.types.Operator):#完了
         #ターゲット群をペアレント解除する
         for obj in targetobjects:
             obj.hide = False
-            deselect()
-            activate(obj)
+            fjw_deselect()
+            fjw_activate(obj)
             self.report({"INFO"},obj.name)
             bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
         
@@ -13158,30 +13158,30 @@ class MYOBJECT_859280(bpy.types.Operator):#完了
         ######################################################################
         #ケージのメッシュベイク
         if cage is not None:
-            deselect()
+            fjw_deselect()
             bpy.context.scene.layers[11] = True
-            activate(cage)
+            fjw_activate(cage)
             cage.select = True
-            mode("OBJECT")
+            fjw_mode("OBJECT")
             bpy.ops.blenrig5.mesh_pose_baker()
             cage.select = False
 
         #プロクシのメッシュベイク
         if proxy is not None:
-            deselect()
+            fjw_deselect()
             bpy.context.scene.layers[1] = True
-            activate(proxy)
+            fjw_activate(proxy)
             proxy.select = True
-            mode("OBJECT")
+            fjw_mode("OBJECT")
             bpy.ops.blenrig5.mesh_pose_baker()
 
             bpy.context.scene.layers[1] = False
 
         #アーマチュアのベイク
-        deselect()
-        activate(armature)
+        fjw_deselect()
+        fjw_activate(armature)
         armature.select = True
-        mode("POSE")
+        fjw_mode("POSE")
         bpy.ops.pose.reveal()
         bpy.ops.blenrig5.armature_baker()
 
@@ -13189,16 +13189,16 @@ class MYOBJECT_859280(bpy.types.Operator):#完了
         ######################################################################
         #Childrenメッシュの更新
         ######################################################################
-        deselect()
+        fjw_deselect()
         #アーマチュアとオブジェクトを選択
 
         #再ペアレント
         for obj_data_name in targetobjects_data:
             obj_data = targetobjects_data[obj_data_name]
-            deselect()
+            fjw_deselect()
             obj = bpy.data.objects[obj_data["name"]]
             obj.select = True
-            activate(armature)
+            fjw_activate(armature)
             armature.select = True
 
 
@@ -13209,32 +13209,32 @@ class MYOBJECT_859280(bpy.types.Operator):#完了
                     bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
 
             if obj_data["parent_type"] == "BONE":
-                activate(armature)
-                mode("POSE")
+                fjw_activate(armature)
+                fjw_mode("POSE")
                 #アクティブボーンの設定
-                bones = active().data.bones
+                bones = fjw_active().data.bones
                 if obj_data["parent_bone"] not in bones:
                     continue
                 bones.active = bones[obj_data["parent_bone"]]
                 self.report({"INFO"},bones.active.basename)
 
-                mode("POSE")
-                self.report({"INFO"},"active:" + active().data.bones.active.basename)
+                fjw_mode("POSE")
+                self.report({"INFO"},"active:" + fjw_active().data.bones.active.basename)
                 
 
                 #オブジェクトレイヤーを全表示に
                 current_objlayers = [True for i in range(32)]
                 for i in range(32):
-                    current_objlayers[i] = active().data.layers[i]
+                    current_objlayers[i] = fjw_active().data.layers[i]
                 #copy.deepcopy(active().data.layers)
-                active().data.layers = [True for i in range(32)]
+                fjw_active().data.layers = [True for i in range(32)]
 
 
                 #ペアレントつける
                 bpy.ops.object.parent_set(type='BONE_RELATIVE')
 
                 #オブジェクトレイヤーを戻す
-                active().data.layers = current_objlayers
+                fjw_active().data.layers = current_objlayers
 
 
         ##空のウェイトでペアレント
@@ -13247,7 +13247,7 @@ class MYOBJECT_859280(bpy.types.Operator):#完了
         #アーマチュアを一番上に
         for obj in targetobjects:
             if obj.type == "MESH":
-                activate(obj)
+                fjw_activate(obj)
                 modslen = len(obj.modifiers)
                 if modslen > 0:
                     #一番新しい奴＝アーマチュア
@@ -13259,15 +13259,15 @@ class MYOBJECT_859280(bpy.types.Operator):#完了
         #ミラーのつけなおし
         for obj in mirrored_objects:
             if obj.type == "MESH":
-                activate(obj)
+                fjw_activate(obj)
                 bpy.ops.object.modifier_add(type='MIRROR')
-                mod = getnewmod(obj)
+                mod = fjw_getnewmod(obj)
                 mod.mirror_object = armature
 
         #ミラーは一番上に。
         for obj in mirrored_objects:
             if obj.type == "MESH":
-                activate(obj)
+                fjw_activate(obj)
                 modslen = len(obj.modifiers)
                 if modslen > 0:
                     mod = obj.modifiers[modslen - 1]
@@ -13279,12 +13279,12 @@ class MYOBJECT_859280(bpy.types.Operator):#完了
         ######################################################################
         #Blenrigパート
         ######################################################################
-        activate(armature)
+        fjw_activate(armature)
         armature.data.reproportion = False
 
         #再バインド
         #blenrig_mdbinding(armature.children, True)
-        activate(current)
+        fjw_activate(current)
 
         return {'FINISHED'}
 ########################################
@@ -13364,7 +13364,7 @@ class MYOBJECT_724488(bpy.types.Operator):#ケージスカルプト
         #ケージレイヤの表示
         bpy.context.scene.layers[11] = True
         
-        mode("OBJECT")
+        fjw_mode("OBJECT")
         cage = bpy.data.objects["BlenRig_mdef_cage"]
         cage.select = True
 
@@ -13373,15 +13373,15 @@ class MYOBJECT_724488(bpy.types.Operator):#ケージスカルプト
         bpy.context.scene.render.simplify_subdivision = 0
 
         #関連バインドの解除→洗濯物のみ。負荷軽減。
-        blenrig_mdbinding(get_selected_list(),False)
+        blenrig_mdbinding(fjw_get_selected_list(),False)
 
-        reject_notmesh()
-        localview()
+        fjw_reject_notmesh()
+        fjw_localview()
 
         bpy.context.scene.layers[11] = True
-        activate(cage)
+        fjw_activate(cage)
         cage.draw_type = "TEXTURED"
-        mode("SCULPT")
+        fjw_mode("SCULPT")
 
         return {'FINISHED'}
 ########################################
@@ -13403,19 +13403,19 @@ class MYOBJECT_371121(bpy.types.Operator):#完了
     #処理部分
     ###################################
     def execute(self, context):
-        globalview()
+        fjw_globalview()
 
         cage = bpy.data.objects["BlenRig_mdef_cage"]
-        mode("OBJECT")
-        activate(cage)
-        mode("OBJECT")
+        fjw_mode("OBJECT")
+        fjw_activate(cage)
+        fjw_mode("OBJECT")
         cage.draw_type = "WIRE"
 
         
 
         #関連再バインド
         blenrig_mdbinding(bpy.data.objects, True)
-        activate(cage)
+        fjw_activate(cage)
         return {'FINISHED'}
 ########################################
 
@@ -13575,13 +13575,13 @@ class MYOBJECT_954427(bpy.types.Operator):#多重解像度モデル化
     #処理部分
     ###################################
     def execute(self, context):
-        reject_notmesh()
-        targets = get_selected_list()
+        fjw_reject_notmesh()
+        targets = fjw_get_selected_list()
         for target in targets:
             bpy.context.scene.render.use_simplify = True
             bpy.context.scene.render.simplify_subdivision = 0
-            deselect()
-            activate(target)
+            fjw_deselect()
+            fjw_activate(target)
             target.select = True
             #subdivレベルを得る
             div = 0
@@ -13593,7 +13593,7 @@ class MYOBJECT_954427(bpy.types.Operator):#多重解像度モデル化
                     div = mod.levels
             
             bpy.ops.object.duplicate(linked=False, mode='TRANSLATION')
-            newone = active()
+            newone = fjw_active()
 
             #mod削除
             for mod in newone.modifiers:
@@ -13601,7 +13601,7 @@ class MYOBJECT_954427(bpy.types.Operator):#多重解像度モデル化
             
             #多重解像度
             bpy.ops.object.modifier_add(type='MULTIRES')
-            mod = getnewmod(newone)
+            mod = fjw_getnewmod(newone)
             #分割
             for n in range(div):
                 bpy.ops.object.multires_subdivide(modifier=mod.name)
@@ -13613,9 +13613,9 @@ class MYOBJECT_954427(bpy.types.Operator):#多重解像度モデル化
 
             name = target.name
             #元のを削除
-            deselect()
+            fjw_deselect()
             target.select = True
-            delete(get_selected_list())
+            fjw_delete(fjw_get_selected_list())
             newone.name = name
 
         self.report({"INFO"},"完了")
@@ -13730,7 +13730,7 @@ class MYOBJECT_302662(bpy.types.Operator):#オートアバター
         #print("armdata:****************")
         #print(armdata)
                       
-        framejump(10)
+        fjw_framejump(10)
 
 
         #MD作業ファイル準備
@@ -13768,26 +13768,26 @@ class MYOBJECT_302662(bpy.types.Operator):#オートアバター
         #bpy.ops.wm.quit_blender()
 
         bpy.ops.object.select_all(action='SELECT')
-        reject_notmesh()
-        selection = get_selected_list()
+        fjw_reject_notmesh()
+        selection = fjw_get_selected_list()
 
         targets = []
 
         for obj in selection:
             if "Body" in obj.name:
-                modu = Modutils(obj)
+                modu = fjw_Modutils(obj)
                 armt = modu.find("Armature")
                 if armt != None:
                     #カメラに映っているもののみに実行する。
-                    if checkIfIsInCameraView(obj):
+                    if fjw_checkIfIsInCameraView(obj):
                         #targets.append(obj)
                         targets.append(armt.object)
 
         for obj in targets:
             if obj == None:
                 continue
-            deselect()
-            activate(obj)
+            fjw_deselect()
+            fjw_activate(obj)
             if obj.type == "ARMATURE":
                 bpy.ops.object.framejump_10()
                 bpy.ops.object.fjw_set_key()
@@ -13837,17 +13837,17 @@ class MYOBJECT_487662(bpy.types.Operator):#オートインポート
 
             if targetname in bpy.data.objects:
                 obj = bpy.data.objects[targetname]
-                arm = find_child_bytype(obj, "ARMATURE")
+                arm = fjw_find_child_bytype(obj, "ARMATURE")
                 if arm is not None:
-                    mode("OBJECT")
-                    deselect()
-                    activate(arm)
+                    fjw_mode("OBJECT")
+                    fjw_deselect()
+                    fjw_activate(arm)
 
-                    mode("POSE")
-                    armu = ArmatureUtils(arm)
+                    fjw_mode("POSE")
+                    armu = fjw_ArmatureUtils(arm)
                     geo = armu.GetGeometryBone()
                     armu.activate(geo)
-                    mode("POSE")
+                    fjw_mode("POSE")
 
                     #インポート
                     import_mdresult(self,dir + file + os.sep + "result.obj")
@@ -13931,7 +13931,7 @@ class MYOBJECT_902822(bpy.types.Operator):#MD作業ファイル準備
             bpy.ops.object.fjw_openlinkedfolder()
 
             #bpy.ops.wm.save_mainfile()
-            framejump(10)
+            fjw_framejump(10)
             dir = os.path.dirname(bpy.data.filepath)
             name = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
             blend_md = dir + os.sep + name + "_MDWork.blend"
@@ -13943,13 +13943,13 @@ class MYOBJECT_902822(bpy.types.Operator):#MD作業ファイル準備
             for i in range(5):
                 bpy.context.scene.layers[i] = True
 
-            mode("OBJECT")
+            fjw_mode("OBJECT")
             bpy.ops.object.select_all(action='SELECT')
             bpy.ops.object.duplicates_make_real(use_base_parent=True,use_hierarchy=True)
 
             #proxyの全削除
-            prxs = find_list("_proxy")
-            delete(prxs)
+            prxs = fjw_find_list("_proxy")
+            fjw_delete(prxs)
 
         return {'FINISHED'}
 ########################################
@@ -14064,7 +14064,7 @@ class MYOBJECT_360702(bpy.types.Operator):#選択プロクシから転送
     def execute(self, context):
         armature = None
         proxy = None
-        selection = get_selected_list()
+        selection = fjw_get_selected_list()
         for obj in selection:
             if "_proxy" in obj.name:
                 proxy = obj
@@ -14073,8 +14073,8 @@ class MYOBJECT_360702(bpy.types.Operator):#選択プロクシから転送
 
         #self.report({"INFO"},armature.name)
         #self.report({"INFO"},proxy.name)
-        activate(armature)
-        mode("POSE")
+        fjw_activate(armature)
+        fjw_mode("POSE")
         bpy.ops.anim.keyframe_insert_menu(type='WholeCharacter')
         armature.animation_data.action = proxy.animation_data.action
         #currentframe = bpy.context.scene.frame_current
@@ -14118,7 +14118,7 @@ uiitem("obj+PointCache")
 def export_mdavatar(self, dir, name, openfolder=True):
         #アクティブオブジェクトのみ。
         #メッシュ以外だったら戻る
-        obj = active()
+        obj = fjw_active()
         if obj.type != "MESH":
             self.report({"INFO"},"")
             return {'CANCELLED'}
@@ -14199,7 +14199,7 @@ class MYOBJECT_347662(bpy.types.Operator):#MDDataに出力
         dir = os.path.dirname(bpy.data.filepath) + os.sep + "MDData" + os.sep
 
         blendname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
-        root = get_root(active())
+        root = fjw_get_root(fjw_active())
 
         name = "avatar_" + blendname + "_" + root.name
 
@@ -14232,7 +14232,7 @@ class MYOBJECT_287546(bpy.types.Operator):#アバターのみ
     def execute(self, context):
         #アクティブオブジェクトのみ。
         #メッシュ以外だったら戻る
-        obj = active()
+        obj = fjw_active()
         if obj.type != "MESH":
             self.report({"INFO"},"")
             return {'CANCELLED'}
@@ -14280,7 +14280,7 @@ class MYOBJECT_341922(bpy.types.Operator):#プロップ出力
     def execute(self, context):
         #アクティブオブジェクトのみ。
         #メッシュ以外だったら戻る
-        obj = active()
+        obj = fjw_active()
         if obj.type != "MESH":
             self.report({"INFO"},"")
             return {'CANCELLED'}
@@ -14340,7 +14340,7 @@ class MYOBJECT_501373(bpy.types.Operator):#アバター出力
         bpy.context.scene.render.use_simplify = True
         bpy.context.scene.render.simplify_subdivision = 2
 
-        targetobj = active()
+        targetobj = fjw_active()
 
         if targetobj.type == "EMPTY":
             if targetobj.dupli_group != None:
@@ -14425,7 +14425,7 @@ class MYOBJECT_518498(bpy.types.Operator):#base出力
         #現状保存
         bpy.ops.wm.save_mainfile()
         
-        mode("OBJECT")
+        fjw_mode("OBJECT")
         
         #レイヤー全表示
         bpy.context.scene.layers = [True for n in range(20)]
@@ -14433,9 +14433,9 @@ class MYOBJECT_518498(bpy.types.Operator):#base出力
         bpy.ops.object.myobject_24259()
 
 
-        selection = get_selected_list()
+        selection = fjw_get_selected_list()
 
-        deselect()
+        fjw_deselect()
         
         #root.select = True
         ##ジオメトリのトランスフォームを解除
@@ -14485,9 +14485,9 @@ class MYOBJECT_518498(bpy.types.Operator):#base出力
         bpy.context.scene.render.simplify_subdivision = 2
 
 
-        deselect()
-        select(selection)
-        reject_notmesh()
+        fjw_deselect()
+        fjw_select(selection)
+        fjw_reject_notmesh()
         #ワイヤーフレーム除外
         for obj in bpy.context.selected_objects:
            if obj.type == "MESH":
@@ -14529,12 +14529,12 @@ class MYOBJECT_178092(bpy.types.Operator):#poseTo出力
     #処理部分
     ###################################
     def execute(self, context):
-        root = active()
+        root = fjw_active()
 
         #現状保存
         bpy.ops.wm.save_mainfile()
         
-        mode("OBJECT")
+        fjw_mode("OBJECT")
 
         #レイヤー全表示
         bpy.context.scene.layers = [True for n in range(20)]
@@ -14542,23 +14542,23 @@ class MYOBJECT_178092(bpy.types.Operator):#poseTo出力
         bpy.ops.object.myobject_24259()
 
 
-        selection = get_selected_list()
+        selection = fjw_get_selected_list()
 
         regist_pose("PoseTo",selection)
-        activate(root)
+        fjw_activate(root)
         bpy.ops.wm.save_mainfile()
-        mode("OBJECT")
+        fjw_mode("OBJECT")
 
-        deselect()
+        fjw_deselect()
         
-        activate(root)
+        fjw_activate(root)
         root.select = True
         #ジオメトリのトランスフォームを解除
         bpy.ops.object.location_clear()
 #        bpy.ops.object.rotation_clear()
         
         #ジオメトリの子を選択
-        select(selection)
+        fjw_select(selection)
         
         #全てシングル化
         bpy.ops.object.make_single_user(type='ALL', object=True, obdata=True, material=False, texture=False, animation=False)
@@ -14598,9 +14598,9 @@ class MYOBJECT_178092(bpy.types.Operator):#poseTo出力
         bpy.context.scene.render.simplify_subdivision = 2
 
 
-        deselect()
-        select(selection)
-        reject_notmesh()
+        fjw_deselect()
+        fjw_select(selection)
+        fjw_reject_notmesh()
         #ワイヤーフレーム除外
         for obj in bpy.context.selected_objects:
            if obj.type == "MESH":
@@ -14622,14 +14622,14 @@ class MYOBJECT_178092(bpy.types.Operator):#poseTo出力
 ########################################
 
 def import_mdresult(self,resultpath):
-        current = active()
+        current = fjw_active()
 
         loc = Vector((0,0,0))
         qrot = Quaternion()
 
         #もしボーンが選択されていたらそのボーンにトランスフォームをあわせる
         if current.mode == "POSE":
-            armu = ArmatureUtils(current)
+            armu = fjw_ArmatureUtils(current)
             pbone = armu.poseactive()
             loc = current.matrix_world * pbone.location
             qrot = pbone.rotation_quaternion
@@ -14638,14 +14638,14 @@ def import_mdresult(self,resultpath):
             loc = Vector((loc.x,loc.z * -1,loc.y))
             qrot = Quaternion((qrot.w, qrot.x, qrot.z * -1, qrot.y))
 
-        mode("OBJECT")
+        fjw_mode("OBJECT")
 
         bpy.ops.import_scene.obj(filepath=resultpath)
         #インポート後処理
         #回転を適用
         bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
 
-        selection = get_selected_list()
+        selection = fjw_get_selected_list()
         for obj in selection:
            if obj.type == "MESH":
                 bpy.context.scene.objects.active = obj
@@ -15242,11 +15242,11 @@ class MYOBJECT_849795(bpy.types.Operator):#base出力
 #ポーズ登録
 def regist_pose(pose_name="Pose", objects=None):
     if objects == None:
-        obj = active()
+        obj = fjw_active()
         if obj.type != "ARMATURE":
             return
 
-        mode("POSE")
+        fjw_mode("POSE")
         bpy.ops.pose.select_all(action='SELECT')
         try:
             newframe = obj.pose_library.frame_range[1] + 1
@@ -15255,11 +15255,11 @@ def regist_pose(pose_name="Pose", objects=None):
             pass
     else:
         for obj in objects:
-            activate(obj)
+            fjw_activate(obj)
             if obj.type != "ARMATURE":
                 continue
 
-            mode("POSE")
+            fjw_mode("POSE")
             bpy.ops.pose.select_all(action='SELECT')
             try:
                 newframe = obj.pose_library.frame_range[1] + 1
@@ -15268,7 +15268,7 @@ def regist_pose(pose_name="Pose", objects=None):
                 pass
             pass
         pass
-    mode("OBJECT")
+    fjw_mode("OBJECT")
 
 #---------------------------------------------
 uiitem().horizontal()
@@ -15301,13 +15301,13 @@ class MYOBJECT_976064(bpy.types.Operator):#中間ポーズ
         
         bpy.ops.object.select_grouped(type='CHILDREN_RECURSIVE')
         for obj in bpy.context.selected_objects:
-            activate(obj)
+            fjw_activate(obj)
             regist_pose("中間ポーズ")
-        deselect()
-        activate(geo)
+        fjw_deselect()
+        fjw_activate(geo)
         bpy.ops.wm.save_mainfile()
 
-        deselect()
+        fjw_deselect()
         
         geo.select = True
         #ジオメトリのトランスフォームを解除
@@ -15405,12 +15405,12 @@ class MYOBJECT_666595(bpy.types.Operator):#反転中間ポーズ
         
         bpy.ops.object.select_grouped(type='CHILDREN_RECURSIVE')
         for obj in bpy.context.selected_objects:
-            activate(obj)
+            fjw_activate(obj)
             regist_pose("中間ポーズ")
-        activate(geo)
+        fjw_activate(geo)
         bpy.ops.wm.save_mainfile()
 
-        deselect()
+        fjw_deselect()
         
         geo.select = True
         #ジオメトリのトランスフォームを解除
@@ -15521,12 +15521,12 @@ class MYOBJECT_677880(bpy.types.Operator):#poseTo出力
         
         bpy.ops.object.select_grouped(type='CHILDREN_RECURSIVE')
         for obj in bpy.context.selected_objects:
-            activate(obj)
+            fjw_activate(obj)
             regist_pose("PoseTo")
-        activate(geo)
+        fjw_activate(geo)
         bpy.ops.wm.save_mainfile()
 
-        deselect()
+        fjw_deselect()
         
         geo.select = True
         #ジオメトリのトランスフォームを解除
@@ -15625,12 +15625,12 @@ class MYOBJECT_425209(bpy.types.Operator):#反転poseTo出力
         
         bpy.ops.object.select_grouped(type='CHILDREN_RECURSIVE')
         for obj in bpy.context.selected_objects:
-            activate(obj)
+            fjw_activate(obj)
             regist_pose("PoseTo")
-        activate(geo)
+        fjw_activate(geo)
         bpy.ops.wm.save_mainfile()
 
-        deselect()
+        fjw_deselect()
         
         geo.select = True
         #ジオメトリのトランスフォームを解除
@@ -15926,7 +15926,7 @@ def saveall_dirtyimages():
 #https://docs.blender.org/api/blender_python_api_2_78c_release/bpy.types.RenderSettings.html#bpy.types.RenderSettings.bake_type
 def texture_bake(filepath, size, type, identifier):
     filename = os.path.basename(filepath)
-    bakeobj = active()
+    bakeobj = fjw_active()
 
     if filename in bpy.data.images:
         imgtobake = bpy.data.images[filename]
@@ -15955,7 +15955,7 @@ def texture_bake(filepath, size, type, identifier):
 
 def bake_setup():
     bpy.ops.object.myobject_998634()#無マテリアルに白を割り当て
-    bakeobj = active()
+    bakeobj = fjw_active()
 
     #複製されてることを考慮して一旦マテリアルを外す
     bakeobj.data.materials.clear()
@@ -15965,10 +15965,10 @@ def bake_setup():
 
     #UV展開
     if len(bakeobj.data.uv_textures) == 0:
-        mode("EDIT")
+        fjw_mode("EDIT")
         bpy.ops.mesh.select_all(action='SELECT')
         bpy.ops.uv.smart_project()
-        mode("OBJECT")
+        fjw_mode("OBJECT")
 
     return objname, bakedir
 
@@ -15991,8 +15991,8 @@ def bake_ModelAppearance(size):
 
     bpy.ops.object.myobject_358608()#テクスチャ回収
 
-    deselect()
-    active().select = True
+    fjw_deselect()
+    fjw_active().select = True
 
 
 
@@ -16066,8 +16066,8 @@ def bake_shadow(size):
     set_sun_shadow(False)
 
     bpy.ops.object.myobject_358608()#テクスチャ回収
-    deselect()
-    active().select = True
+    fjw_deselect()
+    fjw_active().select = True
 
     pass
 
@@ -16168,10 +16168,10 @@ class MYOBJECT_596924(bpy.types.Operator):#Substance Output
     ###################################
     def execute(self, context):
         scrdir = os.path.dirname(__file__)
-        sbssourcepath = get_resourcesdir() + "EMPTY.sbs"
+        sbssourcepath = fjw_get_resourcesdir() + "EMPTY.sbs"
 
-        reject_notmesh()
-        for obj in get_selected_list():
+        fjw_reject_notmesh()
+        for obj in fjw_get_selected_list():
             #substance上で.が_に変換されて都合が悪いので除去しておく
             #obj.name = obj.name.replace(".","")
 
@@ -16185,13 +16185,13 @@ class MYOBJECT_596924(bpy.types.Operator):#Substance Output
             sbsdestpath = imgdir + name + ".sbs"
             if not os.path.exists(sbsdestpath):
                 shutil.copyfile(sbssourcepath, sbsdestpath)
-            deselect()
-            activate(obj)
+            fjw_deselect()
+            fjw_activate(obj)
             if len(obj.data.uv_textures) == 0:
-                mode("EDIT")
+                fjw_mode("EDIT")
                 bpy.ops.mesh.select_all(action='SELECT')
                 bpy.ops.uv.smart_project()
-                mode("OBJECT")
+                fjw_mode("OBJECT")
 
             bpy.ops.export_scene.obj(filepath=imgdir + name + ".obj",check_existing=False,use_selection=True,use_mesh_modifiers=False)
             #出力フォルダを開く
@@ -16217,13 +16217,13 @@ class MYOBJECT_539212(bpy.types.Operator):#分離してSubstance Output
     #処理部分
     ###################################
     def execute(self, context):
-        deselect()
+        fjw_deselect()
         bpy.ops.mesh.separate(type='SELECTED')
-        mode("OBJECT")
+        fjw_mode("OBJECT")
 
         bpy.ops.object.myobject_339338()#スマートUV投影（各選択物）
 
-        for obj in get_selected_list():
+        for obj in fjw_get_selected_list():
             mat = bpy.data.materials.new(name=sbsname(obj.name))#substanceとの連携用にオブジェクト名でマテリアル作る
             mat.diffuse_color = (1,1,1)
             if len(obj.material_slots) == 0:
@@ -16282,7 +16282,7 @@ class MYOBJECT_358608(bpy.types.Operator):#テクスチャ回収
             if re.search("_curvature|_ambient_occlusion", texfile,re.IGNORECASE) is not None:
             #if re.search("_curvature", texfile,re.IGNORECASE) is not None:
                 continue
-            images.append(load_img(texfile))
+            images.append(fjw_load_img(texfile))
 
         #basecolor類がはじめになるように並べ替える
         tmp = []
@@ -16308,7 +16308,7 @@ class MYOBJECT_358608(bpy.types.Operator):#テクスチャ回収
             #matname = texname.split("_")[0]
             #identifier=最後の_hogeを除去したものが名前
             matname = re.sub("_[a-zA-Z]+$", "", texname)
-            mat = get_material(matname)
+            mat = fjw_get_material(matname)
             
 
             texture_slot = mat.texture_slots.add()
@@ -16399,8 +16399,8 @@ class MYOBJECT_819234(bpy.types.Operator):#デプス0.01
     #処理部分
     ###################################
     def execute(self, context):
-        reject_notmesh()
-        settexdepth(0.01,get_selected_list())
+        fjw_reject_notmesh()
+        settexdepth(0.01,fjw_get_selected_list())
         
         return {'FINISHED'}
 ########################################
@@ -16422,8 +16422,8 @@ class MYOBJECT_73453(bpy.types.Operator):#デプス1
     #処理部分
     ###################################
     def execute(self, context):
-        reject_notmesh()
-        settexdepth(1,get_selected_list())
+        fjw_reject_notmesh()
+        settexdepth(1,fjw_get_selected_list())
         return {'FINISHED'}
 ########################################
 
@@ -16444,8 +16444,8 @@ class MYOBJECT_997104(bpy.types.Operator):#デプス5
     #処理部分
     ###################################
     def execute(self, context):
-        reject_notmesh()
-        settexdepth(5,get_selected_list())
+        fjw_reject_notmesh()
+        settexdepth(5,fjw_get_selected_list())
         
         return {'FINISHED'}
 ########################################
@@ -16518,10 +16518,10 @@ class MYOBJECT_521395(bpy.types.Operator):#開きにする
         #個別のシェイプキーは、
         #bpy.data.shape_keys["Key.007"].key_blocks["Flat"].mute = True
         #という形で、key_blocksに入っている
-        active().data.shape_keys.eval_time = 10
+        fjw_active().data.shape_keys.eval_time = 10
 
         #アーマチュア非表示
-        modu = Modutils(active())
+        modu = fjw_Modutils(fjw_active())
         mod_armature = modu.find_bytype("ARMATURE")
         modu.hide(mod_armature)
 
@@ -16548,10 +16548,10 @@ class MYOBJECT_17323(bpy.types.Operator):#立体化
     #処理部分
     ###################################
     def execute(self, context):
-        active().data.shape_keys.eval_time = 0
+        fjw_active().data.shape_keys.eval_time = 0
         
         #アーマチュア表示
-        modu = Modutils(active())
+        modu = fjw_Modutils(fjw_active())
         mod_armature = modu.find_bytype("ARMATURE")
         modu.show(mod_armature)
 
@@ -16608,9 +16608,9 @@ class MYOBJECT_104686(bpy.types.Operator):#ランダム石生成
     #処理部分
     ###################################
     def execute(self, context):
-        mode("OBJECT")
-        bpy.ops.mesh.primitive_cube_add(view_align=False, enter_editmode=False, location=cursor(), layers=(True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False))
-        mode("EDIT")
+        fjw_mode("OBJECT")
+        bpy.ops.mesh.primitive_cube_add(view_align=False, enter_editmode=False, location=fjw_cursor(), layers=(True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False))
+        fjw_mode("EDIT")
 
         def rndv():
             rnd = random.randint(1,1000)
@@ -16629,7 +16629,7 @@ class MYOBJECT_104686(bpy.types.Operator):#ランダム石生成
 
         #bpy.ops.mesh.vertices_smooth(factor=1, repeat=1)
         bpy.ops.mesh.looptools_relax(input='selected', interpolation='cubic', iterations='10', regular=True)
-        mode("OBJECT")
+        fjw_mode("OBJECT")
 
         #自動スムーズ
         bpy.ops.object.myobject_31891()
@@ -16903,11 +16903,11 @@ class MYOBJECT_482428(bpy.types.Operator):#クロスを確定して髪準備
     #処理部分
     ###################################
     def execute(self, context):
-        selection = get_selected_list()
+        selection = fjw_get_selected_list()
         for obj in selection:
             if obj.type == "MESH":
-                deselect()
-                activate(obj)
+                fjw_deselect()
+                fjw_activate(obj)
                 mod_cloth = None
                 for mod in obj.modifiers:
                     if mod.type == "CLOTH":
@@ -16919,7 +16919,7 @@ class MYOBJECT_482428(bpy.types.Operator):#クロスを確定して髪準備
                 bpy.ops.object.modifier_apply(modifier=mod_cloth.name)
                 
                 #パーティクル
-                psetting = append_particlesetting("髪設定")
+                psetting = fjw_append_particlesetting("髪設定")
                 bpy.context.object.hnMasterHairSystem = "髪設定"
                 bpy.ops.particle.hairnet(meshKind="SHEET")
 
@@ -17006,8 +17006,8 @@ class MYOBJECT_718267(bpy.types.Operator):#DPIを揃える
     ###################################
     def execute(self, context):
         
-        reject_notmesh()
-        obj_active = active()
+        fjw_reject_notmesh()
+        obj_active = fjw_active()
 
         ##板ポリじゃない奴を除外
         #for obj in bpy.context.selected_objects:
@@ -17017,7 +17017,7 @@ class MYOBJECT_718267(bpy.types.Operator):#DPIを揃える
         #正面からの縦横比をあわせるべきでは？
         #modオフにすればよかった…
 
-        targets = get_selected_list()
+        targets = fjw_get_selected_list()
 
         X = 0
         Y = 1
@@ -17243,16 +17243,16 @@ class MYOBJECT_342881(bpy.types.Operator):#nゴンチェック
     #処理部分
     ###################################
     def execute(self, context):
-        reject_notmesh()
-        selected = get_selected_list()
+        fjw_reject_notmesh()
+        selected = fjw_get_selected_list()
 
         targets = []
         for obj in selected:
             #if obj in ngon_ok:
             #    continue
 
-            deselect()
-            activate(obj)
+            fjw_deselect()
+            fjw_activate(obj)
 
                         #nゴンチェック
             flag_ngon = False
@@ -17267,12 +17267,12 @@ class MYOBJECT_342881(bpy.types.Operator):#nゴンチェック
             if flag_ngon:
                 targets.append(obj)
 
-        globalview()
-        deselect()
+        fjw_globalview()
+        fjw_deselect()
         for target in targets:
             target.select = True
 
-        localview()
+        fjw_localview()
         self.report({"INFO"},"これらのオブジェクトにNゴンが含まれているので簡略化オフでのルックを確認してください")
 
         return {'FINISHED'}
@@ -17300,23 +17300,23 @@ class MYOBJECT_847775(bpy.types.Operator):#モデル確定
         bpy.context.scene.render.use_simplify = True
         bpy.context.scene.render.simplify_subdivision = 0
 
-        reject_notmesh()
+        fjw_reject_notmesh()
         bpy.ops.object.duplicates_make_real()
         bpy.ops.object.make_single_user(type='SELECTED_OBJECTS', object=True, obdata=True, material=False, texture=False, animation=False)
 
 
 
-        selected = get_selected_list()
+        selected = fjw_get_selected_list()
 
         #ブーリアン非表示で負荷へらす
         for obj in selected:
-            activate(obj)
+            fjw_activate(obj)
             for mod in obj.modifiers:
                 if mod.type == "BOOLEAN":
                     mod.show_viewport = False
 
         bpy.context.scene.render.use_simplify = False
-        apply_mods()
+        fjw_apply_mods()
 
 
         elapsed_time = time.time() - start
@@ -17355,7 +17355,7 @@ class MYOBJECT_809008(bpy.types.Operator):#ポリゴン密度
     #処理部分
     ###################################
     def execute(self, context):
-        obj = active()
+        obj = fjw_active()
         
         dim = obj.dimensions
         vol = dim.x * dim.y * dim.z
@@ -17796,7 +17796,7 @@ class MYOBJECT_542245(bpy.types.Operator):#日本語入力.txt
     #処理部分
     ###################################
     def execute(self, context):
-        if active() == None or active().type != "FONT":
+        if fjw_active() == None or fjw_active().type != "FONT":
             self.report({"INFO"},"テキストオブジェクトを選択してください。")
             return {'FINISHED'}
 
@@ -17861,7 +17861,7 @@ class MYOBJECT_46615(bpy.types.Operator):#流し込み
     #処理部分
     ###################################
     def execute(self, context):
-        if active() == None or active().type != "FONT":
+        if fjw_active() == None or fjw_active().type != "FONT":
             self.report({"INFO"},"テキストオブジェクトを選択してください。")
             return {'FINISHED'}
 
@@ -17913,8 +17913,8 @@ class MYOBJECT_46615(bpy.types.Operator):#流し込み
             if text == "":
                 continue
 
-            deselect()
-            obj = active()
+            fjw_deselect()
+            obj = fjw_active()
             textobjs.append(obj)
 
             obj.data.body = text
@@ -17922,19 +17922,19 @@ class MYOBJECT_46615(bpy.types.Operator):#流し込み
             obj.select = True
 
             bpy.ops.object.duplicate(linked=False, mode='TRANSLATION')
-            dup = active()
-            deselect()
+            dup = fjw_active()
+            fjw_deselect()
 
             dup.location[1] -= obj.dimensions[1] + obj.data.size
 
-        deselect()
-        delete(active())
+        fjw_deselect()
+        fjw_delete(fjw_active())
         
 
         for textobj in textobjs:
             textobj.select = True
         
-        activate(base)
+        fjw_activate(base)
         
         #テキストを消す
         f = codecs.open(txtfullpath, "w", "utf-8")
@@ -17969,7 +17969,7 @@ class MYOBJECT_665745(bpy.types.Operator):#編集
     #処理部分
     ###################################
     def execute(self, context):
-        if active() == None or active().type != "FONT":
+        if fjw_active() == None or fjw_active().type != "FONT":
             self.report({"INFO"},"テキストオブジェクトを選択してください。")
             return {'FINISHED'}
 
@@ -18026,13 +18026,13 @@ class MYOBJECT_352627(bpy.types.Operator):#アクティブへまとめる
     #処理部分
     ###################################
     def execute(self, context):
-        obj = active()
-        selected = get_selected_list()
+        obj = fjw_active()
+        selected = fjw_get_selected_list()
         bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
 
 
         bpy.ops.object.empty_add(type='PLAIN_AXES', radius=0.1, view_align=False, location=obj.location, layers=obj.layers)
-        empty = active()
+        empty = fjw_active()
 
         for slc in selected:
             slc.select = True
@@ -18269,26 +18269,26 @@ class MYOBJECT_482619(bpy.types.Operator):#オブジェクトを統合（グル�
     def execute(self, context):
         mesh_exists = False
         #メッシュがあればグループ統合、そうじゃなければ普通に統合。
-        for obj in get_selected_list():
+        for obj in fjw_get_selected_list():
             if obj.type == "MESH":
                 mesh_exists = True
 
         if mesh_exists:
-            reject_notmesh()
+            fjw_reject_notmesh()
         
-            target = active()
+            target = fjw_active()
             for obj in bpy.context.selected_objects:
-                activate(obj)
-                mode("EDIT")
+                fjw_activate(obj)
+                fjw_mode("EDIT")
                 bpy.ops.mesh.select_all(action='SELECT')
                 bpy.ops.object.vertex_group_assign_new()
                 vgroup = obj.vertex_groups[len(obj.vertex_groups) - 1]
                 vgroup.name = obj.name
-                mode("OBJECT")
+                fjw_mode("OBJECT")
 
                 #subsurf以外のmodは適用するべき？
 
-            activate(target)
+            fjw_activate(target)
 
         bpy.ops.object.join()
         
@@ -18322,7 +18322,7 @@ class MYOBJECT_b424289a(bpy.types.Operator):#プロクシ作成
     ###################################
     def execute(self, context):
         #blenrig用プロクシの作成
-        make_proxy("biped_blenrig")
+        fjw_make_proxy("biped_blenrig")
         #roomtoolsのプロクシ作成（mapcontroller用）を実行
         bpy.ops.object.myobject_424289()
 
@@ -18383,22 +18383,22 @@ class MYOBJECT_248120(bpy.types.Operator):#プロクシ作成（全）
         #プロクシ＝アニメつけるってことだからオート記録オンに
         bpy.context.scene.tool_settings.use_keyframe_insert_auto = True
 
-        linkobj = active()
+        linkobj = fjw_active()
         loc = linkobj.location
-        objects = make_proxy_all()
+        objects = fjw_make_proxy_all()
         for obj in objects:
             if obj.type == "ARMATURE":
                 obj.show_x_ray = True
-        deselect()
+        fjw_deselect()
 
         bpy.context.space_data.cursor_location = loc
         bpy.ops.object.empty_add(type='PLAIN_AXES', radius=1, view_align=False, location=loc, layers=(True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False))
-        empty = active()
+        empty = fjw_active()
         empty.name = linkobj.name
         empty.rotation_euler = linkobj.rotation_euler
 
-        select(objects)
-        activate(empty)
+        fjw_select(objects)
+        fjw_activate(empty)
         bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
 
         linked_objects = linkobj.dupli_group.objects
@@ -18409,7 +18409,7 @@ class MYOBJECT_248120(bpy.types.Operator):#プロクシ作成（全）
             obj.lock_rotation = (True,True,True)
             obj.lock_scale = (True,True,True)
 
-            basename = obj.name.replace("_proxy", "").replace(get_linkedfilename(linkobj) + "/", "")
+            basename = obj.name.replace("_proxy", "").replace(fjw_get_linkedfilename(linkobj) + "/", "")
             baseobj = None
             if basename in linked_objects:
                 baseobj = linked_objects[basename]
@@ -18421,7 +18421,7 @@ class MYOBJECT_248120(bpy.types.Operator):#プロクシ作成（全）
             if baseobj.parent == None:
                 continue
             
-            targetname = get_linkedfilename(linkobj) + "/" + baseobj.parent.name + "_proxy"
+            targetname = fjw_get_linkedfilename(linkobj) + "/" + baseobj.parent.name + "_proxy"
             is_found = False
             for tmp in bpy.data.objects:
                 if targetname == tmp.name:
@@ -18435,17 +18435,17 @@ class MYOBJECT_248120(bpy.types.Operator):#プロクシ作成（全）
 
             targetobj = bpy.data.objects[targetname]
 
-            deselect()
+            fjw_deselect()
             obj.select = True
-            activate(targetobj)
+            fjw_activate(targetobj)
             #親子=オブジェクト
             if baseobj.parent_type == "OBJECT":
-                mode("OBJECT")
+                fjw_mode("OBJECT")
                 bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
                 pass
             #親子=ボーン
             if baseobj.parent_type == "BONE":
-                mode("POSE")
+                fjw_mode("POSE")
                 targetbonename = baseobj.parent_bone
 
                 #ターゲットのアーマチュアレイヤー全部表示しないとだめ
@@ -18457,7 +18457,7 @@ class MYOBJECT_248120(bpy.types.Operator):#プロクシ作成（全）
                 bpy.ops.object.parent_set(type='BONE_RELATIVE')
                 #レイヤー表示を戻す
                 targetobj.data.layers = baselayers
-                mode("OBJECT")
+                fjw_mode("OBJECT")
                 pass
 
 
@@ -18483,10 +18483,10 @@ class MYOBJECT_199238(bpy.types.Operator):#Lamp Proxy
     #処理部分
     ###################################
     def execute(self, context):
-        linkobj = active()
+        linkobj = fjw_active()
         loc = linkobj.location
-        objects = make_proxy_type("LAMP")
-        deselect()
+        objects = fjw_make_proxy_type("LAMP")
+        fjw_deselect()
 
         for obj in objects:
             if obj == linkobj:
@@ -18495,13 +18495,13 @@ class MYOBJECT_199238(bpy.types.Operator):#Lamp Proxy
 
         bpy.context.space_data.cursor_location = loc
         bpy.ops.object.empty_add(type='PLAIN_AXES', radius=1, view_align=False, location=loc, layers=(True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False))
-        empty = active()
+        empty = fjw_active()
         empty.name = linkobj.name + "_Lamps"
         empty.rotation_euler = linkobj.rotation_euler
 
-        select(objects)
+        fjw_select(objects)
         linkobj.select = False
-        activate(empty)
+        fjw_activate(empty)
         bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
         return {'FINISHED'}
 ########################################
@@ -18583,9 +18583,9 @@ class MYOBJECT_95038(bpy.types.Operator):#ペアレントデータビルド
 
 #ペアレントデータから親子関係をビルドする
 def parentdata_buildfromparentdata():
-    mode("OBJECT")
+    fjw_mode("OBJECT")
     for obj in bpy.data.objects:
-        deselect()
+        fjw_deselect()
 
         #すでに親がある場合はスキップ
         if obj.parent != None:
@@ -18596,7 +18596,7 @@ def parentdata_buildfromparentdata():
             for target in bpy.data.objects:
                 if "PARENTDATA_OBJECTID" in target:
                     if target["PARENTDATA_OBJECTID"] == obj["PARENTDATA_DATA"]["parent"]:
-                        activate(target)
+                        fjw_activate(target)
                         break
             
             if obj["PARENTDATA_DATA"]["type"] != "BONE":
@@ -18604,7 +18604,7 @@ def parentdata_buildfromparentdata():
                 bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
             else:
                 #ボーン相対
-                mode("POSE")
+                fjw_mode("POSE")
                 #ターゲットのアーマチュアレイヤー全部表示しないとだめ
                 baselayers = [True for i in range(32)]
                 for i in range(32):
@@ -18614,7 +18614,7 @@ def parentdata_buildfromparentdata():
                 bpy.ops.object.parent_set(type='BONE_RELATIVE')
                 #レイヤー表示を戻す
                 target.data.layers = baselayers
-                mode("OBJECT")
+                fjw_mode("OBJECT")
 
         pass
 
@@ -18667,16 +18667,16 @@ class MYOBJECT_286013(bpy.types.Operator):#複製を実体化
     #処理部分
     ###################################
     def execute(self, context):
-        selection = get_selected_list()
+        selection = fjw_get_selected_list()
 
         #すべてオブジェクトモードに
-        baseobj = active()
+        baseobj = fjw_active()
         for obj in bpy.data.objects:
-            activate(obj)
-            mode("OBJECT")
-        activate(baseobj)
-        deselect()
-        select(selection)
+            fjw_activate(obj)
+            fjw_mode("OBJECT")
+        fjw_activate(baseobj)
+        fjw_deselect()
+        fjw_select(selection)
 
         bpy.ops.object.duplicates_make_real(use_base_parent=True, use_hierarchy=True)
         #proxyあると落ちる→アーマチュアの除去処理必要
@@ -18687,8 +18687,8 @@ class MYOBJECT_286013(bpy.types.Operator):#複製を実体化
                 proxyname = obj.name + "_proxy"
                 if proxyname in bpy.data.objects:
                     deltarget.append(bpy.data.objects[proxyname])
-        delete(deltarget)
-        select(selection)
+        fjw_delete(deltarget)
+        fjw_select(selection)
         bpy.ops.object.make_local(type='SELECT_OBDATA_MATERIAL')
 
         return {'FINISHED'}
@@ -18728,13 +18728,13 @@ class MYOBJECT_823369(bpy.types.Operator):#AssetManager用キャラリンク後�
         bpy.ops.screen.frame_jump(end=False)
         
         #アーマチュアを全部キーフレーム入れる
-        for obj in get_selected_list():
+        for obj in fjw_get_selected_list():
             if obj.type == "ARMATURE":
-                activate(obj)
-                mode("POSE")
+                fjw_activate(obj)
+                fjw_mode("POSE")
                 bpy.ops.pose.select_all(action='SELECT')
                 bpy.ops.anim.keyframe_insert_menu(type='LocRotScale')
-                mode("OBJECT")
+                fjw_mode("OBJECT")
 
 
         #フレーム10に移動
@@ -18754,37 +18754,37 @@ class fjw_set_key(bpy.types.Operator):
     bl_label = "キーフレーム挿入"
 
     def setkey(self, context):
-        if active().type == "ARMATURE":
-            mode("POSE")
-        if active().mode == "OBJECT":
+        if fjw_active().type == "ARMATURE":
+            fjw_mode("POSE")
+        if fjw_active().mode == "OBJECT":
             bpy.ops.anim.keyframe_insert_menu(type='LocRotScale')
-        if active().mode == "POSE":
+        if fjw_active().mode == "POSE":
             bpy.ops.pose.select_all(action='SELECT')
             bpy.ops.anim.keyframe_insert_menu(type='WholeCharacter')
 
 
     def armature_autokey(self,context):
-        if active().type != "ARMATURE":
+        if fjw_active().type != "ARMATURE":
             return
 
-        mode("POSE")
+        fjw_mode("POSE")
 
         #アーマチュアのキーをオートで入れる
         if bpy.context.scene.frame_current == 10:
-            rootname = get_root(active()).name
+            rootname = fjw_get_root(fjw_active()).name
 
             #bpy.ops.object.parent_clear(type='CLEAR')
-            active().location = Vector((0,0,0))
+            fjw_active().location = Vector((0,0,0))
 
             self.setkey(context)
 
             #フレーム10なら微調整じゃないのでオートフレーム。
-            armu = ArmatureUtils(active())
+            armu = fjw_ArmatureUtils(fjw_active())
 
             geoname = armu.findname("Geometry")
             if geoname == None:
                 #head位置が0,0,0のものを探してやればいいのでは？
-                for ebone in active().data.bones:
+                for ebone in fjw_active().data.bones:
                     if ebone.head == Vector((0,0,0)):
                         geoname = ebone.name
                         break
@@ -18797,7 +18797,7 @@ class fjw_set_key(bpy.types.Operator):
 
             self.setkey(context)
 
-            framejump(1)
+            fjw_framejump(1)
             selection = armu.select_all()
             armu.clearTrans(selection)
 
@@ -18807,10 +18807,10 @@ class fjw_set_key(bpy.types.Operator):
             bpy.ops.view3d.view_selected(use_all_regions=False)
 
             #Bodyがあったらそのまま出力までやっちゃう
-            for child in active().children:
+            for child in fjw_active().children:
                 if child.type == "MESH":
                     if "Body" in child.name:
-                        activate(child)
+                        fjw_activate(child)
 
                         #dir = os.path.dirname(bpy.data.filepath) + os.sep +
                         #"MDData" + os.sep
@@ -18826,17 +18826,17 @@ class fjw_set_key(bpy.types.Operator):
                         export_mdavatar(self, dir, name, False)
                         self.report({"INFO"},dir + name)
                         break
-            framejump(10)
+            fjw_framejump(10)
             pass
 
         pass
     
     def execute(self, context):
         #複数対応
-        selection = get_selected_list()
+        selection = fjw_get_selected_list()
         for obj in selection:
-            deselect()
-            activate(obj)
+            fjw_deselect()
+            fjw_activate(obj)
 
             self.setkey(context)
             self.armature_autokey(context)

@@ -98,11 +98,11 @@ def in_localview():
         return True
 
 def localview():
-    if not in_localview():
+    if not fjw_in_localview():
         bpy.ops.view3d.localview()
 
 def globalview():
-    if in_localview():
+    if fjw_in_localview():
         bpy.ops.view3d.localview()
 
 
@@ -150,8 +150,8 @@ def render(renderpath, komarender=False):
             blenderpath = sys.argv[0]
             #scrpath = sys.argv[0] + os.sep + "" + os.sep + "utils" + os.sep +
             #"pagerender.py"
-            scrpath = get_dir(__file__) + "utils" + os.sep + "pagerender.py"
-            cmdstr = qq(blenderpath) + " " + qq(bpy.data.filepath) + " -b " + " -P " + qq(scrpath)
+            scrpath = fjw_get_dir(__file__) + "utils" + os.sep + "pagerender.py"
+            cmdstr = fjw_qq(blenderpath) + " " + fjw_qq(bpy.data.filepath) + " -b " + " -P " + fjw_qq(scrpath)
             #cmdstr = qq(cmdstr)
             print("********************")
             print("__file__:" + __file__)
@@ -301,9 +301,9 @@ class refresh(bpy.types.Operator):
 
             #テクスチャ
             tex = bpy.data.textures.new(file, "IMAGE")
-            load_img(imgdir + file)
+            fjw_load_img(imgdir + file)
 
-            tex.image = load_img(imgdir + file)
+            tex.image = fjw_load_img(imgdir + file)
 
             texture_slot = mat.texture_slots.add()
             texture_slot.texture = tex
@@ -429,7 +429,7 @@ class newcell(bpy.types.Operator):
     bl_label = "新規コマ"
     def execute(self,context):
         dir = os.path.dirname(bpy.data.filepath)
-        templatepath = get_resourcesdir() + "pageutils" + os.sep + "cell.blend"
+        templatepath = fjw_get_resourcesdir() + "pageutils" + os.sep + "cell.blend"
 
         #保存
         bpy.ops.wm.save_mainfile()
@@ -520,7 +520,7 @@ class openprevpage(bpy.types.Operator):
         self.report({"INFO"},"parentdir:" + parentdir)
 
         #親フォルダ内のディレクトリリスト
-        dirs = getdirs(parentdir)
+        dirs = fjw_getdirs(parentdir)
 
         targetdir = ""
         for n in range(0, len(dirs)):
@@ -556,7 +556,7 @@ class opennextpage(bpy.types.Operator):
         self.report({"INFO"},"parentdir:" + parentdir)
 
         #親フォルダ内のディレクトリリスト
-        dirs = getdirs(parentdir)
+        dirs = fjw_getdirs(parentdir)
 
         targetdir = ""
         for n in range(0, len(dirs)):
@@ -641,10 +641,10 @@ class topage(bpy.types.Operator):
         #self.report({"INFO"},"")
 
         #カメラにキー入れる
-        globalview()
-        mode("OBJECT")
-        deselect()
-        activate(bpy.data.objects["Camera"])
+        fjw_globalview()
+        fjw_mode("OBJECT")
+        fjw_deselect()
+        fjw_activate(bpy.data.objects["Camera"])
         bpy.ops.anim.keyframe_insert_menu(type='LocRotScale')
 
 
@@ -662,7 +662,7 @@ class topage(bpy.types.Operator):
         #キーフレームオンだと、ツールでカメラ動かした時にトランスフォームが保存されないことがある
         for obj in bpy.data.objects:
             if obj.type == "CAMERA":
-                deselect()
+                fjw_deselect()
                 obj.select = True
                 try:
                     bpy.ops.anim.keyframe_insert_menu(type='LocRotScale')
@@ -674,7 +674,7 @@ class topage(bpy.types.Operator):
         #保存
         bpy.ops.wm.save_mainfile()
 
-        globalview()
+        fjw_globalview()
         #レンダリング
         #レンダ設定
         renderpath = dir + os.sep + "pageutils" + os.sep + "img" + os.sep + selfname + ".png"
@@ -700,21 +700,21 @@ def save_pre(context):
     #カメラにキー入れる
     if bpy.context.scene.tool_settings.use_keyframe_insert_auto:
         if bpy.context.scene.camera != None:
-            if not in_localview():
-                current = active()
+            if not fjw_in_localview():
+                current = fjw_active()
                 current_mode = "OBJECT"
                 if current != None:
-                    current_mode = active().mode
-                mode("OBJECT")
-                selection = get_selected_list()
-                deselect()
-                activate(bpy.context.scene.camera)
+                    current_mode = fjw_active().mode
+                fjw_mode("OBJECT")
+                selection = fjw_get_selected_list()
+                fjw_deselect()
+                fjw_activate(bpy.context.scene.camera)
                 bpy.ops.anim.keyframe_insert_menu(type='LocRotScale')
                 if current != None:
-                    deselect()
-                    select(selection)
-                    activate(current)
-                    mode(current_mode)
+                    fjw_deselect()
+                    fjw_select(selection)
+                    fjw_activate(current)
+                    fjw_mode(current_mode)
 
 
 

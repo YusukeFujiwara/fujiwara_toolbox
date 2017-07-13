@@ -55,12 +55,12 @@ class AS_addphis(bpy.types.Operator):
     bl_idname = "assetsketcherhelper.addphis"
     bl_label = "物理追加"
     def execute(self,context):
-        reject_notmesh()
+        fjw_reject_notmesh()
 
         canvases = []
         targets = []
         #カスタムプロパティをチェック
-        for obj in get_selected_list():
+        for obj in fjw_get_selected_list():
             if "canvas" in obj:
                 canvases.append(obj)
                 continue
@@ -69,15 +69,15 @@ class AS_addphis(bpy.types.Operator):
                 continue
 
         #カンバス群にパッシブ追加
-        deselect()
-        activate(canvases[0])
-        select(canvases)
+        fjw_deselect()
+        fjw_activate(canvases[0])
+        fjw_select(canvases)
         bpy.ops.rigidbody.objects_add(type='PASSIVE')
 
         #ターゲット群にアクティブ追加
-        deselect()
-        activate(targets[0])
-        select(targets)
+        fjw_deselect()
+        fjw_activate(targets[0])
+        fjw_select(targets)
         bpy.ops.rigidbody.objects_add(type='ACTIVE')
 
         #アニメーション再生
@@ -93,12 +93,12 @@ class AS_delphis(bpy.types.Operator):
     bl_idname = "assetsketcherhelper.delphis"
     bl_label = "削除"
     def execute(self,context):
-        reject_notmesh()
+        fjw_reject_notmesh()
 
         canvases = []
         targets = []
         #カスタムプロパティをチェック
-        for obj in get_selected_list():
+        for obj in fjw_get_selected_list():
             if "canvas" in obj:
                 canvases.append(obj)
                 continue
@@ -106,8 +106,8 @@ class AS_delphis(bpy.types.Operator):
                 targets.append(obj)
                 continue
 
-        select(canvases)
-        select(targets)
+        fjw_select(canvases)
+        fjw_select(targets)
 
         bpy.ops.rigidbody.objects_remove()
 
@@ -121,12 +121,12 @@ class AS_applyphis(bpy.types.Operator):
     bl_idname = "assetsketcherhelper.applyphis"
     bl_label = "確定"
     def execute(self,context):
-        reject_notmesh()
+        fjw_reject_notmesh()
 
         canvases = []
         targets = []
         #カスタムプロパティをチェック
-        for obj in get_selected_list():
+        for obj in fjw_get_selected_list():
             if "canvas" in obj:
                 canvases.append(obj)
                 continue
@@ -134,8 +134,8 @@ class AS_applyphis(bpy.types.Operator):
                 targets.append(obj)
                 continue
 
-        select(canvases)
-        select(targets)
+        fjw_select(canvases)
+        fjw_select(targets)
 
         bpy.ops.object.visual_transform_apply()
         bpy.ops.screen.frame_jump()
