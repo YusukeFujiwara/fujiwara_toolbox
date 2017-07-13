@@ -485,9 +485,6 @@ class FUJIWARATOOLBOX_30808(bpy.types.Operator):#ペンディング
     icon = "PINNED"
     #ui自動登録はなし
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         global dialog_uicat
         global pendings
@@ -508,9 +505,6 @@ class FUJIWARATOOLBOX_114105(bpy.types.Operator):#クリア
 
     #ui自動登録はなし
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         global pendings
         pendings = []
@@ -576,9 +570,6 @@ class CATEGORYBUTTON_111115(bpy.types.Operator):#ファイル
     uiitem.button(bl_idname,bl_label,icon="BLENDER",mode="")
     uiitem.direction = "vertical"
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         uicategory_execute(self)
         return {'FINISHED'}
@@ -605,9 +596,6 @@ class FUJIWARATOOLBOX_490317(bpy.types.Operator):#保存
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="FILE_TICK",mode="all")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         try:
             print(bpy.ops.wm.save_mainfile())
@@ -631,9 +619,6 @@ class FUJIWARATOOLBOX_960554(bpy.types.Operator):#BGレンダ
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #エッジオフ
         bpy.context.scene.render.use_edge_enhance = False
@@ -665,9 +650,6 @@ class FUJIWARATOOLBOX_420416(bpy.types.Operator):#+辺
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #エッジオフ
         bpy.context.scene.render.use_edge_enhance = True
@@ -717,9 +699,6 @@ class FUJIWARATOOLBOX_669544(bpy.types.Operator):#保存して閉じる
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="QUIT",mode="all")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         try:
             bpy.ops.wm.save_mainfile()
@@ -746,9 +725,6 @@ class FUJIWARATOOLBOX_559881(bpy.types.Operator):#保存して開き直す
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="FILE_REFRESH",mode="all")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #try:
         #    bpy.ops.wm.save_mainfile()
@@ -794,9 +770,6 @@ class FUJIWARATOOLBOX_463064(bpy.types.Operator):#100倍
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         camera = bpy.context.scene.camera
         camera.location = (1.3641321659088135, 0.25500816106796265, 0.7163272500038147)
@@ -821,9 +794,6 @@ class FUJIWARATOOLBOX_159343(bpy.types.Operator):#0.01倍
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         camera = bpy.context.scene.camera
         camera.location = (1.3641321659088135, 0.25500816106796265, 0.7163272500038147)
@@ -851,9 +821,6 @@ class FUJIWARATOOLBOX_607395(bpy.types.Operator):#カメラだけ
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         camera = bpy.context.scene.camera
         camera.location = (1.3641321659088135, 0.25500816106796265, 0.7163272500038147)
@@ -879,9 +846,6 @@ class FUJIWARATOOLBOX_227575(bpy.types.Operator):#いろいろ処理
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.context.scene.camera.data.clip_end = 100000
         
@@ -920,9 +884,6 @@ class FUJIWARATOOLBOX_350101(bpy.types.Operator):#メモ設置
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="OUTLINER_OB_EMPTY",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.empty_add(type='SINGLE_ARROW', radius=1, view_align=False, location=bpy.context.space_data.cursor_location, layers=(True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False))
         obj = bpy.context.scene.objects.active
@@ -977,9 +938,6 @@ class FUJIWARATOOLBOX_317755(bpy.types.Operator):#カルテレンダ
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
     
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #ジオメトリの選択
         if "ジオメトリ" not in bpy.context.scene.objects.active.name:
@@ -1095,9 +1053,6 @@ class FUJIWARATOOLBOX_871849(bpy.types.Operator):#VRExport
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #basepath = bpy.data.filepath
 
@@ -1228,9 +1183,6 @@ class FUJIWARATOOLBOX_174609(bpy.types.Operator):#fbxインポート
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.import_scene.fbx(filepath="tmp.fbx",automatic_bone_orientation=True)
         return {'FINISHED'}
@@ -1247,9 +1199,6 @@ class FUJIWARATOOLBOX_87061(bpy.types.Operator):#fbxエクスポート（選択�
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         for obj in bpy.data.objects:
             if obj.type != "MESH":
@@ -1283,9 +1232,6 @@ class FUJIWARATOOLBOX_822477(bpy.types.Operator):#3dcoatエクスポート
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #objじゃないとダメ
         #from blender
@@ -1334,9 +1280,6 @@ class FUJIWARATOOLBOX_189112(bpy.types.Operator):#3dcoatインポート
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #3dcoat
         bpy.ops.import_scene.obj(filepath="tmp3dcoat.obj", axis_forward='-Z', axis_up='Y')
@@ -1412,9 +1355,6 @@ class FUJIWARATOOLBOX_505642(bpy.types.Operator):#posi.objエクスポート
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.export_scene.obj(filepath="posi.obj",check_existing=False,use_selection=True)
         
@@ -1434,9 +1374,6 @@ class FUJIWARATOOLBOX_896828(bpy.types.Operator):#nega.objエクスポート
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.export_scene.obj(filepath="nega.obj",check_existing=False,use_selection=True)
         
@@ -1456,9 +1393,6 @@ class FUJIWARATOOLBOX_229893(bpy.types.Operator):#posi.objインポート
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.import_scene.obj(filepath="posi.obj")
         
@@ -1488,9 +1422,6 @@ class CATEGORYBUTTON_520749(bpy.types.Operator):#簡略化
     uiitem.button(bl_idname,bl_label,icon="MESH_ICOSPHERE",mode="")
     uiitem.direction = "vertical"
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         uicategory_execute(self)
         return {'FINISHED'}
@@ -1516,9 +1447,6 @@ class FUJIWARATOOLBOX_759926(bpy.types.Operator):#オフ
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="MESH_TORUS",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.context.scene.render.use_simplify = False
         
@@ -1538,9 +1466,6 @@ class FUJIWARATOOLBOX_700665(bpy.types.Operator):#Subdiv 2
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="MESH_ICOSPHERE",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.context.scene.render.use_simplify = True
         bpy.context.scene.render.simplify_subdivision = 2
@@ -1562,9 +1487,6 @@ class FUJIWARATOOLBOX_194057(bpy.types.Operator):#Subdiv 1
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="MESH_ICOSPHERE",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.context.scene.render.use_simplify = True
         bpy.context.scene.render.simplify_subdivision = 1
@@ -1586,9 +1508,6 @@ class FUJIWARATOOLBOX_286488(bpy.types.Operator):#Subdiv 0
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="MESH_ICOSPHERE",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.context.scene.render.use_simplify = True
         bpy.context.scene.render.simplify_subdivision = 0
@@ -1613,9 +1532,6 @@ class FUJIWARATOOLBOX_69698(bpy.types.Operator):#レンダ解像度化
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         for obj in bpy.data.objects:
             if obj.type == "MESH":
@@ -1671,9 +1587,6 @@ class CATEGORYBUTTON_200803(bpy.types.Operator):#選択・操作
     uiitem.button(bl_idname,bl_label,icon="MOD_ARRAY",mode="")
     uiitem.direction = "horizontal"
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         uicategory_execute(self)
         return {'FINISHED'}
@@ -1701,9 +1614,6 @@ class FUJIWARATOOLBOX_24259(bpy.types.Operator):#親子
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="MOD_ARRAY",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         objects = fjw.get_selected_list()
         targets = []
@@ -1738,9 +1648,6 @@ class FUJIWARATOOLBOX_96321(bpy.types.Operator):#親子→ローカルビュー
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="MOD_ARRAY",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #for obj in bpy.data.objects:
         #    obj.select = False
@@ -1774,9 +1681,6 @@ class FUJIWARATOOLBOX_55567(bpy.types.Operator):#親子コピー
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="COPYDOWN",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.fujiwara_toolbox.command_24259()
         bpy.ops.view3d.copybuffer()
@@ -1796,9 +1700,6 @@ class FUJIWARATOOLBOX_971178(bpy.types.Operator):#＆ペースト
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.fujiwara_toolbox.command_55567()
         bpy.ops.view3d.pastebuffer()
@@ -1828,9 +1729,6 @@ class FUJIWARATOOLBOX_975985(bpy.types.Operator):#親子削除
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="PANEL_CLOSE",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.fujiwara_toolbox.command_24259()
         bpy.ops.object.delete(use_global=False)
@@ -1855,9 +1753,6 @@ class FUJIWARATOOLBOX_764181(bpy.types.Operator):#グループ
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="ROTATECOLLECTION",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.select_grouped(type='GROUP')
         
@@ -1876,9 +1771,6 @@ class FUJIWARATOOLBOX_490584(bpy.types.Operator):#マテリアル未割り当て
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="SOLID",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         for obj in bpy.data.objects:
             obj.select = False
@@ -1918,9 +1810,6 @@ class FUJIWARATOOLBOX_129690(bpy.types.Operator):#選択物のレイヤーだけ
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #一旦全部非表示
         for n in range(0,20):
@@ -1959,9 +1848,6 @@ class FUJIWARATOOLBOX_124884(bpy.types.Operator):#なにかあるレイヤーだ
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #一旦全部非表示
         for n in range(0,20):
@@ -1994,9 +1880,6 @@ class FUJIWARATOOLBOX_47465(bpy.types.Operator):#ペースト・表示
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="PASTEFLIPDOWN",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.view3d.pastebuffer()
         for obj in bpy.data.objects:
@@ -2024,9 +1907,6 @@ class FUJIWARATOOLBOX_770418(bpy.types.Operator):#カメラ範囲外を選択
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.select_all(action='SELECT')
         selection = fjw.get_selected_list()
@@ -2063,9 +1943,6 @@ class CATEGORYBUTTON_421353(bpy.types.Operator):#原点ツール
     uiitem.button(bl_idname,bl_label,icon="OUTLINER_DATA_EMPTY",mode="")
     uiitem.direction = ""
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         uicategory_execute(self)
         return {'FINISHED'}
@@ -2092,9 +1969,6 @@ class FUJIWARATOOLBOX_551555(bpy.types.Operator):#カーソルに設置
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="CURSOR",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         loc = bpy.context.space_data.cursor_location
         if "原点ピボット" not in bpy.data.objects:
@@ -2131,9 +2005,6 @@ class FUJIWARATOOLBOX_980669(bpy.types.Operator):#オブジェクトに設置
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="OBJECT_DATAMODE",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         loc = bpy.context.scene.objects.active.location
         bpy.context.space_data.cursor_location = loc
@@ -2182,9 +2053,6 @@ class FUJIWARATOOLBOX_145460(bpy.types.Operator):#オブジェクトをピボッ
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="NLA_PUSHDOWN",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.context.scene.objects.active.location = bpy.data.objects["原点ピボット"].location
         
@@ -2206,9 +2074,6 @@ class FUJIWARATOOLBOX_808575(bpy.types.Operator):#ピボットに原点を移動
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="EMPTY_DATA",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.context.space_data.cursor_location = bpy.data.objects["原点ピボット"].location
         bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
@@ -2239,9 +2104,6 @@ class FUJIWARATOOLBOX_947695(bpy.types.Operator):#原点を下に（選択物）
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="TRIA_DOWN_BAR",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         objlist = []
         for obj in bpy.context.selected_objects:
@@ -2282,9 +2144,6 @@ class FUJIWARATOOLBOX_183554(bpy.types.Operator):#重心下に
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.reject_notmesh()
         objlist = fjw.get_selected_list()
@@ -2334,9 +2193,6 @@ class FUJIWARATOOLBOX_463922(bpy.types.Operator):#原点X=0
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         targets = fjw.get_selected_list()
         for obj in targets:
@@ -2372,9 +2228,6 @@ class FUJIWARATOOLBOX_98727(bpy.types.Operator):#カーソルZを0に
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="CURSOR",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.context.space_data.cursor_location[2] = 0
         
@@ -2397,9 +2250,6 @@ class FUJIWARATOOLBOX_109728(bpy.types.Operator):#オブジェクトのZを0に
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="OBJECT_DATAMODE",mode="")
     
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         for obj in bpy.context.selected_objects:
             obj.location[2] = 0
@@ -2425,9 +2275,6 @@ class FUJIWARATOOLBOX_753369(bpy.types.Operator):#選択頂点を原点に
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="EDITMODE_HLT",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         obj = bpy.context.scene.objects.active
         if obj.mode != "EDIT":
@@ -2470,9 +2317,6 @@ class CATEGORYBUTTON_413853(bpy.types.Operator):#スーパー視点
     uiitem.button(bl_idname,bl_label,icon="RESTRICT_VIEW_OFF",mode="")
     uiitem.direction = ""
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         uicategory_execute(self)
         return {'FINISHED'}
@@ -2517,9 +2361,6 @@ class FUJIWARATOOLBOX_202399a(bpy.types.Operator):#
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         
         return {'FINISHED'}
@@ -2537,9 +2378,6 @@ class FUJIWARATOOLBOX_202399b(bpy.types.Operator):#
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         super_view("TOP")
         
@@ -2558,9 +2396,6 @@ class FUJIWARATOOLBOX_202399c(bpy.types.Operator):#
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         
         return {'FINISHED'}
@@ -2592,9 +2427,6 @@ class FUJIWARATOOLBOX_248412d(bpy.types.Operator):#サイド
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         super_view("LEFT")
         return {'FINISHED'}
@@ -2612,9 +2444,6 @@ class FUJIWARATOOLBOX_779140e(bpy.types.Operator):#
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         
         return {'FINISHED'}
@@ -2632,9 +2461,6 @@ class FUJIWARATOOLBOX_779140f(bpy.types.Operator):#
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         super_view("RIGHT")
         
@@ -2661,9 +2487,6 @@ class FUJIWARATOOLBOX_309675g(bpy.types.Operator):#
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         super_view("FRONT")
         
@@ -2682,9 +2505,6 @@ class FUJIWARATOOLBOX_309675h(bpy.types.Operator):#
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         super_view("BOTTOM")
         
@@ -2703,9 +2523,6 @@ class FUJIWARATOOLBOX_309675i(bpy.types.Operator):#
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         super_view("BACK")
         
@@ -2733,9 +2550,6 @@ class CATEGORYBUTTON_798012(bpy.types.Operator):#マテリアル
     uiitem.button(bl_idname,bl_label,icon="SMOOTH",mode="")
     uiitem.direction = "vertical"
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         uicategory_execute(self)
         return {'FINISHED'}
@@ -2762,9 +2576,6 @@ class FUJIWARATOOLBOX_134463(bpy.types.Operator):#全て影なし
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="SOLID",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         for mat in bpy.data.materials:
             mat.use_shadeless = True
@@ -2788,9 +2599,6 @@ class FUJIWARATOOLBOX_594225(bpy.types.Operator):#全て影あり
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="SMOOTH",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         for mat in bpy.data.materials:
             mat.use_shadeless = False
@@ -2819,9 +2627,6 @@ class FUJIWARATOOLBOX_386533(bpy.types.Operator):#全てシングル化
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.make_single_user(type='ALL', object=False, obdata=False, material=True, texture=False, animation=False)
         
@@ -2841,9 +2646,6 @@ class FUJIWARATOOLBOX_867349(bpy.types.Operator):#透過無効化（選択物）
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         for obj in bpy.context.selected_objects:
             for slot in obj.material_slots:
@@ -2868,9 +2670,6 @@ class FUJIWARATOOLBOX_748672(bpy.types.Operator):#有効化（選択物）
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         for obj in bpy.context.selected_objects:
             for slot in obj.material_slots:
@@ -2906,9 +2705,6 @@ class FUJIWARATOOLBOX_110074(bpy.types.Operator):#Material Utils
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.wm.call_menu(name="VIEW3D_MT_master_material")
         return {'FINISHED'}
@@ -2927,9 +2723,6 @@ class FUJIWARATOOLBOX_998634(bpy.types.Operator):#無マテリアルに白を割
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
     #アサイン用マテリアルの作成
         #mat = bpy.data.materials.new(name="whitemat")
@@ -2976,9 +2769,6 @@ class FUJIWARATOOLBOX_266402(bpy.types.Operator):#ベースセットアップ
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         mat = fjw.active().active_material
 
@@ -3027,10 +2817,7 @@ class FUJIWARATOOLBOX_266402(bpy.types.Operator):#ベースセットアップ
 #    uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-#    ###################################
-#    #処理部分
-#    ###################################
-#    def execute(self, context):
+####    def execute(self, context):
 #        objects = get_selected_list()
 #        for obj in objects:
 #            if obj.type != "MESH":
@@ -3111,9 +2898,6 @@ class FUJIWARATOOLBOX_117769(bpy.types.Operator):#漫画シェーダ
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         objects = fjw.get_selected_list()
         for obj in objects:
@@ -3199,9 +2983,6 @@ class CATEGORYBUTTON_959029(bpy.types.Operator):#Render
     uiitem.button(bl_idname,bl_label,icon="OUTLINER_DATA_CAMERA",mode="")
     uiitem.direction = "horizontal"
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         uicategory_execute(self)
         return {'FINISHED'}
@@ -3234,10 +3015,7 @@ uiitem().vertical()
 #    uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-#    ###################################
-#    #処理部分
-#    ###################################
-#    def execute(self, context):
+####    def execute(self, context):
 #        for obj in get_selected_list():
 #            if not checkLocationisinCameraView(obj.matrix_world *
 #            obj.matrix_basis.inverted() * obj.location):
@@ -3294,9 +3072,6 @@ class FUJIWARATOOLBOX_979047(bpy.types.Operator):#GLレンダ（ビューポー�
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.context.space_data.show_only_render = True
         bpy.context.space_data.viewport_shade = 'MATERIAL'
@@ -3361,9 +3136,6 @@ class FUJIWARATOOLBOX_171760(bpy.types.Operator):#GLレンダMASK
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.context.space_data.show_only_render = True
         bpy.context.space_data.viewport_shade = 'MATERIAL'
@@ -3419,9 +3191,6 @@ class FUJIWARATOOLBOX_347064(bpy.types.Operator):#線幅を戻す
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #線幅戻す
         gplayers = bpy.context.scene.grease_pencil.layers
@@ -3509,9 +3278,6 @@ class FUJIWARATOOLBOX_505834(bpy.types.Operator):#コンポジット構築のみ
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         construct_comiccomposit()
         
@@ -3543,9 +3309,6 @@ class FUJIWARATOOLBOX_258524(bpy.types.Operator):#プレビュー
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         construct_comiccomposit()
         bpy.context.scene.render.resolution_percentage = 25
@@ -3569,10 +3332,7 @@ class FUJIWARATOOLBOX_258524(bpy.types.Operator):#プレビュー
 #    uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-#    ###################################
-#    #処理部分
-#    ###################################
-#    def execute(self, context):
+####    def execute(self, context):
 #        construct_comiccomposit()
 #        bpy.context.scene.render.resolution_percentage = 100
 #        bpy.ops.wm.save_mainfile()
@@ -3668,9 +3428,6 @@ class FUJIWARATOOLBOX_716795(bpy.types.Operator):#RenderGroup
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #カメラ・ランプを除外
         for obj in bpy.context.selected_objects:
@@ -3706,9 +3463,6 @@ class FUJIWARATOOLBOX_985143(bpy.types.Operator):#親子・連続指定用
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.fujiwara_toolbox.command_24259()
         bpy.ops.fujiwara_toolbox.command_716795()
@@ -3737,9 +3491,6 @@ class FUJIWARATOOLBOX_880927(bpy.types.Operator):#プロパティから再構成
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         targets = fjw.get_selected_list()
         #親子選択
@@ -3804,9 +3555,6 @@ class FUJIWARATOOLBOX_275643(bpy.types.Operator):#クリア
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         objects = fjw.get_selected_list()
         unlink_RenderGroup(self,objects)
@@ -3827,9 +3575,6 @@ class FUJIWARATOOLBOX_824105(bpy.types.Operator):#割り当て済みを隠す
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="VISIBLE_IPO_OFF",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.deselect()
         for group in bpy.data.groups:
@@ -3867,9 +3612,6 @@ class CATEGORYBUTTON_845862(bpy.types.Operator):#レイヤー
     uiitem.button(bl_idname,bl_label,icon="OUTLINER_OB_LATTICE",mode="")
     uiitem.direction = ""
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         uicategory_execute(self)
         return {'FINISHED'}
@@ -4096,9 +3838,6 @@ class FUJIWARATOOLBOX_822286(bpy.types.Operator):#構成チェック
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         lc = LayerCategory()
         lc.checkall(self)
@@ -4120,9 +3859,6 @@ class FUJIWARATOOLBOX_630218(bpy.types.Operator):#カテゴリに移動（選択
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         selection = fjw.get_selected_list()
         lc = LayerCategory()
@@ -4146,9 +3882,6 @@ class FUJIWARATOOLBOX_113350(bpy.types.Operator):#カテゴリに移動（表示
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         lc = LayerCategory()
         lc.correct(bpy.context.visible_objects)
@@ -4190,9 +3923,6 @@ class FUJIWARATOOLBOX_748000(bpy.types.Operator):#キャラ手前
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="OUTLINER_OB_ARMATURE",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         setlayer(0)
         
@@ -4211,9 +3941,6 @@ class FUJIWARATOOLBOX_547202(bpy.types.Operator):#キャラ
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         setlayer(1)
         
@@ -4232,9 +3959,6 @@ class FUJIWARATOOLBOX_892615(bpy.types.Operator):#キャラ
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         setlayer(2)
         
@@ -4253,9 +3977,6 @@ class FUJIWARATOOLBOX_60203(bpy.types.Operator):#キャラ
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         setlayer(3)
         
@@ -4274,9 +3995,6 @@ class FUJIWARATOOLBOX_951016(bpy.types.Operator):#キャラ奥
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         setlayer(4)
         
@@ -4305,9 +4023,6 @@ class FUJIWARATOOLBOX_977845(bpy.types.Operator):#背景手前
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="OUTLINER_OB_LATTICE",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         setlayer(10)
         
@@ -4326,9 +4041,6 @@ class FUJIWARATOOLBOX_782024(bpy.types.Operator):#背景
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         setlayer(11)
         
@@ -4347,9 +4059,6 @@ class FUJIWARATOOLBOX_288468(bpy.types.Operator):#背景
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         setlayer(12)
         
@@ -4368,9 +4077,6 @@ class FUJIWARATOOLBOX_546419(bpy.types.Operator):#背景
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         setlayer(13)
         
@@ -4389,9 +4095,6 @@ class FUJIWARATOOLBOX_844075(bpy.types.Operator):#背景奥
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         setlayer(14)
         
@@ -4419,9 +4122,6 @@ class FUJIWARATOOLBOX_165238(bpy.types.Operator):#ストック
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         setlayer(15)
         bpy.context.scene.layers[15] = False
@@ -4442,9 +4142,6 @@ class FUJIWARATOOLBOX_377137(bpy.types.Operator):#2
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         setlayer(16)
         bpy.context.scene.layers[16] = False
@@ -4464,9 +4161,6 @@ class FUJIWARATOOLBOX_21253(bpy.types.Operator):#3
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         setlayer(17)
         bpy.context.scene.layers[17] = False
@@ -4486,9 +4180,6 @@ class FUJIWARATOOLBOX_870290(bpy.types.Operator):#4
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         setlayer(18)
         bpy.context.scene.layers[18] = False
@@ -4508,9 +4199,6 @@ class FUJIWARATOOLBOX_255842(bpy.types.Operator):#5
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         setlayer(19)
         bpy.context.scene.layers[19] = False
@@ -4549,9 +4237,6 @@ class FUJIWARATOOLBOX_720458(bpy.types.Operator):#1
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="OUTLINER_OB_LATTICE",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         target = 10
         setlayer(target)
@@ -4580,9 +4265,6 @@ class FUJIWARATOOLBOX_756530(bpy.types.Operator):#2
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         target = 11
         setlayer(target)
@@ -4608,9 +4290,6 @@ class FUJIWARATOOLBOX_589552(bpy.types.Operator):#3
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         target = 12
         setlayer(target)
@@ -4635,9 +4314,6 @@ class FUJIWARATOOLBOX_352073(bpy.types.Operator):#4
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         target = 13
         setlayer(target)
@@ -4663,9 +4339,6 @@ class FUJIWARATOOLBOX_283776(bpy.types.Operator):#5
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         target = 14
         setlayer(target)
@@ -4712,9 +4385,6 @@ class FUJIWARATOOLBOX_436578(bpy.types.Operator):#分離
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         basepath = bpy.data.filepath
         baselayers = []
@@ -4794,9 +4464,6 @@ class FUJIWARATOOLBOX_857359(bpy.types.Operator):#本体を開く
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         basepath = bpy.data.filepath
         if "bg.blend" not in basepath:
@@ -4832,9 +4499,6 @@ class FUJIWARATOOLBOX_348653(bpy.types.Operator):#背景を開く
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         basepath = bpy.data.filepath
         if "bg.blend" in basepath:
@@ -4884,9 +4548,6 @@ class FUJIWARATOOLBOX_995874(bpy.types.Operator):#中点
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="none")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.context.space_data.pivot_point = 'MEDIAN_POINT'
         #グリッドスナップ
@@ -4908,9 +4569,6 @@ class FUJIWARATOOLBOX_59910(bpy.types.Operator):#頂点に
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="none")
     
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #コンテキストに応じてカーソルを設置
         obj = bpy.context.scene.objects.active
@@ -4959,9 +4617,6 @@ class CATEGORYBUTTON_861028(bpy.types.Operator):#素体
     uiitem.button(bl_idname,bl_label,icon="OUTLINER_OB_ARMATURE",mode="")
     uiitem.direction = "horizontal"
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         uicategory_execute(self)
         return {'FINISHED'}
@@ -4994,9 +4649,6 @@ class FUJIWARATOOLBOX_707900(bpy.types.Operator):#素体追加
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
     
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         import fjw.AssetManager
         fjw.AssetManager.mode = "append"
@@ -5260,9 +4912,6 @@ class FUJIWARATOOLBOX_157507(bpy.types.Operator):#スワップ削除
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="FILE_REFRESH",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         geo = None
         for obj in bpy.context.selected_objects:
@@ -5382,9 +5031,6 @@ class FUJIWARATOOLBOX_940955(bpy.types.Operator):#Libポーズ適用
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
     
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         geo = None
         for obj in bpy.context.selected_objects:
@@ -5426,9 +5072,6 @@ class FUJIWARATOOLBOX_319683(bpy.types.Operator):#素体抽出
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
     
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         if "ジオメトリ" not in bpy.context.scene.objects.active.name:
             self.report({"INFO"},"素体ジオメトリを指定してください")
@@ -5532,9 +5175,6 @@ class FUJIWARATOOLBOX_815238(bpy.types.Operator):#ヘアトラッカ設定
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         
         for obj in bpy.data.objects:
@@ -5561,9 +5201,6 @@ class FUJIWARATOOLBOX_68972(bpy.types.Operator):#カメラ目線
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #ヘアトラッカーがカメラと同じ位置なのを利用 ってあー3Dカーソルでもよかった？
         obj = fjw.active()
@@ -5606,9 +5243,6 @@ class CATEGORYBUTTON_14843(bpy.types.Operator):#ランプ
     uiitem.button(bl_idname,bl_label,icon="OUTLINER_OB_LAMP",mode="")
     uiitem.direction = ""
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         uicategory_execute(self)
         return {'FINISHED'}
@@ -5635,9 +5269,6 @@ class FUJIWARATOOLBOX_96315(bpy.types.Operator):#SUN設置
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="LAMP_SUN",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.mode("OBJECT")
         bpy.ops.object.lamp_add(type='SUN', radius=1, view_align=False, location=(0, -6, 6), layers=(True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False))
@@ -5665,9 +5296,6 @@ class FUJIWARATOOLBOX_831406(bpy.types.Operator):#屋内用ロングランプ
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.mode("OBJECT")
         cursor = bpy.context.space_data.cursor_location
@@ -5693,9 +5321,6 @@ class FUJIWARATOOLBOX_47170(bpy.types.Operator):#カメラにポイント設置
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="CAMERA_DATA",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.mode("OBJECT")
         bpy.ops.object.lamp_add(type='POINT', radius=1, view_align=False, location=bpy.context.scene.camera.location, layers=(True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False))
@@ -5723,9 +5348,6 @@ class FUJIWARATOOLBOX_770473(bpy.types.Operator):#ボトムバックライト
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         target = fjw.active()
         fjw.deselect()
@@ -5759,9 +5381,6 @@ class FUJIWARATOOLBOX_648653(bpy.types.Operator):#環境照明
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.context.scene.world.light_settings.use_environment_light = True
         bpy.context.scene.world.light_settings.environment_energy = 0.1
@@ -5798,9 +5417,6 @@ class FUJIWARATOOLBOX_550719(bpy.types.Operator):#ライト正規化
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         for obj in bpy.context.selected_objects:
             if obj.type != "LAMP":
@@ -5831,9 +5447,6 @@ class FUJIWARATOOLBOX_682004(bpy.types.Operator):#ランプ全レイヤ化
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         layers = bpy.context.scene.layers
         for obj in bpy.data.objects:
@@ -5876,9 +5489,6 @@ class CATEGORYBUTTON_712442(bpy.types.Operator):#カスタムプロパティ
     uiitem.button(bl_idname,bl_label,icon="",mode="")
     uiitem.direction = "vertical"
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         uicategory_execute(self)
         return {'FINISHED'}
@@ -5908,9 +5518,6 @@ class FUJIWARATOOLBOX_454471(bpy.types.Operator):#グループ情報を回収
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #まず全部除去
         for obj in bpy.data.objects:
@@ -5942,9 +5549,6 @@ class FUJIWARATOOLBOX_490616(bpy.types.Operator):#グループ再生
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         
         return {'FINISHED'}
@@ -5975,9 +5579,6 @@ class FUJIWARATOOLBOX_372481(bpy.types.Operator):#Trackto:CAMERA
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         for obj in bpy.data.objects:
             if "TrackTo" in obj:
@@ -6043,9 +5644,6 @@ class FUJIWARATOOLBOX_357169(bpy.types.Operator):#グリッドスナップ
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="SNAP_GRID",mode="none")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.context.scene.tool_settings.use_snap = True
         bpy.context.scene.tool_settings.snap_element = 'INCREMENT'
@@ -6066,9 +5664,6 @@ class FUJIWARATOOLBOX_911158(bpy.types.Operator):#面スナップ
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="SNAP_FACE",mode="none")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.context.scene.tool_settings.use_snap = True
         bpy.context.scene.tool_settings.snap_element = 'FACE'
@@ -6091,9 +5686,6 @@ class FUJIWARATOOLBOX_993743(bpy.types.Operator):#辺スナップ
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.context.scene.tool_settings.use_snap = True
         bpy.context.scene.tool_settings.snap_element = 'EDGE'
@@ -6116,9 +5708,6 @@ class FUJIWARATOOLBOX_33358(bpy.types.Operator):#頂点スナップ
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="SNAP_VERTEX",mode="none")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.context.scene.tool_settings.use_snap = True
         bpy.context.scene.tool_settings.snap_element = 'VERTEX'
@@ -6456,9 +6045,6 @@ class CATEGORYBUTTON_812057(bpy.types.Operator):#MOD
     uiitem.button(bl_idname,bl_label,icon="MODIFIER",mode="")
     uiitem.direction = "horizontal"
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         uicategory_execute(self)
         return {'FINISHED'}
@@ -6490,9 +6076,6 @@ class FUJIWARATOOLBOX_557231(bpy.types.Operator):#適用（選択物）
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="FILE_TICK",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #for obj in bpy.data.objects:
         #    if obj.select == True :
@@ -6536,9 +6119,6 @@ class FUJIWARATOOLBOX_661107(bpy.types.Operator):#複製系だけ適用（選択
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="FILE_TICK",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         selected = bpy.context.selected_objects
         for obj in selected:
@@ -6563,9 +6143,6 @@ class FUJIWARATOOLBOX_234815(bpy.types.Operator):#適用・隠す
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="RESTRICT_VIEW_ON",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         selected = bpy.context.selected_objects
         for obj in selected:
@@ -6600,9 +6177,6 @@ class FUJIWARATOOLBOX_474026(bpy.types.Operator):#厚み用拡縮適用
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         for obj in fjw.get_selected_list():
             if not fjw.ismesh(obj):
@@ -6648,9 +6222,6 @@ class FUJIWARATOOLBOX_757415(bpy.types.Operator):#ミラー左右分離（選択
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="MOD_WIREFRAME",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #編集時にfaceいじるにはbmeshを使う必要がある。
         #bmeshについてはこれ↓あと、TextEditorにサンプルコードというかテンプレがある。
@@ -6748,9 +6319,6 @@ class FUJIWARATOOLBOX_900279(bpy.types.Operator):#X-でミラー化
     uiitem.button(bl_idname,bl_label,icon="MOD_MIRROR",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.reject_notmesh()
         selection = fjw.get_selected_list()
@@ -6780,9 +6348,6 @@ class FUJIWARATOOLBOX_734909(bpy.types.Operator):#X+でミラー化
     uiitem.button(bl_idname,bl_label,icon="MOD_MIRROR",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.reject_notmesh()
         selection = fjw.get_selected_list()
@@ -6828,9 +6393,6 @@ class FUJIWARATOOLBOX_892110(bpy.types.Operator):#ペアレントミラー
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="MOD_MIRROR",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
         
@@ -6878,9 +6440,6 @@ class FUJIWARATOOLBOX_553492(bpy.types.Operator):#ターゲットミラー
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         target = bpy.context.scene.objects.active
         #ミラー
@@ -6922,9 +6481,6 @@ class FUJIWARATOOLBOX_17104(bpy.types.Operator):#ターゲットミラー除去
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         for obj in fjw.get_selected_list():
             modu = fjw.Modutils(obj)
@@ -6948,9 +6504,6 @@ class FUJIWARATOOLBOX_239793(bpy.types.Operator):#ミラー適用
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         selection = fjw.get_selected_list()
         for obj in selection:
@@ -7002,9 +6555,6 @@ class FUJIWARATOOLBOX_519944(bpy.types.Operator):#ペアレントラップ
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="MOD_SHRINKWRAP",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
         
@@ -7045,9 +6595,6 @@ class FUJIWARATOOLBOX_907335(bpy.types.Operator):#ペアレント装甲
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="MOD_SOLIDIFY",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
         
@@ -7103,9 +6650,6 @@ class FUJIWARATOOLBOX_449421(bpy.types.Operator):#ペアレントメッシュデ
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="MOD_MESHDEFORM",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
         
@@ -7180,9 +6724,6 @@ class FUJIWARATOOLBOX_384891(bpy.types.Operator):#5
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
         
@@ -7260,9 +6801,6 @@ class FUJIWARATOOLBOX_44204(bpy.types.Operator):#バインド解除
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         for obj in bpy.context.selected_objects:
             if obj.type == "MESH":
@@ -7290,9 +6828,6 @@ class FUJIWARATOOLBOX_766913(bpy.types.Operator):#デフォーム適用
     uiitem.button(bl_idname,bl_label,icon="FILE_TICK",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         for obj in bpy.context.selected_objects:
             if obj.type == "MESH":
@@ -7324,9 +6859,6 @@ class FUJIWARATOOLBOX_860977(bpy.types.Operator):#全て再バインド
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="FILE_REFRESH",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #for obj in bpy.context.selected_objects:
         #    if obj.type == "MESH":
@@ -7370,9 +6902,6 @@ class FUJIWARATOOLBOX_531573(bpy.types.Operator):#カーブにアタッチ
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         curve = None
         mesh = None
@@ -7494,9 +7023,6 @@ class FUJIWARATOOLBOX_141722(bpy.types.Operator):#オープンエッジの線画
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         selection = fjw.get_selected_list()
         fjw.deselect()
@@ -7567,9 +7093,6 @@ class FUJIWARATOOLBOX_288910(bpy.types.Operator):#MOD整列
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         for obj in fjw.get_selected_list():
             if obj.type != "MESH":
@@ -7620,9 +7143,6 @@ class FUJIWARATOOLBOX_476244(bpy.types.Operator):#Differnce
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="MOD_BOOLEAN",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.btool.boolean_diff()
         bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
@@ -7647,9 +7167,6 @@ class FUJIWARATOOLBOX_691601(bpy.types.Operator):#Differnce→隠す
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="RESTRICT_VIEW_ON",mode="")
     
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.btool.boolean_diff()
         bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
@@ -7674,9 +7191,6 @@ class FUJIWARATOOLBOX_69194(bpy.types.Operator):#Union(Direct)
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="MOD_EDGESPLIT",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.btool.boolean_union_direct()
         return {'FINISHED'}
@@ -7701,9 +7215,6 @@ class FUJIWARATOOLBOX_757208(bpy.types.Operator):#バウンド非表示
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="RESTRICT_VIEW_ON",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         for obj in bpy.data.objects:
             if obj.draw_type == 'BOUNDS':
@@ -7727,9 +7238,6 @@ class FUJIWARATOOLBOX_6352(bpy.types.Operator):#bool再計算
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="FILE_REFRESH",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.select_all(action='SELECT')
         bpy.ops.transform.translate(value=(0, 0, 0), constraint_axis=(True, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1, release_confirm=True)
@@ -7762,9 +7270,6 @@ class FUJIWARATOOLBOX_972011(bpy.types.Operator):#裏ポリ+ベベルエッジ
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.fujiwara_toolbox.command_318722()
         bpy.ops.fujiwara_toolbox.command_60327()
@@ -7785,9 +7290,6 @@ class FUJIWARATOOLBOX_357209(bpy.types.Operator):#オノマトペ白フチ
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.fujiwara_toolbox.command_737497()
         bpy.ops.fujiwara_toolbox.command_788766()
@@ -7817,9 +7319,6 @@ class FUJIWARATOOLBOX_793633(bpy.types.Operator):#エッジ適用
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         
         fjw.reject_notmesh()
@@ -7901,9 +7400,6 @@ class FUJIWARATOOLBOX_318722(bpy.types.Operator):#裏ポリエッジ付加
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.reject_notmesh()
         selection = fjw.get_selected_list()
@@ -7944,9 +7440,6 @@ class FUJIWARATOOLBOX_737497(bpy.types.Operator):#裏ポリ白
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.reject_notmesh()
         selection = fjw.get_selected_list()
@@ -8001,10 +7494,7 @@ uiitem().horizontal()
 #    uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-#    ###################################
-#    #処理部分
-#    ###################################
-#    def execute(self, context):
+####    def execute(self, context):
 #        reject_notmesh()
 #        selection = get_selected_list()
 
@@ -8030,9 +7520,6 @@ class FUJIWARATOOLBOX_892991(bpy.types.Operator):#1mm
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.reject_notmesh()
         selection = fjw.get_selected_list()
@@ -8058,9 +7545,6 @@ class FUJIWARATOOLBOX_793908(bpy.types.Operator):#2mm
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.reject_notmesh()
         selection = fjw.get_selected_list()
@@ -8096,9 +7580,6 @@ class FUJIWARATOOLBOX_401033(bpy.types.Operator):#5mm
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.reject_notmesh()
         selection = fjw.get_selected_list()
@@ -8130,9 +7611,6 @@ class FUJIWARATOOLBOX_788766(bpy.types.Operator):#1cm
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.reject_notmesh()
         selection = fjw.get_selected_list()
@@ -8168,10 +7646,7 @@ class FUJIWARATOOLBOX_788766(bpy.types.Operator):#1cm
 #    uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-#    ###################################
-#    #処理部分
-#    ###################################
-#    def execute(self, context):
+####    def execute(self, context):
 #        reject_notmesh()
 #        selection = get_selected_list()
 
@@ -8205,9 +7680,6 @@ class FUJIWARATOOLBOX_513603(bpy.types.Operator):#表示
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.reject_notmesh()
         selection = fjw.get_selected_list()
@@ -8240,9 +7712,6 @@ class FUJIWARATOOLBOX_14967(bpy.types.Operator):#非表示
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.reject_notmesh()
         selection = fjw.get_selected_list()
@@ -8278,9 +7747,6 @@ class FUJIWARATOOLBOX_290695(bpy.types.Operator):#除去
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.reject_notmesh()
         selection = fjw.get_selected_list()
@@ -8326,9 +7792,6 @@ class FUJIWARATOOLBOX_60327(bpy.types.Operator):#ベベルエッジ
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.reject_notmesh()
         selection = fjw.get_selected_list()
@@ -8361,9 +7824,6 @@ class FUJIWARATOOLBOX_312642(bpy.types.Operator):#除去
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         selection = fjw.get_selected_list()
         for obj in selection:
@@ -8409,9 +7869,6 @@ class FUJIWARATOOLBOX_115887(bpy.types.Operator):#辺分離ソリッド
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.reject_notmesh()
         selection = fjw.get_selected_list()
@@ -8442,9 +7899,6 @@ class FUJIWARATOOLBOX_693073(bpy.types.Operator):#除去
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         selection = fjw.get_selected_list()
         for obj in selection:
@@ -8494,9 +7948,6 @@ class FUJIWARATOOLBOX_962587(bpy.types.Operator):#低subsurf化（選択物）
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.reject_notmesh()
         selection = fjw.get_selected_list()
@@ -8561,9 +8012,6 @@ class CATEGORYBUTTON_813381(bpy.types.Operator):#メッシュ
     uiitem.button(bl_idname,bl_label,icon="MESH_DATA",mode="")
     uiitem.direction = ""
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         uicategory_execute(self)
         return {'FINISHED'}
@@ -8599,9 +8047,6 @@ class FUJIWARATOOLBOX_630367(bpy.types.Operator):#バウンド
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.reject_notmesh()
         objs = fjw.get_selected_list()
@@ -8625,9 +8070,6 @@ class FUJIWARATOOLBOX_65984(bpy.types.Operator):#ワイヤー
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.reject_notmesh()
         objs = fjw.get_selected_list()
@@ -8651,9 +8093,6 @@ class FUJIWARATOOLBOX_691590(bpy.types.Operator):#テクスチャ
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.reject_notmesh()
         objs = fjw.get_selected_list()
@@ -8689,9 +8128,6 @@ class FUJIWARATOOLBOX_339338(bpy.types.Operator):#スマートUV投影（各選�
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.reject_notmesh()
         for obj in fjw.get_selected_list():
@@ -8722,9 +8158,6 @@ class FUJIWARATOOLBOX_719855(bpy.types.Operator):#ライトマップパック展
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.reject_notmesh()
         for obj in fjw.get_selected_list():
@@ -8754,9 +8187,6 @@ class FUJIWARATOOLBOX_676177(bpy.types.Operator):#境界クリース
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.mesh.select_all(action='SELECT')
         bpy.ops.mesh.region_to_loop()
@@ -8786,9 +8216,6 @@ class FUJIWARATOOLBOX_31891(bpy.types.Operator):#自動スムーズ
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.shade_smooth()
 
@@ -8815,9 +8242,6 @@ class FUJIWARATOOLBOX_795120(bpy.types.Operator):#法線を反転
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         for obj in bpy.context.selected_objects:
             if obj.type == "MESH":
@@ -8847,9 +8271,6 @@ class FUJIWARATOOLBOX_996345(bpy.types.Operator):#ペラポリ準備
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 
@@ -8902,9 +8323,6 @@ class FUJIWARATOOLBOX_635930(bpy.types.Operator):#複製分離
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="edit")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         baselist = []
         for obj in bpy.data.objects:
@@ -8941,9 +8359,6 @@ class FUJIWARATOOLBOX_273555(bpy.types.Operator):#装甲化
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="MOD_SOLIDIFY",mode="edit")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         
         
@@ -9034,9 +8449,6 @@ class FUJIWARATOOLBOX_338159(bpy.types.Operator):#装甲化（内側）
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         
         baseobj = bpy.context.scene.objects.active
@@ -9127,9 +8539,6 @@ class FUJIWARATOOLBOX_351222(bpy.types.Operator):#厚み反転
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.reject_notmesh()
         for obj in bpy.context.selected_objects:
@@ -9173,9 +8582,6 @@ class FUJIWARATOOLBOX_813387(bpy.types.Operator):#フチ厚み化
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="MOD_SOLIDIFY",mode="edit")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         obj = bpy.context.scene.objects.active
         
@@ -9215,9 +8621,6 @@ class FUJIWARATOOLBOX_994469(bpy.types.Operator):#スキン化
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="MOD_SKIN",mode="edit")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.fujiwara_toolbox.command_635930()
         bpy.ops.mesh.select_all(action='TOGGLE')
@@ -9250,9 +8653,6 @@ class FUJIWARATOOLBOX_467890(bpy.types.Operator):#x*-1
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="EMPTY_DATA",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
 #        if bpy.context.scene.objects.active.type == "EMPTY":
 #            base = bpy.context.scene.objects.active
@@ -9288,9 +8688,6 @@ class FUJIWARATOOLBOX_681921(bpy.types.Operator):#gMirror
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         import random
         groupname = "Group" + str(random.randrange(0,9999999999))
@@ -9335,9 +8732,6 @@ class FUJIWARATOOLBOX_559336(bpy.types.Operator):#重複頂点を削除（選択
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.reject_notmesh()
         selection = fjw.get_selected_list()
@@ -9379,9 +8773,6 @@ class CATEGORYBUTTON_561346(bpy.types.Operator):#トランスフォーム
     uiitem.button(bl_idname,bl_label,icon="MANIPUL",mode="")
     uiitem.direction = "horizontal"
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         uicategory_execute(self)
         return {'FINISHED'}
@@ -9406,9 +8797,6 @@ class FUJIWARATOOLBOX_272822(bpy.types.Operator):#面に回転をあわせる
 
 
     
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.ralign_orientation_to_selection()
 #        bpy.ops.transform.create_orientation()
@@ -9446,10 +8834,7 @@ class FUJIWARATOOLBOX_272822(bpy.types.Operator):#面に回転をあわせる
 #    #モードの追加
 #    ModeList.append("")
 #
-#    ###################################
-#    #処理部分
-#    ###################################
-#    def execute(self, context):
+####    def execute(self, context):
 #        rmode = bpy.context.object.rotation_mode
 #        bpy.context.object.rotation_mode = 'XYZ'
 #        obj = bpy.context.scene.objects.active
@@ -9487,9 +8872,6 @@ class FUJIWARATOOLBOX_698300(bpy.types.Operator):#ミラーリング
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.duplicate(linked=False, mode='TRANSLATION')
         selection = fjw.get_selected_list()
@@ -9638,9 +9020,6 @@ class FUJIWARATOOLBOX_83454(bpy.types.Operator):#global X
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.duplicate(linked=False, mode='TRANSLATION')
         selection = fjw.get_selected_list()
@@ -9721,9 +9100,6 @@ class FUJIWARATOOLBOX_334794(bpy.types.Operator):#カーソル X
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.duplicate(linked=False, mode='TRANSLATION')
         selection = fjw.get_selected_list()
@@ -9788,9 +9164,6 @@ class FUJIWARATOOLBOX_168959(bpy.types.Operator):#Y
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.duplicate(linked=False, mode='TRANSLATION')
         selection = fjw.get_selected_list()
@@ -9856,9 +9229,6 @@ class FUJIWARATOOLBOX_68739(bpy.types.Operator):#Z
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.duplicate(linked=False, mode='TRANSLATION')
         selection = fjw.get_selected_list()
@@ -9958,10 +9328,7 @@ uiitem().vertical()
 #    LabelList.append("ドラフト");
 #
 #
-#    ###################################
-#    #処理部分
-#    ###################################
-#    def execute(self, context):
+####    def execute(self, context):
 #        #http://python.civic-apps.com/date-format/
 #        #bpy.context.scene.render.use_simplify = True
 #        #bpy.context.scene.render.simplify_subdivision = 1
@@ -10032,10 +9399,7 @@ uiitem().vertical()
 #    LabelList.append("オリエンテーション");
 #
 #
-#    ###################################
-#    #処理部分
-#    ###################################
-#    def execute(self, context):
+####    def execute(self, context):
 #        bpy.context.space_data.transform_orientation = 'GLOBAL'
 #
 #        return {'FINISHED'}
@@ -10056,10 +9420,7 @@ uiitem().vertical()
 #    LabelList.append("");
 #
 #
-#    ###################################
-#    #処理部分
-#    ###################################
-#    def execute(self, context):
+####    def execute(self, context):
 #        bpy.context.space_data.transform_orientation = 'LOCAL'
 #
 #        return {'FINISHED'}
@@ -10080,10 +9441,7 @@ uiitem().vertical()
 #    LabelList.append("");
 #
 #
-#    ###################################
-#    #処理部分
-#    ###################################
-#    def execute(self, context):
+####    def execute(self, context):
 #        bpy.context.space_data.transform_orientation = 'NORMAL'
 #
 #        return {'FINISHED'}
@@ -10133,10 +9491,7 @@ uiitem().vertical()
 #    LabelList.append("シーン");
 #
 #
-#    ###################################
-#    #処理部分
-#    ###################################
-#    def execute(self, context):
+####    def execute(self, context):
 #        scene = bpy.context.scene
 #        for screen in bpy.data.screens:
 #            screen.scene = scene
@@ -10201,10 +9556,7 @@ uiitem().vertical()
 #    LabelList.append("スナップ");
 #
 #
-#    ###################################
-#    #処理部分
-#    ###################################
-#    def execute(self, context):
+####    def execute(self, context):
 #        bpy.ops.view3d.snap_selected_to_cursor(use_offset=False)
 #
 #        return {'FINISHED'}
@@ -10226,10 +9578,7 @@ uiitem().vertical()
 #    LabelList.append("");
 #
 #
-#    ###################################
-#    #処理部分
-#    ###################################
-#    def execute(self, context):
+####    def execute(self, context):
 #        bpy.ops.view3d.snap_cursor_to_selected()
 #
 #        return {'FINISHED'}
@@ -10301,9 +9650,6 @@ class CATEGORYBUTTON_445538(bpy.types.Operator):#ペアレント
     uiitem.button(bl_idname,bl_label,icon="",mode="")
     uiitem.direction = ""
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         uicategory_execute(self)
         return {'FINISHED'}
@@ -10330,9 +9676,6 @@ class FUJIWARATOOLBOX_227300(bpy.types.Operator):#オブジェクト
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="OBJECT_DATA",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.parent_set(type='OBJECT', keep_transform=False)
         
@@ -10355,9 +9698,6 @@ class FUJIWARATOOLBOX_413331(bpy.types.Operator):#オブジェクト（Trans維�
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="OBJECT_DATA",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
         #後処理
@@ -10392,9 +9732,6 @@ class FUJIWARATOOLBOX_454489(bpy.types.Operator):#ボーン相対
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="BONE_DATA",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.parent_set(type='BONE_RELATIVE')
         #後処理
@@ -10416,9 +9753,6 @@ class FUJIWARATOOLBOX_182276(bpy.types.Operator):#ボーン相対→隠す
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="RESTRICT_VIEW_ON",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.parent_set(type='BONE_RELATIVE')
         for obj in bpy.context.selected_objects:
@@ -10457,9 +9791,6 @@ class FUJIWARATOOLBOX_214836(bpy.types.Operator):#自動のウェイトで
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="OUTLINER_OB_ARMATURE",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.parent_set(type='ARMATURE_AUTO')
         
@@ -10498,9 +9829,6 @@ class FUJIWARATOOLBOX_214836a(bpy.types.Operator):#自動のウェイトで→�
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="RESTRICT_VIEW_ON",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.parent_set(type='ARMATURE_AUTO')
         for obj in bpy.context.selected_objects:
@@ -10543,9 +9871,6 @@ class FUJIWARATOOLBOX_307216(bpy.types.Operator):#クリア
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="OUTLINER_DATA_LAMP",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.parent_clear(type='CLEAR')
         
@@ -10564,9 +9889,6 @@ class FUJIWARATOOLBOX_855470(bpy.types.Operator):#クリア（Trans維持）
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="OUTLINER_DATA_LAMP",mode="")
     
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
         
@@ -10597,10 +9919,7 @@ uiitem().vertical()
 #    LabelList.append("トランスフォーム");
 #
 #
-#    ###################################
-#    #処理部分
-#    ###################################
-#    def execute(self, context):
+####    def execute(self, context):
 #        obj = bpy.context.scene.objects.active
 #        obj.location[0] = 0
 #
@@ -10627,10 +9946,7 @@ uiitem().vertical()
 #    LabelList.append("");
 #
 #
-#    ###################################
-#    #処理部分
-#    ###################################
-#    def execute(self, context):
+####    def execute(self, context):
 #        obj = bpy.context.scene.objects.active
 #        obj.rotation_euler[0] = 1.5708
 #
@@ -10655,10 +9971,7 @@ uiitem().vertical()
 #    LabelList.append("");
 #
 #
-#    ###################################
-#    #処理部分
-#    ###################################
-#    def execute(self, context):
+####    def execute(self, context):
 #        source = bpy.context.selected_objects[0]
 #        target = bpy.context.scene.objects.active
 #        target.location[0] = source.location[0] * -1
@@ -10797,10 +10110,7 @@ def refreshlayer():
 #    LabelList.append("レンダー設定");
 #
 #
-#    ###################################
-#    #処理部分
-#    ###################################
-#    def execute(self, context):
+####    def execute(self, context):
 #        bpy.context.scene.render.resolution_percentage = 10
 #        bpy.context.scene.render.layers["RenderLayer"].use_solid = True
 #        bpy.context.scene.render.layers["RenderLayer"].use_edge_enhance = True
@@ -10826,10 +10136,7 @@ def refreshlayer():
 #    LabelList.append("");
 #
 #
-#    ###################################
-#    #処理部分
-#    ###################################
-#    def execute(self, context):
+####    def execute(self, context):
 #        bpy.context.scene.render.resolution_percentage = 100
 #        bpy.context.scene.render.layers["RenderLayer"].use_solid = True
 #        bpy.context.scene.render.layers["RenderLayer"].use_edge_enhance = True
@@ -10860,9 +10167,6 @@ class CATEGORYBUTTON_446957(bpy.types.Operator):#アーマチュア
     uiitem.button(bl_idname,bl_label,icon="OUTLINER_OB_ARMATURE",mode="")
     uiitem.direction = "horizontal"
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         uicategory_execute(self)
         return {'FINISHED'}
@@ -10888,9 +10192,6 @@ class FUJIWARATOOLBOX_84927(bpy.types.Operator):#スケール継承解除（選�
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="CHECKBOX_DEHLT",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.context.object.data.draw_type = 'STICK'
         
@@ -10916,9 +10217,6 @@ class FUJIWARATOOLBOX_516332(bpy.types.Operator):#スケール継承有効（選
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="CHECKBOX_HLT",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.context.object.data.draw_type = 'STICK'
         
@@ -10951,9 +10249,6 @@ class FUJIWARATOOLBOX_618823(bpy.types.Operator):#＜●＞コンストレイン
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="VISIBLE_IPO_ON",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         for bone in bpy.context.object.pose.bones:
             if(bpy.context.object.data.bones[bone.name].select == True):
@@ -10975,9 +10270,6 @@ class FUJIWARATOOLBOX_898623(bpy.types.Operator):#＜＿＞コンストレイン
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="VISIBLE_IPO_OFF",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         for bone in bpy.context.object.pose.bones:
             if(bpy.context.object.data.bones[bone.name].select == True):
@@ -11008,9 +10300,6 @@ class FUJIWARATOOLBOX_742340(bpy.types.Operator):#アーマチュアからスキ
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         if fjw.active().type != "ARMATURE":
             self.report({"INFO"},"アーマチュアを選択してください")
@@ -11121,9 +10410,6 @@ class FUJIWARATOOLBOX_166889(bpy.types.Operator):#選択ボーン以外のウェ
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
 
         tmp = fjw.get_selected_list("ARMATURE")
@@ -11183,9 +10469,6 @@ class FUJIWARATOOLBOX_273078(bpy.types.Operator):#ウェイトボーン相対
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #からのグループで割当
         bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
@@ -11282,9 +10565,6 @@ class FUJIWARATOOLBOX_964581(bpy.types.Operator):#準備
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         ######################################################
         #準備
@@ -11324,9 +10604,6 @@ class FUJIWARATOOLBOX_314879(bpy.types.Operator):#ポーズミラーリング
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.pose.copy()
         bpy.ops.pose.paste(flipped=True)
@@ -11526,9 +10803,6 @@ class FUJIWARATOOLBOX_164873(bpy.types.Operator):#アップデート
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         ######################################################
         #後処理
@@ -11550,9 +10824,6 @@ class FUJIWARATOOLBOX_164873a(bpy.types.Operator):#アップデート(C有効)
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         ######################################################
         #後処理
@@ -11733,9 +11004,6 @@ class CATEGORYBUTTON_744202(bpy.types.Operator):#アーマチュアユーティ�
     uiitem.button(bl_idname,bl_label,icon="",mode="")
     uiitem.direction = ""
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         uicategory_execute(self)
         return {'FINISHED'}
@@ -11763,9 +11031,6 @@ class FUJIWARATOOLBOX_244616(bpy.types.Operator):#ジオメトリ
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.deselect()
         fjw.active().name = self.bl_label
@@ -11785,9 +11050,6 @@ class FUJIWARATOOLBOX_589321(bpy.types.Operator):#素体アーマチュア
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.deselect()
         fjw.active().name = self.bl_label
@@ -11807,9 +11069,6 @@ class FUJIWARATOOLBOX_573567(bpy.types.Operator):#ArmatureController
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.deselect()
         fjw.active().name = self.bl_label
@@ -11838,9 +11097,6 @@ class FUJIWARATOOLBOX_285809(bpy.types.Operator):#手コントローラ右
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.deselect()
         fjw.active().name = self.bl_label
@@ -11860,9 +11116,6 @@ class FUJIWARATOOLBOX_431070(bpy.types.Operator):#手コントローラ左
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.deselect()
         fjw.active().name = self.bl_label
@@ -11890,9 +11143,6 @@ class FUJIWARATOOLBOX_116809(bpy.types.Operator):#右手
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.deselect()
         fjw.active().name = self.bl_label
@@ -11912,9 +11162,6 @@ class FUJIWARATOOLBOX_694161(bpy.types.Operator):#左手
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.deselect()
         fjw.active().name = self.bl_label
@@ -11942,9 +11189,6 @@ class FUJIWARATOOLBOX_424374(bpy.types.Operator):#右足
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.deselect()
         fjw.active().name = self.bl_label
@@ -11964,9 +11208,6 @@ class FUJIWARATOOLBOX_372755(bpy.types.Operator):#左足
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.deselect()
         fjw.active().name = self.bl_label
@@ -12013,9 +11254,6 @@ class FUJIWARATOOLBOX_851815(bpy.types.Operator):#head
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bone_rename(self.bl_label)
         return {'FINISHED'}
@@ -12033,9 +11271,6 @@ class FUJIWARATOOLBOX_862554(bpy.types.Operator):#neck
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bone_rename(self.bl_label)
         return {'FINISHED'}
@@ -12053,9 +11288,6 @@ class FUJIWARATOOLBOX_632665(bpy.types.Operator):#chest
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bone_rename(self.bl_label)
         return {'FINISHED'}
@@ -12073,9 +11305,6 @@ class FUJIWARATOOLBOX_886883(bpy.types.Operator):#spine
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bone_rename(self.bl_label)
         return {'FINISHED'}
@@ -12093,9 +11322,6 @@ class FUJIWARATOOLBOX_916888(bpy.types.Operator):#hips
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bone_rename(self.bl_label)
         return {'FINISHED'}
@@ -12113,9 +11339,6 @@ class FUJIWARATOOLBOX_324118(bpy.types.Operator):#root
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bone_rename(self.bl_label)
         return {'FINISHED'}
@@ -12143,9 +11366,6 @@ class FUJIWARATOOLBOX_403000(bpy.types.Operator):#shoulder.R
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bone_rename(self.bl_label)
         return {'FINISHED'}
@@ -12164,9 +11384,6 @@ class FUJIWARATOOLBOX_779120(bpy.types.Operator):#shoulder.L
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bone_rename(self.bl_label)
         return {'FINISHED'}
@@ -12192,9 +11409,6 @@ class FUJIWARATOOLBOX_148790(bpy.types.Operator):#upper_arm.R
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bone_rename(self.bl_label)
         return {'FINISHED'}
@@ -12212,9 +11426,6 @@ class FUJIWARATOOLBOX_598468(bpy.types.Operator):#upper_arm.L
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bone_rename(self.bl_label)
         return {'FINISHED'}
@@ -12241,9 +11452,6 @@ class FUJIWARATOOLBOX_148513(bpy.types.Operator):#forearm.R
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bone_rename(self.bl_label)
         return {'FINISHED'}
@@ -12262,9 +11470,6 @@ class FUJIWARATOOLBOX_928612(bpy.types.Operator):#forearm.L
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bone_rename(self.bl_label)
         return {'FINISHED'}
@@ -12289,9 +11494,6 @@ class FUJIWARATOOLBOX_43548(bpy.types.Operator):#hand.R
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bone_rename(self.bl_label)
         return {'FINISHED'}
@@ -12309,9 +11511,6 @@ class FUJIWARATOOLBOX_862708(bpy.types.Operator):#hand.L
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bone_rename(self.bl_label)
         return {'FINISHED'}
@@ -12341,9 +11540,6 @@ class FUJIWARATOOLBOX_474630(bpy.types.Operator):#thigh.R
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bone_rename(self.bl_label)
         return {'FINISHED'}
@@ -12360,9 +11556,6 @@ class FUJIWARATOOLBOX_550261(bpy.types.Operator):#thigh.L
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bone_rename(self.bl_label)
         return {'FINISHED'}
@@ -12387,9 +11580,6 @@ class FUJIWARATOOLBOX_371561(bpy.types.Operator):#shin.R
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bone_rename(self.bl_label)
         return {'FINISHED'}
@@ -12407,9 +11597,6 @@ class FUJIWARATOOLBOX_348617(bpy.types.Operator):#shin.L
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bone_rename(self.bl_label)
         return {'FINISHED'}
@@ -12434,9 +11621,6 @@ class FUJIWARATOOLBOX_420903(bpy.types.Operator):#heel.R
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bone_rename(self.bl_label)
         return {'FINISHED'}
@@ -12454,9 +11638,6 @@ class FUJIWARATOOLBOX_559040(bpy.types.Operator):#heel.L
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bone_rename(self.bl_label)
         return {'FINISHED'}
@@ -12483,9 +11664,6 @@ class FUJIWARATOOLBOX_505403(bpy.types.Operator):#foot.R
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bone_rename(self.bl_label)
         return {'FINISHED'}
@@ -12503,9 +11681,6 @@ class FUJIWARATOOLBOX_120526(bpy.types.Operator):#foot.L
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bone_rename(self.bl_label)
         return {'FINISHED'}
@@ -12529,9 +11704,6 @@ class FUJIWARATOOLBOX_288663(bpy.types.Operator):#toe.R
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bone_rename(self.bl_label)
         return {'FINISHED'}
@@ -12549,9 +11721,6 @@ class FUJIWARATOOLBOX_135779(bpy.types.Operator):#toe.L
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bone_rename(self.bl_label)
         return {'FINISHED'}
@@ -12593,9 +11762,6 @@ class FUJIWARATOOLBOX_729233(bpy.types.Operator):#選択の形状をアクティ
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         source_arm = fjw.active()
         target_arm = None
@@ -12701,9 +11867,6 @@ class FUJIWARATOOLBOX_546712(bpy.types.Operator):#選択からアクティブへ
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         source_arm = None
         target_arm = fjw.active()
@@ -12835,9 +11998,6 @@ class CATEGORYBUTTON_456539(bpy.types.Operator):#BlenRigヘルパー
     uiitem.button(bl_idname,bl_label,icon="",mode="")
     uiitem.direction = "horizontal"
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         uicategory_execute(self)
         return {'FINISHED'}
@@ -12886,9 +12046,6 @@ class FUJIWARATOOLBOX_545067(bpy.types.Operator):#体型編集
     uiitem.button(bl_idname,bl_label,icon="OUTLINER_OB_ARMATURE",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #バインド解除
         blenrig_mdbinding(fjw.get_selected_list(), False)
@@ -12935,9 +12092,6 @@ class FUJIWARATOOLBOX_942054(bpy.types.Operator):#右側選択
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.select_pattern(pattern="*_R")
 
@@ -12962,9 +12116,6 @@ class FUJIWARATOOLBOX_734967(bpy.types.Operator):#ミラーリング
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.pose.copy()
         bpy.ops.pose.paste(flipped=True)
@@ -12985,9 +12136,6 @@ class FUJIWARATOOLBOX_384660(bpy.types.Operator):#左側選択
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.select_pattern(pattern="*_L")
 
@@ -13020,9 +12168,6 @@ class FUJIWARATOOLBOX_315193(bpy.types.Operator):#アクティブのグループ
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.pose.select_grouped(type='GROUP')
         bpy.ops.pose.select_all(action='INVERT')
@@ -13045,9 +12190,6 @@ class FUJIWARATOOLBOX_705250(bpy.types.Operator):#全て表示
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.pose.reveal()
 
@@ -13083,9 +12225,6 @@ class FUJIWARATOOLBOX_859280(bpy.types.Operator):#完了
     uiitem.button(bl_idname,bl_label,icon="FILE_TICK",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         current = fjw.active()
         fjw.mode("OBJECT")
@@ -13312,9 +12451,6 @@ class FUJIWARATOOLBOX_115485(bpy.types.Operator):#再バインド
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         armature = bpy.data.objects["biped_blenrig"]
         blenrig_mdbinding(armature.children, True)
@@ -13364,9 +12500,6 @@ class FUJIWARATOOLBOX_724488(bpy.types.Operator):#ケージスカルプト
     uiitem.button(bl_idname,bl_label,icon="SCULPTMODE_HLT",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #ケージレイヤの表示
         bpy.context.scene.layers[11] = True
@@ -13406,9 +12539,6 @@ class FUJIWARATOOLBOX_371121(bpy.types.Operator):#完了
     uiitem.button(bl_idname,bl_label,icon="FILE_TICK",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.globalview()
 
@@ -13464,9 +12594,6 @@ class CATEGORYBUTTON_290440(bpy.types.Operator):#VectorDisplacementモデル
     uiitem.button(bl_idname,bl_label,icon="",mode="")
     uiitem.direction = ""
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         uicategory_execute(self)
         return {'FINISHED'}
@@ -13488,9 +12615,6 @@ class FUJIWARATOOLBOX_475352(bpy.types.Operator):#セミオートインポート
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #objのインポート
         import bpy
@@ -13578,9 +12702,6 @@ class FUJIWARATOOLBOX_954427(bpy.types.Operator):#多重解像度モデル化
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.reject_notmesh()
         targets = fjw.get_selected_list()
@@ -13652,9 +12773,6 @@ class CATEGORYBUTTON_425599(bpy.types.Operator):#MarvelousDesigner
     uiitem.button(bl_idname,bl_label,icon="",mode="")
     uiitem.direction = "vertical"
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         uicategory_execute(self)
         return {'FINISHED'}
@@ -13689,10 +12807,7 @@ uiitem().horizontal()
 #    uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-#    ###################################
-#    #処理部分
-#    ###################################
-#    def execute(self, context):
+####    def execute(self, context):
 #        bpy.ops.wm.save_mainfile()
 #        exec_externalutils("autoMDAvatar.py")
 #        return {'FINISHED'}
@@ -13717,9 +12832,6 @@ class FUJIWARATOOLBOX_302662(bpy.types.Operator):#オートアバター
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #だめっぽい
         #個々に別ラインでバックグラウンドやらせてもいいかも
@@ -13827,9 +12939,6 @@ class FUJIWARATOOLBOX_487662(bpy.types.Operator):#オートインポート
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #存在確認
         blendname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
@@ -13930,9 +13039,6 @@ class FUJIWARATOOLBOX_902822(bpy.types.Operator):#MD作業ファイル準備
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         if "_MDWork" not in bpy.data.filepath:
             bpy.ops.object.fjw.openlinkedfolder()
@@ -13974,9 +13080,6 @@ class FUJIWARATOOLBOX_179920(bpy.types.Operator):#元を開く（別窓）
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         path = bpy.data.filepath.replace("_MDWork","")
         subprocess.Popen("EXPLORER " + path)
@@ -14003,9 +13106,6 @@ class FUJIWARATOOLBOX_401078(bpy.types.Operator):#戻る
     uiitem.button(bl_idname,bl_label,icon="LOOP_BACK",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         if "_MDWork" in bpy.data.filepath:
             path = bpy.data.filepath.replace("_MDWork","")
@@ -14031,9 +13131,6 @@ class FUJIWARATOOLBOX_628306(bpy.types.Operator):#終了
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         if "_MDWork" in bpy.data.filepath:
             os.remove(bpy.data.filepath)
@@ -14065,9 +13162,6 @@ class FUJIWARATOOLBOX_360702(bpy.types.Operator):#選択プロクシから転送
     uiitem.button(bl_idname,bl_label,icon="NLA_PUSHDOWN",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         armature = None
         proxy = None
@@ -14177,9 +13271,6 @@ class FUJIWARATOOLBOX_738210(bpy.types.Operator):#アバター出力
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         export_mdavatar(self, fujiwara_toolbox.conf.MarvelousDesigner_dir, "avatar")
         return {'FINISHED'}
@@ -14199,9 +13290,6 @@ class FUJIWARATOOLBOX_347662(bpy.types.Operator):#MDDataに出力
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         dir = os.path.dirname(bpy.data.filepath) + os.sep + "MDData" + os.sep
 
@@ -14233,9 +13321,6 @@ class FUJIWARATOOLBOX_287546(bpy.types.Operator):#アバターのみ
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #アクティブオブジェクトのみ。
         #メッシュ以外だったら戻る
@@ -14281,9 +13366,6 @@ class FUJIWARATOOLBOX_341922(bpy.types.Operator):#プロップ出力
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #アクティブオブジェクトのみ。
         #メッシュ以外だったら戻る
@@ -14339,9 +13421,6 @@ class FUJIWARATOOLBOX_501373(bpy.types.Operator):#アバター出力
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #簡略化2
         bpy.context.scene.render.use_simplify = True
@@ -14421,9 +13500,6 @@ class FUJIWARATOOLBOX_518498(bpy.types.Operator):#base出力
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #アクティブオブジェクトをルートと仮定する
         #root = active()
@@ -14532,9 +13608,6 @@ class FUJIWARATOOLBOX_178092(bpy.types.Operator):#poseTo出力
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         root = fjw.active()
 
@@ -14691,9 +13764,6 @@ class FUJIWARATOOLBOX_86482(bpy.types.Operator):#インポート
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         dir = fujiwara_toolbox.conf.MarvelousDesigner_dir
         import_mdresult(self,dir + "result.obj")
@@ -14847,9 +13917,6 @@ class FUJIWARATOOLBOX_902107(bpy.types.Operator):#インポート用マテリア
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         dir = fujiwara_toolbox.conf.assetdir + os.sep + "ノード"
         os.system("EXPLORER " + dir)
@@ -14872,9 +13939,6 @@ class FUJIWARATOOLBOX_56507(bpy.types.Operator):#マテリアル・ノードク�
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         for nodetree in bpy.data.node_groups:
             if "服　汎用システム" in nodetree.name:
@@ -14911,9 +13975,6 @@ class FUJIWARATOOLBOX_849795(bpy.types.Operator):#base出力
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         if "ジオメトリ" not in bpy.context.scene.objects.active.name:
             self.report({"INFO"},"素体ジオメトリを指定してください")
@@ -15030,10 +14091,7 @@ class FUJIWARATOOLBOX_849795(bpy.types.Operator):#base出力
 #    #モードの追加
 #    ModeList.append("")
 #
-#    ###################################
-#    #処理部分
-#    ###################################
-#    def execute(self, context):
+####    def execute(self, context):
 #        if "ジオメトリ" not in bpy.context.scene.objects.active.name:
 #            self.report({"INFO"},"素体ジオメトリを指定してください")
 #            return {'FINISHED'}
@@ -15147,10 +14205,7 @@ class FUJIWARATOOLBOX_849795(bpy.types.Operator):#base出力
 #    #モードの追加
 #    ModeList.append("")
 #
-#    ###################################
-#    #処理部分
-#    ###################################
-#    def execute(self, context):
+####    def execute(self, context):
 #        if "ジオメトリ" not in bpy.context.scene.objects.active.name:
 #            self.report({"INFO"},"素体ジオメトリを指定してください")
 #            return {'FINISHED'}
@@ -15292,9 +14347,6 @@ class FUJIWARATOOLBOX_976064(bpy.types.Operator):#中間ポーズ
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         if "ジオメトリ" not in bpy.context.scene.objects.active.name:
             self.report({"INFO"},"素体ジオメトリを指定してください")
@@ -15396,9 +14448,6 @@ class FUJIWARATOOLBOX_666595(bpy.types.Operator):#反転中間ポーズ
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         if "ジオメトリ" not in bpy.context.scene.objects.active.name:
             self.report({"INFO"},"素体ジオメトリを指定してください")
@@ -15512,9 +14561,6 @@ class FUJIWARATOOLBOX_677880(bpy.types.Operator):#poseTo出力
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
     
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         if "ジオメトリ" not in bpy.context.scene.objects.active.name:
             self.report({"INFO"},"素体ジオメトリを指定してください")
@@ -15616,9 +14662,6 @@ class FUJIWARATOOLBOX_425209(bpy.types.Operator):#反転poseTo出力
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
     
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         if "ジオメトリ" not in bpy.context.scene.objects.active.name:
             self.report({"INFO"},"素体ジオメトリを指定してください")
@@ -15727,9 +14770,6 @@ class FUJIWARATOOLBOX_717368(bpy.types.Operator):#インポート
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
     
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         if "ジオメトリ" not in bpy.context.scene.objects.active.name:
             self.report({"INFO"},"素体ジオメトリを指定してください")
@@ -15793,9 +14833,6 @@ class FUJIWARATOOLBOX_624042(bpy.types.Operator):#反転インポート
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
     
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         if "ジオメトリ" not in bpy.context.scene.objects.active.name:
             self.report({"INFO"},"素体ジオメトリを指定してください")
@@ -15879,9 +14916,6 @@ class CATEGORYBUTTON_81935(bpy.types.Operator):#Substance/テクスチャ
     uiitem.button(bl_idname,bl_label,icon="",mode="")
     uiitem.direction = "vertical"
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         uicategory_execute(self)
         return {'FINISHED'}
@@ -16016,9 +15050,6 @@ class FUJIWARATOOLBOX_458089(bpy.types.Operator):#2048
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bake_ModelAppearance(2048)
         return {'FINISHED'}
@@ -16038,9 +15069,6 @@ class FUJIWARATOOLBOX_264050(bpy.types.Operator):#4096
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bake_ModelAppearance(4096)
         return {'FINISHED'}
@@ -16098,9 +15126,6 @@ class FUJIWARATOOLBOX_401784(bpy.types.Operator):#512
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bake_shadow(512)
         return {'FINISHED'}
@@ -16120,9 +15145,6 @@ class FUJIWARATOOLBOX_442748(bpy.types.Operator):#1024
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bake_shadow(1024)
         return {'FINISHED'}
@@ -16170,9 +15192,6 @@ class FUJIWARATOOLBOX_596924(bpy.types.Operator):#Substance Output
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         scrdir = os.path.dirname(__file__)
         sbssourcepath = fjw.get_resourcesdir() + "EMPTY.sbs"
@@ -16220,9 +15239,6 @@ class FUJIWARATOOLBOX_539212(bpy.types.Operator):#分離してSubstance Output
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.deselect()
         bpy.ops.mesh.separate(type='SELECTED')
@@ -16266,9 +15282,6 @@ class FUJIWARATOOLBOX_358608(bpy.types.Operator):#テクスチャ回収
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         basedir = os.path.dirname(bpy.data.filepath)
         texfiles = []
@@ -16402,9 +15415,6 @@ class FUJIWARATOOLBOX_819234(bpy.types.Operator):#デプス0.01
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.reject_notmesh()
         settexdepth(0.01,fjw.get_selected_list())
@@ -16425,9 +15435,6 @@ class FUJIWARATOOLBOX_73453(bpy.types.Operator):#デプス1
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.reject_notmesh()
         settexdepth(1,fjw.get_selected_list())
@@ -16447,9 +15454,6 @@ class FUJIWARATOOLBOX_997104(bpy.types.Operator):#デプス5
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.reject_notmesh()
         settexdepth(5,fjw.get_selected_list())
@@ -16485,9 +15489,6 @@ class CATEGORYBUTTON_739344(bpy.types.Operator):#髪ツール
     uiitem.button(bl_idname,bl_label,icon="",mode="")
     uiitem.direction = "horizontal"
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         uicategory_execute(self)
         return {'FINISHED'}
@@ -16517,9 +15518,6 @@ class FUJIWARATOOLBOX_521395(bpy.types.Operator):#開きにする
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #data.shape_keys = bpy.data.keys["Key.007"]みたいになってる
         #個別のシェイプキーは、
@@ -16551,9 +15549,6 @@ class FUJIWARATOOLBOX_17323(bpy.types.Operator):#立体化
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.active().data.shape_keys.eval_time = 0
         
@@ -16585,9 +15580,6 @@ class CATEGORYBUTTON_335613(bpy.types.Operator):#オブジェクト生成
     uiitem.button(bl_idname,bl_label,icon="",mode="")
     uiitem.direction = "vertical"
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         uicategory_execute(self)
         return {'FINISHED'}
@@ -16611,9 +15603,6 @@ class FUJIWARATOOLBOX_104686(bpy.types.Operator):#ランダム石生成
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.mode("OBJECT")
         bpy.ops.mesh.primitive_cube_add(view_align=False, enter_editmode=False, location=fjw.cursor(), layers=(True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False))
@@ -16674,9 +15663,6 @@ class CATEGORYBUTTON_984430(bpy.types.Operator):#物理
     uiitem.button(bl_idname,bl_label,icon="",mode="")
     uiitem.direction = "horizontal"
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         uicategory_execute(self)
         return {'FINISHED'}
@@ -16698,9 +15684,6 @@ class FUJIWARATOOLBOX_245059(bpy.types.Operator):#ベイクリフレッシュ
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="FILE_REFRESH",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.context.scene.render.use_simplify = True
         bpy.context.scene.render.simplify_subdivision = 0
@@ -16727,9 +15710,6 @@ class FUJIWARATOOLBOX_823626(bpy.types.Operator):#Pin割当
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="edit")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         obj = bpy.context.active_object
         if("Pin" not in obj.vertex_groups):
@@ -16766,10 +15746,7 @@ class FUJIWARATOOLBOX_823626(bpy.types.Operator):#Pin割当
 #    #モードの追加
 #    ModeList.append("")
 #
-#    ###################################
-#    #処理部分
-#    ###################################
-#    def execute(self, context):
+####    def execute(self, context):
 #        for obj in bpy.context.selected_objects:
 #            bpy.context.scene.objects.active = obj
 #
@@ -16815,9 +15792,6 @@ class FUJIWARATOOLBOX_205157(bpy.types.Operator):#コリジョン用複製
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         source = bpy.context.scene.objects.active
         bpy.ops.object.duplicate(linked=False, mode='TRANSLATION')
@@ -16856,9 +15830,6 @@ class FUJIWARATOOLBOX_598876(bpy.types.Operator):#サーフェスのオフセッ
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         source = bpy.context.scene.objects.active
         bpy.ops.object.duplicate(linked=False, mode='TRANSLATION')
@@ -16906,9 +15877,6 @@ class FUJIWARATOOLBOX_482428(bpy.types.Operator):#クロスを確定して髪準
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         selection = fjw.get_selected_list()
         for obj in selection:
@@ -16982,9 +15950,6 @@ class CATEGORYBUTTON_814784(bpy.types.Operator):#Plane
     uiitem.button(bl_idname,bl_label,icon="",mode="")
     uiitem.direction = ""
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         uicategory_execute(self)
         return {'FINISHED'}
@@ -17008,9 +15973,6 @@ class FUJIWARATOOLBOX_718267(bpy.types.Operator):#DPIを揃える
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         
         fjw.reject_notmesh()
@@ -17165,9 +16127,6 @@ class CATEGORYBUTTON_207003(bpy.types.Operator):#その他
     uiitem.button(bl_idname,bl_label,icon="",mode="")
     uiitem.direction = ""
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         uicategory_execute(self)
         return {'FINISHED'}
@@ -17192,9 +16151,6 @@ class FUJIWARATOOLBOX_468766(bpy.types.Operator):#アクティブタイプ取得
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         text = bpy.context.active_object.active_material.node_tree.nodes.active.bl_idname
         bpy.data.window_managers['WinMan'].clipboard = text
@@ -17225,9 +16181,6 @@ class FUJIWARATOOLBOX_893322(bpy.types.Operator):#注意事項
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         
         return {'FINISHED'}
@@ -17246,9 +16199,6 @@ class FUJIWARATOOLBOX_342881(bpy.types.Operator):#nゴンチェック
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         fjw.reject_notmesh()
         selected = fjw.get_selected_list()
@@ -17297,9 +16247,6 @@ class FUJIWARATOOLBOX_847775(bpy.types.Operator):#モデル確定
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         start = time.time()
 
@@ -17358,9 +16305,6 @@ class FUJIWARATOOLBOX_809008(bpy.types.Operator):#ポリゴン密度
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         obj = fjw.active()
         
@@ -17413,9 +16357,6 @@ class FUJIWARATOOLBOX_704935(bpy.types.Operator):#カメラとランプをレイ
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         for obj in bpy.data.objects:
             if (obj.type == "CAMERA") or (obj.type == "LAMP"):
@@ -17457,9 +16398,6 @@ class FUJIWARATOOLBOX_199389(bpy.types.Operator):#シングルユーザー化
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
         bpy.ops.object.make_single_user(type='SELECTED_OBJECTS', object=True, obdata=True, material=True, texture=True, animation=False)
@@ -17480,9 +16418,6 @@ class FUJIWARATOOLBOX_607832(bpy.types.Operator):#複製
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
         bpy.ops.object.duplicate()
@@ -17513,9 +16448,6 @@ class FUJIWARATOOLBOX_490317a(bpy.types.Operator):#保存
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="FILE_TICK",mode="all")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         packimg()
         bpy.ops.wm.save_mainfile()
@@ -17535,9 +16467,6 @@ class FUJIWARATOOLBOX_669544a(bpy.types.Operator):#保存して閉じる
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="QUIT",mode="all")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         if bpy.ops.wm.save_mainfile() == {"FINISHED"}:
             packimg()
@@ -17560,9 +16489,6 @@ class FUJIWARATOOLBOX_489145(bpy.types.Operator):#レンダリングのみトグ
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="SCENE",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         if bpy.context.space_data.show_only_render:
             bpy.context.space_data.show_only_render = False
@@ -17591,9 +16517,6 @@ class FUJIWARATOOLBOX_334541(bpy.types.Operator):#オブジェクトモード
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="OBJECT_DATA",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
         return {'FINISHED'}
@@ -17615,9 +16538,6 @@ class FUJIWARATOOLBOX_878021(bpy.types.Operator):#通常ペン
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="IMAGE_ALPHA",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.mode_set(mode='TEXTURE_PAINT')
         bpy.data.brushes["TexDraw"].color = (0, 0, 0)
@@ -17642,9 +16562,6 @@ class FUJIWARATOOLBOX_114451(bpy.types.Operator):#消しゴム アルファ
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="SEQ_PREVIEW",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.mode_set(mode='TEXTURE_PAINT')
         bpy.context.scene.tool_settings.unified_paint_settings.size = 20
@@ -17667,9 +16584,6 @@ class FUJIWARATOOLBOX_125921(bpy.types.Operator):#消しゴム 白
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="MATPLANE",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.object.mode_set(mode='TEXTURE_PAINT')
         bpy.data.brushes["TexDraw"].color = (1, 1, 1)
@@ -17692,9 +16606,6 @@ class FUJIWARATOOLBOX_960402(bpy.types.Operator):#大ブラシ
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="INLINK",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.context.scene.tool_settings.unified_paint_settings.size = 150
         
@@ -17730,10 +16641,7 @@ uiitem("テキスト")
 #    uiitem = uiitem()
 #    uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-#    ###################################
-#    #処理部分
-#    ###################################
-#    def execute(self, context):
+####    def execute(self, context):
 #        bpy.ops.object.text_add(radius=1, view_align=False,
 #        enter_editmode=False, location=bpy.context.space_data.cursor_location,
 #        layers=layers(put_visible_last=True))
@@ -17755,9 +16663,6 @@ class FUJIWARATOOLBOX_757107(bpy.types.Operator):#ヘルパー起動
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="BLENDER")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         import bpy
         import os
@@ -17799,9 +16704,6 @@ class FUJIWARATOOLBOX_542245(bpy.types.Operator):#日本語入力.txt
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="OUTLINER_OB_FONT",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         if fjw.active() == None or fjw.active().type != "FONT":
             self.report({"INFO"},"テキストオブジェクトを選択してください。")
@@ -17864,9 +16766,6 @@ class FUJIWARATOOLBOX_46615(bpy.types.Operator):#流し込み
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         if fjw.active() == None or fjw.active().type != "FONT":
             self.report({"INFO"},"テキストオブジェクトを選択してください。")
@@ -17972,9 +16871,6 @@ class FUJIWARATOOLBOX_665745(bpy.types.Operator):#編集
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="EDIT",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         if fjw.active() == None or fjw.active().type != "FONT":
             self.report({"INFO"},"テキストオブジェクトを選択してください。")
@@ -18029,9 +16925,6 @@ class FUJIWARATOOLBOX_352627(bpy.types.Operator):#アクティブへまとめる
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
     
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         obj = fjw.active()
         selected = fjw.get_selected_list()
@@ -18073,9 +16966,6 @@ class FUJIWARATOOLBOX_381157(bpy.types.Operator):#外部エディタで編集
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
 #        if len(bpy.context.selected_objects) > 20:
 #            self.report({"INFO"},"多すぎ注意！！")
@@ -18106,9 +16996,6 @@ class FUJIWARATOOLBOX_754499(bpy.types.Operator):#選択リロード
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         for obj in bpy.context.selected_objects:
             if obj.type == "MESH":
@@ -18138,9 +17025,6 @@ class FUJIWARATOOLBOX_980757(bpy.types.Operator):#リロード・開く
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         bpy.ops.fujiwara_toolbox.command_754499()
         bpy.ops.fujiwara_toolbox.command_381157()
@@ -18175,10 +17059,7 @@ class FUJIWARATOOLBOX_980757(bpy.types.Operator):#リロード・開く
 #    #モードの追加
 #    ModeList.append("")
 #
-#    ###################################
-#    #処理部分
-#    ###################################
-#    def execute(self, context):
+####    def execute(self, context):
 #        for obj in bpy.data.objects:
 #            if obj.type == "MESH":
 #                if obj.active_material != None:
@@ -18221,9 +17102,6 @@ class FUJIWARATOOLBOX_938626(bpy.types.Operator):#ビューロックトグル
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         if bpy.context.space_data.lock_camera:
             bpy.context.space_data.lock_camera = False
@@ -18245,9 +17123,6 @@ class FUJIWARATOOLBOX_985887(bpy.types.Operator):#LSing
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         for obj in bpy.data.objects:
             for l in range(19,0,-1):
@@ -18270,9 +17145,6 @@ class FUJIWARATOOLBOX_482619(bpy.types.Operator):#オブジェクトを統合（
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="OBJECT_DATA",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         mesh_exists = False
         #メッシュがあればグループ統合、そうじゃなければ普通に統合。
@@ -18324,9 +17196,6 @@ class FUJIWARATOOLBOX_b424289a(bpy.types.Operator):#プロクシ作成
     #uiitem = uiitem()
     #uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #blenrig用プロクシの作成
         fjw.make_proxy("biped_blenrig")
@@ -18383,9 +17252,6 @@ class FUJIWARATOOLBOX_248120(bpy.types.Operator):#プロクシ作成（全）
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #プロクシ＝アニメつけるってことだからオート記録オンに
         bpy.context.scene.tool_settings.use_keyframe_insert_auto = True
@@ -18486,9 +17352,6 @@ class FUJIWARATOOLBOX_199238(bpy.types.Operator):#Lamp Proxy
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         linkobj = fjw.active()
         loc = linkobj.location
@@ -18577,9 +17440,6 @@ class FUJIWARATOOLBOX_95038(bpy.types.Operator):#ペアレントデータビル�
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         parentdata_deleteall()
         parentdata_identifyall()
@@ -18640,9 +17500,6 @@ class FUJIWARATOOLBOX_349810(bpy.types.Operator):#ビルドフロムペアレン
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         parentdata_buildfromparentdata()
         return {'FINISHED'}
@@ -18670,9 +17527,6 @@ class FUJIWARATOOLBOX_286013(bpy.types.Operator):#複製を実体化
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         selection = fjw.get_selected_list()
 
@@ -18717,9 +17571,6 @@ class FUJIWARATOOLBOX_823369(bpy.types.Operator):#AssetManager用キャラリン
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    ###################################
-    #処理部分
-    ###################################
     def execute(self, context):
         #複製を実体化
         bpy.ops.fujiwara_toolbox.command_286013()
