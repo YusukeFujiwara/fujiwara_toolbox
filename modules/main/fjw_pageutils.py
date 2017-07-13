@@ -640,7 +640,7 @@ class opennextcell(bpy.types.Operator):
 class topage(bpy.types.Operator):
     """ページファイルを開く"""
     bl_idname = "pageutils.topage"
-    bl_label = "page.blendへ"
+    bl_label = "ページ全体に戻る"
     def execute(self,context):
         if bpy.data.filepath == "":
             self.report({"INFO"},"一度も保存されていません")
