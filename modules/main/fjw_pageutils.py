@@ -8,6 +8,8 @@ import datetime
 import math
 import shutil
 import re
+import subprocess
+
 from bpy.app.handlers import persistent
 
 try:
