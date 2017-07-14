@@ -12,11 +12,10 @@ import subprocess
 
 from bpy.app.handlers import persistent
 
+fujiwara_toolbox = __import__(__package__)
 try:
-    fujiwara_toolbox = __import__("fujiwara_toolbox")
-    from fujiwara_toolbox import fjw
+    from fujiwara_toolbox import fjw #コード補完用
 except:
-    fujiwara_toolbox = __import__("fujiwara_toolbox-master")
     fjw = fujiwara_toolbox.fjw
 
 
