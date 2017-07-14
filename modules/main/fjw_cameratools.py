@@ -166,6 +166,11 @@ class uiitem():
 
 
 def cameratools_ui(self, context):
+    pref = fujiwara_toolbox.conf.get_pref()
+    if not pref.cameratools:
+        return
+
+
     layout = self.layout
     col = layout.column(align=True)
     row = col.row(align=True)

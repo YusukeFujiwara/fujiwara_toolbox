@@ -60,6 +60,10 @@ class SSMTView3DPanel(bpy.types.Panel):#メインパネル
     #bl_category = "マイアドオン"
 
     def draw(self, context):
+        pref = fujiwara_toolbox.conf.get_pref()
+        if not pref.subsurfmodelingtools:
+            return
+        
         l = self.layout
         r = l.row()
         b = r.box()

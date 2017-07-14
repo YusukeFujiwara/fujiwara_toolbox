@@ -54,6 +54,10 @@ class PageUtils(bpy.types.Panel):#メインパネル
 
 
     def draw(self, context):
+        pref = fujiwara_toolbox.conf.get_pref()
+        if not pref.pageutils:
+            return
+
         filename = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
         dir = os.path.dirname(bpy.data.filepath)
 

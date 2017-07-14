@@ -35,6 +35,10 @@ class Asset_Sketcher_Helper(bpy.types.Panel):#メインパネル
 
 
     def draw(self, context):
+        pref = fujiwara_toolbox.conf.get_pref()
+        if not pref.assetsketcherhelper:
+            return
+
         layout = self.layout
         r = layout.row(align=True)
 

@@ -71,6 +71,10 @@ class GreasePencilToolsPanel(bpy.types.Panel):
     bl_category = "Grease Pencil"
 
     def draw(self, context):
+        pref = fujiwara_toolbox.conf.get_pref()
+        if not pref.greasepenciltools:
+            return
+
         l = self.layout
         r = l.row()
         #b = r.box()

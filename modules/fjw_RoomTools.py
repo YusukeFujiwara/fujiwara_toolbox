@@ -118,6 +118,11 @@ class RoomToolsView3DPanel(bpy.types.Panel):#メインパネル
     bl_category = "Fujiwara Tool Box"
 
     def draw(self, context):
+        pref = fujiwara_toolbox.conf.get_pref()
+        if not pref.roomtools:
+            return
+        
+        
         l = self.layout
         r = l.row()
         #b = r.box()

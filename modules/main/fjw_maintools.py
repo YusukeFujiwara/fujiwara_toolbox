@@ -23,7 +23,8 @@ except:
 import random
 from mathutils import *
 
-assetdir = fujiwara_toolbox.conf.assetdir
+# assetdir = fujiwara_toolbox.conf.assetdir
+assetdir = ""
 
 #コードtips
 #
@@ -328,6 +329,10 @@ class MyaddonView3DPanel(bpy.types.Panel):#メインパネル
     bl_category = "Fujiwara Tool Box"
 
     def draw(self, context):
+        pref = fujiwara_toolbox.conf.get_pref()
+        if not pref.maintools:
+            return
+
         l = self.layout
         r = l.row()
         #b = r.box()
@@ -17811,54 +17816,76 @@ def menu_func_VIEW3D_HT_header(self, context):
     active = layout.row(align = True)
     #active.operator("fujiwara_toolbox.command_985887")
 
+    pref = fujiwara_toolbox.conf.get_pref()
 
-    active = layout.row(align = True)
-    #active.label(text="",icon="COLLAPSEMENU")
-    active.operator("fujiwara_toolbox.command_357169",icon="SNAP_GRID")
-    active.operator("fujiwara_toolbox.command_33358",icon="SNAP_VERTEX")
-    #active.operator("fujiwara_toolbox.command_993743",icon="SNAP_EDGE")
-    active.operator("fujiwara_toolbox.command_911158",icon="SNAP_FACE")
+    if pref.snap_buttons:
+        active = layout.row(align = True)
+        #active.label(text="",icon="COLLAPSEMENU")
+        active.operator("fujiwara_toolbox.command_357169",icon="SNAP_GRID")
+        active.operator("fujiwara_toolbox.command_33358",icon="SNAP_VERTEX")
+        #active.operator("fujiwara_toolbox.command_993743",icon="SNAP_EDGE")
+        active.operator("fujiwara_toolbox.command_911158",icon="SNAP_FACE")
 
-    active = layout.row(align = True)
-    active.operator("fujiwara_toolbox.command_59910",icon="CURSOR")
-    active.operator("fujiwara_toolbox.command_995874",icon="ROTATECENTER")
+    if pref.pivot_buttons:
+        active = layout.row(align = True)
+        active.operator("fujiwara_toolbox.command_59910",icon="CURSOR")
+        active.operator("fujiwara_toolbox.command_995874",icon="ROTATECENTER")
 
-    active = layout.row(align = True)
-    #row.operator("fujiwara_toolbox.command_938626",icon="CAMERA_DATA")
-    active.prop(bpy.context.space_data, "lock_camera", icon="CAMERA_DATA", text="")
-    active.prop(bpy.context.space_data, "show_only_render", icon="RESTRICT_RENDER_OFF", text="")
-    #active = layout.row(align = True)
-    #active.operator("screen.region_quadview",icon="OUTLINER_OB_LATTICE",
-    #text="")
-    active = layout.row(align = True)
-    active.prop(bpy.context.tool_settings, "use_keyframe_insert_auto", icon="REC", text="")
-    active.operator("object.framejump_1",icon="REW", text="")
-    active.operator("object.framejump_5",icon="SPACE3", text="")
-    active.operator("object.framejump_10",icon="FF", text="")
-    #active.operator("object.framejump_15",icon="TRIA_RIGHT_BAR", text="")
-    active.operator("object.set_key", icon="KEYINGSET", text="")
-    active = layout.row(align = True)
-    #active.operator("view3d.hops_helper_popup", text = "Mod",
-    #icon="SCRIPTPLUGINS").tab = "MODIFIERS"
-    active.operator("fujiwara_toolbox.command_979047", text="GL",icon="RENDER_STILL")
-    active.operator("fujiwara_toolbox.command_171760", text="MASK")
-    active.operator("fujiwara_toolbox.command_242623", text="",icon="GREASEPENCIL")
-    active.operator("object.dialog_mainpanel", text="MAIN")
-    active = layout.row(align = True)
-    active.operator("fujiwara_toolbox.command_96321", text="",icon="SOLO_ON")
+    if pref.view_buttons:
+        active = layout.row(align = True)
+        active.prop(bpy.context.space_data, "lock_camera", icon="CAMERA_DATA", text="")
+        active.prop(bpy.context.space_data, "show_only_render", icon="RESTRICT_RENDER_OFF", text="")
 
-    
+    if pref.mdframe_buttons:
+        active = layout.row(align = True)
+        active.prop(bpy.context.tool_settings, "use_keyframe_insert_auto", icon="REC", text="")
+        active.operator("object.framejump_1",icon="REW", text="")
+        active.operator("object.framejump_5",icon="SPACE3", text="")
+        active.operator("object.framejump_10",icon="FF", text="")
+        #active.operator("object.framejump_15",icon="TRIA_RIGHT_BAR", text="")
+        active.operator("object.set_key", icon="KEYINGSET", text="")
+
+    if pref.glrenderutils_buttons:
+        active = layout.row(align = True)
+        active.operator("fujiwara_toolbox.command_979047", text="GL",icon="RENDER_STILL")
+        active.operator("fujiwara_toolbox.command_171760", text="MASK")
+        active.operator("fujiwara_toolbox.command_242623", text="",icon="GREASEPENCIL")
+
+    if pref.maintools_button:
+        active = layout.row(align = True)
+        active.operator("object.dialog_mainpanel", text="MAIN")
+
+    if pref.localview_button:
+        active = layout.row(align = True)
+        active.operator("fujiwara_toolbox.command_96321", text="",icon="SOLO_ON")
+
+
+
+
+
+from bpy.app.handlers import persistent
+@persistent
+def scene_update_post_handler(dummy):
+    bpy.app.handlers.scene_update_post.remove(scene_update_post_handler)
+
+    pref = fujiwara_toolbox.conf.get_pref()
+    global assetdir
+    assetdir = pref.assetdir
+
+
 ############################################################################################################################
 ############################################################################################################################
 #オペレータークラスやUIボタンの登録
 ############################################################################################################################
 ############################################################################################################################
 def sub_registration():
-    bpy.app.handlers.load_post.append(load_handler)
-
     #メニュー追加
     bpy.types.VIEW3D_MT_object_apply.append(menu_func_VIEW3D_MT_object_apply)
     bpy.types.VIEW3D_HT_header.append(menu_func_VIEW3D_HT_header)
+
+
+    bpy.app.handlers.load_post.append(load_handler)
+    bpy.app.handlers.scene_update_post.append(scene_update_post_handler)
     pass
 
 def sub_unregistration():
