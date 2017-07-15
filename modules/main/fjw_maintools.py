@@ -7526,6 +7526,130 @@ class FUJIWARATOOLBOX_SetThicknessDriverwithEmpty(bpy.types.Operator):
 ########################################
 
 
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#頂点AOからウェイト作成
+########################################
+#bpy.ops.fjw.gen_weight_from_vertex_ao() #頂点AOからウェイト作成
+class FUJIWARATOOLBOX_gen_weight_from_vertex_ao(bpy.types.Operator):
+    """頂点カラーのアンビエントオクルージョンから厚みのウェイト用頂点グループを生成する。"""
+    bl_idname = "fujiwara_toolbox.gen_weight_from_vertex_ao"
+    bl_label = "頂点AOからウェイト作成"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        fjw.reject_notmesh()
+        selection = fjw.get_selected_list()
+
+        colname = "裏ポリ用ウェイト"
+        vertex_group_name = colname
+        for obj in selection:
+            fjw.deselect()
+            fjw.activate(obj)
+
+            modu = fjw.Modutils(obj)
+            mod = modu.find("裏ポリエッジ")
+            if mod is None:
+                continue
+
+            if colname not in obj.data.vertex_colors:
+                vcol = obj.data.vertex_colors.new(colname)
+            else:
+                vcol = obj.data.vertex_colors[colname]
+            obj.data.vertex_colors.active = vcol
+            #頂点AO
+            bpy.ops.paint.vertex_color_dirt()
+
+            vgu = fjw.VertexGroupUtils(obj,vertex_group_name)
+            vertex_group = vgu.get_group(vertex_group_name)
+            vertices = vgu.get_vertices()
+            for v in vertices:
+                weight_value = vcol.data[v.index].color.r
+                vgu.set_weight(v.index, vertex_group_name, weight_value)
+
+            #生成につかった頂点カラーは混乱の元なので消しとく
+            obj.data.vertex_colors.remove(vcol)
+
+            mod.vertex_group = vertex_group.name
+            mod.invert_vertex_group = True
+
+        return {'FINISHED'}
+########################################
+
+########################################
+#反転
+########################################
+#bpy.ops.fjw.urapoly_weight_reverse() #反転
+class FUJIWARATOOLBOX_urapoly_weight_reverse(bpy.types.Operator):
+    """裏ポリエッジのウェイトを反転する。"""
+    bl_idname = "fujiwara_toolbox.urapoly_weight_reverse"
+    bl_label = "反転"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        fjw.reject_notmesh()
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            modu = fjw.Modutils(obj)
+            mod = modu.find("裏ポリエッジ")
+            if mod is None:
+                continue
+            
+            if mod.invert_vertex_group:
+                mod.invert_vertex_group = False
+            else:
+                mod.invert_vertex_group = True
+
+        return {'FINISHED'}
+########################################
+
+
+########################################
+#除去
+########################################
+#bpy.ops.fjw.urapoly_weight_remove() #除去
+class FUJIWARATOOLBOX_urapoly_weight_remove(bpy.types.Operator):
+    """裏ポリエッジのウェイトを除去する。"""
+    bl_idname = "fujiwara_toolbox.urapoly_weight_remove"
+    bl_label = "ウェイト除去"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        fjw.reject_notmesh()
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            modu = fjw.Modutils(obj)
+            mod = modu.find("裏ポリエッジ")
+            if mod is None:
+                continue
+            mod.vertex_group = ""
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #---------------------------------------------
 uiitem().vertical()

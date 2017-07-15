@@ -1025,6 +1025,44 @@ class NodetreeUtils():
         self.links.new(output, input)
 
 
+class VertexGroupUtils():
+    #https://blender.stackexchange.com/questions/39653/how-to-set-vertex-weights-from-python
+
+    obj = None
+    groupname = ""
+    
+    def __init__(self, obj, groupname):
+        self.obj = obj
+        self.groupname = groupname
+        activate(obj)
+        mode("OBJECT")
+        pass
+
+    def select_allverts(self):
+        bpy.ops.mesh.select_all(action='SELECT')
+
+    def get_group(self,name):
+        if name not in self.obj.vertex_groups:
+            vg = self.obj.vertex_groups.new(name)
+        else:
+            vg = self.obj.vertex_groups[name]
+
+        return vg
+
+    # def get_vertice(self,index):
+    #     if index < 0:
+    #         return None
+    #     if index >= len(obj.data.vertices):
+    #         return None
+    #     return obj.data.vertices[index]
+
+    def get_vertices(self):
+        return self.obj.data.vertices
+
+    def set_weight(self,index,group_name, weight):
+        vg = self.get_group(group_name)
+        vg.add([index],weight,"REPLACE")
+
 def load_img(filepath):
     filename = os.path.basename(filepath)
     if filename not in bpy.data.images:
