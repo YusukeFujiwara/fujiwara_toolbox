@@ -7577,6 +7577,7 @@ class FUJIWARATOOLBOX_gen_weight_from_vertex_ao(bpy.types.Operator):
             obj.data.vertex_colors.remove(vcol)
 
             mod.vertex_group = vertex_group.name
+            mod.thickness_vertex_group = 0.0001
             mod.invert_vertex_group = True
 
         return {'FINISHED'}
