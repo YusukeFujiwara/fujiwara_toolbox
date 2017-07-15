@@ -17,13 +17,10 @@ from bpy.props import StringProperty, IntProperty, BoolProperty
 print("package:"+__package__)#fuijwara_toolbox
 print("name:"+__name__)#fuijwara_toolbox.conf
 
-#__package__名は変わる可能性がある
-prefname = "fujiwara_toolbox"
-
 class FujiwaraToolBoxPreferences(AddonPreferences):
     # this must match the addon name, use '__package__'
     # when defining this in a submodule of a python package.
-    bl_idname = prefname
+    bl_idname = __package__
 
     #Property https://docs.blender.org/api/blender_python_api_2_78c_release/bpy.types.Property.html#bpy.types.Property.subtype
     """
@@ -157,7 +154,7 @@ class FujiwaraToolBoxPreferences(AddonPreferences):
 
 
 def get_pref():
-    addon_prefs = bpy.context.user_preferences.addons[prefname].preferences
+    addon_prefs = bpy.context.user_preferences.addons[__package__].preferences
     return addon_prefs
     
 
