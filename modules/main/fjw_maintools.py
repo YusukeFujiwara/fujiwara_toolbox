@@ -7517,7 +7517,7 @@ class FUJIWARATOOLBOX_SetThicknessDriverwithEmpty(bpy.types.Operator):
             target = var.targets[0]
             target.id = target_obj.id_data
             target.transform_type = 'SCALE_Z'
-            target.transform_space = 'LOCAL_SPACE'
+            target.transform_space = 'WORLD_SPACE'
 
             driver.expression = "empty_scale_z * 0.01"
             
@@ -7886,6 +7886,64 @@ class FUJIWARATOOLBOX_312642(bpy.types.Operator):#除去
         
         return {'FINISHED'}
 ########################################
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+
+########################################
+#Emptyで幅制御
+########################################
+#bpy.ops.fjw.set_width_driver_with_empty() #Emptyで幅制御
+class FUJIWARATOOLBOX_set_width_driver_with_empty(bpy.types.Operator):
+    """アクティブなEmptyのZ Scaleを使用して厚さを制御できるようにする。ドライバ制御。"""
+    bl_idname = "fujiwara_toolbox.set_width_driver_with_empty"
+    bl_label = "Emptyで幅制御"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        if fjw.active().type != "EMPTY":
+            self.report({"INFO"},"EMPTYを選択してください")
+            return {'CANCELLED'}
+
+        target_obj = fjw.active()
+
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            if obj.type != "MESH":
+                continue
+
+            modu = fjw.Modutils(obj)
+            mod = modu.find("ベベルエッジ")
+
+            if mod is None:
+                continue
+
+            fcurve = mod.driver_add("width")
+            driver = fcurve.driver
+
+            variables = driver.variables
+            varname = "empty_scale_z"
+            if varname in variables:
+                var = variables[varname]
+            else:
+                var = variables.new()
+                var.name = varname
+            var.type = "TRANSFORMS"
+            target = var.targets[0]
+            target.id = target_obj.id_data
+            target.transform_type = 'SCALE_Z'
+            target.transform_space = 'WORLD_SPACE'
+
+            driver.expression = "empty_scale_z * 0.01"
+        return {'FINISHED'}
+########################################
+
 
 
 
