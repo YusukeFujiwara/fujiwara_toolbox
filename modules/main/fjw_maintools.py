@@ -15468,9 +15468,15 @@ class FUJIWARATOOLBOX_358608(bpy.types.Operator):#テクスチャ回収
                 texture_slot.specular_factor = 1
             if re.search("_Shadow", tex.name,re.IGNORECASE) is not None:
                 #作業中
+                tex.image.use_alpha = False
+                mat.use_transparency = True
+                mat.alpha = 0
+                texture_slot.blend_type = 'MIX'
                 texture_slot.use_map_color_diffuse = True
                 texture_slot.diffuse_color_factor = 1
-                texture_slot.blend_type = 'MULTIPLY'
+                texture_slot.use_map_alpha = True
+                texture_slot.alpha_factor = -1
+
 
         bpy.ops.file.make_paths_relative()
         return {'FINISHED'}
