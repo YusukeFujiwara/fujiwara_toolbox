@@ -6405,11 +6405,8 @@ class FUJIWARATOOLBOX_892110(bpy.types.Operator):#ペアレントミラー
         for obj in bpy.context.selected_objects:
             bpy.context.scene.objects.active = obj
             if obj != target:
-                bpy.ops.object.modifier_add(type='MIRROR')
-                last = len(obj.modifiers) - 1
-                mod = obj.modifiers[last]
-                mod.mirror_object = target
-                mod.name = "Parented Mirror"
+                modu = fjw.Modutils(obj)
+                mod = modu.add("Parented Mirror",'MIRROR')
 
                 ##片面化
                 #meshu = MeshUtils(obj)
