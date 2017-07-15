@@ -7468,9 +7468,62 @@ class FUJIWARATOOLBOX_737497(bpy.types.Operator):#裏ポリ白
         return {'FINISHED'}
 ########################################
 
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
 
+########################################
+#Emptyで厚み制御
+########################################
+#bpy.ops.fjw.SetThicknessDriverwithEmpty() #Emptyで厚み制御
+class FUJIWARATOOLBOX_SetThicknessDriverwithEmpty(bpy.types.Operator):
+    """アクティブなEmptyのZ Scaleを使用して厚さを制御できるようにする。ドライバ制御。"""
+    bl_idname = "fujiwara_toolbox.set_thickness_driver_with_empty"
+    bl_label = "Emptyで厚み制御"
+    bl_options = {'REGISTER', 'UNDO'}
 
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
 
+    def execute(self, context):
+        if fjw.active().type != "EMPTY":
+            self.report({"INFO"},"EMPTYを選択してください")
+            return {'CANCELLED'}
+
+        target_obj = fjw.active()
+
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            if obj.type != "MESH":
+                continue
+
+            modu = fjw.Modutils(obj)
+            mod = modu.find("裏ポリエッジ")
+
+            if mod is None:
+                continue
+
+            fcurve = mod.driver_add("thickness")
+            driver = fcurve.driver
+
+            variables = driver.variables
+            varname = "empty_scale_z"
+            if varname in variables:
+                var = variables[varname]
+            else:
+                var = variables.new()
+                var.name = varname
+            var.type = "TRANSFORMS"
+            target = var.targets[0]
+            target.id = target_obj.id_data
+            target.transform_type = 'SCALE_Z'
+            target.transform_space = 'LOCAL_SPACE'
+
+            driver.expression = "empty_scale_z * 0.01"
+            
+
+        return {'FINISHED'}
+########################################
 
 
 
