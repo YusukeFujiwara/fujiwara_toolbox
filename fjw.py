@@ -416,8 +416,8 @@ class ActionConstraintUtils():
             constraint.target_space = 'LOCAL_WITH_PARENT'
             constraint.min = 0.5
             constraint.max = 1
-            constraint.frame_start = 1
-            constraint.frame_end = 60
+            constraint.frame_start = 60
+            constraint.frame_end = 1
             constraint.action = action
         pass
     def do(self):
