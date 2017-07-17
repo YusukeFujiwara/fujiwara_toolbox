@@ -279,18 +279,26 @@ class Modutils():
 
 class ArmatureUtils():
     armature = None
+    pose_bones = None
+    data_bones = None
 
     def __init__(self, obj):
         if obj.type != "ARMATURE":
             return None
 
         self.armature = obj
+        self.pose_bones = self.armature.pose.bones
+        self.data_bones = self.armature.data.bones
 
     def findname(self, name):#該当するボーンの名前を返す
         for bone in self.armature.data.bones:
             if name in bone.name:
                 return bone.name
         return None
+
+    def is_selected(self, bone):
+        databone = self.databone(bone.name)
+        return databone.select
 
     def posebone(self, name):#名前のポーズボーンを返す
         return self.armature.pose.bones[name]
@@ -370,6 +378,51 @@ class ArmatureUtils():
 
 
     def func(self):
+        pass
+
+
+class ActionConstraintUtils():
+    armature = None
+    constraint_name = "ActionforConstraint"
+    action_frame = 60
+
+    def __init__(self, obj):
+        self.armature = obj
+
+    def make_action(self):
+        action = bpy.data.actions.new(self.constraint_name)
+        self.armature.pose_library = action
+        mode("POSE")
+        bpy.ops.poselib.pose_add(frame=self.action_frame, name="EndPose")
+        bpy.ops.pose.transforms_clear()
+        bpy.ops.poselib.pose_add(frame=1, name="StartPose")
+        bpy.ops.poselib.apply_pose(pose_index=1)
+        return action
+
+    def set_action_constraint(self, action):
+        armu = ArmatureUtils(self.armature)
+        active_pbone = armu.poseactive()
+
+        for pbone in armu.pose_bones:
+            if not armu.is_selected(pbone):
+                continue
+            if pbone.name == active_pbone.name:
+                continue
+            #コンストレイントを設定する
+            constraint = pbone.constraints.new("ACTION")
+            constraint.target = self.armature
+            constraint.subtarget = active_pbone.name
+            constraint.transform_channel = 'SCALE_Z'
+            constraint.target_space = 'LOCAL_WITH_PARENT'
+            constraint.min = 0.5
+            constraint.max = 1
+            constraint.frame_start = 1
+            constraint.frame_end = 60
+            constraint.action = action
+        pass
+    def do(self):
+        action = self.make_action()
+        self.set_action_constraint(action)
         pass
 
 class MeshUtils():

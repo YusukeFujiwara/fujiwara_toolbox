@@ -11218,10 +11218,53 @@ class FUJIWARATOOLBOX_164873a(bpy.types.Operator):#アップデート(C有効)
 #        return {'FINISHED'}
 
 
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+############################################################################################################################
+uiitem("コンストレイント")
+############################################################################################################################
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+
+
+
+########################################
+#アクションコンストレイント生成
+########################################
+#bpy.ops.fjw.generate_action_constraint() #アクションコンストレイント生成
+class FUJIWARATOOLBOX_generate_action_constraint(bpy.types.Operator):
+    """現在のポーズからアクションコンストレイントを生成する。アクティブボーンのZscaleをターゲットとして設定する。"""
+    bl_idname = "fujiwara_toolbox.generate_action_constraint"
+    bl_label = "アクションコンストレイント生成"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        if fjw.active().type != "ARMATURE":
+            self.report({"INFO"},"ARMATUREを選択してください")
+
+        acu = fjw.ActionConstraintUtils(fjw.active())
+        acu.do()
+
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+
 
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
+
 
 
 
