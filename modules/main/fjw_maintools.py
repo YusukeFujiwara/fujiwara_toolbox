@@ -15353,6 +15353,90 @@ class FUJIWARATOOLBOX_264050(bpy.types.Operator):#4096
         bake_ModelAppearance(4096)
         return {'FINISHED'}
 ########################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+############################################################################################################################
+uiitem("アルファをベイク")
+############################################################################################################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+def bake_alpha(size):
+    bpy.context.scene.render.bake_distance = 0
+    bpy.context.scene.render.bake_bias = 0.001
+    bpy.context.scene.render.bake_margin = 16
+    bpy.context.scene.render.use_bake_clear = True
+    bpy.context.scene.render.use_bake_to_vertex_color = False
+    bpy.context.scene.render.bake_quad_split = 'AUTO'
+    
+    #アルファの場合、透過マテリアルを設定しないといけないので
+    #auto bakeをそのまま使用できない
+    objname,bakedir = bake_setup()
+    bakepath = bakedir + objname + "_" + "Alpha" + ".png"
+
+    #透過マテリアルの割当
+    alphamat = fjw.get_material("alpha_zero")
+    alphamat.use_transparency = True
+    alphamat.alpha = 0
+
+    fjw.active().data.materials.append(alphamat)
+    texture_bake(bakepath,size,"ALPHA","Alpha")
+    fjw.active().data.materials.clear()
+
+    bpy.ops.fujiwara_toolbox.command_358608()#テクスチャ回収
+
+########################################
+#2048
+########################################
+#bpy.ops.fjw.bake_alpha_2048() #2048
+class FUJIWARATOOLBOX_bake_alpha_2048(bpy.types.Operator):
+    """選択物のアルファをアクティブにベイクする。2048px。"""
+    bl_idname = "fujiwara_toolbox.bake_alpha_2048"
+    bl_label = "2048"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        bake_alpha(2048)
+        return {'FINISHED'}
+########################################
+
+########################################
+#4096
+########################################
+#bpy.ops.fjw.bake_alpha_4096() #4096
+class FUJIWARATOOLBOX_bake_alpha_4096(bpy.types.Operator):
+    """選択物のアルファをアクティブにベイクする。4096px。"""
+    bl_idname = "fujiwara_toolbox.bake_alpha_4096"
+    bl_label = "4096"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        bake_alpha(4096)
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+
+
+
+
+
 
 #---------------------------------------------
 uiitem().vertical()
@@ -15618,6 +15702,14 @@ class FUJIWARATOOLBOX_358608(bpy.types.Operator):#テクスチャ回収
                 texture_slot.use_map_color_diffuse = True
                 texture_slot.diffuse_color_factor = 1
                 texture_slot.blend_type = 'MULTIPLY'
+            if re.search("_Alpha", tex.name,re.IGNORECASE) is not None:
+                texture_slot.use_map_color_diffuse = False
+                texture_slot.use_map_alpha = True
+                texture_slot.use_rgb_to_intensity = True
+                texture_slot.alpha_factor = 1
+                texture_slot.blend_type = 'MIX'
+                mat.use_transparency = True
+                mat.alpha = 0
             if re.search("_Height|_Normal", tex.name,re.IGNORECASE) is not None:
                 texture_slot.use_map_color_diffuse = False
                 texture_slot.use_map_normal = True
