@@ -399,6 +399,12 @@ class ActionConstraintUtils():
         bpy.ops.poselib.apply_pose(pose_index=1)
         return action
 
+    def add_pose(self,frame,name):
+        action = self.armature.pose_library
+        mode("POSE")
+        bpy.ops.poselib.pose_add(frame=frame, name=name)
+        bpy.ops.pose.transforms_clear()
+
     def set_action_constraint(self, action):
         armu = ArmatureUtils(self.armature)
         active_pbone = armu.poseactive()
@@ -420,7 +426,7 @@ class ActionConstraintUtils():
             constraint.frame_end = 1
             constraint.action = action
         pass
-    def do(self):
+    def auto_execute(self):
         action = self.make_action()
         self.set_action_constraint(action)
         pass
