@@ -11222,23 +11222,19 @@ class FUJIWARATOOLBOX_164873a(bpy.types.Operator):#アップデート(C有効)
 uiitem().vertical()
 #---------------------------------------------
 ############################################################################################################################
-uiitem("コンストレイント")
+uiitem("アクションコンストレイント")
 ############################################################################################################################
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
-
 
 
 
 ########################################
-#アクションコンストレイント生成
+#ワンタッチ生成
 ########################################
-#bpy.ops.fjw.generate_action_constraint() #アクションコンストレイント生成
+#bpy.ops.fjw.generate_action_constraint() #ワンタッチ生成
 class FUJIWARATOOLBOX_generate_action_constraint(bpy.types.Operator):
     """現在のポーズからアクションコンストレイントを生成する。アクティブボーンのZscaleをターゲットとして設定する。"""
     bl_idname = "fujiwara_toolbox.generate_action_constraint"
-    bl_label = "アクションコンストレイント生成"
+    bl_label = "ワンタッチ生成"
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
@@ -11249,10 +11245,125 @@ class FUJIWARATOOLBOX_generate_action_constraint(bpy.types.Operator):
             self.report({"INFO"},"ARMATUREを選択してください")
 
         acu = fjw.ActionConstraintUtils(fjw.active())
-        acu.do()
+        acu.auto_execute()
 
         return {'FINISHED'}
 ########################################
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+"""
+現在のポーズでポーズライブラリ作成
+中割追加
+アクティブなポーズライブラリでアクションコンストレイントを作成
+"""
+########################################
+#PoseLib作成
+########################################
+#bpy.ops.fjw.make_poselib_with_current_pose() #PoseLib作成
+class FUJIWARATOOLBOX_make_poselib_with_current_pose(bpy.types.Operator):
+    """現在のポーズからアクションコンストレイント用のポーズライブラリを作成する。"""
+    bl_idname = "fujiwara_toolbox.make_poselib_with_current_pose"
+    bl_label = "PoseLib作成"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        if fjw.active().type != "ARMATURE":
+            self.report({"INFO"},"ARMATUREを選択してください")
+
+        acu = fjw.ActionConstraintUtils(fjw.active())
+        acu.make_action()
+        return {'FINISHED'}
+########################################
+
+########################################
+#中間ポーズ設定
+########################################
+#bpy.ops.fjw.set_midpose_to_current_poselib() #中間ポーズ追加
+class FUJIWARATOOLBOX_set_midpose_to_current_poselib(bpy.types.Operator):
+    """アクティブなポーズライブラリの中間ポーズを設定する。"""
+    bl_idname = "fujiwara_toolbox.set_midpose_to_current_poselib"
+    bl_label = "中間ポーズ設定"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        if fjw.active().type != "ARMATURE":
+                self.report({"INFO"},"ARMATUREを選択してください")
+        acu = fjw.ActionConstraintUtils(fjw.active())
+        acu.add_pose(acu.action_frame/2,"MidPose")
+        return {'FINISHED'}
+########################################
+
+########################################
+#終端ポーズ再設定
+########################################
+#bpy.ops.fjw.set_endpose_to_current_poselib() #終端ポーズ再設定
+class FUJIWARATOOLBOX_set_endpose_to_current_poselib(bpy.types.Operator):
+    """アクティブなポーズライブラリの終端ポーズを再設定する。"""
+    bl_idname = "fujiwara_toolbox.set_endpose_to_current_poselib"
+    bl_label = "終端ポーズ再設定"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        if fjw.active().type != "ARMATURE":
+                self.report({"INFO"},"ARMATUREを選択してください")
+        acu = fjw.ActionConstraintUtils(fjw.active())
+        acu.add_pose(acu.action_frame,"EndPose")
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+
+########################################
+#アクションコンストレイント作成
+########################################
+#bpy.ops.fjw.make_action_constraint_with_current_poselib() #アクションコンストレイント作成
+class FUJIWARATOOLBOX_make_action_constraint_with_current_poselib(bpy.types.Operator):
+    """アクティブなポーズライブラリで、アクティブボーンをターゲットにしたアクションコンストレイントを作成する。"""
+    bl_idname = "fujiwara_toolbox.make_action_constraint_with_current_poselib"
+    bl_label = "アクションコンストレイント作成"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        if fjw.active().type != "ARMATURE":
+                self.report({"INFO"},"ARMATUREを選択してください")
+        acu = fjw.ActionConstraintUtils(fjw.active())
+        action = acu.armature.pose_library
+        acu.set_action_constraint(action)
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+
+
+
+
 
 
 
