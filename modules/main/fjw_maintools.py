@@ -11222,6 +11222,71 @@ class FUJIWARATOOLBOX_164873a(bpy.types.Operator):#アップデート(C有効)
 uiitem().vertical()
 #---------------------------------------------
 ############################################################################################################################
+uiitem("ボーン生成")
+############################################################################################################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#選択頂点からボーン生成
+########################################
+#bpy.ops.fjw.gen_bone_from_selected_vertices() #選択頂点からボーン生成
+class FUJIWARATOOLBOX_gen_bone_from_selected_vertices(bpy.types.Operator):
+    """アーマチュア→メッシュと選択してから実行。メッシュ内の選択頂点から、法線方向にボーンを生成する。"""
+    bl_idname = "fujiwara_toolbox.gen_bone_from_selected_vertices"
+    bl_label = "選択頂点からボーン生成"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        armature = None
+        meshobj = None
+        selection = fjw.get_selected_list()
+
+        for obj in selection:
+            if obj.type == "ARMATURE":
+                armature = obj
+            if obj.type == "MESH":
+                meshobj = obj
+        if armature is None:
+            self.report({"INFO"},"ARMATUREを選択してください")
+            return {'CANCELLED'}
+        if meshobj is None:
+            self.report({"INFO"},"MESHを選択してください")
+            return {'CANCELLED'}
+
+        meshu = fjw.MeshUtils(meshobj)
+        fjw.mode("OBJECT")
+        fjw.activate(armature)
+        fjw.mode("EDIT")
+        edit_bones = armature.data.edit_bones
+        for v in meshu.vertices:
+            if v.select:
+                b = edit_bones.new("bonefromnormal")
+                b.head = v.co
+                b.tail = b.head + v.normal
+                pass
+
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+############################################################################################################################
 uiitem("アクションコンストレイント")
 ############################################################################################################################
 
