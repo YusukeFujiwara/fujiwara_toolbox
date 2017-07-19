@@ -853,7 +853,7 @@ def append_material(name):
 
 def append_particlesetting(name):
     if name not in bpy.data.particles:
-        dir = fujiwara_toolbox.conf.assetdir + os.sep + "パーティクル設定"
+        dir =get_resourcesdir() + "パーティクル設定"
 
         _dataname = name
         _filename = name + ".blend"
@@ -863,6 +863,14 @@ def append_particlesetting(name):
     
     return bpy.data.particles[name]
 
+def append_group(name):
+    dir =get_resourcesdir()
+
+    _dataname = name
+    _filename = name + ".blend"
+    _directory = dir + os.sep + _filename + os.sep + "Group" + os.sep
+    _filepath = _directory + _filename
+    bpy.ops.wm.append(filepath=_filepath, filename=_dataname, directory=_directory)
 
 def nodegroup_instance(basetree, group):
     node = basetree.nodes.new("ShaderNodeGroup")
