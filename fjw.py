@@ -433,11 +433,13 @@ class ActionConstraintUtils():
 
 class MeshUtils():
     object = None
+    vertices = None
     def __init__(self, obj):
         if obj.type != "MESH":
             return None
 
         self.object = obj
+        self.vertices = obj.data.vertices
 
     def deselect(self):
         activate(self.object)
