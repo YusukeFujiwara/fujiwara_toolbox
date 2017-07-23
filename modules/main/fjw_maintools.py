@@ -13697,13 +13697,13 @@ def export_mdavatar(self, dir, name, openfolder=True):
         #obj出力
         #dir = "G:" + os.sep + "MarvelousDesigner" + os.sep
         #dir = fujiwara_toolbox.conf.MarvelousDesigner_dir
-        bpy.ops.export_scene.obj(filepath= dir + name + ".obj", use_selection=True)
+        bpy.ops.export_scene.obj(filepath= dir + os.sep + name + ".obj", use_selection=True)
 
         #PointCache出力
         #bpy.ops.export_shape.pc2(filepath= dir + "avatar.pc2",
         #check_existing=False, rot_x90=True, world_space=True,
         #apply_modifiers=True, range_start=1, range_end=10, sampling='1')
-        bpy.ops.export_shape.mdd(filepath= dir + name + ".mdd", fps=6,frame_start=1,frame_end=10)
+        bpy.ops.export_shape.mdd(filepath= dir + os.sep + name + ".mdd", fps=6,frame_start=1,frame_end=10)
 
         #結果用の空ファイルを作っておく
         f = open(dir + "result.obj","w")
@@ -15398,7 +15398,7 @@ def sbsname(basename):
 #            mat.use_textures[index] = flag
 
 def remove_tex_identifier(name):
-    name = re.sub("_curvature|_ambient_occlusion|_baseColor|_color|_diffuse|_Height|_Normal|_AO|_ambient_occlusion|_metallic|_roughness|_shadow","",name,0,re.IGNORECASE)
+    name = re.sub("_curvature|_ambient_occlusion|_baseColor|_color|_diffuse|_Height|_Normal|_AO|_ambient_occlusion|_metallic|_roughness|_shadow|_fullrender|_alpha","",name,0,re.IGNORECASE)
     return name
 
 def get_texname(filepath):
@@ -15451,6 +15451,8 @@ def texture_bake(filepath, size, type, identifier):
 
 
 def bake_setup():
+    #returns objname, bakedir
+        
     bpy.ops.fujiwara_toolbox.command_998634()#無マテリアルに白を割り当て
     bakeobj = fjw.active()
 
@@ -15469,6 +15471,13 @@ def bake_setup():
 
     return objname, bakedir
 
+def bake_finish():
+    bpy.ops.fujiwara_toolbox.command_358608()#テクスチャ回収
+
+    fjw.deselect()
+    fjw.active().select = True
+
+
 def autobake(size,type,identifier):
     objname,bakedir = bake_setup()
     bakepath = bakedir + objname + "_" + identifier + ".png"
@@ -15486,10 +15495,7 @@ def bake_ModelAppearance(size):
     autobake(size,"DISPLACEMENT","Height")
     autobake(size,"NORMALS","Normal")
 
-    bpy.ops.fujiwara_toolbox.command_358608()#テクスチャ回収
-
-    fjw.deselect()
-    fjw.active().select = True
+    bake_finish()
 
 
 
@@ -15692,6 +15698,75 @@ class FUJIWARATOOLBOX_442748(bpy.types.Operator):#1024
 
 
 
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+############################################################################################################################
+uiitem("フルレンダをベイク")
+############################################################################################################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+def bake_fullrender(size):
+    bpy.context.scene.render.bake_distance = 0
+    bpy.context.scene.render.bake_bias = 0.001
+    bpy.context.scene.render.bake_margin = 16
+    bpy.context.scene.render.use_bake_clear = True
+    bpy.context.scene.render.use_bake_to_vertex_color = False
+    bpy.context.scene.render.bake_quad_split = 'AUTO'
+    autobake(size,"FULL","FullRender")
+    bake_finish()
+
+
+########################################
+#2048
+########################################
+#bpy.ops.fjw.bake_fullrender_2048() #2048
+class FUJIWARATOOLBOX_bake_fullrender_2048(bpy.types.Operator):
+    """フルレンダをベイクする。"""
+    bl_idname = "fujiwara_toolbox.bake_fullrender_2048"
+    bl_label = "2048"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        size = 2048
+        bake_fullrender(size)
+        return {'FINISHED'}
+########################################
+
+########################################
+#4096
+########################################
+#bpy.ops.fjw.bake_fullrender_4096() #4096
+class FUJIWARATOOLBOX_bake_fullrender_4096(bpy.types.Operator):
+    """フルレンダをベイクする。"""
+    bl_idname = "fujiwara_toolbox.bake_fullrender_4096"
+    bl_label = "4096"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        size = 4096
+        bake_fullrender(size)
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
 
 
 
@@ -15847,7 +15922,7 @@ class FUJIWARATOOLBOX_358608(bpy.types.Operator):#テクスチャ回収
         #basecolor類がはじめになるように並べ替える
         tmp = []
         for image in images:
-            if re.search("_baseColor|_color|_diffuse", image.name,re.IGNORECASE) is not None:
+            if re.search("_baseColor|_color|_diffuse|_fullrender", image.name,re.IGNORECASE) is not None:
                 tmp.append(image)
                 images.remove(image)
         #残りを足す
@@ -15874,7 +15949,7 @@ class FUJIWARATOOLBOX_358608(bpy.types.Operator):#テクスチャ回収
             texture_slot = mat.texture_slots.add()
             texture_slot.texture = tex
 
-            if re.search("_baseColor|_color|_diffuse", tex.name,re.IGNORECASE) is not None:
+            if re.search("_baseColor|_color|_diffuse|_fullrender", tex.name,re.IGNORECASE) is not None:
                 texture_slot.use_map_color_diffuse = True
                 texture_slot.diffuse_color_factor = 1
                 texture_slot.blend_type = 'MULTIPLY'
