@@ -1531,7 +1531,7 @@ class FUJIWARATOOLBOX_778347(bpy.types.Operator):#建築エリア設置
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="EDIT_VEC",mode="")
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     ###################################
     #処理部分

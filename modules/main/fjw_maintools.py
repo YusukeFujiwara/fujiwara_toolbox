@@ -15397,8 +15397,30 @@ def sbsname(basename):
 #        for index,use_texture in mat.use_textures:
 #            mat.use_textures[index] = flag
 
+
+tex_identifiers = {}
+
+"""
+tex_identifiers[""] = 
+"""
+tex_identifiers["color"] = "_baseColor|_color|_diffuse|_fullrender"
+tex_identifiers["modelinfo"] = "_curvature|_ambient_occlusion"
+tex_identifiers["alpha"] = "_Alpha"
+tex_identifiers["height"] = "_Height|_Normal"
+tex_identifiers["ao"] = "_AO|_ambient_occlusion"
+tex_identifiers["metallic"] = "_metallic"
+tex_identifiers["roughness"] = "_roughness"
+tex_identifiers["shadow"] = "_Shadow"
+
+tex_identifiers_all = ""
+for tex_identifier in tex_identifiers:
+    tex_identifiers_all += tex_identifiers[tex_identifier] + "|"
+
+
+
 def remove_tex_identifier(name):
-    name = re.sub("_curvature|_ambient_occlusion|_baseColor|_color|_diffuse|_Height|_Normal|_AO|_ambient_occlusion|_metallic|_roughness|_shadow|_fullrender|_alpha","",name,0,re.IGNORECASE)
+    global tex_identifiers_all
+    name = re.sub(tex_identifiers_all,"",name,0,re.IGNORECASE)
     return name
 
 def get_texname(filepath):
@@ -15419,11 +15441,25 @@ def saveall_dirtyimages():
                 img.filepath = imgdir + img.name
             img.save()
 
+
+zero_transp_mat = None
+def get_zero_transp_mat():
+    global zero_transp_mat
+    if zero_transp_mat is None:
+        zero_transp_mat = bpy.data.materials.new("zero_transp_mat")
+    zero_transp_mat.use_raytrace = False
+    zero_transp_mat.use_transparency = True
+    #完全にゼロだとターゲットがないといわれてしまう
+    zero_transp_mat.alpha = 1e-009
+    zero_transp_mat.specular_alpha = 1e-009
+    return zero_transp_mat
+
 #type:
 #https://docs.blender.org/api/blender_python_api_2_78c_release/bpy.types.RenderSettings.html#bpy.types.RenderSettings.bake_type
 def texture_bake(filepath, size, type, identifier):
     filename = os.path.basename(filepath)
     bakeobj = fjw.active()
+
 
     if filename in bpy.data.images:
         imgtobake = bpy.data.images[filename]
@@ -15445,8 +15481,10 @@ def texture_bake(filepath, size, type, identifier):
     bpy.context.scene.render.use_bake_selected_to_active = True
     bpy.context.scene.render.use_textures = True
 
+
     bpy.ops.object.bake_image()
     saveall_dirtyimages()
+
 
 
 
@@ -15458,6 +15496,8 @@ def bake_setup():
 
     #複製されてることを考慮して一旦マテリアルを外す
     bakeobj.data.materials.clear()
+    #ベイク先オブジェクトを透明にしておく
+    bakeobj.data.materials.append(get_zero_transp_mat())
 
     objname = sbsname(bakeobj.name)
     bakedir = os.path.dirname(bpy.data.filepath) + os.sep + objname + "_textures" + os.sep
@@ -15472,6 +15512,9 @@ def bake_setup():
     return objname, bakedir
 
 def bake_finish():
+    #透明マテリアルのクリア
+    fjw.active().data.materials.clear()
+
     bpy.ops.fujiwara_toolbox.command_358608()#テクスチャ回収
 
     fjw.deselect()
@@ -15898,6 +15941,7 @@ class FUJIWARATOOLBOX_358608(bpy.types.Operator):#テクスチャ回収
 
 
     def execute(self, context):
+        global tex_identifiers
         basedir = os.path.dirname(bpy.data.filepath)
         texfiles = []
 
@@ -15914,7 +15958,7 @@ class FUJIWARATOOLBOX_358608(bpy.types.Operator):#テクスチャ回収
         for texfile in texfiles:
             self.report({"INFO"},texfile)
             #Substanceのモデル情報はスルー
-            if re.search("_curvature|_ambient_occlusion", texfile,re.IGNORECASE) is not None:
+            if re.search(tex_identifiers["modelinfo"], texfile,re.IGNORECASE) is not None:
             #if re.search("_curvature", texfile,re.IGNORECASE) is not None:
                 continue
             images.append(fjw.load_img(texfile))
@@ -15922,7 +15966,7 @@ class FUJIWARATOOLBOX_358608(bpy.types.Operator):#テクスチャ回収
         #basecolor類がはじめになるように並べ替える
         tmp = []
         for image in images:
-            if re.search("_baseColor|_color|_diffuse|_fullrender", image.name,re.IGNORECASE) is not None:
+            if re.search(tex_identifiers["color"], image.name,re.IGNORECASE) is not None:
                 tmp.append(image)
                 images.remove(image)
         #残りを足す
@@ -15949,11 +15993,14 @@ class FUJIWARATOOLBOX_358608(bpy.types.Operator):#テクスチャ回収
             texture_slot = mat.texture_slots.add()
             texture_slot.texture = tex
 
-            if re.search("_baseColor|_color|_diffuse|_fullrender", tex.name,re.IGNORECASE) is not None:
+            if re.search(tex_identifiers["color"], tex.name,re.IGNORECASE) is not None:
                 texture_slot.use_map_color_diffuse = True
                 texture_slot.diffuse_color_factor = 1
+                texture_slot.use_map_alpha = True
                 texture_slot.blend_type = 'MULTIPLY'
-            if re.search("_Alpha", tex.name,re.IGNORECASE) is not None:
+                mat.use_transparency = True
+                mat.alpha = 1
+            if re.search(tex_identifiers["alpha"], tex.name,re.IGNORECASE) is not None:
                 texture_slot.use_map_color_diffuse = False
                 texture_slot.use_map_alpha = True
                 texture_slot.use_rgb_to_intensity = True
@@ -15961,23 +16008,23 @@ class FUJIWARATOOLBOX_358608(bpy.types.Operator):#テクスチャ回収
                 texture_slot.blend_type = 'MIX'
                 mat.use_transparency = True
                 mat.alpha = 0
-            if re.search("_Height|_Normal", tex.name,re.IGNORECASE) is not None:
+            if re.search(tex_identifiers["height"], tex.name,re.IGNORECASE) is not None:
                 texture_slot.use_map_color_diffuse = False
                 texture_slot.use_map_normal = True
                 texture_slot.normal_factor = 0.01
-            if re.search("_AO|_ambient_occlusion", tex.name,re.IGNORECASE) is not None:
+            if re.search(tex_identifiers["ao"], tex.name,re.IGNORECASE) is not None:
                 texture_slot.use_map_color_diffuse = True
                 texture_slot.diffuse_color_factor = 1
                 texture_slot.blend_type = 'MULTIPLY'
-            if re.search("_metallic", tex.name,re.IGNORECASE) is not None:
+            if re.search(tex_identifiers["metallic"], tex.name,re.IGNORECASE) is not None:
                 texture_slot.use_map_color_diffuse = False
                 texture_slot.use_map_hardness = True
                 texture_slot.hardness_factor = 1
-            if re.search("_roughness", tex.name,re.IGNORECASE) is not None:
+            if re.search(tex_identifiers["roughness"], tex.name,re.IGNORECASE) is not None:
                 texture_slot.use_map_color_diffuse = False
                 texture_slot.use_map_specular = True
                 texture_slot.specular_factor = 1
-            if re.search("_Shadow", tex.name,re.IGNORECASE) is not None:
+            if re.search(tex_identifiers["shadow"], tex.name,re.IGNORECASE) is not None:
                 #作業中
                 tex.image.use_alpha = False
                 mat.use_transparency = True
