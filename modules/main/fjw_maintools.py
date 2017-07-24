@@ -349,17 +349,17 @@ class MyaddonView3DPanel(bpy.types.Panel):#メインパネル
         active.label(text="クイック")
         active = active.row(align=True)
         active.operator("fujiwara_toolbox.command_490317",text="保存",icon="FILE_TICK")
-        active.operator("fujiwara_toolbox.command_960554",text="BGレンダ")
-        active.operator("pageutils.topage",text="ページに戻る")
+        active.operator("fujiwara_toolbox.command_559881",text="保存して開き直す",icon="FILE_REFRESH")
+        # active.operator("fujiwara_toolbox.command_960554",text="BGレンダ")
+        # active.operator("pageutils.topage",text="ページに戻る")
         #active.operator("fujiwara_toolbox.command_420416",text="+辺")
         active = cols.column(align=True)
         active = active.row(align=True)
         #roomtools
-        active.operator("fujiwara_toolbox.command_288056",text="Grp化")#グループ化
+        active.operator("fujiwara_toolbox.command_288056",text="グループ化")#グループ化
         #maintools内
-        active.operator("fujiwara_toolbox.command_b424289a",text="Proxy")#プロクシ作成
+        # active.operator("fujiwara_toolbox.command_b424289a",text="Proxy")#プロクシ作成
         active.operator("fujiwara_toolbox.command_248120",text="Full Proxy")#プロクシ作成
-        active = cols.row(align=True)
         active.operator("fujiwara_toolbox.command_199238",text="Lamp Proxy")#Lamp Proxy
         active = cols.row(align=True)
         active.operator("fujiwara_toolbox.command_286013",text="複製を実体化")#複製を実体化
@@ -370,52 +370,52 @@ class MyaddonView3DPanel(bpy.types.Panel):#メインパネル
         active.operator("fujiwara_toolbox.command_286488",icon="MESH_ICOSPHERE")
 
 
+        # active = cols.row(align=True)
+        # active.label(text="")
+
+        # active = cols.row(align=True)
+        # active.label(text="ペンディング",icon="PINNED")
+        # #クリアボタン
+        # active.operator("fujiwara_toolbox.command_114105",icon="UNPINNED",text="")
+        # active = cols.column(align=True)
+
+        # #ペンディングされたUIの描画
+        # for uicat in pendings:
+        #     uiitemList = uicategories[uicat]
+        #     for item in uiitemList:
+        #         #スキップ処理
+        #         if item.mode == "none":
+        #             continue
+            
+        #         #if item.mode == "edit":
+        #             ##編集モード以外飛ばす
+        #             #if bpy.context.edit_object != None:
+        #             #    continue
+            
+        #         #縦横
+        #         if item.type == "fix":
+        #             if item.direction == "vertical":
+        #                 active = cols.column(align=True)
+        #             if item.direction == "horizontal":
+        #                 active = active.row(align=True)
+        #             continue
+            
+        #         #描画
+        #         if item.type == "label":
+        #             if item.icon != "":
+        #                 active.label(text=item.label, icon=item.icon)
+        #             else:
+        #                 active.label(text=item.label)
+        #         if item.type == "button":
+        #             if item.icon != "":
+        #                 active.operator(item.idname, icon=item.icon)
+        #             else:
+        #                 active.operator(item.idname)
+
+
+
+
         active = cols.row(align=True)
-        active.label(text="")
-
-        active = cols.row(align=True)
-        active.label(text="ペンディング",icon="PINNED")
-        #クリアボタン
-        active.operator("fujiwara_toolbox.command_114105",icon="UNPINNED",text="")
-        active = cols.column(align=True)
-
-        #ペンディングされたUIの描画
-        for uicat in pendings:
-            uiitemList = uicategories[uicat]
-            for item in uiitemList:
-                #スキップ処理
-                if item.mode == "none":
-                    continue
-            
-                #if item.mode == "edit":
-                    ##編集モード以外飛ばす
-                    #if bpy.context.edit_object != None:
-                    #    continue
-            
-                #縦横
-                if item.type == "fix":
-                    if item.direction == "vertical":
-                        active = cols.column(align=True)
-                    if item.direction == "horizontal":
-                        active = active.row(align=True)
-                    continue
-            
-                #描画
-                if item.type == "label":
-                    if item.icon != "":
-                        active.label(text=item.label, icon=item.icon)
-                    else:
-                        active.label(text=item.label)
-                if item.type == "button":
-                    if item.icon != "":
-                        active.operator(item.idname, icon=item.icon)
-                    else:
-                        active.operator(item.idname)
-
-
-
-
-
         active.label(text="メイン")
         for uicat in uicategories:
             uiitemList = uicategories[uicat]
@@ -610,36 +610,36 @@ class FUJIWARATOOLBOX_490317(bpy.types.Operator):#保存
         return {'FINISHED'}
 ########################################
 
-########################################
-#BGレンダ
-########################################
-class FUJIWARATOOLBOX_960554(bpy.types.Operator):#BGレンダ
-    """BGレンダ"""
-    bl_idname = "fujiwara_toolbox.command_960554"
-    bl_label = "BGレンダ"
-    bl_options = {'REGISTER', 'UNDO'}
+# ########################################
+# #BGレンダ
+# ########################################
+# class FUJIWARATOOLBOX_960554(bpy.types.Operator):#BGレンダ
+#     """BGレンダ"""
+#     bl_idname = "fujiwara_toolbox.command_960554"
+#     bl_label = "BGレンダ"
+#     bl_options = {'REGISTER', 'UNDO'}
 
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    def execute(self, context):
-        #エッジオフ
-        bpy.context.scene.render.use_edge_enhance = False
+#     def execute(self, context):
+#         #エッジオフ
+#         bpy.context.scene.render.use_edge_enhance = False
 
-        #メイン
-        blendfilepath = bpy.data.filepath
-        blendname = os.path.splitext(os.path.basename(blendfilepath))[0]
-        renderdir = os.path.dirname(blendfilepath) + os.sep + "tmp_render" + os.sep
-        binpath = bpy.app.binary_path
-        command = fjw.qq(binpath) + " -b " + fjw.qq(blendfilepath) + " -o " + fjw.qq(renderdir + blendname + "_") + " -F PNG -x 1 -f " + str(bpy.context.scene.frame_current)
-        self.report({"INFO"},command)
-        #os.system(command)
-        #subprocess.call(command, shell=True)
-        subprocess.Popen(command)
+#         #メイン
+#         blendfilepath = bpy.data.filepath
+#         blendname = os.path.splitext(os.path.basename(blendfilepath))[0]
+#         renderdir = os.path.dirname(blendfilepath) + os.sep + "tmp_render" + os.sep
+#         binpath = bpy.app.binary_path
+#         command = fjw.qq(binpath) + " -b " + fjw.qq(blendfilepath) + " -o " + fjw.qq(renderdir + blendname + "_") + " -F PNG -x 1 -f " + str(bpy.context.scene.frame_current)
+#         self.report({"INFO"},command)
+#         #os.system(command)
+#         #subprocess.call(command, shell=True)
+#         subprocess.Popen(command)
 
-        return {'FINISHED'}
-########################################
+#         return {'FINISHED'}
+# ########################################
 
 ########################################
 #+辺
@@ -749,119 +749,119 @@ class FUJIWARATOOLBOX_559881(bpy.types.Operator):#保存して開き直す
 ########################################
 
 
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
+# #---------------------------------------------
+# uiitem().vertical()
+# #---------------------------------------------
 
 
 
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
+# #---------------------------------------------
+# uiitem().horizontal()
+# #---------------------------------------------
 
 
-########################################
-#100倍とか
-########################################
-class FUJIWARATOOLBOX_463064(bpy.types.Operator):#100倍
-    """100倍"""
-    bl_idname = "fujiwara_toolbox.command_463064"
-    bl_label = "100倍とか"
-    bl_options = {'REGISTER', 'UNDO'}
+# ########################################
+# #100倍とか
+# ########################################
+# class FUJIWARATOOLBOX_463064(bpy.types.Operator):#100倍
+#     """100倍"""
+#     bl_idname = "fujiwara_toolbox.command_463064"
+#     bl_label = "100倍とか"
+#     bl_options = {'REGISTER', 'UNDO'}
 
 
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-    
-    def execute(self, context):
-        camera = bpy.context.scene.camera
-        camera.location = (1.3641321659088135, 0.25500816106796265, 0.7163272500038147)
-        camera.rotation_euler[0] = 0.8746716380119324
-        camera.rotation_euler[1] = -2.7369874260330107e-06
-        camera.rotation_euler[2] = 2.5201363563537598
-        
-        bpy.ops.transform.resize(value=(10000, 10000, 10000), constraint_axis=(False, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1)
-        bpy.ops.view3d.view_selected()
-        return {'FINISHED'}
-########################################
-
-########################################
-#0.01倍
-########################################
-class FUJIWARATOOLBOX_159343(bpy.types.Operator):#0.01倍
-    """0.0001倍"""
-    bl_idname = "fujiwara_toolbox.command_159343"
-    bl_label = "0.01倍"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-    def execute(self, context):
-        camera = bpy.context.scene.camera
-        camera.location = (1.3641321659088135, 0.25500816106796265, 0.7163272500038147)
-        camera.rotation_euler[0] = 0.8746716380119324
-        camera.rotation_euler[1] = -2.7369874260330107e-06
-        camera.rotation_euler[2] = 2.5201363563537598
-        
-        bpy.ops.transform.resize(value=(0.01, 0.01,0.01), constraint_axis=(False, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1)
-        bpy.ops.view3d.view_selected()
-        
-        return {'FINISHED'}
-########################################
-
-########################################
-#カメラだけ
-########################################
-class FUJIWARATOOLBOX_607395(bpy.types.Operator):#カメラだけ
-    """カメラだけ"""
-    bl_idname = "fujiwara_toolbox.command_607395"
-    bl_label = "カメラだけ"
-    bl_options = {'REGISTER', 'UNDO'}
-
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     
-    def execute(self, context):
-        camera = bpy.context.scene.camera
-        camera.location = (1.3641321659088135, 0.25500816106796265, 0.7163272500038147)
-        camera.rotation_euler[0] = 1
-        camera.rotation_euler[1] = 0
-        camera.rotation_euler[2] = -1
+#     def execute(self, context):
+#         camera = bpy.context.scene.camera
+#         camera.location = (1.3641321659088135, 0.25500816106796265, 0.7163272500038147)
+#         camera.rotation_euler[0] = 0.8746716380119324
+#         camera.rotation_euler[1] = -2.7369874260330107e-06
+#         camera.rotation_euler[2] = 2.5201363563537598
         
-        bpy.ops.view3d.view_selected()
+#         bpy.ops.transform.resize(value=(10000, 10000, 10000), constraint_axis=(False, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1)
+#         bpy.ops.view3d.view_selected()
+#         return {'FINISHED'}
+# ########################################
+
+# ########################################
+# #0.01倍
+# ########################################
+# class FUJIWARATOOLBOX_159343(bpy.types.Operator):#0.01倍
+#     """0.0001倍"""
+#     bl_idname = "fujiwara_toolbox.command_159343"
+#     bl_label = "0.01倍"
+#     bl_options = {'REGISTER', 'UNDO'}
+
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+#     def execute(self, context):
+#         camera = bpy.context.scene.camera
+#         camera.location = (1.3641321659088135, 0.25500816106796265, 0.7163272500038147)
+#         camera.rotation_euler[0] = 0.8746716380119324
+#         camera.rotation_euler[1] = -2.7369874260330107e-06
+#         camera.rotation_euler[2] = 2.5201363563537598
         
-        return {'FINISHED'}
-########################################
+#         bpy.ops.transform.resize(value=(0.01, 0.01,0.01), constraint_axis=(False, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1)
+#         bpy.ops.view3d.view_selected()
+        
+#         return {'FINISHED'}
+# ########################################
 
-########################################
-#いろいろ処理
-########################################
-class FUJIWARATOOLBOX_227575(bpy.types.Operator):#いろいろ処理
-    """いろいろ処理"""
-    bl_idname = "fujiwara_toolbox.command_227575"
-    bl_label = "いろいろ処理"
-    bl_options = {'REGISTER', 'UNDO'}
+# ########################################
+# #カメラだけ
+# ########################################
+# class FUJIWARATOOLBOX_607395(bpy.types.Operator):#カメラだけ
+#     """カメラだけ"""
+#     bl_idname = "fujiwara_toolbox.command_607395"
+#     bl_label = "カメラだけ"
+#     bl_options = {'REGISTER', 'UNDO'}
 
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     
-    def execute(self, context):
-        bpy.context.scene.camera.data.clip_end = 100000
+#     def execute(self, context):
+#         camera = bpy.context.scene.camera
+#         camera.location = (1.3641321659088135, 0.25500816106796265, 0.7163272500038147)
+#         camera.rotation_euler[0] = 1
+#         camera.rotation_euler[1] = 0
+#         camera.rotation_euler[2] = -1
         
-        camera = bpy.context.scene.camera
-        camera.location = (1.3641321659088135, 0.25500816106796265, 0.7163272500038147)
-        camera.rotation_euler[0] = 1
-        camera.rotation_euler[1] = 0
-        camera.rotation_euler[2] = -1
+#         bpy.ops.view3d.view_selected()
         
-        bpy.ops.view3d.view_selected()
-        return {'FINISHED'}
-########################################
+#         return {'FINISHED'}
+# ########################################
+
+# ########################################
+# #いろいろ処理
+# ########################################
+# class FUJIWARATOOLBOX_227575(bpy.types.Operator):#いろいろ処理
+#     """いろいろ処理"""
+#     bl_idname = "fujiwara_toolbox.command_227575"
+#     bl_label = "いろいろ処理"
+#     bl_options = {'REGISTER', 'UNDO'}
+
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    
+#     def execute(self, context):
+#         bpy.context.scene.camera.data.clip_end = 100000
+        
+#         camera = bpy.context.scene.camera
+#         camera.location = (1.3641321659088135, 0.25500816106796265, 0.7163272500038147)
+#         camera.rotation_euler[0] = 1
+#         camera.rotation_euler[1] = 0
+#         camera.rotation_euler[2] = -1
+        
+#         bpy.ops.view3d.view_selected()
+#         return {'FINISHED'}
+# ########################################
 
 
 
@@ -15397,8 +15397,30 @@ def sbsname(basename):
 #        for index,use_texture in mat.use_textures:
 #            mat.use_textures[index] = flag
 
+
+tex_identifiers = {}
+
+"""
+tex_identifiers[""] = 
+"""
+tex_identifiers["color"] = "_baseColor|_color|_diffuse|_fullrender"
+tex_identifiers["modelinfo"] = "_curvature|_ambient_occlusion"
+tex_identifiers["alpha"] = "_Alpha"
+tex_identifiers["height"] = "_Height|_Normal"
+tex_identifiers["ao"] = "_AO|_ambient_occlusion"
+tex_identifiers["metallic"] = "_metallic"
+tex_identifiers["roughness"] = "_roughness"
+tex_identifiers["shadow"] = "_Shadow"
+
+tex_identifiers_all = ""
+for tex_identifier in tex_identifiers:
+    tex_identifiers_all += tex_identifiers[tex_identifier] + "|"
+
+
+
 def remove_tex_identifier(name):
-    name = re.sub("_curvature|_ambient_occlusion|_baseColor|_color|_diffuse|_Height|_Normal|_AO|_ambient_occlusion|_metallic|_roughness|_shadow|_fullrender|_alpha","",name,0,re.IGNORECASE)
+    global tex_identifiers_all
+    name = re.sub(tex_identifiers_all,"",name,0,re.IGNORECASE)
     return name
 
 def get_texname(filepath):
@@ -15419,11 +15441,25 @@ def saveall_dirtyimages():
                 img.filepath = imgdir + img.name
             img.save()
 
+
+zero_transp_mat = None
+def get_zero_transp_mat():
+    global zero_transp_mat
+    if zero_transp_mat is None:
+        zero_transp_mat = bpy.data.materials.new("zero_transp_mat")
+    zero_transp_mat.use_raytrace = False
+    zero_transp_mat.use_transparency = True
+    #完全にゼロだとターゲットがないといわれてしまう
+    zero_transp_mat.alpha = 1e-009
+    zero_transp_mat.specular_alpha = 1e-009
+    return zero_transp_mat
+
 #type:
 #https://docs.blender.org/api/blender_python_api_2_78c_release/bpy.types.RenderSettings.html#bpy.types.RenderSettings.bake_type
 def texture_bake(filepath, size, type, identifier):
     filename = os.path.basename(filepath)
     bakeobj = fjw.active()
+
 
     if filename in bpy.data.images:
         imgtobake = bpy.data.images[filename]
@@ -15445,8 +15481,10 @@ def texture_bake(filepath, size, type, identifier):
     bpy.context.scene.render.use_bake_selected_to_active = True
     bpy.context.scene.render.use_textures = True
 
+
     bpy.ops.object.bake_image()
     saveall_dirtyimages()
+
 
 
 
@@ -15458,6 +15496,8 @@ def bake_setup():
 
     #複製されてることを考慮して一旦マテリアルを外す
     bakeobj.data.materials.clear()
+    #ベイク先オブジェクトを透明にしておく
+    bakeobj.data.materials.append(get_zero_transp_mat())
 
     objname = sbsname(bakeobj.name)
     bakedir = os.path.dirname(bpy.data.filepath) + os.sep + objname + "_textures" + os.sep
@@ -15472,6 +15512,9 @@ def bake_setup():
     return objname, bakedir
 
 def bake_finish():
+    #透明マテリアルのクリア
+    fjw.active().data.materials.clear()
+
     bpy.ops.fujiwara_toolbox.command_358608()#テクスチャ回収
 
     fjw.deselect()
@@ -15539,75 +15582,75 @@ class FUJIWARATOOLBOX_264050(bpy.types.Operator):#4096
 uiitem().vertical()
 #---------------------------------------------
 
-############################################################################################################################
-uiitem("アルファをベイク")
-############################################################################################################################
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
+# ############################################################################################################################
+# uiitem("アルファをベイク")
+# ############################################################################################################################
+# #---------------------------------------------
+# uiitem().vertical()
+# #---------------------------------------------
+# #---------------------------------------------
+# uiitem().horizontal()
+# #---------------------------------------------
 
-def bake_alpha(size):
-    bpy.context.scene.render.bake_distance = 0
-    bpy.context.scene.render.bake_bias = 0.001
-    bpy.context.scene.render.bake_margin = 16
-    bpy.context.scene.render.use_bake_clear = True
-    bpy.context.scene.render.use_bake_to_vertex_color = False
-    bpy.context.scene.render.bake_quad_split = 'AUTO'
+# def bake_alpha(size):
+#     bpy.context.scene.render.bake_distance = 0
+#     bpy.context.scene.render.bake_bias = 0.001
+#     bpy.context.scene.render.bake_margin = 16
+#     bpy.context.scene.render.use_bake_clear = True
+#     bpy.context.scene.render.use_bake_to_vertex_color = False
+#     bpy.context.scene.render.bake_quad_split = 'AUTO'
     
-    #アルファの場合、透過マテリアルを設定しないといけないので
-    #auto bakeをそのまま使用できない
-    objname,bakedir = bake_setup()
-    bakepath = bakedir + objname + "_" + "Alpha" + ".png"
+#     #アルファの場合、透過マテリアルを設定しないといけないので
+#     #auto bakeをそのまま使用できない
+#     objname,bakedir = bake_setup()
+#     bakepath = bakedir + objname + "_" + "Alpha" + ".png"
 
-    #透過マテリアルの割当
-    alphamat = fjw.get_material("alpha_zero")
-    alphamat.use_transparency = True
-    alphamat.alpha = 0
+#     #透過マテリアルの割当
+#     alphamat = fjw.get_material("alpha_zero")
+#     alphamat.use_transparency = True
+#     alphamat.alpha = 0
 
-    fjw.active().data.materials.append(alphamat)
-    texture_bake(bakepath,size,"ALPHA","Alpha")
-    fjw.active().data.materials.clear()
+#     fjw.active().data.materials.append(alphamat)
+#     texture_bake(bakepath,size,"ALPHA","Alpha")
+#     fjw.active().data.materials.clear()
 
-    bpy.ops.fujiwara_toolbox.command_358608()#テクスチャ回収
+#     bpy.ops.fujiwara_toolbox.command_358608()#テクスチャ回収
 
-########################################
-#2048
-########################################
-#bpy.ops.fjw.bake_alpha_2048() #2048
-class FUJIWARATOOLBOX_bake_alpha_2048(bpy.types.Operator):
-    """選択物のアルファをアクティブにベイクする。2048px。"""
-    bl_idname = "fujiwara_toolbox.bake_alpha_2048"
-    bl_label = "2048"
-    bl_options = {'REGISTER', 'UNDO'}
+# ########################################
+# #2048
+# ########################################
+# #bpy.ops.fjw.bake_alpha_2048() #2048
+# class FUJIWARATOOLBOX_bake_alpha_2048(bpy.types.Operator):
+#     """選択物のアルファをアクティブにベイクする。2048px。"""
+#     bl_idname = "fujiwara_toolbox.bake_alpha_2048"
+#     bl_label = "2048"
+#     bl_options = {'REGISTER', 'UNDO'}
 
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    def execute(self, context):
-        bake_alpha(2048)
-        return {'FINISHED'}
-########################################
+#     def execute(self, context):
+#         bake_alpha(2048)
+#         return {'FINISHED'}
+# ########################################
 
-########################################
-#4096
-########################################
-#bpy.ops.fjw.bake_alpha_4096() #4096
-class FUJIWARATOOLBOX_bake_alpha_4096(bpy.types.Operator):
-    """選択物のアルファをアクティブにベイクする。4096px。"""
-    bl_idname = "fujiwara_toolbox.bake_alpha_4096"
-    bl_label = "4096"
-    bl_options = {'REGISTER', 'UNDO'}
+# ########################################
+# #4096
+# ########################################
+# #bpy.ops.fjw.bake_alpha_4096() #4096
+# class FUJIWARATOOLBOX_bake_alpha_4096(bpy.types.Operator):
+#     """選択物のアルファをアクティブにベイクする。4096px。"""
+#     bl_idname = "fujiwara_toolbox.bake_alpha_4096"
+#     bl_label = "4096"
+#     bl_options = {'REGISTER', 'UNDO'}
 
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    def execute(self, context):
-        bake_alpha(4096)
-        return {'FINISHED'}
-########################################
+#     def execute(self, context):
+#         bake_alpha(4096)
+#         return {'FINISHED'}
+# ########################################
 
 
 
@@ -15842,10 +15885,10 @@ class FUJIWARATOOLBOX_596924(bpy.types.Operator):#Substance Output
 ########################################
 
 ########################################
-#分離してSubstance Output
+#選択メッシュを分離してSubstance Output
 ########################################
 class FUJIWARATOOLBOX_539212(bpy.types.Operator):#分離してSubstance Output
-    """分離してSubstance Output"""
+    """選択メッシュを分離してSubstance Output"""
     bl_idname = "fujiwara_toolbox.command_539212"
     bl_label = "分離してSubstance Output"
     bl_options = {'REGISTER', 'UNDO'}
@@ -15898,6 +15941,7 @@ class FUJIWARATOOLBOX_358608(bpy.types.Operator):#テクスチャ回収
 
 
     def execute(self, context):
+        global tex_identifiers
         basedir = os.path.dirname(bpy.data.filepath)
         texfiles = []
 
@@ -15914,7 +15958,7 @@ class FUJIWARATOOLBOX_358608(bpy.types.Operator):#テクスチャ回収
         for texfile in texfiles:
             self.report({"INFO"},texfile)
             #Substanceのモデル情報はスルー
-            if re.search("_curvature|_ambient_occlusion", texfile,re.IGNORECASE) is not None:
+            if re.search(tex_identifiers["modelinfo"], texfile,re.IGNORECASE) is not None:
             #if re.search("_curvature", texfile,re.IGNORECASE) is not None:
                 continue
             images.append(fjw.load_img(texfile))
@@ -15922,7 +15966,7 @@ class FUJIWARATOOLBOX_358608(bpy.types.Operator):#テクスチャ回収
         #basecolor類がはじめになるように並べ替える
         tmp = []
         for image in images:
-            if re.search("_baseColor|_color|_diffuse|_fullrender", image.name,re.IGNORECASE) is not None:
+            if re.search(tex_identifiers["color"], image.name,re.IGNORECASE) is not None:
                 tmp.append(image)
                 images.remove(image)
         #残りを足す
@@ -15949,11 +15993,14 @@ class FUJIWARATOOLBOX_358608(bpy.types.Operator):#テクスチャ回収
             texture_slot = mat.texture_slots.add()
             texture_slot.texture = tex
 
-            if re.search("_baseColor|_color|_diffuse|_fullrender", tex.name,re.IGNORECASE) is not None:
+            if re.search(tex_identifiers["color"], tex.name,re.IGNORECASE) is not None:
                 texture_slot.use_map_color_diffuse = True
                 texture_slot.diffuse_color_factor = 1
+                texture_slot.use_map_alpha = True
                 texture_slot.blend_type = 'MULTIPLY'
-            if re.search("_Alpha", tex.name,re.IGNORECASE) is not None:
+                mat.use_transparency = True
+                mat.alpha = 1
+            if re.search(tex_identifiers["alpha"], tex.name,re.IGNORECASE) is not None:
                 texture_slot.use_map_color_diffuse = False
                 texture_slot.use_map_alpha = True
                 texture_slot.use_rgb_to_intensity = True
@@ -15961,23 +16008,23 @@ class FUJIWARATOOLBOX_358608(bpy.types.Operator):#テクスチャ回収
                 texture_slot.blend_type = 'MIX'
                 mat.use_transparency = True
                 mat.alpha = 0
-            if re.search("_Height|_Normal", tex.name,re.IGNORECASE) is not None:
+            if re.search(tex_identifiers["height"], tex.name,re.IGNORECASE) is not None:
                 texture_slot.use_map_color_diffuse = False
                 texture_slot.use_map_normal = True
                 texture_slot.normal_factor = 0.01
-            if re.search("_AO|_ambient_occlusion", tex.name,re.IGNORECASE) is not None:
+            if re.search(tex_identifiers["ao"], tex.name,re.IGNORECASE) is not None:
                 texture_slot.use_map_color_diffuse = True
                 texture_slot.diffuse_color_factor = 1
                 texture_slot.blend_type = 'MULTIPLY'
-            if re.search("_metallic", tex.name,re.IGNORECASE) is not None:
+            if re.search(tex_identifiers["metallic"], tex.name,re.IGNORECASE) is not None:
                 texture_slot.use_map_color_diffuse = False
                 texture_slot.use_map_hardness = True
                 texture_slot.hardness_factor = 1
-            if re.search("_roughness", tex.name,re.IGNORECASE) is not None:
+            if re.search(tex_identifiers["roughness"], tex.name,re.IGNORECASE) is not None:
                 texture_slot.use_map_color_diffuse = False
                 texture_slot.use_map_specular = True
                 texture_slot.specular_factor = 1
-            if re.search("_Shadow", tex.name,re.IGNORECASE) is not None:
+            if re.search(tex_identifiers["shadow"], tex.name,re.IGNORECASE) is not None:
                 #作業中
                 tex.image.use_alpha = False
                 mat.use_transparency = True
@@ -17857,66 +17904,66 @@ uiitem().vertical()
 
 
 
-########################################
-#プロクシ作成
-########################################
-class FUJIWARATOOLBOX_b424289a(bpy.types.Operator):#プロクシ作成
-    """プロクシ作成　自動キーフレームオン"""
-    bl_idname = "fujiwara_toolbox.command_b424289a"
-    bl_label = "プロクシ作成"
-    bl_options = {'REGISTER', 'UNDO'}
+# ########################################
+# #プロクシ作成
+# ########################################
+# class FUJIWARATOOLBOX_b424289a(bpy.types.Operator):#プロクシ作成
+#     """プロクシ作成　自動キーフレームオン"""
+#     bl_idname = "fujiwara_toolbox.command_b424289a"
+#     bl_label = "プロクシ作成"
+#     bl_options = {'REGISTER', 'UNDO'}
 
-    #uiitem = uiitem()
-    #uiitem.button(bl_idname,bl_label,icon="",mode="")
+#     #uiitem = uiitem()
+#     #uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    def execute(self, context):
-        #blenrig用プロクシの作成
-        fjw.make_proxy("biped_blenrig")
-        #roomtoolsのプロクシ作成（mapcontroller用）を実行
-        bpy.ops.fujiwara_toolbox.command_424289()
+#     def execute(self, context):
+#         #blenrig用プロクシの作成
+#         fjw.make_proxy("biped_blenrig")
+#         #roomtoolsのプロクシ作成（mapcontroller用）を実行
+#         bpy.ops.fujiwara_toolbox.command_424289()
 
-        #make_proxy_all()
+#         #make_proxy_all()
 
-        #プロクシ作るとキーフレームじゃないと保存されなかったりするので自動キーフレームうつ
-        bpy.context.scene.tool_settings.use_keyframe_insert_auto = True
+#         #プロクシ作るとキーフレームじゃないと保存されなかったりするので自動キーフレームうつ
+#         bpy.context.scene.tool_settings.use_keyframe_insert_auto = True
 
         
-        #deselect()
-        #pobj.select = True
+#         #deselect()
+#         #pobj.select = True
 
 
 
 
-        ##リンクデータのオブジェクト
-        #inlinkobjects = pobj.dupli_group.objects
+#         ##リンクデータのオブジェクト
+#         #inlinkobjects = pobj.dupli_group.objects
         
-        #mp_name = ""
-        #for obj in inlinkobjects:
-        #    if "MapController" in obj.name:
-        #        mp_name = obj.name
-        #        break
+#         #mp_name = ""
+#         #for obj in inlinkobjects:
+#         #    if "MapController" in obj.name:
+#         #        mp_name = obj.name
+#         #        break
 
-        #if mp_name == "":
-        #    self.report({"INFO"},"MapControllerがありません。")
-        #    return {'CANCELLED'}
+#         #if mp_name == "":
+#         #    self.report({"INFO"},"MapControllerがありません。")
+#         #    return {'CANCELLED'}
 
-        #bpy.ops.object.proxy_make(object=mp_name)
+#         #bpy.ops.object.proxy_make(object=mp_name)
 
-        #mapcontroller = active()
-        #map.select = True
+#         #mapcontroller = active()
+#         #map.select = True
 
-        #bpy.ops.object.parent_set(type='OBJECT', keep_transform=False)
-        #bpy.ops.object.mode_set(mode='POSE', toggle=False)
+#         #bpy.ops.object.parent_set(type='OBJECT', keep_transform=False)
+#         #bpy.ops.object.mode_set(mode='POSE', toggle=False)
 
 
-        return {'FINISHED'}
-########################################
+#         return {'FINISHED'}
+# ########################################
 
 ########################################
 #プロクシ作成（全）
 ########################################
 class FUJIWARATOOLBOX_248120(bpy.types.Operator):#プロクシ作成（全）
-    """プロクシ作成（全）"""
+    """グループに含まれるすべてのEmptyとArmatureから親子構造を維持したプロクシを作成する。"""
     bl_idname = "fujiwara_toolbox.command_248120"
     bl_label = "Full Proxy"
     bl_options = {'REGISTER', 'UNDO'}
