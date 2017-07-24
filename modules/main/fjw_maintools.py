@@ -7550,16 +7550,15 @@ def get_edge_control():
             if "エッジ制御" in obj.name:
                 empty = obj
     if empty is None:
-        loc = bpy.context.space_data.cursor_location
-        ls = bpy.context.scene.layers
-
         empty = bpy.data.objects.new("エッジ制御",None)
-        bpy.context.scene.objects.link(empty)
-        empty.location = loc
-        empty.layers = ls
-        empty.show_x_ray = True
-        empty.show_name = True
-        empty.empty_draw_type = 'SINGLE_ARROW'
+    loc = bpy.context.space_data.cursor_location
+    ls = bpy.context.scene.layers
+    bpy.context.scene.objects.link(empty)
+    empty.location = loc
+    empty.layers = ls
+    empty.show_x_ray = True
+    empty.show_name = True
+    empty.empty_draw_type = 'SINGLE_ARROW'
     return empty
 
 
