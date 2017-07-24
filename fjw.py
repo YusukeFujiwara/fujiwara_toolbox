@@ -64,6 +64,13 @@ def cursor():
 def set_cursor(pos):
     bpy.context.space_data.cursor_location = pos
 
+def blendname():
+    name = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
+    return name
+
+def blenddir():
+    dir = os.path.dirname(bpy.data.filepath)
+    return dir
 
 
 def find(name):
@@ -1143,6 +1150,26 @@ def get_material(matname):
         mat = bpy.data.materials.new(name=matname)
         mat.diffuse_color = (1, 1, 1)
     return bpy.data.materials[matname]
+
+
+class ViewState():
+    viewstate = {}
+
+    def store_current_viewstate(self):
+        for obj in bpy.data.objects:
+            self.viewstate[obj.name] = [obj.hide, obj.hide_render]
+
+    def __init__(self):
+        self.store_current_viewstate()
+        pass
+
+
+    def restore_viewstate(self):
+        for vsname in self.viewstate:
+            obj = bpy.data.objects[vsname]
+            obj.hide = self.viewstate[vsname][0]
+            obj.hide_render = self.viewstate[vsname][1]
+
 
 def dummy():
     return

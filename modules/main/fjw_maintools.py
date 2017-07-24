@@ -3039,6 +3039,8 @@ uiitem("OpenGLレンダ")
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
+
+
 def active_gpbrush():
     return bpy.context.scene.tool_settings.gpencil_brushes.active
 
@@ -3063,13 +3065,33 @@ def gpline_change(gplayer, value):
 
 
 
+def render_opengl(filename,show_viewport=False):
+    bpy.context.space_data.show_only_render = True
+    bpy.context.space_data.viewport_shade = 'MATERIAL'
+    bpy.context.space_data.fx_settings.use_ssao = False
+
+    #カメラビュー
+    bpy.context.space_data.region_3d.view_perspective = "CAMERA"
+    #参考：bpy.data.screens[0].areas[1].spaces[0].local_view
+
+    dir = os.path.dirname(bpy.data.filepath)
+    renderdir = fjw.blenddir() + os.sep + "render" + os.sep 
+    renderpath = renderdir + filename + ".png"
+    bpy.context.scene.render.filepath = renderpath
+
+    if show_viewport:
+        bpy.ops.render.opengl("INVOKE_DEFAULT",view_context=True,write_still=True)
+    else:
+        bpy.ops.render.opengl(view_context=True,write_still=True)
+
+
 ########################################
 #GLレンダ（ビューポート）
 ########################################
 class FUJIWARATOOLBOX_979047(bpy.types.Operator):#GLレンダ（ビューポート）
     """GLレンダ（ビューポート）"""
     bl_idname = "fujiwara_toolbox.command_979047"
-    bl_label = "GLレンダ（ビューポート）"
+    bl_label = "OpenGLレンダ。透過レンダと透過オブジェクト非表示レンダを生成。ドロップシャドウ無効。"
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
@@ -3077,50 +3099,41 @@ class FUJIWARATOOLBOX_979047(bpy.types.Operator):#GLレンダ（ビューポー�
 
 
     def execute(self, context):
-        bpy.context.space_data.show_only_render = True
-        bpy.context.space_data.viewport_shade = 'MATERIAL'
-        #bpy.context.space_data.fx_settings.use_ssao = False
-
-        #カメラビュー
-        bpy.context.space_data.region_3d.view_perspective = "CAMERA"
-        #参考：bpy.data.screens[0].areas[1].spaces[0].local_view
+        viewstate = fjw.ViewState()
 
         #グリペンレイヤ
-        gplayers = bpy.context.scene.grease_pencil.layers
-        if "下書き" in gplayers:
-            bpy.context.scene.grease_pencil.layers["下書き"].hide = True
+        if bpy.context.scene.grease_pencil is not None:
+            gplayers = bpy.context.scene.grease_pencil.layers | None
+            if "下書き" in gplayers:
+                bpy.context.scene.grease_pencil.layers["下書き"].hide = True
+            #gpcurrent = bpy.context.scene.grease_pencil.layers.active
+            ##線幅
+            for gplayer in gplayers:
+                if not gplayer.hide:
+                    gpline_change(gplayer, 20)
 
-        #gpcurrent = bpy.context.scene.grease_pencil.layers.active
+        #ランプドロップシャドウ非表示
+        for lamp in bpy.data.lamps:
+            lamp.use_shadow = False
 
-        ##線幅
-        for gplayer in gplayers:
-            if not gplayer.hide:
-                gpline_change(gplayer, 20)
 
-        #for gplayer in gplayers:
-        #    gplayer.line_change = 10
+        #半透明非表示
+        for obj in bpy.data.objects:
+            if hasattr(obj.data, "materials"):
+                for mat in obj.data.materials:
+                    if "裏ポリエッジ" in mat.name:
+                        continue
+                    if mat.use_transparency:
+                        obj.hide = True
+                        break
+        selfname = fjw.blendname() + "_layerAll_OpenGL_B_NonTranpsarent"
+        render_opengl(selfname)
+        viewstate.restore_viewstate()
 
-        selfname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
-        dir = os.path.dirname(bpy.data.filepath)
-        renderdir = dir + os.sep + "render" + os.sep 
-        renderpath = renderdir + selfname + "_layerAll_OpenGL.png"
-        bpy.context.scene.render.filepath = renderpath
 
-        bpy.ops.render.opengl("INVOKE_DEFAULT",view_context=True,write_still=True)
-        #bpy.ops.render.opengl(view_context=False,write_still=True)
 
-        #for gplayer in gplayers:
-        #    if not gplayer.hide:
-        #        bpy.context.scene.grease_pencil.layers.active = gplayer
-        #        gpline_change(gplayer,-10)
-        #        gpline_change(gplayer,-10)
-        #        gpline_change(gplayer,-10)
-        #        gpline_change(gplayer,-10)
-
-        #for gplayer in gplayers:
-        #    gplayer.line_change = -10
-
-        #bpy.context.scene.grease_pencil.layers.active = gpcurrent
+        selfname = fjw.blendname() + "_layerAll_OpenGL_A_Main"
+        render_opengl(selfname,True)
 
         return {'FINISHED'}
 ########################################
