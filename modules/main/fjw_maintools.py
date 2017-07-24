@@ -7484,15 +7484,18 @@ class FUJIWARATOOLBOX_737497(bpy.types.Operator):#裏ポリ白
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
 
 ########################################
-#Emptyで厚み制御
+#指定Emptyで厚み制御
 ########################################
-#bpy.ops.fjw.SetThicknessDriverwithEmpty() #Emptyで厚み制御
+#bpy.ops.fjw.SetThicknessDriverwithEmpty() #指定Emptyで厚み制御
 class FUJIWARATOOLBOX_SetThicknessDriverwithEmpty(bpy.types.Operator):
     """アクティブなEmptyのZ Scaleを使用して厚さを制御できるようにする。ドライバ制御。"""
     bl_idname = "fujiwara_toolbox.set_thickness_driver_with_empty"
-    bl_label = "Emptyで厚み制御"
+    bl_label = "指定Emptyで厚み制御"
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
@@ -7538,6 +7541,63 @@ class FUJIWARATOOLBOX_SetThicknessDriverwithEmpty(bpy.types.Operator):
         return {'FINISHED'}
 ########################################
 
+
+
+def get_edge_control():
+    empty = None
+    for obj in bpy.data.objects:
+        if obj.type == "EMPTY":
+            if "エッジ制御" in obj.name:
+                empty = obj
+    if empty is None:
+        loc = bpy.context.space_data.cursor_location
+        ls = bpy.context.scene.layers
+
+        empty = bpy.data.objects.new("エッジ制御",None)
+        bpy.context.scene.objects.link(empty)
+        empty.location = loc
+        empty.layers = ls
+        empty.show_x_ray = True
+        empty.show_name = True
+        empty.empty_draw_type = 'SINGLE_ARROW'
+    return empty
+
+
+
+
+########################################
+#Emptyで厚み制御（自動）
+########################################
+#bpy.ops.fjw.set_thickness_driver_with_empty_auto() #Emptyで厚み制御（自動）
+class FUJIWARATOOLBOX_set_thickness_driver_with_empty_auto(bpy.types.Operator):
+    """自動でEmptyを生成してそれで厚み制御する。"""
+    bl_idname = "fujiwara_toolbox.set_thickness_driver_with_empty_auto"
+    bl_label = "Emptyで厚み制御（自動）"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        empty = get_edge_control()
+        fjw.activate(empty)
+        fjw.select(bpy.data.objects)
+        bpy.ops.fujiwara_toolbox.set_thickness_driver_with_empty()
+        fjw.deselect()
+        fjw.activate(empty)
+
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
 
 #---------------------------------------------
 uiitem().horizontal()
