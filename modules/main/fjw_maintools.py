@@ -7549,11 +7549,12 @@ def get_edge_control():
         if obj.type == "EMPTY":
             if "エッジ制御" in obj.name:
                 empty = obj
+                break
     if empty is None:
         empty = bpy.data.objects.new("エッジ制御",None)
+        bpy.context.scene.objects.link(empty)
     loc = bpy.context.space_data.cursor_location
     ls = bpy.context.scene.layers
-    bpy.context.scene.objects.link(empty)
     empty.location = loc
     empty.layers = ls
     empty.show_x_ray = True
@@ -18070,9 +18071,11 @@ class FUJIWARATOOLBOX_248120(bpy.types.Operator):#プロクシ作成（全）
         #親子構造の反映
         for obj in objects:
             #プロクシ使う場合トランスフォームはロックした方が望ましい
-            obj.lock_location = (True,True,True)
-            obj.lock_rotation = (True,True,True)
-            obj.lock_scale = (True,True,True)
+            #Emptyは除外
+            if obj.type != "EMPTY":
+                obj.lock_location = (True,True,True)
+                obj.lock_rotation = (True,True,True)
+                obj.lock_scale = (True,True,True)
 
             basename = obj.name.replace("_proxy", "").replace(fjw.get_linkedfilename(linkobj) + "/", "")
             baseobj = None
