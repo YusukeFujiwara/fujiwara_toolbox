@@ -342,7 +342,8 @@ class deploy_pages(bpy.types.Operator):
 
         files = os.listdir(parent_dir)
 
-        done = []
+        folder_done = []
+        img_done = []
         for file in files:
             name, ext = os.path.splitext(file)
             if re.search("bmp|jpg|jpeg|png", ext, re.IGNORECASE) is None:
@@ -356,23 +357,25 @@ class deploy_pages(bpy.types.Operator):
 
             destdir = parent_dir + os.sep + name + os.sep
 
-            if os.path.exists(destdir):
-                continue
+            #フォルダがあった場合はbackgroundだけコピーする
+            flag_folder_exists = os.path.exists(destdir)
 
-            shutil.copytree(self_dir, destdir)
+            if not flag_folder_exists:
+                shutil.copytree(self_dir, destdir)
+                folder_done.append(name)
 
             #background.pngのコピー
             if re.search("png", ext, re.IGNORECASE) is not None:
                 pageimgpath = parent_dir + os.sep + file
                 destbgimgpath = destdir + os.sep + "background.png"
                 shutil.copy(pageimgpath, destbgimgpath)
-            
-            done.append(name)
+                img_done.append(file)
 
-        if len(done) == 0:
+        if len(folder_done) == 0:
             self.report({"INFO"},"新規作成フォルダはありません")
+            self.report({"INFO"},",".join(img_done) + "をコピーしました")
         else:
-            self.report({"INFO"},",".join(done) + "を作成しました")
+            self.report({"INFO"},",".join(folder_done) + "を作成しました")
         return {"FINISHED"}
 
 class tocell(bpy.types.Operator):

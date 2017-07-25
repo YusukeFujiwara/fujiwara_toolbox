@@ -5479,6 +5479,30 @@ class FUJIWARATOOLBOX_682004(bpy.types.Operator):#ランプ全レイヤ化
 
 
 
+########################################
+#全ドロップシャドウオフ
+########################################
+#bpy.ops.fjw.disable_all_dropshadow() #全ドロップシャドウオフ
+class FUJIWARATOOLBOX_disable_all_dropshadow(bpy.types.Operator):
+    """すべてのランプのドロップシャドウを無効化する"""
+    bl_idname = "fujiwara_toolbox.disable_all_dropshadow"
+    bl_label = "全ドロップシャドウオフ"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        for lamp in bpy.data.lamps:
+            lamp.data.shadow_method = 'NOSHADOW'
+
+        return {'FINISHED'}
+########################################
+
+
+
+
+
 
 
 
