@@ -5278,9 +5278,9 @@ uiitem().horizontal()
 #SUN設置
 ########################################
 class FUJIWARATOOLBOX_96315(bpy.types.Operator):#SUN設置
-    """SUN設置"""
+    """SUN設置。ドロップシャドウの見た目はゲームエンジンにて設定できる。"""
     bl_idname = "fujiwara_toolbox.command_96315"
-    bl_label = "SUN設置。ドロップシャドウの見た目はゲームエンジンにて設定できる。"
+    bl_label = "SUN設置"
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
