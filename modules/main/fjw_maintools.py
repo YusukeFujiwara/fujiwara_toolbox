@@ -3100,13 +3100,15 @@ class FUJIWARATOOLBOX_979047(bpy.types.Operator):#GLレンダ（ビューポー�
 
     def execute(self, context):
         viewstate = fjw.ViewState()
+        if bpy.context.scene.render.simplify_subdivision < 2:
+            bpy.context.scene.render.simplify_subdivision = 2
 
         #下書き非表示
         bpy.context.space_data.show_background_images = False
 
         #グリペンレイヤ
         if bpy.context.scene.grease_pencil is not None:
-            gplayers = bpy.context.scene.grease_pencil.layers | None
+            gplayers = bpy.context.scene.grease_pencil.layers
             if "下書き" in gplayers:
                 bpy.context.scene.grease_pencil.layers["下書き"].hide = True
             #gpcurrent = bpy.context.scene.grease_pencil.layers.active
@@ -3114,11 +3116,6 @@ class FUJIWARATOOLBOX_979047(bpy.types.Operator):#GLレンダ（ビューポー�
             for gplayer in gplayers:
                 if not gplayer.hide:
                     gpline_change(gplayer, 20)
-
-        #ランプドロップシャドウ非表示
-        for lamp in bpy.data.lamps:
-            lamp.use_shadow = False
-
 
         #半透明非表示
         for obj in bpy.data.objects:
@@ -3132,11 +3129,11 @@ class FUJIWARATOOLBOX_979047(bpy.types.Operator):#GLレンダ（ビューポー�
         selfname = fjw.blendname() + "_layerAll_OpenGL_B_NonTranpsarent"
         render_opengl(selfname)
         viewstate.restore_viewstate()
-
-
+        del viewstate
 
         selfname = fjw.blendname() + "_layerAll_OpenGL_A_Main"
         render_opengl(selfname,True)
+
 
         return {'FINISHED'}
 ########################################
@@ -5283,7 +5280,7 @@ uiitem().horizontal()
 class FUJIWARATOOLBOX_96315(bpy.types.Operator):#SUN設置
     """SUN設置"""
     bl_idname = "fujiwara_toolbox.command_96315"
-    bl_label = "SUN設置"
+    bl_label = "SUN設置。ドロップシャドウの見た目はゲームエンジンにて設定できる。"
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
@@ -5299,6 +5296,10 @@ class FUJIWARATOOLBOX_96315(bpy.types.Operator):#SUN設置
         obj.rotation_euler[2] = 0.487015
         obj.data.shadow_method = 'RAY_SHADOW'
 
+        obj.data.ge_shadow_buffer_type = 'VARIANCE'
+        obj.data.shadow_buffer_size = 4096
+        obj.data.shadow_buffer_bias = 0.1
+        obj.data.shadow_buffer_bleed_bias = 0.55
         
         
         return {'FINISHED'}
@@ -5483,25 +5484,25 @@ class FUJIWARATOOLBOX_682004(bpy.types.Operator):#ランプ全レイヤ化
 
 
 
-########################################
-#全ドロップシャドウオフ
-########################################
-#bpy.ops.fjw.disable_all_dropshadow() #全ドロップシャドウオフ
-class FUJIWARATOOLBOX_disable_all_dropshadow(bpy.types.Operator):
-    """すべてのランプのドロップシャドウを無効化する"""
-    bl_idname = "fujiwara_toolbox.disable_all_dropshadow"
-    bl_label = "全ドロップシャドウオフ"
-    bl_options = {'REGISTER', 'UNDO'}
+# ########################################
+# #全ドロップシャドウオフ
+# ########################################
+# #bpy.ops.fjw.disable_all_dropshadow() #全ドロップシャドウオフ
+# class FUJIWARATOOLBOX_disable_all_dropshadow(bpy.types.Operator):
+#     """すべてのランプのドロップシャドウを無効化する"""
+#     bl_idname = "fujiwara_toolbox.disable_all_dropshadow"
+#     bl_label = "全ドロップシャドウオフ"
+#     bl_options = {'REGISTER', 'UNDO'}
 
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    def execute(self, context):
-        for lamp in bpy.data.lamps:
-            lamp.shadow_method = 'NOSHADOW'
+#     def execute(self, context):
+#         for lamp in bpy.data.lamps:
+#             lamp.shadow_method = 'NOSHADOW'
 
-        return {'FINISHED'}
-########################################
+#         return {'FINISHED'}
+# ########################################
 
 
 

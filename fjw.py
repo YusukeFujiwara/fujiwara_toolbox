@@ -1153,23 +1153,24 @@ def get_material(matname):
 
 
 class ViewState():
-    viewstate = {}
+    viewstates = []
 
     def store_current_viewstate(self):
         for obj in bpy.data.objects:
-            self.viewstate[obj.name] = [obj.hide, obj.hide_render]
+            self.viewstates.append([obj,obj.hide,obj.hide_render])
 
     def __init__(self):
         self.store_current_viewstate()
         pass
 
-
     def restore_viewstate(self):
-        for vsname in self.viewstate:
-            obj = bpy.data.objects[vsname]
-            obj.hide = self.viewstate[vsname][0]
-            obj.hide_render = self.viewstate[vsname][1]
+        for viewstate in self.viewstates:
+            obj = viewstate[0]
+            obj.hide = viewstate[1]
+            obj.hide_render = viewstate[2]
 
+    def delete(self):
+        del self.viewstates
 
 def dummy():
     return
