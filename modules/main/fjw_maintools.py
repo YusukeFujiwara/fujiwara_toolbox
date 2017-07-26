@@ -3101,6 +3101,9 @@ class FUJIWARATOOLBOX_979047(bpy.types.Operator):#GLレンダ（ビューポー�
     def execute(self, context):
         viewstate = fjw.ViewState()
 
+        #下書き非表示
+        bpy.context.space_data.show_background_images = False
+
         #グリペンレイヤ
         if bpy.context.scene.grease_pencil is not None:
             gplayers = bpy.context.scene.grease_pencil.layers | None
@@ -5288,7 +5291,8 @@ class FUJIWARATOOLBOX_96315(bpy.types.Operator):#SUN設置
 
     def execute(self, context):
         fjw.mode("OBJECT")
-        bpy.ops.object.lamp_add(type='SUN', radius=1, view_align=False, location=(0, -6, 6), layers=(True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False))
+        loc = (-1, -1, 2)
+        bpy.ops.object.lamp_add(type='SUN', radius=1, view_align=False, location=loc, layers=(True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False))
         obj = bpy.context.scene.objects.active
         obj.rotation_euler[0] = 0.691299
         obj.rotation_euler[1] = 0
@@ -5494,7 +5498,7 @@ class FUJIWARATOOLBOX_disable_all_dropshadow(bpy.types.Operator):
 
     def execute(self, context):
         for lamp in bpy.data.lamps:
-            lamp.data.shadow_method = 'NOSHADOW'
+            lamp.shadow_method = 'NOSHADOW'
 
         return {'FINISHED'}
 ########################################
@@ -13496,12 +13500,15 @@ class FUJIWARATOOLBOX_487662(bpy.types.Operator):#オートインポート
         #存在確認
         blendname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
         dir = os.path.dirname(bpy.data.filepath) + os.sep + "MDData" + os.sep + blendname + os.sep
+        self.report({"INFO"},dir)
 
         if not os.path.exists(dir):
+            self.report({"INFO"},"キャンセルされました。")
             return {'CANCELLED'}
 
         files = os.listdir(dir)
         for file in files:
+            self.report({"INFO"},file)
             targetname = file
 
             if targetname in bpy.data.objects:
@@ -13520,6 +13527,7 @@ class FUJIWARATOOLBOX_487662(bpy.types.Operator):#オートインポート
 
                     #インポート
                     import_mdresult(self,dir + file + os.sep + "result.obj")
+
 
         ##存在確認
         #dir = os.path.dirname(bpy.data.filepath) + os.sep + "MDData" + os.sep
@@ -13594,7 +13602,7 @@ class FUJIWARATOOLBOX_902822(bpy.types.Operator):#MD作業ファイル準備
 
     def execute(self, context):
         if "_MDWork" not in bpy.data.filepath:
-            bpy.ops.object.fjw.openlinkedfolder()
+            bpy.ops.object.fjw_openlinkedfolder() #asset manager依存だからよくない…
 
             #bpy.ops.wm.save_mainfile()
             fjw.framejump(10)
