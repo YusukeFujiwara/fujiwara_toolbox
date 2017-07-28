@@ -13406,7 +13406,6 @@ class FUJIWARATOOLBOX_302662(bpy.types.Operator):#オートアバター
         
         #print("armdata:****************")
         #print(armdata)
-                      
         fjw.framejump(10)
 
 
@@ -13478,6 +13477,7 @@ class FUJIWARATOOLBOX_302662(bpy.types.Operator):#オートアバター
 
         #終了
         bpy.ops.fujiwara_toolbox.command_628306()
+        print("finish")
 
         return {'FINISHED'}
 ########################################
@@ -13625,6 +13625,8 @@ class FUJIWARATOOLBOX_902822(bpy.types.Operator):#MD作業ファイル準備
             #proxyの全削除
             prxs = fjw.find_list("_proxy")
             fjw.delete(prxs)
+
+            bpy.context.space_data.show_only_render = False
 
         return {'FINISHED'}
 ########################################
