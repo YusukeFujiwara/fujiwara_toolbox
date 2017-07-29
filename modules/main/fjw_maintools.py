@@ -13526,6 +13526,8 @@ class FUJIWARATOOLBOX_487662(bpy.types.Operator):#オートインポート
                     armu.activate(geo)
                     fjw.mode("POSE")
 
+                    self.report({"INFO"},dir + file)
+
                     #インポート
                     import_mdresult(self,dir + file + os.sep + "result.obj")
 
@@ -13814,8 +13816,9 @@ def export_mdavatar(self, dir, name, openfolder=True):
         bpy.ops.export_shape.mdd(filepath= dir + os.sep + name + ".mdd", fps=6,frame_start=1,frame_end=10)
 
         #結果用の空ファイルを作っておく
-        f = open(dir + "result.obj","w")
-        f.close()
+        if not os.path.exists(dir+"result.obj"):
+            f = open(dir + "result.obj","w")
+            f.close()
 
         #出力フォルダを開く
         if openfolder:

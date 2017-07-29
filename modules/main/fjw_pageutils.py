@@ -613,6 +613,15 @@ class openprevcell(bpy.types.Operator):
 
         #保存
         bpy.ops.wm.save_mainfile()
+
+        fjw.globalview()
+        #レンダリング
+        selfname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
+        dir = os.path.dirname(bpy.data.filepath)
+        #レンダ設定
+        renderpath = dir + os.sep + "pageutils" + os.sep + "img" + os.sep + selfname + ".png"
+        render(renderpath,True)
+
         #ページファイルを開く
         bpy.ops.wm.open_mainfile(filepath=target)
         return {"FINISHED"}
@@ -636,6 +645,15 @@ class opennextcell(bpy.types.Operator):
 
         #保存
         bpy.ops.wm.save_mainfile()
+
+        fjw.globalview()
+        #レンダリング
+        selfname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
+        dir = os.path.dirname(bpy.data.filepath)
+        #レンダ設定
+        renderpath = dir + os.sep + "pageutils" + os.sep + "img" + os.sep + selfname + ".png"
+        render(renderpath,True)
+
         #ページファイルを開く
         bpy.ops.wm.open_mainfile(filepath=target)
         return {"FINISHED"}
