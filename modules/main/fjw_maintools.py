@@ -2888,6 +2888,9 @@ class FUJIWARATOOLBOX_266402(bpy.types.Operator):#ベースセットアップ
 #########################################
 
 
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
 
 ########################################
 #漫画シェーダ
@@ -2947,6 +2950,69 @@ class FUJIWARATOOLBOX_117769(bpy.types.Operator):#漫画シェーダ
         fjw.select(objects)
         return {'FINISHED'}
 ########################################
+
+
+
+########################################
+#スペキュラなし
+########################################
+#bpy.ops.fjw.comic_shader_nospec() #スペキュラなし
+class FUJIWARATOOLBOX_comic_shader_nospec(bpy.types.Operator):
+    """スペキュラなしの漫画シェーダ。"""
+    bl_idname = "fujiwara_toolbox.comic_shader_nospec"
+    bl_label = "スペキュラなし"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        objects = fjw.get_selected_list()
+        for obj in objects:
+            if obj.type != "MESH":
+                continue
+            if len(obj.data.materials) == 0:
+                mat = bpy.data.materials.new(name="モノクロマテリアル")
+                obj.data.materials.append(mat)
+            for mat in obj.data.materials:
+                #既にノードがオンの場合データ消えるとマズいから警告だして終了する
+                #if mat.use_nodes:
+                #    continue
+                #→破棄でいいや
+                #裏ポリはスキップ！！
+                if "裏ポリエッジ" in mat.name:
+                    continue
+                
+                mat.use_shadeless = True
+                ntu = fjw.NodetreeUtils(mat)
+                ntu.activate()
+                ntu.cleartree()
+
+                ng_comic = ntu.group_instance(fjw.append_nodetree("漫画シェーダ_スペキュラなし"))
+
+                #マテリアルノード
+                n_mat = ntu.add("ShaderNodeMaterial","Material")
+                #自身のマテリアルを指定
+                n_mat.material = mat
+
+                #出力
+                n_out = ntu.add("ShaderNodeOutput","Output")
+
+                #接続
+                ntu.link(n_mat.outputs["Color"], ng_comic.inputs["Color"])
+                ntu.link(n_mat.outputs["Normal"], ng_comic.inputs["Normal"])
+
+                ntu.link(ng_comic.outputs["Color"], n_out.inputs["Color"])
+
+                ntu.link(n_mat.outputs["Alpha"], n_out.inputs["Alpha"])
+
+
+                pass
+        fjw.select(objects)
+        return {'FINISHED'}
+########################################
+
+
 
 
 
