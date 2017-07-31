@@ -2888,6 +2888,9 @@ class FUJIWARATOOLBOX_266402(bpy.types.Operator):#ベースセットアップ
 #########################################
 
 
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
 
 ########################################
 #漫画シェーダ
@@ -2947,6 +2950,69 @@ class FUJIWARATOOLBOX_117769(bpy.types.Operator):#漫画シェーダ
         fjw.select(objects)
         return {'FINISHED'}
 ########################################
+
+
+
+########################################
+#スペキュラなし
+########################################
+#bpy.ops.fjw.comic_shader_nospec() #スペキュラなし
+class FUJIWARATOOLBOX_comic_shader_nospec(bpy.types.Operator):
+    """スペキュラなしの漫画シェーダ。"""
+    bl_idname = "fujiwara_toolbox.comic_shader_nospec"
+    bl_label = "スペキュラなし"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        objects = fjw.get_selected_list()
+        for obj in objects:
+            if obj.type != "MESH":
+                continue
+            if len(obj.data.materials) == 0:
+                mat = bpy.data.materials.new(name="モノクロマテリアル")
+                obj.data.materials.append(mat)
+            for mat in obj.data.materials:
+                #既にノードがオンの場合データ消えるとマズいから警告だして終了する
+                #if mat.use_nodes:
+                #    continue
+                #→破棄でいいや
+                #裏ポリはスキップ！！
+                if "裏ポリエッジ" in mat.name:
+                    continue
+                
+                mat.use_shadeless = True
+                ntu = fjw.NodetreeUtils(mat)
+                ntu.activate()
+                ntu.cleartree()
+
+                ng_comic = ntu.group_instance(fjw.append_nodetree("漫画シェーダ_スペキュラなし"))
+
+                #マテリアルノード
+                n_mat = ntu.add("ShaderNodeMaterial","Material")
+                #自身のマテリアルを指定
+                n_mat.material = mat
+
+                #出力
+                n_out = ntu.add("ShaderNodeOutput","Output")
+
+                #接続
+                ntu.link(n_mat.outputs["Color"], ng_comic.inputs["Color"])
+                ntu.link(n_mat.outputs["Normal"], ng_comic.inputs["Normal"])
+
+                ntu.link(ng_comic.outputs["Color"], n_out.inputs["Color"])
+
+                ntu.link(n_mat.outputs["Alpha"], n_out.inputs["Alpha"])
+
+
+                pass
+        fjw.select(objects)
+        return {'FINISHED'}
+########################################
+
+
 
 
 
@@ -3100,10 +3166,15 @@ class FUJIWARATOOLBOX_979047(bpy.types.Operator):#GLレンダ（ビューポー�
 
     def execute(self, context):
         viewstate = fjw.ViewState()
+        if bpy.context.scene.render.simplify_subdivision < 2:
+            bpy.context.scene.render.simplify_subdivision = 2
+
+        #下書き非表示
+        bpy.context.space_data.show_background_images = False
 
         #グリペンレイヤ
         if bpy.context.scene.grease_pencil is not None:
-            gplayers = bpy.context.scene.grease_pencil.layers | None
+            gplayers = bpy.context.scene.grease_pencil.layers
             if "下書き" in gplayers:
                 bpy.context.scene.grease_pencil.layers["下書き"].hide = True
             #gpcurrent = bpy.context.scene.grease_pencil.layers.active
@@ -3111,11 +3182,6 @@ class FUJIWARATOOLBOX_979047(bpy.types.Operator):#GLレンダ（ビューポー�
             for gplayer in gplayers:
                 if not gplayer.hide:
                     gpline_change(gplayer, 20)
-
-        #ランプドロップシャドウ非表示
-        for lamp in bpy.data.lamps:
-            lamp.use_shadow = False
-
 
         #半透明非表示
         for obj in bpy.data.objects:
@@ -3129,11 +3195,11 @@ class FUJIWARATOOLBOX_979047(bpy.types.Operator):#GLレンダ（ビューポー�
         selfname = fjw.blendname() + "_layerAll_OpenGL_B_NonTranpsarent"
         render_opengl(selfname)
         viewstate.restore_viewstate()
-
-
+        del viewstate
 
         selfname = fjw.blendname() + "_layerAll_OpenGL_A_Main"
         render_opengl(selfname,True)
+
 
         return {'FINISHED'}
 ########################################
@@ -5278,7 +5344,7 @@ uiitem().horizontal()
 #SUN設置
 ########################################
 class FUJIWARATOOLBOX_96315(bpy.types.Operator):#SUN設置
-    """SUN設置"""
+    """SUN設置。ドロップシャドウの見た目はゲームエンジンにて設定できる。"""
     bl_idname = "fujiwara_toolbox.command_96315"
     bl_label = "SUN設置"
     bl_options = {'REGISTER', 'UNDO'}
@@ -5288,13 +5354,18 @@ class FUJIWARATOOLBOX_96315(bpy.types.Operator):#SUN設置
 
     def execute(self, context):
         fjw.mode("OBJECT")
-        bpy.ops.object.lamp_add(type='SUN', radius=1, view_align=False, location=(0, -6, 6), layers=(True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False))
+        loc = (-1, -1, 2)
+        bpy.ops.object.lamp_add(type='SUN', radius=1, view_align=False, location=loc, layers=(True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False))
         obj = bpy.context.scene.objects.active
         obj.rotation_euler[0] = 0.691299
         obj.rotation_euler[1] = 0
         obj.rotation_euler[2] = 0.487015
         obj.data.shadow_method = 'RAY_SHADOW'
 
+        obj.data.ge_shadow_buffer_type = 'VARIANCE'
+        obj.data.shadow_buffer_size = 4096
+        obj.data.shadow_buffer_bias = 0.1
+        obj.data.shadow_buffer_bleed_bias = 0.55
         
         
         return {'FINISHED'}
@@ -5476,6 +5547,30 @@ class FUJIWARATOOLBOX_682004(bpy.types.Operator):#ランプ全レイヤ化
 
         return {'FINISHED'}
 ########################################
+
+
+
+# ########################################
+# #全ドロップシャドウオフ
+# ########################################
+# #bpy.ops.fjw.disable_all_dropshadow() #全ドロップシャドウオフ
+# class FUJIWARATOOLBOX_disable_all_dropshadow(bpy.types.Operator):
+#     """すべてのランプのドロップシャドウを無効化する"""
+#     bl_idname = "fujiwara_toolbox.disable_all_dropshadow"
+#     bl_label = "全ドロップシャドウオフ"
+#     bl_options = {'REGISTER', 'UNDO'}
+
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+#     def execute(self, context):
+#         for lamp in bpy.data.lamps:
+#             lamp.shadow_method = 'NOSHADOW'
+
+#         return {'FINISHED'}
+# ########################################
+
+
 
 
 
@@ -13377,7 +13472,6 @@ class FUJIWARATOOLBOX_302662(bpy.types.Operator):#オートアバター
         
         #print("armdata:****************")
         #print(armdata)
-                      
         fjw.framejump(10)
 
 
@@ -13449,6 +13543,7 @@ class FUJIWARATOOLBOX_302662(bpy.types.Operator):#オートアバター
 
         #終了
         bpy.ops.fujiwara_toolbox.command_628306()
+        print("finish")
 
         return {'FINISHED'}
 ########################################
@@ -13472,12 +13567,15 @@ class FUJIWARATOOLBOX_487662(bpy.types.Operator):#オートインポート
         #存在確認
         blendname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
         dir = os.path.dirname(bpy.data.filepath) + os.sep + "MDData" + os.sep + blendname + os.sep
+        self.report({"INFO"},dir)
 
         if not os.path.exists(dir):
+            self.report({"INFO"},"キャンセルされました。")
             return {'CANCELLED'}
 
         files = os.listdir(dir)
         for file in files:
+            self.report({"INFO"},file)
             targetname = file
 
             if targetname in bpy.data.objects:
@@ -13494,8 +13592,11 @@ class FUJIWARATOOLBOX_487662(bpy.types.Operator):#オートインポート
                     armu.activate(geo)
                     fjw.mode("POSE")
 
+                    self.report({"INFO"},dir + file)
+
                     #インポート
                     import_mdresult(self,dir + file + os.sep + "result.obj")
+
 
         ##存在確認
         #dir = os.path.dirname(bpy.data.filepath) + os.sep + "MDData" + os.sep
@@ -13570,7 +13671,7 @@ class FUJIWARATOOLBOX_902822(bpy.types.Operator):#MD作業ファイル準備
 
     def execute(self, context):
         if "_MDWork" not in bpy.data.filepath:
-            bpy.ops.object.fjw.openlinkedfolder()
+            bpy.ops.object.fjw_openlinkedfolder() #asset manager依存だからよくない…
 
             #bpy.ops.wm.save_mainfile()
             fjw.framejump(10)
@@ -13592,6 +13693,8 @@ class FUJIWARATOOLBOX_902822(bpy.types.Operator):#MD作業ファイル準備
             #proxyの全削除
             prxs = fjw.find_list("_proxy")
             fjw.delete(prxs)
+
+            bpy.context.space_data.show_only_render = False
 
         return {'FINISHED'}
 ########################################
@@ -13779,8 +13882,9 @@ def export_mdavatar(self, dir, name, openfolder=True):
         bpy.ops.export_shape.mdd(filepath= dir + os.sep + name + ".mdd", fps=6,frame_start=1,frame_end=10)
 
         #結果用の空ファイルを作っておく
-        f = open(dir + "result.obj","w")
-        f.close()
+        if not os.path.exists(dir+"result.obj"):
+            f = open(dir + "result.obj","w")
+            f.close()
 
         #出力フォルダを開く
         if openfolder:
