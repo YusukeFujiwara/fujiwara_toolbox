@@ -13457,57 +13457,10 @@ class FUJIWARATOOLBOX_302662(bpy.types.Operator):#オートアバター
 
 
     def execute(self, context):
-        #だめっぽい
-        #個々に別ラインでバックグラウンドやらせてもいいかも
-
-        #ターゲットになるプロクシアーマチュアを選択している、という前提
-        #dataを見ればいい 同一のアーマチュアデータを参照している、で同定する
-        #selection = get_selected_list()
-
-        #armdata = []
-
-        #for obj in selection:
-        #    if obj.type == "ARMATURE":
-        #       armdata.append(obj.data.name)
-        
-        #print("armdata:****************")
-        #print(armdata)
         fjw.framejump(10)
 
-
         #MD作業ファイル準備
-        bpy.ops.fujiwara_toolbox.command_902822()
-
-        #bpy.context.scene.layers[0] = True
-        #for i in range(19):
-        #    bpy.context.scene.layers[i+1] = False
-        #for i in range(5):
-        #    bpy.context.scene.layers[i] = True
-
-        #mode("OBJECT")
-        #bpy.ops.object.select_all(action='SELECT')
-        #bpy.ops.object.duplicates_make_real(use_base_parent=True,use_hierarchy=True)
-        #bpy.ops.object.make_local(type='SELECT_OBDATA')
-
-        ##proxyの全削除
-        #prxs = find_list("_proxy")
-        #delete(prxs)
-
-
-        #bpy.ops.object.select_all(action='SELECT')
-
-
-        #selection = get_selected_list()
-        #for obj in selection:
-        #    if obj.type == "ARMATURE":
-        #        if obj.data.name in armdata:
-        #            targets.append(obj)
-        #            print(obj.data.name)
-        #deselect()
-        #select(targets)
-        #print(targets)
-        #bpy.ops.object.fjw.set_key()
-        #bpy.ops.wm.quit_blender()
+        bpy.ops.fujiwara_toolbox.setup_mdwork_blend()
 
         bpy.ops.object.select_all(action='SELECT')
         fjw.reject_notmesh()
@@ -13515,6 +13468,7 @@ class FUJIWARATOOLBOX_302662(bpy.types.Operator):#オートアバター
 
         targets = []
 
+        #カメラ内アーマチュアのピックアップ
         for obj in selection:
             if "Body" in obj.name:
                 modu = fjw.Modutils(obj)
@@ -13525,24 +13479,18 @@ class FUJIWARATOOLBOX_302662(bpy.types.Operator):#オートアバター
                         #targets.append(obj)
                         targets.append(armt.object)
 
+        # ターゲットへの実行
         for obj in targets:
             if obj == None:
                 continue
             fjw.deselect()
             fjw.activate(obj)
             if obj.type == "ARMATURE":
-                bpy.ops.object.framejump_10()
-                bpy.ops.object.set_key()
-            #MDDataに出力
-            #bpy.ops.fujiwara_toolbox.command_347662()
+                fjw.framejump(10)
+                bpy.ops.fujiwara_toolbox.set_key()
         
-        ##元ファイルを開き直してdone
-        #    #subprocess.Popen("EXPLORER " + bpy.data.filepath)
-        #    #ばーっとひらいてつぎつぎ、というやり方にする ただとじる
-        #    bpy.ops.wm.quit_blender()
-
         #終了
-        bpy.ops.fujiwara_toolbox.command_628306()
+        bpy.ops.fujiwara_toolbox.exit_mdwork()
         print("finish")
 
         return {'FINISHED'}
@@ -13661,7 +13609,7 @@ uiitem().horizontal()
 ########################################
 class FUJIWARATOOLBOX_902822(bpy.types.Operator):#MD作業ファイル準備
     """MD作業ファイル準備"""
-    bl_idname = "fujiwara_toolbox.command_902822"
+    bl_idname = "fujiwara_toolbox.setup_mdwork_blend"
     bl_label = "MD作業ファイル準備"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -13730,7 +13678,7 @@ class FUJIWARATOOLBOX_179920(bpy.types.Operator):#元を開く（別窓）
 ########################################
 class FUJIWARATOOLBOX_401078(bpy.types.Operator):#戻る
     """戻る"""
-    bl_idname = "fujiwara_toolbox.command_401078"
+    bl_idname = "fujiwara_toolbox.return_from_mdwork"
     bl_label = "戻る"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -13755,7 +13703,7 @@ class FUJIWARATOOLBOX_401078(bpy.types.Operator):#戻る
 ########################################
 class FUJIWARATOOLBOX_628306(bpy.types.Operator):#終了
     """終了"""
-    bl_idname = "fujiwara_toolbox.command_628306"
+    bl_idname = "fujiwara_toolbox.exit_mdwork"
     bl_label = "終了"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -18505,104 +18453,96 @@ class FUJIWARATOOLBOX_823369(bpy.types.Operator):#AssetManager用キャラリン
 
 
 
+def setkey():
+    if fjw.active().type == "ARMATURE":
+        fjw.mode("POSE")
+    if fjw.active().mode == "OBJECT":
+        bpy.ops.anim.keyframe_insert_menu(type='LocRotScale')
+    if fjw.active().mode == "POSE":
+        bpy.ops.pose.select_all(action='SELECT')
+        bpy.ops.anim.keyframe_insert_menu(type='WholeCharacter')
+
+
+def export_mdavatar_to_mddata():
+    name = rootname
+    blendname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
+    blendname = blendname.replace("_MDWork","")
+    dir = os.path.dirname(bpy.data.filepath) + os.sep + "MDData" + os.sep
+    dir += blendname + os.sep + name + os.sep
+    export_mdavatar(self, dir, name, False)
+    
+def armature_autokey():
+    if fjw.active().type != "ARMATURE":
+        return
+
+    fjw.mode("POSE")
+
+    #アーマチュアのキーをオートで入れる
+    if bpy.context.scene.frame_current == 10:
+        rootname = fjw.get_root(fjw.active()).name
+
+        fjw.active().location = Vector((0,0,0))
+
+        setkey()
+
+        #フレーム10なら微調整じゃないのでオートフレーム。
+        armu = fjw.ArmatureUtils(fjw.active())
+
+        geoname = armu.findname("Geometry")
+        if geoname == None:
+            #head位置が0,0,0のものを探してやればいいのでは？
+            for ebone in fjw.active().data.bones:
+                if ebone.head == Vector((0,0,0)):
+                    geoname = ebone.name
+                    break
+
+        #それでもなければアクティブをジオメトリに使う
+        if geoname == None:
+            geoname = armu.poseactive().name
+        geo = armu.posebone(geoname)
+        armu.clearTrans([geo])
+
+        setkey()
+
+        fjw.framejump(1)
+        selection = armu.select_all()
+        armu.clearTrans(selection)
+
+        setkey()
+
+        #選択にズーム
+        bpy.ops.view3d.view_selected(use_all_regions=False)
+
+        #Bodyがあったらそのまま出力までやっちゃう
+        for child in fjw.active().children:
+            if child.type == "MESH":
+                if "Body" in child.name:
+                    fjw.activate(child)
+                    export_mdavatar_to_mddata()
+                    break
+        fjw.framejump(10)
+        pass
+    pass
+
 class set_key(bpy.types.Operator):
     """キーフレーム挿入"""
-    bl_idname = "object.set_key"
+    bl_idname = "fujiwara_toolbox.set_key"
     bl_label = "キーフレーム挿入"
 
-    def setkey(self, context):
-        if fjw.active().type == "ARMATURE":
-            fjw.mode("POSE")
-        if fjw.active().mode == "OBJECT":
-            bpy.ops.anim.keyframe_insert_menu(type='LocRotScale')
-        if fjw.active().mode == "POSE":
-            bpy.ops.pose.select_all(action='SELECT')
-            bpy.ops.anim.keyframe_insert_menu(type='WholeCharacter')
-
-
-    def armature_autokey(self,context):
-        if fjw.active().type != "ARMATURE":
-            return
-
-        fjw.mode("POSE")
-
-        #アーマチュアのキーをオートで入れる
-        if bpy.context.scene.frame_current == 10:
-            rootname = fjw.get_root(fjw.active()).name
-
-            #bpy.ops.object.parent_clear(type='CLEAR')
-            fjw.active().location = Vector((0,0,0))
-
-            self.setkey(context)
-
-            #フレーム10なら微調整じゃないのでオートフレーム。
-            armu = fjw.ArmatureUtils(fjw.active())
-
-            geoname = armu.findname("Geometry")
-            if geoname == None:
-                #head位置が0,0,0のものを探してやればいいのでは？
-                for ebone in fjw.active().data.bones:
-                    if ebone.head == Vector((0,0,0)):
-                        geoname = ebone.name
-                        break
-
-            #それでもなければアクティブをジオメトリに使う
-            if geoname == None:
-                geoname = armu.poseactive().name
-            geo = armu.posebone(geoname)
-            armu.clearTrans([geo])
-
-            self.setkey(context)
-
-            fjw.framejump(1)
-            selection = armu.select_all()
-            armu.clearTrans(selection)
-
-            self.setkey(context)
-
-            #選択にズーム
-            bpy.ops.view3d.view_selected(use_all_regions=False)
-
-            #Bodyがあったらそのまま出力までやっちゃう
-            for child in fjw.active().children:
-                if child.type == "MESH":
-                    if "Body" in child.name:
-                        fjw.activate(child)
-
-                        #dir = os.path.dirname(bpy.data.filepath) + os.sep +
-                        #"MDData" + os.sep
-                        #blendname =
-                        #os.path.splitext(os.path.basename(bpy.data.filepath))[0]
-                        #name = "avatar_" + blendname + "_" + rootname
-                        #name = name.replace("_MDWork","")
-                        name = rootname
-                        blendname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
-                        blendname = blendname.replace("_MDWork","")
-                        dir = os.path.dirname(bpy.data.filepath) + os.sep + "MDData" + os.sep
-                        dir += blendname + os.sep + name + os.sep
-                        export_mdavatar(self, dir, name, False)
-                        self.report({"INFO"},dir + name)
-                        break
-            fjw.framejump(10)
-            pass
-
-        pass
-    
     def execute(self, context):
         #複数対応
         selection = fjw.get_selected_list()
         for obj in selection:
             fjw.deselect()
             fjw.activate(obj)
-
-            self.setkey(context)
-            self.armature_autokey(context)
+            setkey()
+            armature_autokey()
         return {"FINISHED"}
 
 
 class framejump_1(bpy.types.Operator):
     """フレーム移動　1"""
-    bl_idname = "object.framejump_1"
+    bl_idname = "fujiwara_toolbox.framejump_1"
     bl_label = "1"
     
     def execute(self, context):
@@ -18613,7 +18553,7 @@ class framejump_1(bpy.types.Operator):
 
 class framejump_5(bpy.types.Operator):
     """フレーム移動　5"""
-    bl_idname = "object.framejump_5"
+    bl_idname = "fujiwara_toolbox.framejump_5"
     bl_label = "5"
     
     def execute(self, context):
@@ -18623,7 +18563,7 @@ class framejump_5(bpy.types.Operator):
 
 class framejump_10(bpy.types.Operator):
     """フレーム移動　10"""
-    bl_idname = "object.framejump_10"
+    bl_idname = "fujiwara_toolbox.framejump_10"
     bl_label = "10"
     
     def execute(self, context):
@@ -18633,7 +18573,7 @@ class framejump_10(bpy.types.Operator):
 
 class framejump_15(bpy.types.Operator):
     """フレーム移動　15"""
-    bl_idname = "object.framejump_15"
+    bl_idname = "fujiwara_toolbox.framejump_15"
     bl_label = "15"
     
     def execute(self, context):
@@ -18734,11 +18674,11 @@ def menu_func_VIEW3D_HT_header(self, context):
     if pref.mdframe_buttons:
         active = layout.row(align = True)
         active.prop(bpy.context.tool_settings, "use_keyframe_insert_auto", icon="REC", text="")
-        active.operator("object.framejump_1",icon="REW", text="")
-        active.operator("object.framejump_5",icon="SPACE3", text="")
-        active.operator("object.framejump_10",icon="FF", text="")
-        #active.operator("object.framejump_15",icon="TRIA_RIGHT_BAR", text="")
-        active.operator("object.set_key", icon="KEYINGSET", text="")
+        active.operator("fujiwara_toolbox.framejump_1",icon="REW", text="")
+        active.operator("fujiwara_toolbox.framejump_5",icon="SPACE3", text="")
+        active.operator("fujiwara_toolbox.framejump_10",icon="FF", text="")
+        #active.operator("fujiwara_toolbox.framejump_15",icon="TRIA_RIGHT_BAR", text="")
+        active.operator("fujiwara_toolbox.set_key", icon="KEYINGSET", text="")
 
     if pref.glrenderutils_buttons:
         active = layout.row(align = True)
