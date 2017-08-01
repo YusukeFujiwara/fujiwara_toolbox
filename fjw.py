@@ -387,6 +387,13 @@ class ArmatureUtils():
     def func(self):
         pass
 
+class ActionUtils():
+    action = None
+    def __init__(self, armature):
+        
+        return
+    
+
 
 class ActionConstraintUtils():
     armature = None

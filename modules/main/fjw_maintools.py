@@ -26,6 +26,8 @@ from mathutils import *
 # assetdir = fujiwara_toolbox.conf.assetdir
 assetdir = ""
 
+    
+
 #コードtips
 #
 #bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
@@ -515,16 +517,6 @@ class FUJIWARATOOLBOX_114105(bpy.types.Operator):#クリア
         
         return {'FINISHED'}
 ########################################
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -13403,6 +13395,139 @@ class CATEGORYBUTTON_425599(bpy.types.Operator):#MarvelousDesigner
 ########################################
 ################################################################################
 
+def export_mdavatar(dir, name, openfolder=True):
+    #アクティブオブジェクトのみ。
+    #メッシュ以外だったら戻る
+    obj = fjw.active()
+    if obj.type != "MESH":
+        return {'CANCELLED'}
+
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+
+    #簡略化2
+    bpy.context.scene.render.use_simplify = True
+    bpy.context.scene.render.simplify_subdivision = 2
+
+    #裏ポリエッジオフ
+    for mod in obj.modifiers:
+        if "裏ポリエッジ" in mod.name:
+            mod.show_viewport = False
+
+    #フレーム1に移動
+    bpy.ops.screen.frame_jump(end=False)
+    #obj出力
+    bpy.ops.export_scene.obj(filepath= dir + os.sep + name + ".obj", use_selection=True)
+    #PointCache出力
+    bpy.ops.export_shape.mdd(filepath= dir + os.sep + name + ".mdd", fps=6,frame_start=1,frame_end=10)
+
+    #結果用の空ファイルを作っておく
+    if not os.path.exists(dir+"result.obj"):
+        f = open(dir + "result.obj","w")
+        f.close()
+
+    #出力フォルダを開く
+    if openfolder:
+        os.system("EXPLORER " + dir)
+
+
+
+
+def setkey():
+    if fjw.active().type == "ARMATURE":
+        fjw.mode("POSE")
+    if fjw.active().mode == "OBJECT":
+        bpy.ops.anim.keyframe_insert_menu(type='LocRotScale')
+    if fjw.active().mode == "POSE":
+        bpy.ops.pose.select_all(action='SELECT')
+        bpy.ops.anim.keyframe_insert_menu(type='WholeCharacter')
+
+def delkey():
+    if fjw.active().type == "ARMATURE":
+        fjw.mode("POSE")
+    if fjw.active().mode == "OBJECT":
+        bpy.ops.anim.keyframe_delete_v3d()
+    if fjw.active().mode == "POSE":
+        bpy.ops.pose.select_all(action='SELECT')
+        bpy.ops.anim.keyframe_delete_v3d()
+    
+
+def get_mddatadir():
+    return os.path.dirname(bpy.data.filepath) + os.sep + "MDData"+ os.sep
+
+def export_mdavatar_to_mddata(name):
+    blendname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
+    blendname = blendname.replace("_MDWork","")
+    dir = get_mddatadir()
+    dir += blendname + os.sep + name + os.sep
+    export_mdavatar(dir, name, False)
+
+def export_active_body_mdavatar():
+    rootname = fjw.get_root(fjw.active()).name
+    fjw.framejump(1)
+    #Bodyがあったら出力
+    for child in fjw.active().children:
+        if child.type == "MESH":
+            if "Body" in child.name:
+                fjw.activate(child)
+                export_mdavatar_to_mddata(rootname)
+                break
+    fjw.framejump(10)
+
+
+def armature_autokey():
+    if fjw.active().type != "ARMATURE":
+        return
+
+    fjw.mode("POSE")
+
+    #アーマチュアのキーをオートで入れる
+    if bpy.context.scene.frame_current == 10:
+        rootname = fjw.get_root(fjw.active()).name
+
+        fjw.active().location = Vector((0,0,0))
+
+        setkey()
+
+        #フレーム10なら微調整じゃないのでオートフレーム。
+        armu = fjw.ArmatureUtils(fjw.active())
+
+        geoname = armu.findname("Geometry")
+        if geoname == None:
+            #head位置が0,0,0のものを探してやればいいのでは？
+            for ebone in fjw.active().data.bones:
+                if ebone.head == Vector((0,0,0)):
+                    geoname = ebone.name
+                    break
+
+        #それでもなければアクティブをジオメトリに使う
+        if geoname == None:
+            geoname = armu.poseactive().name
+        geo = armu.posebone(geoname)
+        armu.clearTrans([geo])
+
+        setkey()
+
+        fjw.framejump(1)
+        selection = armu.select_all()
+        armu.clearTrans(selection)
+
+        setkey()
+
+        #選択にズーム
+        bpy.ops.view3d.view_selected(use_all_regions=False)
+        fjw.framejump(10)
+
+        pass
+    pass
+
+
+
+
+
+
+
+
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
@@ -13417,32 +13542,7 @@ uiitem().horizontal()
 #---------------------------------------------
 
 
-#バックグラウンドじゃキーフレーム挿入できないんだった…
-#########################################
-##オートアバターBG
-#########################################
-#class FUJIWARATOOLBOX_747942(bpy.types.Operator):#オートアバターBG
-#    """オートアバターBG"""
-#    bl_idname = "fujiwara_toolbox.command_747942"
-#    bl_label = "オートアバターBG"
-#    bl_options = {'REGISTER', 'UNDO'}
-
-#    uiitem = uiitem()
-#    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-####    def execute(self, context):
-#        bpy.ops.wm.save_mainfile()
-#        exec_externalutils("autoMDAvatar.py")
-#        return {'FINISHED'}
-#########################################
-
-
-
-
-
-
-
+#バックグラウンドじゃキーフレーム挿入できないの留意
 ########################################
 #オートアバター
 ########################################
@@ -13488,6 +13588,7 @@ class FUJIWARATOOLBOX_302662(bpy.types.Operator):#オートアバター
             if obj.type == "ARMATURE":
                 fjw.framejump(10)
                 bpy.ops.fujiwara_toolbox.set_key()
+                export_active_body_mdavatar()
         
         #終了
         bpy.ops.fujiwara_toolbox.exit_mdwork()
@@ -13593,7 +13694,7 @@ uiitem().vertical()
 #---------------------------------------------
 
 ############################################################################################################################
-uiitem("セットアップ")
+uiitem("MDWorkファイル")
 ############################################################################################################################
 #---------------------------------------------
 uiitem().vertical()
@@ -13608,7 +13709,7 @@ uiitem().horizontal()
 #MD作業ファイル準備
 ########################################
 class FUJIWARATOOLBOX_902822(bpy.types.Operator):#MD作業ファイル準備
-    """MD作業ファイル準備"""
+    """Marvelous Designer作業用ファイル MDWork.blendを準備する。"""
     bl_idname = "fujiwara_toolbox.setup_mdwork_blend"
     bl_label = "MD作業ファイル準備"
     bl_options = {'REGISTER', 'UNDO'}
@@ -13729,114 +13830,44 @@ class FUJIWARATOOLBOX_628306(bpy.types.Operator):#終了
 uiitem().vertical()
 #---------------------------------------------
 
-########################################
-#選択プロクシから転送
-########################################
-class FUJIWARATOOLBOX_360702(bpy.types.Operator):#選択プロクシから転送
-    """選択プロクシから転送"""
-    bl_idname = "fujiwara_toolbox.command_360702"
-    bl_label = "選択プロクシから転送"
-    bl_options = {'REGISTER', 'UNDO'}
+# ########################################
+# #選択プロクシから転送
+# ########################################
+# class FUJIWARATOOLBOX_360702(bpy.types.Operator):#選択プロクシから転送
+#     """選択プロクシから転送"""
+#     bl_idname = "fujiwara_toolbox.command_360702"
+#     bl_label = "選択プロクシから転送"
+#     bl_options = {'REGISTER', 'UNDO'}
 
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="NLA_PUSHDOWN",mode="")
-
-
-    def execute(self, context):
-        armature = None
-        proxy = None
-        selection = fjw.get_selected_list()
-        for obj in selection:
-            if "_proxy" in obj.name:
-                proxy = obj
-            else:
-                armature = obj
-
-        #self.report({"INFO"},armature.name)
-        #self.report({"INFO"},proxy.name)
-        fjw.activate(armature)
-        fjw.mode("POSE")
-        bpy.ops.anim.keyframe_insert_menu(type='WholeCharacter')
-        armature.animation_data.action = proxy.animation_data.action
-        #currentframe = bpy.context.scene.frame_current
-        #if armature is not None and proxy is not None:
-        #    framejump(0)
-        #    TransferPose(proxy, armature)
-        #    framejump(5)
-        #    TransferPose(proxy, armature)
-        #    framejump(10)
-        #    TransferPose(proxy, armature)
-        #    framejump(15)
-        #    TransferPose(proxy, armature)
-        #    framejump(currentframe)
-        #    pass
-
-        return {'FINISHED'}
-########################################
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="NLA_PUSHDOWN",mode="")
 
 
+#     def execute(self, context):
+#         armature = None
+#         proxy = None
+#         selection = fjw.get_selected_list()
+#         for obj in selection:
+#             if "_proxy" in obj.name:
+#                 proxy = obj
+#             else:
+#                 armature = obj
+#         fjw.activate(armature)
+#         fjw.mode("POSE")
+#         bpy.ops.anim.keyframe_insert_menu(type='WholeCharacter')
+#         armature.animation_data.action = proxy.animation_data.action
+
+#         return {'FINISHED'}
+# ########################################
 
 
-
-
-
-
-
-
-
-
-
-
-
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
+# #---------------------------------------------
+# uiitem().vertical()
+# #---------------------------------------------
 
 ############################################################################################################################
 uiitem("obj+PointCache")
 ############################################################################################################################
-
-def export_mdavatar(self, dir, name, openfolder=True):
-        #アクティブオブジェクトのみ。
-        #メッシュ以外だったら戻る
-        obj = fjw.active()
-        if obj.type != "MESH":
-            self.report({"INFO"},"")
-            return {'CANCELLED'}
-
-        if not os.path.exists(dir):
-            os.makedirs(dir)
-
-        #簡略化2
-        bpy.context.scene.render.use_simplify = True
-        bpy.context.scene.render.simplify_subdivision = 2
-
-        #裏ポリエッジオフ
-        for mod in obj.modifiers:
-            if "裏ポリエッジ" in mod.name:
-                mod.show_viewport = False
-
-        #フレーム1に移動
-        bpy.ops.screen.frame_jump(end=False)
-        #obj出力
-        #dir = "G:" + os.sep + "MarvelousDesigner" + os.sep
-        #dir = fujiwara_toolbox.conf.MarvelousDesigner_dir
-        bpy.ops.export_scene.obj(filepath= dir + os.sep + name + ".obj", use_selection=True)
-
-        #PointCache出力
-        #bpy.ops.export_shape.pc2(filepath= dir + "avatar.pc2",
-        #check_existing=False, rot_x90=True, world_space=True,
-        #apply_modifiers=True, range_start=1, range_end=10, sampling='1')
-        bpy.ops.export_shape.mdd(filepath= dir + os.sep + name + ".mdd", fps=6,frame_start=1,frame_end=10)
-
-        #結果用の空ファイルを作っておく
-        if not os.path.exists(dir+"result.obj"):
-            f = open(dir + "result.obj","w")
-            f.close()
-
-        #出力フォルダを開く
-        if openfolder:
-            os.system("EXPLORER " + dir)
 
 
 ########################################
@@ -13853,7 +13884,7 @@ class FUJIWARATOOLBOX_738210(bpy.types.Operator):#アバター出力
 
 
     def execute(self, context):
-        export_mdavatar(self, fujiwara_toolbox.conf.MarvelousDesigner_dir, "avatar")
+        export_mdavatar(fujiwara_toolbox.conf.MarvelousDesigner_dir, "avatar")
         return {'FINISHED'}
 ########################################
 
@@ -13879,7 +13910,7 @@ class FUJIWARATOOLBOX_347662(bpy.types.Operator):#MDDataに出力
 
         name = "avatar_" + blendname + "_" + root.name
 
-        export_mdavatar(self, dir, name, False)
+        export_mdavatar(dir, name, False)
         return {'FINISHED'}
 ########################################
 
@@ -13975,1505 +14006,296 @@ class FUJIWARATOOLBOX_341922(bpy.types.Operator):#プロップ出力
 ########################################
 
 
-
-
-
-
-
-
-
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-############################################################################################################################
-uiitem("フレーム毎obj")
-############################################################################################################################
-
-########################################
-#アバター出力
-########################################
-class FUJIWARATOOLBOX_501373(bpy.types.Operator):#アバター出力
-    """アバター出力"""
-    bl_idname = "fujiwara_toolbox.command_501373"
-    bl_label = "アバター出力"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        #簡略化2
-        bpy.context.scene.render.use_simplify = True
-        bpy.context.scene.render.simplify_subdivision = 2
-
-        targetobj = fjw.active()
-
-        if targetobj.type == "EMPTY":
-            if targetobj.dupli_group != None:
-                dupliobjects = targetobj.dupli_group.objects
-                for obj in dupliobjects:
-                    #裏ポリエッジオフ
-                    for mod in obj.modifiers:
-                        if "裏ポリエッジ" in mod.name:
-                            mod.show_viewport = False
-                    #非表示オブジェクトをかたっぱしからunlink
-                    if obj.hide_render:
-                        dupliobjects.unlink(obj)
-
-        dir = fujiwara_toolbox.conf.MarvelousDesigner_dir
-        #フレーム0
-        bpy.ops.screen.frame_jump(end=False)
-        bpy.ops.screen.frame_offset(delta=-1)
-        #obj出力
-        bpy.ops.export_scene.obj(filepath= dir + "avatar_0.obj", use_selection=True)
-
-        #フレーム5
-        bpy.ops.screen.frame_jump(end=False)
-        bpy.ops.screen.frame_offset(delta=4)
-        #obj出力
-        bpy.ops.export_scene.obj(filepath= dir + "avatar_5.obj", use_selection=True)
-
-        #フレーム10
-        bpy.ops.screen.frame_jump(end=False)
-        bpy.ops.screen.frame_offset(delta=9)
-        #obj出力
-        bpy.ops.export_scene.obj(filepath= dir + "avatar_10.obj", use_selection=True)
-
-        #出力フォルダを開く
-        os.system("EXPLORER " + dir)
-
-        return {'FINISHED'}
-########################################
-
-
-
-
-
-
-
-
-
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
 
 
+# ############################################################################################################################
+# uiitem("ジェネラル")
+# ############################################################################################################################
+
+# ########################################
+# #base出力
+# ########################################
+# class FUJIWARATOOLBOX_518498(bpy.types.Operator):#base出力
+#     """base出力"""
+#     bl_idname = "fujiwara_toolbox.command_518498"
+#     bl_label = "base出力"
+#     bl_options = {'REGISTER', 'UNDO'}
+
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
+#     def execute(self, context):
+#         #アクティブオブジェクトをルートと仮定する
+#         #root = active()
 
 
-
-############################################################################################################################
-uiitem("ジェネラル")
-############################################################################################################################
-
-########################################
-#base出力
-########################################
-class FUJIWARATOOLBOX_518498(bpy.types.Operator):#base出力
-    """base出力"""
-    bl_idname = "fujiwara_toolbox.command_518498"
-    bl_label = "base出力"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        #アクティブオブジェクトをルートと仮定する
-        #root = active()
-
-
-        #現状保存
-        bpy.ops.wm.save_mainfile()
+#         #現状保存
+#         bpy.ops.wm.save_mainfile()
         
-        fjw.mode("OBJECT")
+#         fjw.mode("OBJECT")
         
-        #レイヤー全表示
-        bpy.context.scene.layers = [True for n in range(20)]
-        #複数親子選択
-        bpy.ops.fujiwara_toolbox.command_24259()
+#         #レイヤー全表示
+#         bpy.context.scene.layers = [True for n in range(20)]
+#         #複数親子選択
+#         bpy.ops.fujiwara_toolbox.command_24259()
 
 
-        selection = fjw.get_selected_list()
+#         selection = fjw.get_selected_list()
 
-        fjw.deselect()
+#         fjw.deselect()
         
-        #root.select = True
-        ##ジオメトリのトランスフォームを解除
-        #bpy.ops.object.location_clear()
-        #bpy.ops.object.rotation_clear()
+#         #root.select = True
+#         ##ジオメトリのトランスフォームを解除
         
-        #子アーマチュアを全てレスト位置に
-        for obj in selection:
-            if obj.type == "ARMATURE":
-                obj.data.pose_position = 'REST'
+#         #子アーマチュアを全てレスト位置に
+#         for obj in selection:
+#             if obj.type == "ARMATURE":
+#                 obj.data.pose_position = 'REST'
 
-        #全てシングル化
-        bpy.ops.object.make_single_user(type='ALL', object=True, obdata=True, material=False, texture=False, animation=False)
+#         #全てシングル化
+#         bpy.ops.object.make_single_user(type='ALL', object=True, obdata=True, material=False, texture=False, animation=False)
 
 
-        #ミラーとアーマチュアの適用
-        #オブジェクト側：アーマチュア適用
-        for obj in selection:
-            if obj.type == "MESH":
-                bpy.context.scene.objects.active = obj
-                for mod in obj.modifiers:
-                    if mod.type == "MIRROR":
-                        #アーマチュアより上位にあるミラーを適用しないと齟齬がでたので仕方なくミラー適用
-                        bpy.ops.object.modifier_apply(modifier=mod.name)
-                    if mod.type == "ARMATURE":
-                        #適用する
-                        self.report({"INFO"},obj.name + ":" + mod.name)
-                        try:
-                            bpy.ops.object.modifier_apply(modifier=mod.name)
-                            pass
-                        except  :
-                            pass
+#         #ミラーとアーマチュアの適用
+#         #オブジェクト側：アーマチュア適用
+#         for obj in selection:
+#             if obj.type == "MESH":
+#                 bpy.context.scene.objects.active = obj
+#                 for mod in obj.modifiers:
+#                     if mod.type == "MIRROR":
+#                         #アーマチュアより上位にあるミラーを適用しないと齟齬がでたので仕方なくミラー適用
+#                         bpy.ops.object.modifier_apply(modifier=mod.name)
+#                     if mod.type == "ARMATURE":
+#                         #適用する
+#                         self.report({"INFO"},obj.name + ":" + mod.name)
+#                         try:
+#                             bpy.ops.object.modifier_apply(modifier=mod.name)
+#                             pass
+#                         except  :
+#                             pass
                         
-                    if "裏ポリエッジ" in mod.name:
-                        bpy.ops.object.modifier_remove(modifier=mod.name)
-        ##親子解除
-        #select(selection)
-        #bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
+#                     if "裏ポリエッジ" in mod.name:
+#                         bpy.ops.object.modifier_remove(modifier=mod.name)
+#         ##親子解除
+#         #select(selection)
+#         #bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
 
-        #トランスフォームのアプライ
-        bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-        #ノーマルの再計算
-        bpy.ops.fujiwara_toolbox.command_590395()
+#         #トランスフォームのアプライ
+#         bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+#         #ノーマルの再計算
+#         bpy.ops.fujiwara_toolbox.command_590395()
         
-        #簡略化2
-        bpy.context.scene.render.use_simplify = True
-        bpy.context.scene.render.simplify_subdivision = 2
+#         #簡略化2
+#         bpy.context.scene.render.use_simplify = True
+#         bpy.context.scene.render.simplify_subdivision = 2
 
 
-        fjw.deselect()
-        fjw.select(selection)
-        fjw.reject_notmesh()
-        #ワイヤーフレーム除外
-        for obj in bpy.context.selected_objects:
-           if obj.type == "MESH":
-               if obj.draw_type == "WIRE":
-                   obj.select = False
-        #ノンレンダ除外
-        for obj in bpy.context.selected_objects:
-            if obj.hide_render == True:
-                   obj.select = False
+#         fjw.deselect()
+#         fjw.select(selection)
+#         fjw.reject_notmesh()
+#         #ワイヤーフレーム除外
+#         for obj in bpy.context.selected_objects:
+#            if obj.type == "MESH":
+#                if obj.draw_type == "WIRE":
+#                    obj.select = False
+#         #ノンレンダ除外
+#         for obj in bpy.context.selected_objects:
+#             if obj.hide_render == True:
+#                    obj.select = False
 
 
 
 
-        dir = fujiwara_toolbox.conf.MarvelousDesigner_dir
-        bpy.ops.export_scene.obj(filepath=dir + "base.obj", use_selection=True,)
+#         dir = fujiwara_toolbox.conf.MarvelousDesigner_dir
+#         bpy.ops.export_scene.obj(filepath=dir + "base.obj", use_selection=True,)
         
-        #開きなおし
-        bpy.ops.wm.revert_mainfile(use_scripts=True)
+#         #開きなおし
+#         bpy.ops.wm.revert_mainfile(use_scripts=True)
         
-        return {'FINISHED'}
-########################################
+#         return {'FINISHED'}
+# ########################################
 
 
 
-########################################
-#poseTo出力
-########################################
-class FUJIWARATOOLBOX_178092(bpy.types.Operator):#poseTo出力
-    """poseTo出力"""
-    bl_idname = "fujiwara_toolbox.command_178092"
-    bl_label = "poseTo出力"
-    bl_options = {'REGISTER', 'UNDO'}
+# ########################################
+# #poseTo出力
+# ########################################
+# class FUJIWARATOOLBOX_178092(bpy.types.Operator):#poseTo出力
+#     """poseTo出力"""
+#     bl_idname = "fujiwara_toolbox.command_178092"
+#     bl_label = "poseTo出力"
+#     bl_options = {'REGISTER', 'UNDO'}
 
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    def execute(self, context):
-        root = fjw.active()
+#     def execute(self, context):
+#         root = fjw.active()
 
-        #現状保存
-        bpy.ops.wm.save_mainfile()
+#         #現状保存
+#         bpy.ops.wm.save_mainfile()
         
-        fjw.mode("OBJECT")
+#         fjw.mode("OBJECT")
 
-        #レイヤー全表示
-        bpy.context.scene.layers = [True for n in range(20)]
-        #複数親子選択
-        bpy.ops.fujiwara_toolbox.command_24259()
+#         #レイヤー全表示
+#         bpy.context.scene.layers = [True for n in range(20)]
+#         #複数親子選択
+#         bpy.ops.fujiwara_toolbox.command_24259()
 
 
-        selection = fjw.get_selected_list()
+#         selection = fjw.get_selected_list()
 
-        regist_pose("PoseTo",selection)
-        fjw.activate(root)
-        bpy.ops.wm.save_mainfile()
-        fjw.mode("OBJECT")
+#         regist_pose("PoseTo",selection)
+#         fjw.activate(root)
+#         bpy.ops.wm.save_mainfile()
+#         fjw.mode("OBJECT")
 
-        fjw.deselect()
+#         fjw.deselect()
         
-        fjw.activate(root)
-        root.select = True
-        #ジオメトリのトランスフォームを解除
-        bpy.ops.object.location_clear()
-#        bpy.ops.object.rotation_clear()
+#         fjw.activate(root)
+#         root.select = True
+#         #ジオメトリのトランスフォームを解除
+#         bpy.ops.object.location_clear()
+# #        bpy.ops.object.rotation_clear()
         
-        #ジオメトリの子を選択
-        fjw.select(selection)
+#         #ジオメトリの子を選択
+#         fjw.select(selection)
         
-        #全てシングル化
-        bpy.ops.object.make_single_user(type='ALL', object=True, obdata=True, material=False, texture=False, animation=False)
+#         #全てシングル化
+#         bpy.ops.object.make_single_user(type='ALL', object=True, obdata=True, material=False, texture=False, animation=False)
         
-        #ミラーとアーマチュアの適用
-        #オブジェクト側：アーマチュア適用
-        for obj in selection:
-            if obj.type == "MESH":
-                bpy.context.scene.objects.active = obj
-                for mod in obj.modifiers:
-                    if mod.type == "MIRROR":
-                        #アーマチュアより上位にあるミラーを適用しないと齟齬がでたので仕方なくミラー適用
-                        bpy.ops.object.modifier_apply(modifier=mod.name)
-                    if mod.type == "ARMATURE":
-                        #適用する
-                        self.report({"INFO"},obj.name + ":" + mod.name)
-                        try:
-                            bpy.ops.object.modifier_apply(modifier=mod.name)
-                            pass
-                        except  :
-                            pass
+#         #ミラーとアーマチュアの適用
+#         #オブジェクト側：アーマチュア適用
+#         for obj in selection:
+#             if obj.type == "MESH":
+#                 bpy.context.scene.objects.active = obj
+#                 for mod in obj.modifiers:
+#                     if mod.type == "MIRROR":
+#                         #アーマチュアより上位にあるミラーを適用しないと齟齬がでたので仕方なくミラー適用
+#                         bpy.ops.object.modifier_apply(modifier=mod.name)
+#                     if mod.type == "ARMATURE":
+#                         #適用する
+#                         self.report({"INFO"},obj.name + ":" + mod.name)
+#                         try:
+#                             bpy.ops.object.modifier_apply(modifier=mod.name)
+#                             pass
+#                         except  :
+#                             pass
                         
-                    if "裏ポリエッジ" in mod.name:
-                        bpy.ops.object.modifier_remove(modifier=mod.name)
-        #親子解除
-        #for obj in bpy.context.selected_objects:
-        #    bpy.context.scene.objects.active = obj
-        #    bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
+#                     if "裏ポリエッジ" in mod.name:
+#                         bpy.ops.object.modifier_remove(modifier=mod.name)
+#         #親子解除
+#         #for obj in bpy.context.selected_objects:
+#         #    bpy.context.scene.objects.active = obj
+#         #    bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
         
-        #トランスフォームのアプライ
-        bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-        #ノーマルの再計算
-        bpy.ops.fujiwara_toolbox.command_590395()
+#         #トランスフォームのアプライ
+#         bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+#         #ノーマルの再計算
+#         bpy.ops.fujiwara_toolbox.command_590395()
         
-        #簡略化2
-        bpy.context.scene.render.use_simplify = True
-        bpy.context.scene.render.simplify_subdivision = 2
-
-
-        fjw.deselect()
-        fjw.select(selection)
-        fjw.reject_notmesh()
-        #ワイヤーフレーム除外
-        for obj in bpy.context.selected_objects:
-           if obj.type == "MESH":
-               if obj.draw_type == "WIRE":
-                   obj.select = False
-        #ノンレンダ除外
-        for obj in bpy.context.selected_objects:
-            if obj.hide_render == True:
-                   obj.select = False
-
-        dir = fujiwara_toolbox.conf.MarvelousDesigner_dir
-        bpy.ops.export_scene.obj(filepath=dir + "poseTo.obj", use_selection=True,)
-
-        
-        #開きなおし
-        bpy.ops.wm.revert_mainfile(use_scripts=True)
-        
-        return {'FINISHED'}
-########################################
-
-def import_mdresult(self,resultpath):
-        current = fjw.active()
-
-        loc = Vector((0,0,0))
-        qrot = Quaternion()
-
-        #もしボーンが選択されていたらそのボーンにトランスフォームをあわせる
-        if current.mode == "POSE":
-            armu = fjw.ArmatureUtils(current)
-            pbone = armu.poseactive()
-            loc = current.matrix_world * pbone.location
-            qrot = pbone.rotation_quaternion
-
-            #boneはYupなので入れ替え
-            loc = Vector((loc.x,loc.z * -1,loc.y))
-            qrot = Quaternion((qrot.w, qrot.x, qrot.z * -1, qrot.y))
-
-        fjw.mode("OBJECT")
-
-        bpy.ops.import_scene.obj(filepath=resultpath)
-        #インポート後処理
-        #回転を適用
-        bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
-
-        selection = fjw.get_selected_list()
-        for obj in selection:
-           if obj.type == "MESH":
-                bpy.context.scene.objects.active = obj
-                bpy.ops.object.mode_set(mode='EDIT', toggle=False)
-                bpy.ops.mesh.remove_doubles()
-                bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-                
-                #服はエッジ出ない方がいい 裏ポリで十分
-                for slot in obj.material_slots:
-                    mat = slot.material
-                    mat.use_transparency = True
-                    mat.transparency_method = 'RAYTRACE'
-
-
-                obj.location = loc
-                obj.rotation_quaternion = obj.rotation_quaternion * qrot
-                obj.rotation_euler = obj.rotation_quaternion.to_euler()
-        
-                #読み先にレイヤーをそろえる
-                obj.layers = current.layers
-        
-        #裏ポリエッジ付加
-        bpy.ops.fujiwara_toolbox.command_318722()
-
-
-########################################
-#インポート
-########################################
-class FUJIWARATOOLBOX_86482(bpy.types.Operator):#インポート
-    """インポート"""
-    bl_idname = "fujiwara_toolbox.command_86482"
-    bl_label = "インポート"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        dir = fujiwara_toolbox.conf.MarvelousDesigner_dir
-        import_mdresult(self,dir + "result.obj")
-
-#        current = active()
-
-#        loc = Vector((0,0,0))
-#        qrot = Quaternion()
-
-#        #もしボーンが選択されていたらそのボーンにトランスフォームをあわせる
-#        if current.mode == "POSE":
-#            armu = ArmatureUtils(current)
-#            pbone = armu.poseactive()
-#            loc = current.matrix_world * pbone.location
-#            qrot = pbone.rotation_quaternion
-
-#            #boneはYupなので入れ替え
-#            loc = Vector((loc.x,loc.z*-1,loc.y))
-#            qrot = Quaternion((qrot.w, qrot.x, qrot.z*-1, qrot.y))
-
-#        #bpy.ops.view3d.snap_cursor_to_selected()
-#        #loc = bpy.context.space_data.cursor_location
-#        ##loc = current.location
-#        #rot = current.rotation_euler
-        
-#        #append_nodetree("服 汎用システム")
-#        #append_nodetree("二値・グレー化")
-
-#        mode("OBJECT")
-
-#        dir = fujiwara_toolbox.conf.MarvelousDesigner_dir
-#        bpy.ops.import_scene.obj(filepath=dir + "result.obj")
-#        #インポート後処理
-#        #回転を適用
-#        bpy.ops.object.transform_apply(location=False, rotation=True,
-#        scale=False)
-
-#        selection = get_selected_list()
-#        for obj in selection:
-#           if obj.type == "MESH":
-#                bpy.context.scene.objects.active = obj
-#                bpy.ops.object.mode_set(mode='EDIT', toggle=False)
-#                bpy.ops.mesh.remove_doubles()
-#                bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-                
-#                #obj.layers = current.layers
-
-#                #bpy.ops.object.modifier_add(type='SUBSURF')
-#                #bpy.context.object.modifiers["Subsurf"].levels = 0
-#                #bpy.context.object.modifiers["Subsurf"].render_levels = 2
-#                for slot in obj.material_slots:
-#                    mat = slot.material
-#                    mat.use_transparency = False
-
-#                obj.location = loc
-#                obj.rotation_quaternion = obj.rotation_quaternion * qrot
-#                obj.rotation_euler = obj.rotation_quaternion.to_euler()
-        
-#                #読み先にレイヤーをそろえる
-#                obj.layers = current.layers
-        
-#        #いらんかも。
-#        #for obj in selection:
-#        # if obj.type == "MESH":
-#        # activate(obj)
-
-#        # #マテリアルに服シェーダをアタッチする
-#        # if "服 汎用システム" in bpy.data.node_groups:
-#        # for mat in obj.data.materials:
-#        # ng_clothshader = bpy.data.node_groups["服 汎用システム"]
-
-#        # mat.use_nodes = True
-#        # mat.use_shadeless = True
-#        # tree = mat.node_tree
-#        # links = tree.links
-
-#        # #ノードのクリア
-#        # for node in tree.nodes:
-#        # tree.nodes.remove(node)
-
-#        # #マテリアルノード
-#        # n_mat = tree.nodes.new("ShaderNodeMaterial")
-#        # #自身のマテリアルを指定
-#        # n_mat.material = mat
-#        # n_mat.location = (0,200)
-
-#        # n_group = tree.nodes.new("ShaderNodeGroup")
-#        # n_group.node_tree = ng_clothshader
-
-#        # #出力
-#        # n_out = tree.nodes.new("ShaderNodeOutput")
-#        # n_out.location = (500,200)
-
-
-#        # #接続
-#        # tree.links.new(n_mat.outputs["Color"], n_group.inputs["Color1"])
-#        # tree.links.new(n_group.outputs["Color"], n_out.inputs["Color"])
-
-
-#                #回転をあわせる
-##                obj.rotation_euler = rot
-#                #位置をあわせる
-#                #bpy.ops.transform.translate(value=(loc[0], loc[1], loc[2]),
-#                constraint_axis=(False, False, False),
-#                constraint_orientation='GLOBAL', mirror=False,
-#                proportional='DISABLED', proportional_edit_falloff='SMOOTH',
-#                proportional_size=1)
-#                #原点位置であってる シミュレーションで問題でる？が、どうしようもない
-        
-        
-#        #裏ポリエッジ付加
-#        bpy.ops.fujiwara_toolbox.command_318722()
-
-            
-
-#        #deselect()
-#        #select(selection)
-#        ##オープンエッジの線画化
-#        #bpy.ops.fujiwara_toolbox.command_141722()
-#        #deselect()
-
-#        #ジオメトリの子にする
-#        #activate(current)
-#        #bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
-        
-#        #オブジェクトを単一レイヤー化する
-#        #for obj in bpy.data.objects:
-#        #for obj in selection:
-#        # for l in range(19,0,-1):
-#        # obj.layers[l] = False
-        
-        return {'FINISHED'}
-########################################
-
-
-
-############################################################################################################################
-uiitem("マテリアル")
-############################################################################################################################
-
-########################################
-#インポート用マテリアルフォルダを開く
-########################################
-class FUJIWARATOOLBOX_902107(bpy.types.Operator):#インポート用マテリアルフォルダを開く
-    """インポート用マテリアルフォルダを開く"""
-    bl_idname = "fujiwara_toolbox.command_902107"
-    bl_label = "インポート用マテリアルフォルダを開く"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        dir = fujiwara_toolbox.conf.assetdir + os.sep + "ノード"
-        os.system("EXPLORER " + dir)
-
-        return {'FINISHED'}
-########################################
-
-
-
-########################################
-#マテリアル・ノードクリンアップ
-########################################
-class FUJIWARATOOLBOX_56507(bpy.types.Operator):#マテリアル・ノードクリンアップ
-    """マテリアル・ノードクリンアップ"""
-    bl_idname = "fujiwara_toolbox.command_56507"
-    bl_label = "マテリアル・ノードクリンアップ"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        for nodetree in bpy.data.node_groups:
-            if "服　汎用システム" in nodetree.name:
-                bpy.data.node_groups.remove(nodetree,True)
-        return {'FINISHED'}
-########################################
-
-
-
-
-
-
-
-
-
-
-
-
-
-############################################################################################################################
-uiitem("旧素体システム")
-############################################################################################################################
-
-########################################
-#base出力
-########################################
-class FUJIWARATOOLBOX_849795(bpy.types.Operator):#base出力
-    """base出力。保存して開き直すので注意"""
-    bl_idname = "fujiwara_toolbox.command_849795"
-    bl_label = "base出力"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-    
-    def execute(self, context):
-        if "ジオメトリ" not in bpy.context.scene.objects.active.name:
-            self.report({"INFO"},"素体ジオメトリを指定してください")
-            return {'FINISHED'}
-        #現状保存
-        bpy.ops.wm.save_mainfile()
-        
-        
-        
-        geo = bpy.context.scene.objects.active
-        
-        for obj in bpy.context.selected_objects:
-            obj.select = False
-        
-        geo.select = True
-        #ジオメトリのトランスフォームを解除
-        bpy.ops.object.location_clear()
-        bpy.ops.object.rotation_clear()
-        bpy.ops.transform.translate(value=(0, 0, 0), constraint_axis=(False, True, False), constraint_orientation='LOCAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1, release_confirm=True)
-        
-        
-        #ジオメトリの子を選択
-        bpy.ops.object.select_grouped(type='CHILDREN_RECURSIVE')
-        #髪を除外
-        for obj in bpy.context.selected_objects:
-           if obj.type == "MESH":
-               if len(obj.material_slots) != 0:
-                   if ("髪" in obj.material_slots[0].name) or ("hair" in obj.material_slots[0].name):
-                       obj.select = False
-        
-        #書割除外
-        for obj in bpy.context.selected_objects:
-           if obj.type == "MESH":
-               if obj.dimensions[0] == 0 or obj.dimensions[1] == 0 or obj.dimensions[2] == 0:
-                   obj.select = False
-
-        #ワイヤーフレーム除外
-        for obj in bpy.context.selected_objects:
-           if obj.type == "MESH":
-               if obj.draw_type == "WIRE":
-                   obj.select = False
-
-
-        #子アーマチュアを全てレスト位置に
-        for obj in bpy.context.selected_objects:
-            if obj.type == "ARMATURE":
-                obj.data.pose_position = 'REST'
-                #素体だったらトランスフォーム解除
-                #if "素体" in obj.name:
-                #    bpy.context.scene.objects.active = obj
-                #    bpy.ops.object.rotation_clear()
-
-        #bpy.context.scene.objects.active = geo
-        
-        #全てシングル化
-        bpy.ops.object.make_single_user(type='ALL', object=True, obdata=True, material=False, texture=False, animation=False)
-
-
-        #ミラーとアーマチュアの適用
-        #オブジェクト側：アーマチュア適用
-        for obj in bpy.context.selected_objects:
-            if obj.type == "MESH":
-                bpy.context.scene.objects.active = obj
-                for mod in obj.modifiers:
-                    if mod.type == "MIRROR":
-                        #アーマチュアより上位にあるミラーを適用しないと齟齬がでたので仕方なくミラー適用
-                        bpy.ops.object.modifier_apply(modifier=mod.name)
-                    if mod.type == "ARMATURE":
-                        #適用する
-                        self.report({"INFO"},obj.name + ":" + mod.name)
-                        bpy.ops.object.modifier_apply(modifier=mod.name)
-        #親子解除
-        for obj in bpy.context.selected_objects:
-            bpy.context.scene.objects.active = obj
-            bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
-
-
-        #トランスフォームのアプライ
-        bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-        #ノーマルの再計算
-        bpy.ops.fujiwara_toolbox.command_590395()
-        
-        #簡略化2
-        bpy.context.scene.render.use_simplify = True
-        bpy.context.scene.render.simplify_subdivision = 2
-        
-        dir = fujiwara_toolbox.conf.MarvelousDesigner_dir
-        bpy.ops.export_scene.obj(filepath=dir + "base.obj", use_selection=True,)
-        
-        #開きなおし
-        bpy.ops.wm.revert_mainfile(use_scripts=True)
-        return {'FINISHED'}
-########################################
-
-
-
-#
-#########################################
-##poseRot0出力
-#########################################
-#class FUJIWARATOOLBOX_473205(bpy.types.Operator):#poseRot0出力
-#    """poseRot0出力"""
-#    bl_idname = "fujiwara_toolbox.command_473205"
-#    bl_label = "poseRot0出力"
-#    bl_options = {'REGISTER', 'UNDO'}
-#
-#
-#    #メインパネルのボタンリストに登録
-#    ButtonList.append(bl_idname)
-#    #テキストラベルの追加
-#    LabelList.append("");
-#    #アイコンの追加
-#    IconList.append("")
-#    #モードの追加
-#    ModeList.append("")
-#
-####    def execute(self, context):
-#        if "ジオメトリ" not in bpy.context.scene.objects.active.name:
-#            self.report({"INFO"},"素体ジオメトリを指定してください")
-#            return {'FINISHED'}
-#        #現状保存
-#        bpy.ops.wm.save_mainfile()
-#
-#
-#
-#        geo = bpy.context.scene.objects.active
-#
-#        for obj in bpy.context.selected_objects:
-#            obj.select = False
-#
-#        geo.select = True
-#        #ジオメトリのトランスフォームを解除
-#        bpy.ops.object.location_clear()
-#        #まずは垂直だけ回転にする
-##        geo.rotation_mode = 'XYZ'
-##        geo.rotation_euler[0] = 0
-##        geo.rotation_euler[1] = 0
-#
-##        rotto = geo.rotation_euler[2]
-##        bpy.ops.object.rotation_clear()
-##        bpy.ops.transform.rotate(value=rotto, axis=(0, 0, 1),
-##        constraint_axis=(False, False, False),
-##        constraint_orientation='LOCAL', mirror=False,
-##        proportional='DISABLED', proportional_edit_falloff='SMOOTH',
-##        proportional_size=1)
-#
-#        bpy.ops.transform.translate(value=(0, 0, 0), constraint_axis=(False,
-#        True, False), constraint_orientation='LOCAL', mirror=False,
-#        proportional='DISABLED', proportional_edit_falloff='SMOOTH',
-#        proportional_size=1, release_confirm=True)
-#
-#        #ジオメトリの子を選択
-#        bpy.ops.object.select_grouped(type='CHILDREN_RECURSIVE')
-#        #髪を除外
-#        for obj in bpy.context.selected_objects:
-#           if obj.type == "MESH":
-#               if ("髪" in obj.material_slots[0].name) or ("hair" in
-#               obj.material_slots[0].name):
-#                   obj.select = False
-#
-#        #子アーマチュアを全てレスト位置に
-#        for obj in bpy.context.selected_objects:
-#            if obj.type == "ARMATURE":
-#                obj.data.pose_position = 'REST'
-#
-#        #全てシングル化
-#        bpy.ops.object.make_single_user(type='ALL', object=True, obdata=True,
-#        material=False, texture=False, animation=False)
-#
-#
-#        #ミラーとアーマチュアの適用
-#        #オブジェクト側：アーマチュア適用
-#        for obj in bpy.context.selected_objects:
+#         #簡略化2
+#         bpy.context.scene.render.use_simplify = True
+#         bpy.context.scene.render.simplify_subdivision = 2
+
+
+#         fjw.deselect()
+#         fjw.select(selection)
+#         fjw.reject_notmesh()
+#         #ワイヤーフレーム除外
+#         for obj in bpy.context.selected_objects:
 #            if obj.type == "MESH":
-#                bpy.context.scene.objects.active = obj
-#                for mod in obj.modifiers:
-#                    if mod.type=="MIRROR":
-#                        #アーマチュアより上位にあるミラーを適用しないと齟齬がでたので仕方なくミラー適用
-#                        bpy.ops.object.modifier_apply (modifier=mod.name)
-#                    if mod.type=="ARMATURE":
-#                        #適用する
-#                        self.report({"INFO"},obj.name + ":" + mod.name)
-#                        bpy.ops.object.modifier_apply (modifier=mod.name)
-#        #親子解除
-#        for obj in bpy.context.selected_objects:
-#            bpy.context.scene.objects.active = obj
-#            bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
-#
-#
-#        #トランスフォームのアプライ
-#        bpy.ops.object.transform_apply(location=False, rotation=False,
-#        scale=True)
-#        #ノーマルの再計算
-#        bpy.ops.fujiwara_toolbox.command_590395()
-#
-#        #簡略化2
-#        bpy.context.scene.render.use_simplify = True
-#        bpy.context.scene.render.simplify_subdivision = 2
-#
-#        bpy.ops.export_scene.obj(filepath="G:"+os.sep+"MarvelousDesigner"+os.sep+"poseRot0.obj",
-#        use_selection=True,)
-#
-#        #開きなおし
-#        bpy.ops.wm.revert_mainfile(use_scripts=True)
-#        return {'FINISHED'}
-#########################################
-#
+#                if obj.draw_type == "WIRE":
+#                    obj.select = False
+#         #ノンレンダ除外
+#         for obj in bpy.context.selected_objects:
+#             if obj.hide_render == True:
+#                    obj.select = False
 
+#         dir = fujiwara_toolbox.conf.MarvelousDesigner_dir
+#         bpy.ops.export_scene.obj(filepath=dir + "poseTo.obj", use_selection=True,)
 
+        
+#         #開きなおし
+#         bpy.ops.wm.revert_mainfile(use_scripts=True)
+        
+#         return {'FINISHED'}
+# ########################################
 
+# def import_mdresult(self,resultpath):
+#         current = fjw.active()
 
-#########################################
-##posenoRot出力
-#########################################
-#class FUJIWARATOOLBOX_424197(bpy.types.Operator):#posenoRot出力
-#    """posenoRot出力"""
-#    bl_idname = "fujiwara_toolbox.command_424197"
-#    bl_label = "posenoRot出力"
-#    bl_options = {'REGISTER', 'UNDO'}
-#
-#
-#    #メインパネルのボタンリストに登録
-#    ButtonList.append(bl_idname)
-#    #テキストラベルの追加
-#    LabelList.append("");
-#    #アイコンの追加
-#    IconList.append("")
-#    #モードの追加
-#    ModeList.append("")
-#
-####    def execute(self, context):
-#        if "ジオメトリ" not in bpy.context.scene.objects.active.name:
-#            self.report({"INFO"},"素体ジオメトリを指定してください")
-#            return {'FINISHED'}
-#        #現状保存
-#        bpy.ops.wm.save_mainfile()
-#
-#
-#
-#        geo = bpy.context.scene.objects.active
-#
-#        for obj in bpy.context.selected_objects:
-#            obj.select = False
-#
-#        geo.select = True
-#        #ジオメトリのトランスフォームを解除
-##        bpy.ops.object.location_clear()
-#        bpy.ops.object.rotation_clear()
-#        bpy.ops.transform.translate(value=(0, 0, 0), constraint_axis=(False,
-#        True, False), constraint_orientation='LOCAL', mirror=False,
-#        proportional='DISABLED', proportional_edit_falloff='SMOOTH',
-#        proportional_size=1, release_confirm=True)
-#
-#
-#        #ジオメトリの子を選択
-#        bpy.ops.object.select_grouped(type='CHILDREN_RECURSIVE')
-#        #髪を除外
-#        for obj in bpy.context.selected_objects:
-#           if obj.type == "MESH":
-#               if ("髪" in obj.material_slots[0].name) or ("hair" in
-#               obj.material_slots[0].name):
-#                   obj.select = False
-#
-#        #全てシングル化
-#        bpy.ops.object.make_single_user(type='ALL', object=True, obdata=True,
-#        material=False, texture=False, animation=False)
-#
-#        #ミラーとアーマチュアの適用
-#        #オブジェクト側：アーマチュア適用
-#        for obj in bpy.context.selected_objects:
+#         loc = Vector((0,0,0))
+#         qrot = Quaternion()
+
+#         #もしボーンが選択されていたらそのボーンにトランスフォームをあわせる
+#         if current.mode == "POSE":
+#             armu = fjw.ArmatureUtils(current)
+#             pbone = armu.poseactive()
+#             loc = current.matrix_world * pbone.location
+#             qrot = pbone.rotation_quaternion
+
+#             #boneはYupなので入れ替え
+#             loc = Vector((loc.x,loc.z * -1,loc.y))
+#             qrot = Quaternion((qrot.w, qrot.x, qrot.z * -1, qrot.y))
+
+#         fjw.mode("OBJECT")
+
+#         bpy.ops.import_scene.obj(filepath=resultpath)
+#         #インポート後処理
+#         #回転を適用
+#         bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
+
+#         selection = fjw.get_selected_list()
+#         for obj in selection:
 #            if obj.type == "MESH":
-#                bpy.context.scene.objects.active = obj
-#                for mod in obj.modifiers:
-#                    if mod.type=="MIRROR":
-#                        #アーマチュアより上位にあるミラーを適用しないと齟齬がでたので仕方なくミラー適用
-#                        bpy.ops.object.modifier_apply (modifier=mod.name)
-#                    if mod.type=="ARMATURE":
-#                        #適用する
-#                        self.report({"INFO"},obj.name + ":" + mod.name)
-#                        bpy.ops.object.modifier_apply (modifier=mod.name)
-#        #親子解除
-#        for obj in bpy.context.selected_objects:
-#            bpy.context.scene.objects.active = obj
-#            bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
-#
-#        #トランスフォームのアプライ
-#        bpy.ops.object.transform_apply(location=False, rotation=False,
-#        scale=True)
-#        #ノーマルの再計算
-#        bpy.ops.fujiwara_toolbox.command_590395()
-#
-#        #簡略化2
-#        bpy.context.scene.render.use_simplify = True
-#        bpy.context.scene.render.simplify_subdivision = 2
-#
-#        bpy.ops.export_scene.obj(filepath="G:"+os.sep+"MarvelousDesigner"+os.sep+"posenoRot.obj",
-#        use_selection=True,)
-#
-#        #開きなおし
-#        bpy.ops.wm.revert_mainfile(use_scripts=True)
-#        return {'FINISHED'}
-#########################################
-#
-#
-#
-#
+#                 bpy.context.scene.objects.active = obj
+#                 bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+#                 bpy.ops.mesh.remove_doubles()
+#                 bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+                
+#                 #服はエッジ出ない方がいい 裏ポリで十分
+#                 for slot in obj.material_slots:
+#                     mat = slot.material
+#                     mat.use_transparency = True
+#                     mat.transparency_method = 'RAYTRACE'
 
 
-"""
-よくよく考えたらどうすんのこれ問題。
-
-・ポーズの前後が反転していると、大変めんどくさい。前後が同じであれば、わりとなんとかなる。
-→前後反転してたら一回反転してposeTo出して、インポート時にまた反転する
-　のはいいんだけど、反転の判定ってどーしたらいいの～
-
-→無理なきがするから手動でやる？
-
-ジオメトリに回転がかかってる場合
-・単純に位置をゼロにすると、地面を突き破ることが。
-・かといってx,yだけゼロにする処理だと、zが大きい場合なんかにものすごい不都合。シーン内で飛び上がってる奴とか。
+#                 obj.location = loc
+#                 obj.rotation_quaternion = obj.rotation_quaternion * qrot
+#                 obj.rotation_euler = obj.rotation_quaternion.to_euler()
+        
+#                 #読み先にレイヤーをそろえる
+#                 obj.layers = current.layers
+        
+#         #裏ポリエッジ付加
+#         bpy.ops.fujiwara_toolbox.command_318722()
 
 
+# ########################################
+# #インポート
+# ########################################
+# class FUJIWARATOOLBOX_86482(bpy.types.Operator):#インポート
+#     """インポート"""
+#     bl_idname = "fujiwara_toolbox.command_86482"
+#     bl_label = "インポート"
+#     bl_options = {'REGISTER', 'UNDO'}
+
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-"""
+#     def execute(self, context):
+#         dir = fujiwara_toolbox.conf.MarvelousDesigner_dir
+#         import_mdresult(self,dir + "result.obj")
 
-#ポーズ登録
-def regist_pose(pose_name="Pose", objects=None):
-    if objects == None:
-        obj = fjw.active()
-        if obj.type != "ARMATURE":
-            return
-
-        fjw.mode("POSE")
-        bpy.ops.pose.select_all(action='SELECT')
-        try:
-            newframe = obj.pose_library.frame_range[1] + 1
-            bpy.ops.poselib.pose_add(frame=newframe, name=pose_name)
-        except:
-            pass
-    else:
-        for obj in objects:
-            fjw.activate(obj)
-            if obj.type != "ARMATURE":
-                continue
-
-            fjw.mode("POSE")
-            bpy.ops.pose.select_all(action='SELECT')
-            try:
-                newframe = obj.pose_library.frame_range[1] + 1
-                bpy.ops.poselib.pose_add(frame=newframe, name=pose_name)
-            except:
-                pass
-            pass
-        pass
-    fjw.mode("OBJECT")
-
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
-########################################
-#中間ポーズ
-########################################
-class FUJIWARATOOLBOX_976064(bpy.types.Operator):#中間ポーズ
-    """中間ポーズ"""
-    bl_idname = "fujiwara_toolbox.command_976064"
-    bl_label = "中間ポーズ"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-    def execute(self, context):
-        if "ジオメトリ" not in bpy.context.scene.objects.active.name:
-            self.report({"INFO"},"素体ジオメトリを指定してください")
-            return {'FINISHED'}
-        #現状保存
-        bpy.ops.wm.save_mainfile()
-        
-        
-        
-        geo = bpy.context.scene.objects.active
-        
-        bpy.ops.object.select_grouped(type='CHILDREN_RECURSIVE')
-        for obj in bpy.context.selected_objects:
-            fjw.activate(obj)
-            regist_pose("中間ポーズ")
-        fjw.deselect()
-        fjw.activate(geo)
-        bpy.ops.wm.save_mainfile()
-
-        fjw.deselect()
-        
-        geo.select = True
-        #ジオメトリのトランスフォームを解除
-        bpy.ops.object.location_clear()
-#        bpy.ops.object.rotation_clear()
-        bpy.ops.transform.translate(value=(0, 0, 0), constraint_axis=(False, True, False), constraint_orientation='LOCAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1, release_confirm=True)
-        
-        
-        #ジオメトリの子を選択
-        bpy.ops.object.select_grouped(type='CHILDREN_RECURSIVE')
-        #髪を除外
-        for obj in bpy.context.selected_objects:
-           if obj.type == "MESH":
-               if len(obj.material_slots) != 0:
-                   if ("髪" in obj.material_slots[0].name) or ("hair" in obj.material_slots[0].name):
-                       obj.select = False
-        #書割除外
-        for obj in bpy.context.selected_objects:
-           if obj.type == "MESH":
-               if obj.dimensions[0] == 0 or obj.dimensions[1] == 0 or obj.dimensions[2] == 0:
-                   obj.select = False
-
-        #ワイヤーフレーム除外
-        for obj in bpy.context.selected_objects:
-           if obj.type == "MESH":
-               if obj.draw_type == "WIRE":
-                   obj.select = False
-
-        
-        #全てシングル化
-        bpy.ops.object.make_single_user(type='ALL', object=True, obdata=True, material=False, texture=False, animation=False)
-        
-        #ミラーとアーマチュアの適用
-        #オブジェクト側：アーマチュア適用
-        for obj in bpy.context.selected_objects:
-            if obj.type == "MESH":
-                bpy.context.scene.objects.active = obj
-                for mod in obj.modifiers:
-                    if mod.type == "MIRROR":
-                        #アーマチュアより上位にあるミラーを適用しないと齟齬がでたので仕方なくミラー適用
-                        bpy.ops.object.modifier_apply(modifier=mod.name)
-                    if mod.type == "ARMATURE":
-                        #適用する
-                        self.report({"INFO"},obj.name + ":" + mod.name)
-                        bpy.ops.object.modifier_apply(modifier=mod.name)
-        #親子解除
-        for obj in bpy.context.selected_objects:
-            bpy.context.scene.objects.active = obj
-            bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
-        
-        #トランスフォームのアプライ
-        bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-        #ノーマルの再計算
-        bpy.ops.fujiwara_toolbox.command_590395()
-        
-        #簡略化2
-        bpy.context.scene.render.use_simplify = True
-        bpy.context.scene.render.simplify_subdivision = 2
-        
-        dir = fujiwara_toolbox.conf.MarvelousDesigner_dir
-        bpy.ops.export_scene.obj(filepath=dir + "中間poseTo.obj", use_selection=True,)
-        
-        #開きなおし
-        bpy.ops.wm.revert_mainfile(use_scripts=True)
-        
-        return {'FINISHED'}
-########################################
-
-
-########################################
-#反転中間ポーズ
-########################################
-class FUJIWARATOOLBOX_666595(bpy.types.Operator):#反転中間ポーズ
-    """反転中間ポーズ"""
-    bl_idname = "fujiwara_toolbox.command_666595"
-    bl_label = "反転中間ポーズ"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-    def execute(self, context):
-        if "ジオメトリ" not in bpy.context.scene.objects.active.name:
-            self.report({"INFO"},"素体ジオメトリを指定してください")
-            return {'FINISHED'}
-        #現状保存
-        bpy.ops.wm.save_mainfile()
-        
-        
-        
-        geo = bpy.context.scene.objects.active
-        
-        bpy.ops.object.select_grouped(type='CHILDREN_RECURSIVE')
-        for obj in bpy.context.selected_objects:
-            fjw.activate(obj)
-            regist_pose("中間ポーズ")
-        fjw.activate(geo)
-        bpy.ops.wm.save_mainfile()
-
-        fjw.deselect()
-        
-        geo.select = True
-        #ジオメトリのトランスフォームを解除
-        bpy.ops.object.location_clear()
-        bpy.ops.transform.rotate(value=3.14159, axis=(-0, -0, -1), constraint_axis=(False, False, False), constraint_orientation='LOCAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1)
-        bpy.ops.transform.translate(value=(0, 0, 0), constraint_axis=(False, True, False), constraint_orientation='LOCAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1, release_confirm=True)
-        bpy.ops.transform.translate(value=(0, 0, 0), constraint_axis=(False, True, False), constraint_orientation='LOCAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1, release_confirm=True)
-        
-        #ジオメトリの子を選択
-        bpy.ops.object.select_grouped(type='CHILDREN_RECURSIVE')
-        #髪を除外
-        for obj in bpy.context.selected_objects:
-           if obj.type == "MESH":
-               if ("髪" in obj.material_slots[0].name) or ("hair" in obj.material_slots[0].name):
-                   obj.select = False
-        #書割除外
-        for obj in bpy.context.selected_objects:
-           if obj.type == "MESH":
-               if obj.dimensions[0] == 0 or obj.dimensions[1] == 0 or obj.dimensions[2] == 0:
-                   obj.select = False
-
-
-        #ワイヤーフレーム除外
-        for obj in bpy.context.selected_objects:
-           if obj.type == "MESH":
-               if obj.draw_type == "WIRE":
-                   obj.select = False
-
-        
-        #全てシングル化
-        bpy.ops.object.make_single_user(type='ALL', object=True, obdata=True, material=False, texture=False, animation=False)
-        
-        #ミラーとアーマチュアの適用
-        #オブジェクト側：アーマチュア適用
-        for obj in bpy.context.selected_objects:
-            if obj.type == "MESH":
-                bpy.context.scene.objects.active = obj
-                for mod in obj.modifiers:
-                    if mod.type == "MIRROR":
-                        #アーマチュアより上位にあるミラーを適用しないと齟齬がでたので仕方なくミラー適用
-                        bpy.ops.object.modifier_apply(modifier=mod.name)
-                    if mod.type == "ARMATURE":
-                        #適用する
-                        self.report({"INFO"},obj.name + ":" + mod.name)
-                        bpy.ops.object.modifier_apply(modifier=mod.name)
-        #親子解除
-        for obj in bpy.context.selected_objects:
-            bpy.context.scene.objects.active = obj
-            bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
-        
-        #トランスフォームのアプライ
-        bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-        #ノーマルの再計算
-        bpy.ops.fujiwara_toolbox.command_590395()
-        
-        #簡略化2
-        bpy.context.scene.render.use_simplify = True
-        bpy.context.scene.render.simplify_subdivision = 2
-        
-        dir = fujiwara_toolbox.conf.MarvelousDesigner_dir
-        bpy.ops.export_scene.obj(filepath=dir + "中間poseTo.obj", use_selection=True,)
-        
-        #開きなおし
-        bpy.ops.wm.revert_mainfile(use_scripts=True)
-        
-        return {'FINISHED'}
-########################################
-
-
-
-
-
-
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
-
-
-########################################
-#poseTo出力
-########################################
-class FUJIWARATOOLBOX_677880(bpy.types.Operator):#poseTo出力
-    """poseTo出力"""
-    bl_idname = "fujiwara_toolbox.command_677880"
-    bl_label = "poseTo出力"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-    
-    def execute(self, context):
-        if "ジオメトリ" not in bpy.context.scene.objects.active.name:
-            self.report({"INFO"},"素体ジオメトリを指定してください")
-            return {'FINISHED'}
-        #現状保存
-        bpy.ops.wm.save_mainfile()
-        
-        
-        
-        geo = bpy.context.scene.objects.active
-        
-        bpy.ops.object.select_grouped(type='CHILDREN_RECURSIVE')
-        for obj in bpy.context.selected_objects:
-            fjw.activate(obj)
-            regist_pose("PoseTo")
-        fjw.activate(geo)
-        bpy.ops.wm.save_mainfile()
-
-        fjw.deselect()
-        
-        geo.select = True
-        #ジオメトリのトランスフォームを解除
-        bpy.ops.object.location_clear()
-#        bpy.ops.object.rotation_clear()
-        bpy.ops.transform.translate(value=(0, 0, 0), constraint_axis=(False, True, False), constraint_orientation='LOCAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1, release_confirm=True)
-        
-        
-        #ジオメトリの子を選択
-        bpy.ops.object.select_grouped(type='CHILDREN_RECURSIVE')
-        #髪を除外
-        for obj in bpy.context.selected_objects:
-           if obj.type == "MESH":
-               if len(obj.material_slots) != 0:
-                   if ("髪" in obj.material_slots[0].name) or ("hair" in obj.material_slots[0].name):
-                       obj.select = False
-        #書割除外
-        for obj in bpy.context.selected_objects:
-           if obj.type == "MESH":
-               if obj.dimensions[0] == 0 or obj.dimensions[1] == 0 or obj.dimensions[2] == 0:
-                   obj.select = False
-
-        #ワイヤーフレーム除外
-        for obj in bpy.context.selected_objects:
-           if obj.type == "MESH":
-               if obj.draw_type == "WIRE":
-                   obj.select = False
-
-
-        
-        #全てシングル化
-        bpy.ops.object.make_single_user(type='ALL', object=True, obdata=True, material=False, texture=False, animation=False)
-        
-        #ミラーとアーマチュアの適用
-        #オブジェクト側：アーマチュア適用
-        for obj in bpy.context.selected_objects:
-            if obj.type == "MESH":
-                bpy.context.scene.objects.active = obj
-                for mod in obj.modifiers:
-                    if mod.type == "MIRROR":
-                        #アーマチュアより上位にあるミラーを適用しないと齟齬がでたので仕方なくミラー適用
-                        bpy.ops.object.modifier_apply(modifier=mod.name)
-                    if mod.type == "ARMATURE":
-                        #適用する
-                        self.report({"INFO"},obj.name + ":" + mod.name)
-                        bpy.ops.object.modifier_apply(modifier=mod.name)
-        #親子解除
-        for obj in bpy.context.selected_objects:
-            bpy.context.scene.objects.active = obj
-            bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
-        
-        #トランスフォームのアプライ
-        bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-        #ノーマルの再計算
-        bpy.ops.fujiwara_toolbox.command_590395()
-        
-        #簡略化2
-        bpy.context.scene.render.use_simplify = True
-        bpy.context.scene.render.simplify_subdivision = 2
-        
-        dir = fujiwara_toolbox.conf.MarvelousDesigner_dir
-        bpy.ops.export_scene.obj(filepath=dir + "poseTo.obj", use_selection=True,)
-        
-        #開きなおし
-        bpy.ops.wm.revert_mainfile(use_scripts=True)
-        return {'FINISHED'}
-########################################
-
-
-
-########################################
-#反転poseTo出力
-########################################
-class FUJIWARATOOLBOX_425209(bpy.types.Operator):#反転poseTo出力
-    """反転poseTo出力"""
-    bl_idname = "fujiwara_toolbox.command_425209"
-    bl_label = "反転poseTo出力"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-    
-    def execute(self, context):
-        if "ジオメトリ" not in bpy.context.scene.objects.active.name:
-            self.report({"INFO"},"素体ジオメトリを指定してください")
-            return {'FINISHED'}
-        #現状保存
-        bpy.ops.wm.save_mainfile()
-        
-        
-        
-        geo = bpy.context.scene.objects.active
-        
-        bpy.ops.object.select_grouped(type='CHILDREN_RECURSIVE')
-        for obj in bpy.context.selected_objects:
-            fjw.activate(obj)
-            regist_pose("PoseTo")
-        fjw.activate(geo)
-        bpy.ops.wm.save_mainfile()
-
-        fjw.deselect()
-        
-        geo.select = True
-        #ジオメトリのトランスフォームを解除
-        bpy.ops.object.location_clear()
-        bpy.ops.transform.rotate(value=3.14159, axis=(-0, -0, -1), constraint_axis=(False, False, False), constraint_orientation='LOCAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1)
-        bpy.ops.transform.translate(value=(0, 0, 0), constraint_axis=(False, True, False), constraint_orientation='LOCAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1, release_confirm=True)
-        bpy.ops.transform.translate(value=(0, 0, 0), constraint_axis=(False, True, False), constraint_orientation='LOCAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1, release_confirm=True)
-        
-        #ジオメトリの子を選択
-        bpy.ops.object.select_grouped(type='CHILDREN_RECURSIVE')
-        #髪を除外
-        for obj in bpy.context.selected_objects:
-           if obj.type == "MESH":
-               if ("髪" in obj.material_slots[0].name) or ("hair" in obj.material_slots[0].name):
-                   obj.select = False
-        #書割除外
-        for obj in bpy.context.selected_objects:
-           if obj.type == "MESH":
-               if obj.dimensions[0] == 0 or obj.dimensions[1] == 0 or obj.dimensions[2] == 0:
-                   obj.select = False
-
-        #ワイヤーフレーム除外
-        for obj in bpy.context.selected_objects:
-           if obj.type == "MESH":
-               if obj.draw_type == "WIRE":
-                   obj.select = False
-
-
-        
-        #全てシングル化
-        bpy.ops.object.make_single_user(type='ALL', object=True, obdata=True, material=False, texture=False, animation=False)
-        
-        #ミラーとアーマチュアの適用
-        #オブジェクト側：アーマチュア適用
-        for obj in bpy.context.selected_objects:
-            if obj.type == "MESH":
-                bpy.context.scene.objects.active = obj
-                for mod in obj.modifiers:
-                    if mod.type == "MIRROR":
-                        #アーマチュアより上位にあるミラーを適用しないと齟齬がでたので仕方なくミラー適用
-                        bpy.ops.object.modifier_apply(modifier=mod.name)
-                    if mod.type == "ARMATURE":
-                        #適用する
-                        self.report({"INFO"},obj.name + ":" + mod.name)
-                        bpy.ops.object.modifier_apply(modifier=mod.name)
-        #親子解除
-        for obj in bpy.context.selected_objects:
-            bpy.context.scene.objects.active = obj
-            bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
-        
-        #トランスフォームのアプライ
-        bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-        #ノーマルの再計算
-        bpy.ops.fujiwara_toolbox.command_590395()
-        
-        #簡略化2
-        bpy.context.scene.render.use_simplify = True
-        bpy.context.scene.render.simplify_subdivision = 2
-        
-        dir = fujiwara_toolbox.conf.MarvelousDesigner_dir
-        bpy.ops.export_scene.obj(filepath=dir + "poseTo.obj", use_selection=True,)
-        
-        #開きなおし
-        bpy.ops.wm.revert_mainfile(use_scripts=True)
-        return {'FINISHED'}
-########################################
-
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
-
-
-########################################
-#インポート
-########################################
-class FUJIWARATOOLBOX_717368(bpy.types.Operator):#インポート
-    """インポート"""
-    bl_idname = "fujiwara_toolbox.command_717368"
-    bl_label = "インポート"
-    bl_options = {'REGISTER', 'UNDO'}
-
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-    
-    def execute(self, context):
-        if "ジオメトリ" not in bpy.context.scene.objects.active.name:
-            self.report({"INFO"},"素体ジオメトリを指定してください")
-            return {'FINISHED'}
-        geo = bpy.context.scene.objects.active
-        loc = geo.location
-        rot = geo.rotation_euler
-        
-        dir = fujiwara_toolbox.conf.MarvelousDesigner_dir
-        bpy.ops.import_scene.obj(filepath=dir + "result.obj")
-        #インポート後処理
-        #回転を適用
-        bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
-        
-        for obj in bpy.context.selected_objects:
-           if obj.type == "MESH":
-                bpy.context.scene.objects.active = obj
-                bpy.ops.object.mode_set(mode='EDIT', toggle=False)
-                bpy.ops.mesh.remove_doubles()
-                bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-                bpy.ops.object.modifier_add(type='SUBSURF')
-                bpy.context.object.modifiers["Subsurf"].levels = 0
-                bpy.context.object.modifiers["Subsurf"].render_levels = 2
-                for slot in obj.material_slots:
-                    mat = slot.material
-                    mat.use_transparency = False
-        
-        
-        
-        for obj in bpy.context.selected_objects:
-            if obj.type == "MESH":
-                bpy.context.scene.objects.active = obj
-                #回転をあわせる
-#                obj.rotation_euler = rot
-                #位置をあわせる
-                bpy.ops.transform.translate(value=(loc[0], loc[1], loc[2]), constraint_axis=(False, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1)
-        
-        
-        #ジオメトリの子にする
-        bpy.context.scene.objects.active = geo
-        bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
-        
-        #オブジェクトを単一レイヤー化する
-        for obj in bpy.data.objects:
-            for l in range(19,0,-1):
-                    obj.layers[l] = False
-        return {'FINISHED'}
-########################################
-
-
-
-########################################
-#反転インポート
-########################################
-class FUJIWARATOOLBOX_624042(bpy.types.Operator):#反転インポート
-    """反転インポート"""
-    bl_idname = "fujiwara_toolbox.command_624042"
-    bl_label = "反転インポート"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-    
-    def execute(self, context):
-        if "ジオメトリ" not in bpy.context.scene.objects.active.name:
-            self.report({"INFO"},"素体ジオメトリを指定してください")
-            return {'FINISHED'}
-        geo = bpy.context.scene.objects.active
-        loc = geo.location
-        rot = geo.rotation_euler
-        
-        dir = fujiwara_toolbox.conf.MarvelousDesigner_dir
-        bpy.ops.import_scene.obj(filepath=dir + "result.obj")
-        #インポート後処理
-        #回転を適用
-        bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
-        
-        for obj in bpy.context.selected_objects:
-           if obj.type == "MESH":
-                bpy.context.scene.objects.active = obj
-                bpy.ops.object.mode_set(mode='EDIT', toggle=False)
-                bpy.ops.mesh.remove_doubles()
-                bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-                bpy.ops.object.modifier_add(type='SUBSURF')
-                bpy.context.object.modifiers["Subsurf"].levels = 0
-                bpy.context.object.modifiers["Subsurf"].render_levels = 2
-                for slot in obj.material_slots:
-                    mat = slot.material
-                    mat.use_transparency = False
-        
-        
-        
-        for obj in bpy.context.selected_objects:
-            if obj.type == "MESH":
-                bpy.context.scene.objects.active = obj
-                #回転をあわせる
-#                obj.rotation_euler = rot
-                #位置をあわせる
-                bpy.ops.transform.translate(value=(loc[0], loc[1], loc[2]), constraint_axis=(False, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1)
-        
-        
-        #ジオメトリの子にする
-        bpy.context.scene.objects.active = geo
-        bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
-        
-        #オブジェクトを単一レイヤー化する
-        for obj in bpy.data.objects:
-            for l in range(19,0,-1):
-                    obj.layers[l] = False
-        #反転処理
-        bpy.ops.transform.rotate(value=3.14159, axis=(-0, -0, -1), constraint_axis=(False, False, False), constraint_orientation='LOCAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1)
-#        bpy.ops.transform.translate(value=(loc[0], loc[1], loc[2]*-1),
-#        constraint_axis=(False, False, False),
-#        constraint_orientation='GLOBAL', mirror=False,
-#        proportional='DISABLED', proportional_edit_falloff='SMOOTH',
-#        proportional_size=1)
-
-        return {'FINISHED'}
-########################################
-
-
-
-
+#         return {'FINISHED'}
+# ########################################
 
 
 #---------------------------------------------
@@ -18453,84 +17275,16 @@ class FUJIWARATOOLBOX_823369(bpy.types.Operator):#AssetManager用キャラリン
 
 
 
-def setkey():
-    if fjw.active().type == "ARMATURE":
-        fjw.mode("POSE")
-    if fjw.active().mode == "OBJECT":
-        bpy.ops.anim.keyframe_insert_menu(type='LocRotScale')
-    if fjw.active().mode == "POSE":
-        bpy.ops.pose.select_all(action='SELECT')
-        bpy.ops.anim.keyframe_insert_menu(type='WholeCharacter')
 
-
-def export_mdavatar_to_mddata():
-    name = rootname
-    blendname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
-    blendname = blendname.replace("_MDWork","")
-    dir = os.path.dirname(bpy.data.filepath) + os.sep + "MDData" + os.sep
-    dir += blendname + os.sep + name + os.sep
-    export_mdavatar(self, dir, name, False)
-    
-def armature_autokey():
-    if fjw.active().type != "ARMATURE":
-        return
-
-    fjw.mode("POSE")
-
-    #アーマチュアのキーをオートで入れる
-    if bpy.context.scene.frame_current == 10:
-        rootname = fjw.get_root(fjw.active()).name
-
-        fjw.active().location = Vector((0,0,0))
-
-        setkey()
-
-        #フレーム10なら微調整じゃないのでオートフレーム。
-        armu = fjw.ArmatureUtils(fjw.active())
-
-        geoname = armu.findname("Geometry")
-        if geoname == None:
-            #head位置が0,0,0のものを探してやればいいのでは？
-            for ebone in fjw.active().data.bones:
-                if ebone.head == Vector((0,0,0)):
-                    geoname = ebone.name
-                    break
-
-        #それでもなければアクティブをジオメトリに使う
-        if geoname == None:
-            geoname = armu.poseactive().name
-        geo = armu.posebone(geoname)
-        armu.clearTrans([geo])
-
-        setkey()
-
-        fjw.framejump(1)
-        selection = armu.select_all()
-        armu.clearTrans(selection)
-
-        setkey()
-
-        #選択にズーム
-        bpy.ops.view3d.view_selected(use_all_regions=False)
-
-        #Bodyがあったらそのまま出力までやっちゃう
-        for child in fjw.active().children:
-            if child.type == "MESH":
-                if "Body" in child.name:
-                    fjw.activate(child)
-                    export_mdavatar_to_mddata()
-                    break
-        fjw.framejump(10)
-        pass
-    pass
-
-class set_key(bpy.types.Operator):
+#
+#   ヘッダーボタン用
+#
+class SETKEY(bpy.types.Operator):
     """キーフレーム挿入"""
     bl_idname = "fujiwara_toolbox.set_key"
     bl_label = "キーフレーム挿入"
 
     def execute(self, context):
-        #複数対応
         selection = fjw.get_selected_list()
         for obj in selection:
             fjw.deselect()
@@ -18539,6 +17293,28 @@ class set_key(bpy.types.Operator):
             armature_autokey()
         return {"FINISHED"}
 
+
+class DELKEY(bpy.types.Operator):
+    """キーフレーム削除"""
+    bl_idname = "fujiwara_toolbox.del_key"
+    bl_label = "キーフレーム削除"
+
+    def execute(self, context):
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            fjw.deselect()
+            fjw.activate(obj)
+            delkey()
+        return {"FINISHED"}
+
+class EXPORT_ACTIVE_BODY_MDAVATAR(bpy.types.Operator):
+    """アバター出力"""
+    bl_idname = "fujiwara_toolbox.export_active_body_mdavatar"
+    bl_label = "アバター出力"
+
+    def execute(self, context):
+        export_active_body_mdavatar()
+        return {"FINISHED"}
 
 class framejump_1(bpy.types.Operator):
     """フレーム移動　1"""
@@ -18679,12 +17455,14 @@ def menu_func_VIEW3D_HT_header(self, context):
         active.operator("fujiwara_toolbox.framejump_10",icon="FF", text="")
         #active.operator("fujiwara_toolbox.framejump_15",icon="TRIA_RIGHT_BAR", text="")
         active.operator("fujiwara_toolbox.set_key", icon="KEYINGSET", text="")
+        active.operator("fujiwara_toolbox.del_key", icon="KEY_DEHLT", text="")
+        active.operator("fujiwara_toolbox.export_active_body_mdavatar", icon="EXPORT", text="")
 
     if pref.glrenderutils_buttons:
         active = layout.row(align = True)
         active.operator("fujiwara_toolbox.command_979047", text="GL",icon="RENDER_STILL")
-        active.operator("fujiwara_toolbox.command_171760", text="MASK")
-        active.operator("fujiwara_toolbox.command_242623", text="",icon="GREASEPENCIL")
+        # active.operator("fujiwara_toolbox.command_171760", text="MASK")
+        # active.operator("fujiwara_toolbox.command_242623", text="",icon="GREASEPENCIL")
 
     if pref.maintools_button:
         active = layout.row(align = True)
