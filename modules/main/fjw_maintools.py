@@ -13395,131 +13395,150 @@ class CATEGORYBUTTON_425599(bpy.types.Operator):#MarvelousDesigner
 ########################################
 ################################################################################
 
-def export_mdavatar(dir, name, openfolder=True):
-    #アクティブオブジェクトのみ。
-    #メッシュ以外だったら戻る
-    obj = fjw.active()
-    if obj.type != "MESH":
-        return {'CANCELLED'}
 
-    if not os.path.exists(dir):
-        os.makedirs(dir)
+class MarvelousDesingerUtils():
+    @classmethod
+    def export_mdavatar(cls, dir, name, openfolder=True):
+        #アクティブオブジェクトのみ。
+        #メッシュ以外だったら戻る
+        obj = fjw.active()
+        if obj.type != "MESH":
+            return {'CANCELLED'}
 
-    #簡略化2
-    bpy.context.scene.render.use_simplify = True
-    bpy.context.scene.render.simplify_subdivision = 2
+        if not os.path.exists(dir):
+            os.makedirs(dir)
 
-    #裏ポリエッジオフ
-    for mod in obj.modifiers:
-        if "裏ポリエッジ" in mod.name:
-            mod.show_viewport = False
+        #簡略化2
+        bpy.context.scene.render.use_simplify = True
+        bpy.context.scene.render.simplify_subdivision = 2
 
-    #フレーム1に移動
-    bpy.ops.screen.frame_jump(end=False)
-    #obj出力
-    bpy.ops.export_scene.obj(filepath= dir + os.sep + name + ".obj", use_selection=True)
-    #PointCache出力
-    bpy.ops.export_shape.mdd(filepath= dir + os.sep + name + ".mdd", fps=6,frame_start=1,frame_end=10)
+        #裏ポリエッジオフ
+        for mod in obj.modifiers:
+            if "裏ポリエッジ" in mod.name:
+                mod.show_viewport = False
 
-    #結果用の空ファイルを作っておく
-    if not os.path.exists(dir+"result.obj"):
-        f = open(dir + "result.obj","w")
-        f.close()
+        #フレーム1に移動
+        bpy.ops.screen.frame_jump(end=False)
+        #obj出力
+        bpy.ops.export_scene.obj(filepath= dir + os.sep + name + ".obj", use_selection=True)
+        #PointCache出力
+        bpy.ops.export_shape.mdd(filepath= dir + os.sep + name + ".mdd", fps=6,frame_start=1,frame_end=10)
 
-    #出力フォルダを開く
-    if openfolder:
-        os.system("EXPLORER " + dir)
+        #結果用の空ファイルを作っておく
+        if not os.path.exists(dir+"result.obj"):
+            f = open(dir + "result.obj","w")
+            f.close()
 
-
-
-
-def setkey():
-    if fjw.active().type == "ARMATURE":
-        fjw.mode("POSE")
-    if fjw.active().mode == "OBJECT":
-        bpy.ops.anim.keyframe_insert_menu(type='LocRotScale')
-    if fjw.active().mode == "POSE":
-        bpy.ops.pose.select_all(action='SELECT')
-        bpy.ops.anim.keyframe_insert_menu(type='WholeCharacter')
-
-def delkey():
-    if fjw.active().type == "ARMATURE":
-        fjw.mode("POSE")
-    if fjw.active().mode == "OBJECT":
-        bpy.ops.anim.keyframe_delete_v3d()
-    if fjw.active().mode == "POSE":
-        bpy.ops.pose.select_all(action='SELECT')
-        bpy.ops.anim.keyframe_delete_v3d()
-    
-
-def get_mddatadir():
-    return os.path.dirname(bpy.data.filepath) + os.sep + "MDData"+ os.sep
-
-def export_mdavatar_to_mddata(name):
-    blendname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
-    blendname = blendname.replace("_MDWork","")
-    dir = get_mddatadir()
-    dir += blendname + os.sep + name + os.sep
-    export_mdavatar(dir, name, False)
-
-def export_active_body_mdavatar():
-    rootname = fjw.get_root(fjw.active()).name
-    fjw.framejump(1)
-    #Bodyがあったら出力
-    for child in fjw.active().children:
-        if child.type == "MESH":
-            if "Body" in child.name:
-                fjw.activate(child)
-                export_mdavatar_to_mddata(rootname)
-                break
-    fjw.framejump(10)
+        #出力フォルダを開く
+        if openfolder:
+            os.system("EXPLORER " + dir)
 
 
-def armature_autokey():
-    if fjw.active().type != "ARMATURE":
-        return
 
-    fjw.mode("POSE")
 
-    #アーマチュアのキーをオートで入れる
-    if bpy.context.scene.frame_current == 10:
+    @classmethod
+    def setkey(cls):
+        if fjw.active().type == "ARMATURE":
+            fjw.mode("POSE")
+        if fjw.active().mode == "OBJECT":
+            bpy.ops.anim.keyframe_insert_menu(type='LocRotScale')
+        if fjw.active().mode == "POSE":
+            #MarvelousDesigner用
+            aau = fjw.ArmatureActionUtils()
+            aau.set_action("mdwork")
+            frame = bpy.context.scene.frame_current
+            aau.store_pose(frame, "mdpose_"+frame)
+
+            bpy.ops.pose.select_all(action='SELECT')
+            bpy.ops.anim.keyframe_insert_menu(type='WholeCharacter')
+
+    @classmethod
+    def delkey(cls):
+        if fjw.active().type == "ARMATURE":
+            fjw.mode("POSE")
+        if fjw.active().mode == "OBJECT":
+            bpy.ops.anim.keyframe_delete_v3d()
+        if fjw.active().mode == "POSE":
+            #MarvelousDesigner用
+            aau = fjw.ArmatureActionUtils()
+            aau.set_action("mdwork")
+            frame = bpy.context.scene.frame_current
+            aau.delete_pose("mdpose_"+frame)        
+
+            bpy.ops.pose.select_all(action='SELECT')
+            bpy.ops.anim.keyframe_delete_v3d()
+        
+
+    @classmethod
+    def get_mddatadir(cls):
+        return os.path.dirname(bpy.data.filepath) + os.sep + "MDData"+ os.sep
+
+    @classmethod
+    def export_mdavatar_to_mddata(cls,name):
+        blendname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
+        blendname = blendname.replace("_MDWork","")
+        dir = cls.get_mddatadir()
+        dir += blendname + os.sep + name + os.sep
+        cls.export_mdavatar(dir, name, False)
+
+    @classmethod
+    def export_active_body_mdavatar(cls):
         rootname = fjw.get_root(fjw.active()).name
-
-        fjw.active().location = Vector((0,0,0))
-
-        setkey()
-
-        #フレーム10なら微調整じゃないのでオートフレーム。
-        armu = fjw.ArmatureUtils(fjw.active())
-
-        geoname = armu.findname("Geometry")
-        if geoname == None:
-            #head位置が0,0,0のものを探してやればいいのでは？
-            for ebone in fjw.active().data.bones:
-                if ebone.head == Vector((0,0,0)):
-                    geoname = ebone.name
-                    break
-
-        #それでもなければアクティブをジオメトリに使う
-        if geoname == None:
-            geoname = armu.poseactive().name
-        geo = armu.posebone(geoname)
-        armu.clearTrans([geo])
-
-        setkey()
-
         fjw.framejump(1)
-        selection = armu.select_all()
-        armu.clearTrans(selection)
-
-        setkey()
-
-        #選択にズーム
-        bpy.ops.view3d.view_selected(use_all_regions=False)
+        #Bodyがあったら出力
+        for child in fjw.active().children:
+            if child.type == "MESH":
+                if "Body" in child.name:
+                    fjw.activate(child)
+                    cls.export_mdavatar_to_mddata(rootname)
+                    break
         fjw.framejump(10)
 
-        pass
-    pass
+
+    @classmethod
+    def armature_autokey(cls):
+        if fjw.active().type != "ARMATURE":
+            return
+
+        fjw.mode("POSE")
+
+        #アーマチュアのキーをオートで入れる
+        if bpy.context.scene.frame_current == 10:
+            rootname = fjw.get_root(fjw.active()).name
+
+            fjw.active().location = Vector((0,0,0))
+
+            cls.setkey()
+
+            #フレーム10なら微調整じゃないのでオートフレーム。
+            armu = fjw.ArmatureUtils(fjw.active())
+
+            geoname = armu.findname("Geometry")
+            if geoname == None:
+                #head位置が0,0,0のものを探してやればいいのでは？
+                for ebone in fjw.active().data.bones:
+                    if ebone.head == Vector((0,0,0)):
+                        geoname = ebone.name
+                        break
+
+            #それでもなければアクティブをジオメトリに使う
+            if geoname == None:
+                geoname = armu.poseactive().name
+            geo = armu.posebone(geoname)
+            armu.clearTrans([geo])
+
+            cls.setkey()
+
+            fjw.framejump(1)
+            selection = armu.select_all()
+            armu.clearTrans(selection)
+
+            cls.setkey()
+
+            #選択にズーム
+            bpy.ops.view3d.view_selected(use_all_regions=False)
+            fjw.framejump(10)
+
 
 
 
@@ -13588,7 +13607,7 @@ class FUJIWARATOOLBOX_302662(bpy.types.Operator):#オートアバター
             if obj.type == "ARMATURE":
                 fjw.framejump(10)
                 bpy.ops.fujiwara_toolbox.set_key()
-                export_active_body_mdavatar()
+                MarvelousDesingerUtils.export_active_body_mdavatar()
         
         #終了
         bpy.ops.fujiwara_toolbox.exit_mdwork()
@@ -13884,7 +13903,7 @@ class FUJIWARATOOLBOX_738210(bpy.types.Operator):#アバター出力
 
 
     def execute(self, context):
-        export_mdavatar(fujiwara_toolbox.conf.MarvelousDesigner_dir, "avatar")
+        MarvelousDesingerUtils.export_mdavatar(fujiwara_toolbox.conf.MarvelousDesigner_dir, "avatar")
         return {'FINISHED'}
 ########################################
 
@@ -13910,7 +13929,7 @@ class FUJIWARATOOLBOX_347662(bpy.types.Operator):#MDDataに出力
 
         name = "avatar_" + blendname + "_" + root.name
 
-        export_mdavatar(dir, name, False)
+        MarvelousDesingerUtils.export_mdavatar(dir, name, False)
         return {'FINISHED'}
 ########################################
 
@@ -17279,7 +17298,7 @@ class FUJIWARATOOLBOX_823369(bpy.types.Operator):#AssetManager用キャラリン
 #
 #   ヘッダーボタン用
 #
-class SETKEY(bpy.types.Operator):
+class MarvelousDesingerUtils.setkey(bpy.types.Operator):
     """キーフレーム挿入"""
     bl_idname = "fujiwara_toolbox.set_key"
     bl_label = "キーフレーム挿入"
@@ -17289,12 +17308,12 @@ class SETKEY(bpy.types.Operator):
         for obj in selection:
             fjw.deselect()
             fjw.activate(obj)
-            setkey()
-            armature_autokey()
+            MarvelousDesingerUtils.setkey()
+            MarvelousDesingerUtils.armature_autokey()
         return {"FINISHED"}
 
 
-class DELKEY(bpy.types.Operator):
+class MarvelousDesingerUtils.delkey(bpy.types.Operator):
     """キーフレーム削除"""
     bl_idname = "fujiwara_toolbox.del_key"
     bl_label = "キーフレーム削除"
@@ -17304,16 +17323,16 @@ class DELKEY(bpy.types.Operator):
         for obj in selection:
             fjw.deselect()
             fjw.activate(obj)
-            delkey()
+            MarvelousDesingerUtils.delkey()
         return {"FINISHED"}
 
-class EXPORT_ACTIVE_BODY_MDAVATAR(bpy.types.Operator):
+class MarvelousDesingerUtils.export_active_body_mdavatar(bpy.types.Operator):
     """アバター出力"""
-    bl_idname = "fujiwara_toolbox.export_active_body_mdavatar"
+    bl_idname = "fujiwara_toolbox.MarvelousDesingerUtils.export_active_body_mdavatar"
     bl_label = "アバター出力"
 
     def execute(self, context):
-        export_active_body_mdavatar()
+        MarvelousDesingerUtils.export_active_body_mdavatar()
         return {"FINISHED"}
 
 class framejump_1(bpy.types.Operator):
@@ -17456,7 +17475,7 @@ def menu_func_VIEW3D_HT_header(self, context):
         #active.operator("fujiwara_toolbox.framejump_15",icon="TRIA_RIGHT_BAR", text="")
         active.operator("fujiwara_toolbox.set_key", icon="KEYINGSET", text="")
         active.operator("fujiwara_toolbox.del_key", icon="KEY_DEHLT", text="")
-        active.operator("fujiwara_toolbox.export_active_body_mdavatar", icon="EXPORT", text="")
+        active.operator("fujiwara_toolbox.MarvelousDesingerUtils.export_active_body_mdavatar", icon="EXPORT", text="")
 
     if pref.glrenderutils_buttons:
         active = layout.row(align = True)
