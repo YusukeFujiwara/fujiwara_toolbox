@@ -379,7 +379,6 @@ class ArmatureUtils():
         if geoname == None:
             geoname = self.self.armature.data.bones[0].name
 
-
         geo = self.posebone(geoname)
         return geo
 
@@ -396,7 +395,7 @@ class ArmatureActionUtils():
         return
 
     def new_action(self, name):
-        action = bpy.data.actions.new(self.constraint_name)
+        action = bpy.data.actions.new(name)
         self.armature.pose_library = action
         self.action = self.armature.pose_library
         pass
@@ -407,7 +406,7 @@ class ArmatureActionUtils():
 
     def set_action(self,name):
         #nameが現在のポーズに含まれていればそれを返す
-        if self.action is not None
+        if self.action is not None:
             if name in self.action.name:
                 return self.action
 
@@ -437,7 +436,8 @@ class ArmatureActionUtils():
                 break
 
     def delete_pose(self, name):
-        bpy.ops.poselib.pose_remove(name)
+        if name in self.action.pose_markers:
+            bpy.ops.poselib.pose_remove(pose=name)
         pass
 
 class ActionConstraintUtils():
@@ -1223,6 +1223,32 @@ class ViewState():
 
     def delete(self):
         del self.viewstates
+
+
+# class OnetimeHandler():
+#     func = None
+#     def __init__(self, func):
+#         self.func = func
+#         self.store()
+    
+#     def execute(self, context):
+#         self.func()
+#         bpy.app.handlers.scene_update_post.remove(self.execute)
+
+#     def store(self):
+#         bpy.app.handlers.scene_update_post.append(self.execute)
+
+# OnetimeHandler_Func = None
+# def OnetimeHandler(func):
+#     global OnetimeHandler_Func
+#     OnetimeHandler_Func = func
+#     bpy.app.handlers.scene_update_post.append(OnetimeHandler_Exec)
+
+# def OnetimeHandler_Exec(context):
+#     global OnetimeHandler_Func
+#     OnetimeHandler_Func()
+#     bpy.app.handlers.scene_update_post.remove(OnetimeHandler_Exec)
+
 
 def dummy():
     return

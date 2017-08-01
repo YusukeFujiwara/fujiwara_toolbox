@@ -13444,10 +13444,10 @@ class MarvelousDesingerUtils():
             bpy.ops.anim.keyframe_insert_menu(type='LocRotScale')
         if fjw.active().mode == "POSE":
             #MarvelousDesigner用
-            aau = fjw.ArmatureActionUtils()
+            aau = fjw.ArmatureActionUtils(fjw.active())
             aau.set_action("mdwork")
             frame = bpy.context.scene.frame_current
-            aau.store_pose(frame, "mdpose_"+frame)
+            aau.store_pose(frame, "mdpose_"+str(frame))
 
             bpy.ops.pose.select_all(action='SELECT')
             bpy.ops.anim.keyframe_insert_menu(type='WholeCharacter')
@@ -13460,10 +13460,10 @@ class MarvelousDesingerUtils():
             bpy.ops.anim.keyframe_delete_v3d()
         if fjw.active().mode == "POSE":
             #MarvelousDesigner用
-            aau = fjw.ArmatureActionUtils()
+            aau = fjw.ArmatureActionUtils(fjw.active())
             aau.set_action("mdwork")
             frame = bpy.context.scene.frame_current
-            aau.delete_pose("mdpose_"+frame)        
+            aau.delete_pose("mdpose_"+str(frame))        
 
             bpy.ops.pose.select_all(action='SELECT')
             bpy.ops.anim.keyframe_delete_v3d()
@@ -13483,6 +13483,7 @@ class MarvelousDesingerUtils():
 
     @classmethod
     def export_active_body_mdavatar(cls):
+        cls.armature_autokey()
         rootname = fjw.get_root(fjw.active()).name
         fjw.framejump(1)
         #Bodyがあったら出力
@@ -13512,19 +13513,7 @@ class MarvelousDesingerUtils():
 
             #フレーム10なら微調整じゃないのでオートフレーム。
             armu = fjw.ArmatureUtils(fjw.active())
-
-            geoname = armu.findname("Geometry")
-            if geoname == None:
-                #head位置が0,0,0のものを探してやればいいのでは？
-                for ebone in fjw.active().data.bones:
-                    if ebone.head == Vector((0,0,0)):
-                        geoname = ebone.name
-                        break
-
-            #それでもなければアクティブをジオメトリに使う
-            if geoname == None:
-                geoname = armu.poseactive().name
-            geo = armu.posebone(geoname)
+            geo = armu.GetGeometryBone()
             armu.clearTrans([geo])
 
             cls.setkey()
@@ -13739,7 +13728,7 @@ class FUJIWARATOOLBOX_902822(bpy.types.Operator):#MD作業ファイル準備
 
     def execute(self, context):
         if "_MDWork" not in bpy.data.filepath:
-            bpy.ops.object.fjw_openlinkedfolder() #asset manager依存だからよくない…
+            # bpy.ops.object.fjw_openlinkedfolder() #asset manager依存だからよくない…
 
             #bpy.ops.wm.save_mainfile()
             fjw.framejump(10)
@@ -13758,10 +13747,60 @@ class FUJIWARATOOLBOX_902822(bpy.types.Operator):#MD作業ファイル準備
             bpy.ops.object.select_all(action='SELECT')
             bpy.ops.object.duplicates_make_real(use_base_parent=True,use_hierarchy=True)
 
+            #proxyの処理
+            #同一のアーマチュアデータを使っているものを探してポーズライブラリを設定する。
+            for armature_proxy in bpy.data.objects:
+                if armature_proxy.type != "ARMATURE":
+                    continue
+                if "_proxy" not in armature_proxy.name:
+                    continue
+
+                for armature in bpy.data.objects:
+                    if armature.type != "ARMATURE":
+                        continue
+                    if armature == armature_proxy:
+                        continue
+
+                    if armature.data == armature_proxy.data:
+                        #同一データを使用している
+                        #のでポーズライブラリの設定をコピーする
+                        armature.pose_library = armature_proxy.pose_library
+
+                        #回収したポーズライブラリを反映する
+                        fjw.mode("OBJECT")
+                        fjw.activate(armature)
+                        
+                        if fjw.active() is not None:
+                            aau = fjw.ArmatureActionUtils(armature)
+                            poselist = aau.get_poselist()
+                            armu = fjw.ArmatureUtils(armature)
+                            if poselist is not None:
+                                for pose in aau.get_poselist():
+                                    frame = int(str(pose.name).replace("mdpose_",""))
+                                    fjw.framejump(frame)
+                                    fjw.mode("POSE")
+
+                                    #ジオメトリはゼロ位置にする
+                                    geo = armu.GetGeometryBone()
+                                    armu.clearTrans([geo])
+                                    bpy.ops.pose.select_all(action='SELECT')
+                                    armu.databone(geo.name).select = False
+                                    aau.apply_pose(pose.name)
+                            #1フレームではデフォルトポーズに
+                            fjw.mode("POSE")
+                            fjw.framejump(1)
+                            bpy.ops.pose.select_all(action='SELECT')
+                            bpy.ops.pose.transforms_clear()
+
+
+
+
             #proxyの全削除
+            fjw.mode("OBJECT")
             prxs = fjw.find_list("_proxy")
             fjw.delete(prxs)
 
+            # bpy.app.handlers.scene_update_post.append(process_proxy)
             bpy.context.space_data.show_only_render = False
 
         return {'FINISHED'}
@@ -17298,7 +17337,7 @@ class FUJIWARATOOLBOX_823369(bpy.types.Operator):#AssetManager用キャラリン
 #
 #   ヘッダーボタン用
 #
-class MarvelousDesingerUtils.setkey(bpy.types.Operator):
+class MD_SETKEY(bpy.types.Operator):
     """キーフレーム挿入"""
     bl_idname = "fujiwara_toolbox.set_key"
     bl_label = "キーフレーム挿入"
@@ -17309,11 +17348,11 @@ class MarvelousDesingerUtils.setkey(bpy.types.Operator):
             fjw.deselect()
             fjw.activate(obj)
             MarvelousDesingerUtils.setkey()
-            MarvelousDesingerUtils.armature_autokey()
+            # MarvelousDesingerUtils.armature_autokey()
         return {"FINISHED"}
 
 
-class MarvelousDesingerUtils.delkey(bpy.types.Operator):
+class MD_DELKEY(bpy.types.Operator):
     """キーフレーム削除"""
     bl_idname = "fujiwara_toolbox.del_key"
     bl_label = "キーフレーム削除"
@@ -17326,9 +17365,9 @@ class MarvelousDesingerUtils.delkey(bpy.types.Operator):
             MarvelousDesingerUtils.delkey()
         return {"FINISHED"}
 
-class MarvelousDesingerUtils.export_active_body_mdavatar(bpy.types.Operator):
+class MD_export_active_body_mdavatar(bpy.types.Operator):
     """アバター出力"""
-    bl_idname = "fujiwara_toolbox.MarvelousDesingerUtils.export_active_body_mdavatar"
+    bl_idname = "fujiwara_toolbox.export_active_body_mdavatar"
     bl_label = "アバター出力"
 
     def execute(self, context):
@@ -17475,7 +17514,7 @@ def menu_func_VIEW3D_HT_header(self, context):
         #active.operator("fujiwara_toolbox.framejump_15",icon="TRIA_RIGHT_BAR", text="")
         active.operator("fujiwara_toolbox.set_key", icon="KEYINGSET", text="")
         active.operator("fujiwara_toolbox.del_key", icon="KEY_DEHLT", text="")
-        active.operator("fujiwara_toolbox.MarvelousDesingerUtils.export_active_body_mdavatar", icon="EXPORT", text="")
+        active.operator("fujiwara_toolbox.export_active_body_mdavatar", icon="EXPORT", text="")
 
     if pref.glrenderutils_buttons:
         active = layout.row(align = True)
