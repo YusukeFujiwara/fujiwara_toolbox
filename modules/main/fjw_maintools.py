@@ -13876,11 +13876,6 @@ class FUJIWARATOOLBOX_179920(bpy.types.Operator):#元を開く（別窓）
 ########################################
 
 
-
-
-
-
-
 ########################################
 #戻る
 ########################################
@@ -13897,8 +13892,6 @@ class FUJIWARATOOLBOX_401078(bpy.types.Operator):#戻る
     def execute(self, context):
         if "_MDWork" in bpy.data.filepath:
             path = bpy.data.filepath.replace("_MDWork","")
-            #bpy.ops.wm.open_mainfile(filepath = path)
-            #os.system(path)
             subprocess.Popen("EXPLORER " + path)
             os.remove(bpy.data.filepath)
             bpy.ops.wm.quit_blender()
@@ -13927,50 +13920,9 @@ class FUJIWARATOOLBOX_628306(bpy.types.Operator):#終了
         return {'FINISHED'}
 ########################################
 
-
-
-
-
-
-
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
-
-# ########################################
-# #選択プロクシから転送
-# ########################################
-# class FUJIWARATOOLBOX_360702(bpy.types.Operator):#選択プロクシから転送
-#     """選択プロクシから転送"""
-#     bl_idname = "fujiwara_toolbox.command_360702"
-#     bl_label = "選択プロクシから転送"
-#     bl_options = {'REGISTER', 'UNDO'}
-
-#     uiitem = uiitem()
-#     uiitem.button(bl_idname,bl_label,icon="NLA_PUSHDOWN",mode="")
-
-
-#     def execute(self, context):
-#         armature = None
-#         proxy = None
-#         selection = fjw.get_selected_list()
-#         for obj in selection:
-#             if "_proxy" in obj.name:
-#                 proxy = obj
-#             else:
-#                 armature = obj
-#         fjw.activate(armature)
-#         fjw.mode("POSE")
-#         bpy.ops.anim.keyframe_insert_menu(type='WholeCharacter')
-#         armature.animation_data.action = proxy.animation_data.action
-
-#         return {'FINISHED'}
-# ########################################
-
-
-# #---------------------------------------------
-# uiitem().vertical()
-# #---------------------------------------------
 
 ############################################################################################################################
 uiitem("obj+PointCache")
@@ -13991,40 +13943,10 @@ class FUJIWARATOOLBOX_738210(bpy.types.Operator):#アバター出力
 
 
     def execute(self, context):
-        MarvelousDesingerUtils.export_mdavatar(fujiwara_toolbox.conf.MarvelousDesigner_dir, "avatar")
+        # MarvelousDesingerUtils.export_mdavatar(fujiwara_toolbox.conf.MarvelousDesigner_dir, "avatar")
+        MarvelousDesingerUtils.export_mdavatar_to_mddata("avatar")
         return {'FINISHED'}
 ########################################
-
-
-########################################
-#MDDataに出力
-########################################
-class FUJIWARATOOLBOX_347662(bpy.types.Operator):#MDDataに出力
-    """MDDataに出力"""
-    bl_idname = "fujiwara_toolbox.command_347662"
-    bl_label = "MDDataに出力"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        dir = os.path.dirname(bpy.data.filepath) + os.sep + "MDData" + os.sep
-
-        blendname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
-        root = fjw.get_root(fjw.active())
-
-        name = "avatar_" + blendname + "_" + root.name
-
-        MarvelousDesingerUtils.export_mdavatar(dir, name, False)
-        return {'FINISHED'}
-########################################
-
-
-
-
-
 
 
 ########################################
@@ -14062,7 +13984,7 @@ class FUJIWARATOOLBOX_287546(bpy.types.Operator):#アバターのみ
         #フレーム1に移動
         bpy.ops.screen.frame_jump(end=False)
         #obj出力
-        dir = fujiwara_toolbox.conf.MarvelousDesigner_dir
+        dir = MarvelousDesingerUtils.get_mddatadir()
         bpy.ops.export_scene.obj(filepath= dir + "avatar.obj", use_selection=True)
 
 
@@ -14102,7 +14024,7 @@ class FUJIWARATOOLBOX_341922(bpy.types.Operator):#プロップ出力
         #フレーム1に移動→しない！
         #bpy.ops.screen.frame_jump(end=False)
         #obj出力
-        dir = fujiwara_toolbox.conf.MarvelousDesigner_dir
+        dir = MarvelousDesingerUtils.get_mddatadir()
         bpy.ops.export_scene.obj(filepath= dir + "prop.obj", use_selection=True)
 
 
