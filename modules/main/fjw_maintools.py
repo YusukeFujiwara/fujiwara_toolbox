@@ -7578,7 +7578,7 @@ uiitem().horizontal()
 ########################################
 #指定Emptyで厚み制御
 ########################################
-#bpy.ops.fjw.SetThicknessDriverwithEmpty() #指定Emptyで厚み制御
+#bpy.ops.fujiwara_toolbox.set_thickness_driver_with_empty() #指定Emptyで厚み制御
 class FUJIWARATOOLBOX_SetThicknessDriverwithEmpty(bpy.types.Operator):
     """アクティブなEmptyのZ Scaleを使用して厚さを制御できるようにする。ドライバ制御。"""
     bl_idname = "fujiwara_toolbox.set_thickness_driver_with_empty"
@@ -13555,7 +13555,7 @@ class MarvelousDesingerUtils():
 
             selection = fjw.get_selected_list()
             for obj in selection:
-            if obj.type == "MESH":
+                if obj.type == "MESH":
                     bpy.context.scene.objects.active = obj
                     bpy.ops.object.mode_set(mode='EDIT', toggle=False)
                     bpy.ops.mesh.remove_doubles()
@@ -13577,7 +13577,7 @@ class MarvelousDesingerUtils():
             
             
             bpy.ops.fujiwara_toolbox.command_318722()#裏ポリエッジ付加
-            bpy.ops.fjw.SetThicknessDriverwithEmpty() #指定Emptyで厚み制御
+            bpy.ops.fujiwara_toolbox.set_thickness_driver_with_empty_auto() #指定Emptyで厚み制御
 
 
 
@@ -13701,7 +13701,7 @@ class FUJIWARATOOLBOX_487662(bpy.types.Operator):#オートインポート
                     self.report({"INFO"},dir + file)
 
                     #インポート
-                    MarvelousDesingerUtils.import_mdresult(self,dir + file + os.sep + "result.obj")
+                    MarvelousDesingerUtils.import_mdresult(dir + file + os.sep + "result.obj")
 
 
         ##存在確認
