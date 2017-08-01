@@ -696,6 +696,7 @@ def delete(objects):
         obj.hide_select = False
         obj.select = True
         activate(obj)
+        mode("OBJECT")
 
     bpy.ops.object.delete(use_global=False)
 

@@ -10,6 +10,7 @@ import subprocess
 import shutil
 import time
 import copy
+import sys
 from collections import OrderedDict
 
 
@@ -3098,6 +3099,7 @@ uiitem("OpenGLレンダ")
 uiitem().vertical()
 #---------------------------------------------
 
+#GLレンダのバックグラウンド実行は無理。
 
 def active_gpbrush():
     return bpy.context.scene.tool_settings.gpencil_brushes.active
@@ -13633,7 +13635,6 @@ class FUJIWARATOOLBOX_302662(bpy.types.Operator):#オートアバター
                 if armt != None:
                     #カメラに映っているもののみに実行する。
                     if fjw.checkIfIsInCameraView(obj):
-                        #targets.append(obj)
                         targets.append(armt.object)
 
         # ターゲットへの実行
@@ -13643,8 +13644,6 @@ class FUJIWARATOOLBOX_302662(bpy.types.Operator):#オートアバター
             fjw.deselect()
             fjw.activate(obj)
             if obj.type == "ARMATURE":
-                fjw.framejump(10)
-                bpy.ops.fujiwara_toolbox.set_key()
                 MarvelousDesingerUtils.export_active_body_mdavatar()
         
         #終了
@@ -13792,6 +13791,24 @@ class FUJIWARATOOLBOX_902822(bpy.types.Operator):#MD作業ファイル準備
             for i in range(5):
                 bpy.context.scene.layers[i] = True
 
+
+            #ポーズだけついてるやつをポーズライブラリに登録する
+            for armature_proxy in bpy.data.objects:
+                if armature_proxy.type != "ARMATURE":
+                    continue
+                if "_proxy" not in armature_proxy.name:
+                    continue
+                fjw.deselect()
+                fjw.activate(armature_proxy)
+                fjw.mode("POSE")
+                bpy.ops.pose.select_all(action='SELECT')
+                bpy.ops.fujiwara_toolbox.set_key()
+                fjw.mode("OBJECT")
+
+
+
+
+
             fjw.mode("OBJECT")
             bpy.ops.object.select_all(action='SELECT')
             bpy.ops.object.duplicates_make_real(use_base_parent=True,use_hierarchy=True)
@@ -13803,6 +13820,18 @@ class FUJIWARATOOLBOX_902822(bpy.types.Operator):#MD作業ファイル準備
                     continue
                 if "_proxy" not in armature_proxy.name:
                     continue
+
+
+                # fjw.framejump(10)
+                # fjw.activate(armature_proxy)
+                # fjw.mode("POSE")
+                # #とりあえずポーズだけついてるやつのことを考えると、フレーム10の登録をしないといけないのでは
+                # bpy.ops.pose.select_all(action='SELECT')
+                # bpy.ops.fujiwara_toolbox.set_key()
+                # fjw.mode("OBJECT")
+
+                            
+
 
                 for armature in bpy.data.objects:
                     if armature.type != "ARMATURE":
@@ -13821,13 +13850,14 @@ class FUJIWARATOOLBOX_902822(bpy.types.Operator):#MD作業ファイル準備
                         
                         if fjw.active() is not None:
                             aau = fjw.ArmatureActionUtils(armature)
-                            poselist = aau.get_poselist()
                             armu = fjw.ArmatureUtils(armature)
+                            
+                            fjw.mode("POSE")
+                            poselist = aau.get_poselist()
                             if poselist is not None:
                                 for pose in aau.get_poselist():
                                     frame = int(str(pose.name).replace("mdpose_",""))
                                     fjw.framejump(frame)
-                                    fjw.mode("POSE")
 
                                     #ジオメトリはゼロ位置にする
                                     geo = armu.GetGeometryBone()
@@ -15292,8 +15322,59 @@ class FUJIWARATOOLBOX_104686(bpy.types.Operator):#ランダム石生成
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
+ 
+# ################################################################################
+# #UIカテゴリ
+# ########################################
+# #テスト用
+# ########################################
+# class CATEGORYBUTTON_348479(bpy.types.Operator):
+#     """テスト用"""
+#     bl_idname = "fujiwara_toolbox.categorybutton_348479"
+#     bl_label = "テスト用"
+#     bl_options = {'REGISTER', 'UNDO'}
+
+#     uiitem = uiitem("テスト用",True)
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
+#     uiitem.direction = "vertical"
+
+#     def execute(self, context):
+#         uicategory_execute(self)
+#         return {'FINISHED'}
+# ################################################################################
 
 
+
+
+# ########################################
+# #TEST
+# ########################################
+# #bpy.ops.fujiwara_toolbox.testfunc() #TEST
+# class FUJIWARATOOLBOX_testfunc(bpy.types.Operator):
+#     """テスト用"""
+#     bl_idname = "fujiwara_toolbox.testfunc"
+#     bl_label = "TEST"
+#     bl_options = {'REGISTER', 'UNDO'}
+
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+#     def execute(self, context):
+#         #バックグラウンドGLレンダ
+#         exec_externalutils("openglrender.py")
+#         return {'FINISHED'}
+# ########################################
+
+
+
+
+
+
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
 
 
 ################################################################################
