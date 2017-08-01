@@ -13528,7 +13528,56 @@ class MarvelousDesingerUtils():
             bpy.ops.view3d.view_selected(use_all_regions=False)
             fjw.framejump(10)
 
+    @classmethod
+    def import_mdresult(cls,resultpath):
+            current = fjw.active()
 
+            loc = Vector((0,0,0))
+            qrot = Quaternion()
+
+            #もしボーンが選択されていたらそのボーンにトランスフォームをあわせる
+            if current.mode == "POSE":
+                armu = fjw.ArmatureUtils(current)
+                pbone = armu.poseactive()
+                loc = current.matrix_world * pbone.location
+                qrot = pbone.rotation_quaternion
+
+                #boneはYupなので入れ替え
+                loc = Vector((loc.x,loc.z * -1,loc.y))
+                qrot = Quaternion((qrot.w, qrot.x, qrot.z * -1, qrot.y))
+
+            fjw.mode("OBJECT")
+
+            bpy.ops.import_scene.obj(filepath=resultpath)
+            #インポート後処理
+            #回転を適用
+            bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
+
+            selection = fjw.get_selected_list()
+            for obj in selection:
+            if obj.type == "MESH":
+                    bpy.context.scene.objects.active = obj
+                    bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+                    bpy.ops.mesh.remove_doubles()
+                    bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+                    
+                    #服はエッジ出ない方がいい 裏ポリで十分
+                    for slot in obj.material_slots:
+                        mat = slot.material
+                        mat.use_transparency = True
+                        mat.transparency_method = 'RAYTRACE'
+
+
+                    obj.location = loc
+                    obj.rotation_quaternion = obj.rotation_quaternion * qrot
+                    obj.rotation_euler = obj.rotation_quaternion.to_euler()
+            
+                    #読み先にレイヤーをそろえる
+                    obj.layers = current.layers
+            
+            
+            bpy.ops.fujiwara_toolbox.command_318722()#裏ポリエッジ付加
+            bpy.ops.fjw.SetThicknessDriverwithEmpty() #指定Emptyで厚み制御
 
 
 
@@ -13652,7 +13701,7 @@ class FUJIWARATOOLBOX_487662(bpy.types.Operator):#オートインポート
                     self.report({"INFO"},dir + file)
 
                     #インポート
-                    import_mdresult(self,dir + file + os.sep + "result.obj")
+                    MarvelousDesingerUtils.import_mdresult(self,dir + file + os.sep + "result.obj")
 
 
         ##存在確認
@@ -14285,54 +14334,6 @@ uiitem().vertical()
 #         return {'FINISHED'}
 # ########################################
 
-# def import_mdresult(self,resultpath):
-#         current = fjw.active()
-
-#         loc = Vector((0,0,0))
-#         qrot = Quaternion()
-
-#         #もしボーンが選択されていたらそのボーンにトランスフォームをあわせる
-#         if current.mode == "POSE":
-#             armu = fjw.ArmatureUtils(current)
-#             pbone = armu.poseactive()
-#             loc = current.matrix_world * pbone.location
-#             qrot = pbone.rotation_quaternion
-
-#             #boneはYupなので入れ替え
-#             loc = Vector((loc.x,loc.z * -1,loc.y))
-#             qrot = Quaternion((qrot.w, qrot.x, qrot.z * -1, qrot.y))
-
-#         fjw.mode("OBJECT")
-
-#         bpy.ops.import_scene.obj(filepath=resultpath)
-#         #インポート後処理
-#         #回転を適用
-#         bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
-
-#         selection = fjw.get_selected_list()
-#         for obj in selection:
-#            if obj.type == "MESH":
-#                 bpy.context.scene.objects.active = obj
-#                 bpy.ops.object.mode_set(mode='EDIT', toggle=False)
-#                 bpy.ops.mesh.remove_doubles()
-#                 bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-                
-#                 #服はエッジ出ない方がいい 裏ポリで十分
-#                 for slot in obj.material_slots:
-#                     mat = slot.material
-#                     mat.use_transparency = True
-#                     mat.transparency_method = 'RAYTRACE'
-
-
-#                 obj.location = loc
-#                 obj.rotation_quaternion = obj.rotation_quaternion * qrot
-#                 obj.rotation_euler = obj.rotation_quaternion.to_euler()
-        
-#                 #読み先にレイヤーをそろえる
-#                 obj.layers = current.layers
-        
-#         #裏ポリエッジ付加
-#         bpy.ops.fujiwara_toolbox.command_318722()
 
 
 # ########################################
