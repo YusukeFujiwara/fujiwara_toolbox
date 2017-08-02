@@ -594,22 +594,85 @@ class opennextpage(bpy.types.Operator):
         return {"FINISHED"}
 
 
+def get_paths(dir):
+    files = os.listdir(dir)
+    result = []
+    #ファイルのみ結果に追加し、そうでなければ再帰探索
+    for file in files:
+        path = dir + os.sep + file
+        if not os.path.isdir(path):
+            result.append(path)
+        else:
+            result.extend(get_paths(path))
+    return result
+
+def get_cellpaths(dir):
+    #指定ディレクトリ以下の.blendファイルをすべて取得する
+    paths = get_paths(dir)
+    result = []
+
+    for path in paths:
+        #blendファイルのみ
+        if re.search("\.blend", path) is None:
+            continue
+        #特定ファイルを除外
+        if re.search("page\.blend|\.blend\d+", path) is not None:
+            continue
+        result.append(path)
+
+    return result
+
+
+
+def moveup_til_str_dir(path, str):
+    #strのディレクトリまで上がる
+
+    #ないならそのまま帰す
+    if str not in path:
+        return path
+
+    path = os.path.dirname(path)
+    if os.path.basename(path) == str:
+        return path
+
+    #合わなかったら再帰
+    path = moveup_til_str_dir(path, str)
+    return path
+
+def get_cells():
+    pages_str = (os.sep + "pages" + os.sep)
+
+    if pages_str in bpy.data.filepath :
+        #pagesフォルダがあるからそこから取得
+        dir = moveup_til_str_dir(bpy.data.filepath,"pages")
+        pass
+    else:
+        #pagesフォルダがパス内にない、ので自フォルダ
+        dir = os.path.dirname(bpy.data.filepath)
+        pass
+
+    return get_cellpaths(dir)
+
+def get_selfindex_and_cellfilepaths():
+    files = get_cells()
+    selfpath = bpy.data.filepath
+    print("get_selfindex_and_cellfilepaths")
+    for index, file in enumerate(files):
+        print("%s, %s" % (selfpath, file))
+        if selfpath == file:
+            return index, files
+    return None, None
+
 class openprevcell(bpy.types.Operator):
     """前のコマを開く"""
     bl_idname = "pageutils.openprevcell"
     bl_label = "前のコマ"
     def execute(self,context):
-        selfdir = os.path.dirname(bpy.data.filepath)
-        filename = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
-        #http://uxmilk.jp/8662
-        selfcellindex = int(re.sub(r"[a-z]+", "", filename))
-
-        index = selfcellindex - 1
-
-        target = selfdir + os.sep + str(index) + ".blend"
-        if not os.path.exists(target):
-            self.report({"INFO"},"ファイルが存在しません:" + target)
+        selfindex, filepaths = get_selfindex_and_cellfilepaths()
+        if selfindex <= 0:
+            self.report({"INFO"},"ファイルが存在しません")
             return {'CANCELLED'}
+        target = filepaths[selfindex - 1]
 
         #保存
         bpy.ops.wm.save_mainfile()
@@ -631,17 +694,11 @@ class opennextcell(bpy.types.Operator):
     bl_idname = "pageutils.opennextcell"
     bl_label = "次のコマ"
     def execute(self,context):
-        selfdir = os.path.dirname(bpy.data.filepath)
-        filename = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
-        #http://uxmilk.jp/8662
-        selfcellindex = int(re.sub(r"[a-z]+", "", filename))
-
-        index = selfcellindex + 1
-
-        target = selfdir + os.sep + str(index) + ".blend"
-        if not os.path.exists(target):
-            self.report({"INFO"},"ファイルが存在しません:" + target)
+        selfindex, filepaths = get_selfindex_and_cellfilepaths()
+        if selfindex >= len(filepaths) - 1:
+            self.report({"INFO"},"ファイルが存在しません")
             return {'CANCELLED'}
+        target = filepaths[selfindex + 1]
 
         #保存
         bpy.ops.wm.save_mainfile()
