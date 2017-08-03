@@ -634,36 +634,36 @@ class FUJIWARATOOLBOX_490317(bpy.types.Operator):#保存
 #         return {'FINISHED'}
 # ########################################
 
-########################################
-#+辺
-########################################
-class FUJIWARATOOLBOX_420416(bpy.types.Operator):#+辺
-    """+辺"""
-    bl_idname = "fujiwara_toolbox.command_420416"
-    bl_label = "+辺"
-    bl_options = {'REGISTER', 'UNDO'}
+# ########################################
+# #+辺
+# ########################################
+# class FUJIWARATOOLBOX_420416(bpy.types.Operator):#+辺
+#     """+辺"""
+#     bl_idname = "fujiwara_toolbox.command_420416"
+#     bl_label = "+辺"
+#     bl_options = {'REGISTER', 'UNDO'}
 
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    def execute(self, context):
-        #エッジオフ
-        bpy.context.scene.render.use_edge_enhance = True
+#     def execute(self, context):
+#         #エッジオフ
+#         bpy.context.scene.render.use_edge_enhance = True
 
-        #メイン
-        blendfilepath = bpy.data.filepath
-        blendname = os.path.splitext(os.path.basename(blendfilepath))[0]
-        renderdir = os.path.dirname(blendfilepath) + os.sep + "tmp_render" + os.sep
-        binpath = bpy.app.binary_path
-        command = fjw.qq(binpath) + " -b " + fjw.qq(blendfilepath) + " -o " + fjw.qq(renderdir + blendname + "_") + " -F PNG -x 1 -f " + str(bpy.context.scene.frame_current)
-        self.report({"INFO"},command)
-        #os.system(command)
-        #subprocess.call(command, shell=True)
-        subprocess.Popen(command)
+#         #メイン
+#         blendfilepath = bpy.data.filepath
+#         blendname = os.path.splitext(os.path.basename(blendfilepath))[0]
+#         renderdir = os.path.dirname(blendfilepath) + os.sep + "tmp_render" + os.sep
+#         binpath = bpy.app.binary_path
+#         command = fjw.qq(binpath) + " -b " + fjw.qq(blendfilepath) + " -o " + fjw.qq(renderdir + blendname + "_") + " -F PNG -x 1 -f " + str(bpy.context.scene.frame_current)
+#         self.report({"INFO"},command)
+#         #os.system(command)
+#         #subprocess.call(command, shell=True)
+#         subprocess.Popen(command)
         
-        return {'FINISHED'}
-########################################
+#         return {'FINISHED'}
+# ########################################
 
 
 
