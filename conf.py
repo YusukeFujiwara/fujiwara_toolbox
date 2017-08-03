@@ -125,6 +125,10 @@ class FujiwaraToolBoxPreferences(AddonPreferences):
             name="MarvelousDesigner作業用ディレクトリ",
             subtype='FILE_PATH',
             )
+    script_loader = BoolProperty(
+            name="FJW Script Loader",
+            default=False,
+            )
 
     def draw(self, context):
         layout = self.layout
@@ -150,6 +154,7 @@ class FujiwaraToolBoxPreferences(AddonPreferences):
         layout.label(text="特殊設定")
         layout.prop(self, "assetdir")
         layout.prop(self, "MarvelousDesigner_dir")
+        layout.prop(self, "script_loader")
 
 
 

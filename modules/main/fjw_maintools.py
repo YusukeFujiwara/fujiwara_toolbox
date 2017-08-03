@@ -3134,8 +3134,9 @@ class FUJIWARATOOLBOX_979047(bpy.types.Operator):#GLレンダ（ビューポー�
         if bpy.context.scene.render.simplify_subdivision < 2:
             bpy.context.scene.render.simplify_subdivision = 2
 
-        #下書き非表示
-        bpy.context.space_data.show_background_images = False
+        if not background:
+            #下書き非表示
+            bpy.context.space_data.show_background_images = False
 
         #グリペンレイヤ
         if bpy.context.scene.grease_pencil is not None:
