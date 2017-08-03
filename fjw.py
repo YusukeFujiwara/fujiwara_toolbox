@@ -1251,5 +1251,16 @@ class ViewState():
 #     bpy.app.handlers.scene_update_post.remove(OnetimeHandler_Exec)
 
 
+def get_override(areatype):
+    override = bpy.context.copy()
+    for area in bpy.context.screen.areas:
+        if area.type == areatype:
+            override['area'] = area
+            break
+    return override
+
 def dummy():
     return
+
+
+

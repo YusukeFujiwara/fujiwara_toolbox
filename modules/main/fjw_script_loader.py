@@ -52,7 +52,12 @@ def sceneupdate_post_onetime_exectute(context):
     print("execute:%s" % scriptpath)
     with open(file = scriptpath, encoding = "utf_8_sig") as f:
         code = f.read()
-        exec(code)
+        exec(code, globals(), locals())
+
+    #実行スクリプト内では
+    # override = fjw.get_override("VIEW_3D")
+    # bpy.ops.fujiwara_toolbox.command_979047(override)
+    #のように扱う
 
     print("::::sceneupdate_post_onetime_exectute end::::")
 
