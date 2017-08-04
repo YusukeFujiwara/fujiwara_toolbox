@@ -2571,8 +2571,9 @@ class FUJIWARATOOLBOX_make_materials_monochrome(bpy.types.Operator):
     def execute(self, context):
         selection = fjw.get_selected_list()
         for obj in selection:
-            for mat in obj.data.materials:
-                mat.diffuse_color.s = 0.0
+            if obj.type == "MESH":
+                for mat in obj.data.materials:
+                    mat.diffuse_color.s = 0.0
 
         return {'FINISHED'}
 ########################################
