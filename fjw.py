@@ -379,7 +379,6 @@ class ArmatureUtils():
         if geoname == None:
             geoname = self.self.armature.data.bones[0].name
 
-
         geo = self.posebone(geoname)
         return geo
 
@@ -387,6 +386,59 @@ class ArmatureUtils():
     def func(self):
         pass
 
+class ArmatureActionUtils():
+    armature = None
+    action = None
+    def __init__(self, armature):
+        self.armature = armature
+        self.action = armature.pose_library
+        return
+
+    def new_action(self, name):
+        action = bpy.data.actions.new(name)
+        self.armature.pose_library = action
+        self.action = self.armature.pose_library
+        pass
+
+    def get_action(self):
+        self.action = self.armature.pose_library
+        return self.action
+
+    def set_action(self,name):
+        #nameが現在のポーズに含まれていればそれを返す
+        if self.action is not None:
+            if name in self.action.name:
+                return self.action
+
+        #なければ作成する
+        self.new_action(name)
+        return self.action
+
+    
+
+    def get_poselist(self):
+        if self.get_action() is None:
+            return None
+        return self.action.pose_markers
+
+    def store_pose(self,frame,name):
+        mode("POSE")
+        bpy.ops.poselib.pose_add(frame=frame, name=name)
+        pass
+
+    def apply_pose(self, name):
+        if name not in self.action.pose_markers:
+            print("no pose found")
+            return
+        for index, pose in enumerate(self.action.pose_markers):
+            if pose.name == name:
+                bpy.ops.poselib.apply_pose(pose_index=index)
+                break
+
+    def delete_pose(self, name):
+        if name in self.action.pose_markers:
+            bpy.ops.poselib.pose_remove(pose=name)
+        pass
 
 class ActionConstraintUtils():
     armature = None
@@ -644,6 +696,7 @@ def delete(objects):
         obj.hide_select = False
         obj.select = True
         activate(obj)
+        mode("OBJECT")
 
     bpy.ops.object.delete(use_global=False)
 
@@ -1172,5 +1225,42 @@ class ViewState():
     def delete(self):
         del self.viewstates
 
+
+# class OnetimeHandler():
+#     func = None
+#     def __init__(self, func):
+#         self.func = func
+#         self.store()
+    
+#     def execute(self, context):
+#         self.func()
+#         bpy.app.handlers.scene_update_post.remove(self.execute)
+
+#     def store(self):
+#         bpy.app.handlers.scene_update_post.append(self.execute)
+
+# OnetimeHandler_Func = None
+# def OnetimeHandler(func):
+#     global OnetimeHandler_Func
+#     OnetimeHandler_Func = func
+#     bpy.app.handlers.scene_update_post.append(OnetimeHandler_Exec)
+
+# def OnetimeHandler_Exec(context):
+#     global OnetimeHandler_Func
+#     OnetimeHandler_Func()
+#     bpy.app.handlers.scene_update_post.remove(OnetimeHandler_Exec)
+
+
+def get_override(areatype):
+    override = bpy.context.copy()
+    for area in bpy.context.screen.areas:
+        if area.type == areatype:
+            override['area'] = area
+            break
+    return override
+
 def dummy():
     return
+
+
+

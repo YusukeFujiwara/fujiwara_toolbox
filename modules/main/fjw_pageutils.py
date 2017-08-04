@@ -215,114 +215,117 @@ class bgopen(bpy.types.Operator):
 ############################################################################################################################
 #ページモード
 ############################################################################################################################
+
+def refresh_command(self):
+    filename = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
+    if "page" not in filename:
+        return {'CANCELLED'}
+    #pageutils/img/を調べる
+    dir = os.path.dirname(bpy.data.filepath)
+    imgdir = dir + os.sep + "pageutils" + os.sep + "img" + os.sep
+    files = os.listdir(imgdir)
+
+    #カメラの縦を1とした時の横方向の比率
+    wr = bpy.context.scene.render.resolution_x / bpy.context.scene.render.resolution_y
+
+    #カメラの設定
+    camera = bpy.context.scene.camera
+    camera.data.type = 'ORTHO'
+    camera.data.ortho_scale = 2
+    camera.location[0] = 0
+    camera.location[1] = -2
+    camera.location[2] = 0
+
+    #bpy.context.space_data.lock_camera = False
+
+    yoffset = 0
+    for file in files:
+        yoffset += 0.3
+        #拡張子除去
+        fname = file.replace(".png","")
+
+        #存在確認 あったらスキップ
+        if fname in bpy.data.objects:
+            obj = bpy.data.objects[fname]
+            obj.location[0] = 0
+            obj.location[2] = 0
+            obj.show_wire = True
+            continue
+
+        self.report({"INFO"},file)
+        #板追加
+        bpy.ops.mesh.primitive_plane_add(radius=1, view_align=False, enter_editmode=False, location=(0, 0, 0), layers=(True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False))
+        obj = bpy.context.scene.objects.active
+        obj.name = fname
+        obj.show_wire = True
+
+        #UVマップ 変形する前に展開しておくべき
+        bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+        bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+        #bpy.ops.uv.smart_project()
+        bpy.ops.uv.unwrap(method='ANGLE_BASED', margin=0.001)
+        bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+
+        #板を立てる
+        obj.rotation_euler[0] = 1.5708
+        #上下も反転
+        obj.rotation_euler[1] = 3.14159
+
+        #比率をカメラに合わせる
+        obj.scale[0] = wr
+        #トランスフォームのアプライ
+        bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
+        #比率が1以上＝横長
+        if wr > 1:
+            obj.scale = (1 / wr,1 / wr,1 / wr)
+            #トランスフォームのアプライ
+            bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
+
+
+        obj.rotation_euler[1] = 3.14159
+        #トランスフォームのアプライ
+        bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
+
+        #オブジェクトに位置オフセットをつける
+        obj.location[0] = 0
+        obj.location[1] = yoffset
+        obj.location[2] = 0
+
+        #マテリアル関係
+        matname = "コマ_" + fname
+        mat = bpy.data.materials.new(name=matname)
+        mat.use_transparency = True
+        mat.alpha = 0
+        mat.use_shadeless = True
+
+        obj.data.materials.append(mat)
+
+
+        #テクスチャ
+        tex = bpy.data.textures.new(file, "IMAGE")
+        fjw.load_img(imgdir + file)
+
+        tex.image = fjw.load_img(imgdir + file)
+
+        texture_slot = mat.texture_slots.add()
+        texture_slot.texture = tex
+        texture_slot.texture = tex
+        texture_slot.use_map_alpha = True
+        #obj.material_slots[0].material.texture_slots[0].texture = tex
+
+        return True
+    return False
+
+
+
 class refresh(bpy.types.Operator):
     """コマ画像をスキャンして追加"""
     bl_idname = "pageutils.refresh"
     bl_label = "リフレッシュ"
     def execute(self,context):
-        filename = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
-        if "page" not in filename:
-            return {'CANCELLED'}
-        #pageutils/img/を調べる
-        dir = os.path.dirname(bpy.data.filepath)
-        imgdir = dir + os.sep + "pageutils" + os.sep + "img" + os.sep
-        files = os.listdir(imgdir)
-
-        #カメラの縦を1とした時の横方向の比率
-        wr = bpy.context.scene.render.resolution_x / bpy.context.scene.render.resolution_y
-
-        #カメラの設定
-        camera = bpy.context.scene.camera
-        camera.data.type = 'ORTHO'
-        camera.data.ortho_scale = 2
-        camera.location[0] = 0
-        camera.location[1] = -2
-        camera.location[2] = 0
-
-        #bpy.context.space_data.lock_camera = False
-
-        yoffset = 0
-        for file in files:
-            yoffset += 0.3
-            #拡張子除去
-            fname = file.replace(".png","")
-
-            #存在確認 あったらスキップ
-            if fname in bpy.data.objects:
-                obj = bpy.data.objects[fname]
-                obj.location[0] = 0
-                #あえて移動したやつは変更しない
-                #obj.location[1] = yoffset
-                obj.location[2] = 0
-                obj.show_wire = True
-                continue
-
-            self.report({"INFO"},file)
-            #板追加
-            bpy.ops.mesh.primitive_plane_add(radius=1, view_align=False, enter_editmode=False, location=(0, 0, 0), layers=(True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False))
-            obj = bpy.context.scene.objects.active
-            obj.name = fname
-            obj.show_wire = True
-
-            #UVマップ 変形する前に展開しておくべき
-            bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-            bpy.ops.object.mode_set(mode='EDIT', toggle=False)
-            #bpy.ops.uv.smart_project()
-            bpy.ops.uv.unwrap(method='ANGLE_BASED', margin=0.001)
-            bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-
-            #板を立てる
-            obj.rotation_euler[0] = 1.5708
-            #上下も反転
-            obj.rotation_euler[1] = 3.14159
-
-            #比率をカメラに合わせる
-            obj.scale[0] = wr
-            #トランスフォームのアプライ
-            bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
-            ##サイズをあわせる
-            #obj.dimensions = (obj.dimensions[0],obj.dimensions[1], 2)
-            #obj.scale[0] = obj.scale[2]
-            #比率が1以上＝横長
-            if wr > 1:
-                obj.scale = (1 / wr,1 / wr,1 / wr)
-                #トランスフォームのアプライ
-                bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
-
-
-            obj.rotation_euler[1] = 3.14159
-            #トランスフォームのアプライ
-            bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
-
-            #オブジェクトに位置オフセットをつける
-            obj.location[0] = 0
-            obj.location[1] = yoffset
-            obj.location[2] = 0
-
-            #マテリアル関係
-            matname = "コマ_" + fname
-            mat = bpy.data.materials.new(name=matname)
-            mat.use_transparency = True
-            mat.alpha = 0
-            mat.use_shadeless = True
-
-            obj.data.materials.append(mat)
-
-
-            #テクスチャ
-            tex = bpy.data.textures.new(file, "IMAGE")
-            fjw.load_img(imgdir + file)
-
-            tex.image = fjw.load_img(imgdir + file)
-
-            texture_slot = mat.texture_slots.add()
-            texture_slot.texture = tex
-            texture_slot.texture = tex
-            texture_slot.use_map_alpha = True
-            #obj.material_slots[0].material.texture_slots[0].texture = tex
-
-            bpy.context.space_data.viewport_shade = 'MATERIAL'
-
+        for n in range(10):
+            if not refresh_command(self):
+                break
 
         return {"FINISHED"}
     def invoke(self, context, event):
@@ -594,22 +597,85 @@ class opennextpage(bpy.types.Operator):
         return {"FINISHED"}
 
 
+def get_paths(dir):
+    files = os.listdir(dir)
+    result = []
+    #ファイルのみ結果に追加し、そうでなければ再帰探索
+    for file in files:
+        path = dir + os.sep + file
+        if not os.path.isdir(path):
+            result.append(path)
+        else:
+            result.extend(get_paths(path))
+    return result
+
+def get_cellpaths(dir):
+    #指定ディレクトリ以下の.blendファイルをすべて取得する
+    paths = get_paths(dir)
+    result = []
+
+    for path in paths:
+        #blendファイルのみ
+        if re.search("\.blend", path) is None:
+            continue
+        #特定ファイルを除外
+        if re.search("page\.blend|\.blend\d+", path) is not None:
+            continue
+        result.append(path)
+
+    return result
+
+
+
+def moveup_til_str_dir(path, str):
+    #strのディレクトリまで上がる
+
+    #ないならそのまま帰す
+    if str not in path:
+        return path
+
+    path = os.path.dirname(path)
+    if os.path.basename(path) == str:
+        return path
+
+    #合わなかったら再帰
+    path = moveup_til_str_dir(path, str)
+    return path
+
+def get_cells():
+    pages_str = (os.sep + "pages" + os.sep)
+
+    if pages_str in bpy.data.filepath :
+        #pagesフォルダがあるからそこから取得
+        dir = moveup_til_str_dir(bpy.data.filepath,"pages")
+        pass
+    else:
+        #pagesフォルダがパス内にない、ので自フォルダ
+        dir = os.path.dirname(bpy.data.filepath)
+        pass
+
+    return get_cellpaths(dir)
+
+def get_selfindex_and_cellfilepaths():
+    files = get_cells()
+    selfpath = bpy.data.filepath
+    print("get_selfindex_and_cellfilepaths")
+    for index, file in enumerate(files):
+        print("%s, %s" % (selfpath, file))
+        if selfpath == file:
+            return index, files
+    return None, None
+
 class openprevcell(bpy.types.Operator):
     """前のコマを開く"""
     bl_idname = "pageutils.openprevcell"
     bl_label = "前のコマ"
     def execute(self,context):
-        selfdir = os.path.dirname(bpy.data.filepath)
-        filename = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
-        #http://uxmilk.jp/8662
-        selfcellindex = int(re.sub(r"[a-z]+", "", filename))
-
-        index = selfcellindex - 1
-
-        target = selfdir + os.sep + str(index) + ".blend"
-        if not os.path.exists(target):
-            self.report({"INFO"},"ファイルが存在しません:" + target)
+        selfindex, filepaths = get_selfindex_and_cellfilepaths()
+        if selfindex <= 0:
+            self.report({"INFO"},"ファイルが存在しません")
             return {'CANCELLED'}
+        target = filepaths[selfindex - 1]
 
         #保存
         bpy.ops.wm.save_mainfile()
@@ -631,17 +697,11 @@ class opennextcell(bpy.types.Operator):
     bl_idname = "pageutils.opennextcell"
     bl_label = "次のコマ"
     def execute(self,context):
-        selfdir = os.path.dirname(bpy.data.filepath)
-        filename = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
-        #http://uxmilk.jp/8662
-        selfcellindex = int(re.sub(r"[a-z]+", "", filename))
-
-        index = selfcellindex + 1
-
-        target = selfdir + os.sep + str(index) + ".blend"
-        if not os.path.exists(target):
-            self.report({"INFO"},"ファイルが存在しません:" + target)
+        selfindex, filepaths = get_selfindex_and_cellfilepaths()
+        if selfindex >= len(filepaths) - 1:
+            self.report({"INFO"},"ファイルが存在しません")
             return {'CANCELLED'}
+        target = filepaths[selfindex + 1]
 
         #保存
         bpy.ops.wm.save_mainfile()
