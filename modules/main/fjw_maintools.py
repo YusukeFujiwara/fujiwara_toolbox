@@ -11,6 +11,7 @@ import shutil
 import time
 import copy
 import sys
+import mathutils
 from collections import OrderedDict
 
 
@@ -2554,7 +2555,32 @@ class CATEGORYBUTTON_798012(bpy.types.Operator):#マテリアル
 ################################################################################
 
 
+########################################
+#モノクロ化
+########################################
+#bpy.ops.fujiwara_toolbox.make_materials_monochrome() #モノクロ化
+class FUJIWARATOOLBOX_make_materials_monochrome(bpy.types.Operator):
+    """選択オブジェクトのマテリアルをモノクロ化する"""
+    bl_idname = "fujiwara_toolbox.make_materials_monochrome"
+    bl_label = "モノクロ化"
+    bl_options = {'REGISTER', 'UNDO'}
 
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            for mat in obj.data.materials:
+                mat.diffuse_color.s = 0.0
+
+        return {'FINISHED'}
+########################################
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
 
 #---------------------------------------------
 uiitem().horizontal()
