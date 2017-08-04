@@ -3163,7 +3163,9 @@ class FUJIWARATOOLBOX_979047(bpy.types.Operator):#GLレンダ（ビューポー�
         del viewstate
 
         selfname = fjw.blendname() + "_layerAll_OpenGL_A_Main"
-        render_opengl(selfname,True)
+        # render_opengl(selfname,True)
+        render_opengl(selfname)
+        self.report({"INFO"},"レンダ完了")
 
 
         return {'FINISHED'}
