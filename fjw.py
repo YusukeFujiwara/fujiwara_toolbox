@@ -1250,13 +1250,15 @@ class ViewState():
 #     OnetimeHandler_Func()
 #     bpy.app.handlers.scene_update_post.remove(OnetimeHandler_Exec)
 
+def get_area(areatype):
+    for area in bpy.context.screen.areas:
+        if area.type == areatype:
+            return area
+    return None
 
 def get_override(areatype):
     override = bpy.context.copy()
-    for area in bpy.context.screen.areas:
-        if area.type == areatype:
-            override['area'] = area
-            break
+    override['area'] = get_area(areatype)
     return override
 
 def dummy():
