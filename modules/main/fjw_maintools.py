@@ -2770,7 +2770,6 @@ class FUJIWARATOOLBOX_998634(bpy.types.Operator):#無マテリアルに白を割
 ########################################
 
 
-
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
@@ -14335,6 +14334,31 @@ class CATEGORYBUTTON_81935(bpy.types.Operator):#Substance/テクスチャ
         return {'FINISHED'}
 ########################################
 ################################################################################
+
+
+########################################
+#リンク切れテクスチャを削除
+########################################
+#bpy.ops.fujiwara_toolbox.disable_textures_img_not_found() #リンク切れテクスチャを無効化
+class FUJIWARATOOLBOX_disable_textures_img_not_found(bpy.types.Operator):
+    """リンク切れテクスチャを削除する。"""
+    bl_idname = "fujiwara_toolbox.disable_textures_img_not_found"
+    bl_label = "リンク切れテクスチャを削除"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        for texture in bpy.data.textures:
+            image = texture.image
+            if image is not None:
+                if image.resolution == Vector((0,0)):
+                    bpy.data.textures.remove(texture,True)
+
+        return {'FINISHED'}
+########################################
+
 
 
 ############################################################################################################################
