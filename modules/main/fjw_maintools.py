@@ -17506,6 +17506,7 @@ def menu_func_VIEW3D_HT_header(self, context):
 
     if pref.view_buttons:
         active = layout.row(align = True)
+        active.operator("screen.region_quadview",icon="OUTLINER_OB_LATTICE", text="")
         active.prop(bpy.context.space_data, "lock_camera", icon="CAMERA_DATA", text="")
         active.prop(bpy.context.space_data, "show_only_render", icon="RESTRICT_RENDER_OFF", text="")
 

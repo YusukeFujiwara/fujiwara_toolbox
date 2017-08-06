@@ -88,11 +88,82 @@ class extendborder(bpy.types.Operator):
         return {"FINISHED"}
 
 
+def get_screen_fix():
+    x = 1
+    y = 1
+    res_x = bpy.context.scene.render.resolution_x
+    res_y = bpy.context.scene.render.resolution_y
+    #縦=1
+    if res_y > res_x:
+        #横をfix
+        x = res_x / res_y
+    #横=1
+    else:
+        #縦をfix
+        y = res_y / res_x
+    return x, y
+
+def camera_co_to_shift_co_single(v):
+    v = (v - 0.5)*-1
+    return v
+
+
+def shift_co_to_camera_co(shift_x,shift_y):
+    fix_x, fix_y = get_screen_fix()
+
+    #単純な位置fix 左下ゼロ化
+    shift_x = shift_x - 0.5
+    shift_y = shift_y - 0.5
+
+    #左下が+なので、右上が+に→いらない？
+
+    #画面比率をかける
+    shift_x = shift_x / fix_x
+    shift_y = shift_y / fix_y
+    #シフトは相対値だから、これでOK？
+
+    # x = (shift_x*-1 + 0.5) / fix_x
+    # y = (shift_y*-1 + 0.5) / fix_y
+    return shift_x, shift_y
+
+class setshift_to_cursor(bpy.types.Operator):
+    """3Dカーソルにシフト"""
+    bl_idname = "object.setshift_to_cursor"
+    bl_label = "3Dカーソルにシフト"
+
+    def execute(self, context):
+        prev_shift_x = bpy.context.object.data.shift_x
+        prev_shift_y = bpy.context.object.data.shift_y
+
+        #シフトの計算意味わからんのでいっかいゼロにしてから、現在のシフトを足す。
+        bpy.context.object.data.shift_x = 0
+        bpy.context.object.data.shift_y = 0
+
+        from bpy_extras.object_utils import world_to_camera_view
+        camera = bpy.context.scene.camera
+        cursor = fjw.get_area("VIEW_3D").spaces[0].cursor_location
+        x, y, z = world_to_camera_view(bpy.context.scene, camera, cursor)
+        self.report({"INFO"},"%f|%f|%f" % (x, y, z))
+
+        fix_x, fix_y = get_screen_fix()
+
+        #0,0からの移動はこれでOK
+        shift_x = camera_co_to_shift_co_single(x) * fix_x
+        shift_y = camera_co_to_shift_co_single(y) * fix_y
+
+        bpy.context.object.data.shift_x = shift_x + prev_shift_x
+        bpy.context.object.data.shift_y = shift_y + prev_shift_y
+
+        return {"FINISHED"}
+    
+
 
 class fromfile(bpy.types.Operator):
     """../komaフォルダから情報を取得して設定"""
     bl_idname = "object.border_fromfile"
     bl_label = "../komaフォルダから設定"
+
+
 
     def execute(self, context):
         filename = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
@@ -176,6 +247,8 @@ def cameratools_ui(self, context):
     row = col.row(align=True)
     row.operator("object.setshifttobordercenter")
     row.operator("object.extendborder")
+    row = col.row(align=True)
+    row.operator("object.setshift_to_cursor")
     layout.operator("object.border_fromfile")
 
     l = self.layout
