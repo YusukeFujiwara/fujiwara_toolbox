@@ -5750,7 +5750,7 @@ class FUJIWARATOOLBOX_357169(bpy.types.Operator):#グリッドスナップ
     uiitem.button(bl_idname,bl_label,icon="SNAP_GRID",mode="none")
 
     def execute(self, context):
-        bpy.context.scene.tool_settings.use_snap = True
+        # bpy.context.scene.tool_settings.use_snap = True
         bpy.context.scene.tool_settings.snap_element = 'INCREMENT'
         bpy.context.scene.tool_settings.use_snap_grid_absolute = True
         
