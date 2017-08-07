@@ -141,7 +141,7 @@ class FujiwaraToolBoxPreferences(AddonPreferences):
         layout.prop(self, "glrenderutils_buttons")
         layout.prop(self, "localview_button")
 
-        layout.label(text="モジュール表示設定（簡易）")
+        layout.label(text="モジュール表示設定")
         layout.prop(self, "maintools")
         layout.prop(self, "roomtools")
         layout.prop(self, "pageutils")

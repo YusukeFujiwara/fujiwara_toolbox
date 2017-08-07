@@ -332,11 +332,12 @@ class MyaddonView3DPanel(bpy.types.Panel):#メインパネル
     bl_region_type = "TOOLS"
     bl_category = "Fujiwara Tool Box"
 
-    def draw(self, context):
+    @classmethod
+    def poll(cls, context):
         pref = fujiwara_toolbox.conf.get_pref()
-        if not pref.maintools:
-            return
+        return pref.maintools
 
+    def draw(self, context):
         l = self.layout
         r = l.row()
         #b = r.box()
