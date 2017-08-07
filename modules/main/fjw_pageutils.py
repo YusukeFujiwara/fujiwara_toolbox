@@ -52,12 +52,12 @@ class PageUtils(bpy.types.Panel):#メインパネル
     #bl_category = "Relations"
     bl_category = "Fujiwara Tool Box"
 
+    @classmethod
+    def poll(cls, context):
+        pref = fujiwara_toolbox.conf.get_pref()
+        return pref.pageutils
 
     def draw(self, context):
-        pref = fujiwara_toolbox.conf.get_pref()
-        if not pref.pageutils:
-            return
-
         filename = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
         dir = os.path.dirname(bpy.data.filepath)
 
