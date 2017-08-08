@@ -56,8 +56,10 @@ def get_root(obj):
     parent = obj.parent
     if parent == None:
         return obj
-
     return get_root(parent)
+
+def get_world_co(obj):
+    return obj.matrix_world * obj.matrix_basis.inverted() * obj.location
 
 def cursor():
     return bpy.context.space_data.cursor_location
@@ -151,9 +153,6 @@ def get_mod(mod_type):
     return result
 
 class Modutils():
-    object = None
-    mods = None
-
     def __init__(self, obj):
         self.object = obj
         self.mods = obj.modifiers
@@ -285,10 +284,6 @@ class Modutils():
         pass
 
 class ArmatureUtils():
-    armature = None
-    pose_bones = None
-    data_bones = None
-
     def __init__(self, obj):
         if obj.type != "ARMATURE":
             return None
@@ -311,6 +306,11 @@ class ArmatureUtils():
         return self.armature.pose.bones[name]
     def databone(self, name):
         return self.armature.data.bones[name]
+
+    def get_pbone_world_co(self, co):#ボーンのワールド座標を返す
+        # loc = self.armature.matrix_world * self.armature.matrix_basis.inverted() * co
+        loc = self.armature.matrix_world * co
+        return loc
 
     def dataactive(self):
         return self.armature.data.bones.active
@@ -387,8 +387,6 @@ class ArmatureUtils():
         pass
 
 class ArmatureActionUtils():
-    armature = None
-    action = None
     def __init__(self, armature):
         self.armature = armature
         self.action = armature.pose_library
@@ -441,12 +439,10 @@ class ArmatureActionUtils():
         pass
 
 class ActionConstraintUtils():
-    armature = None
-    constraint_name = "ActionforConstraint"
-    action_frame = 60
-
     def __init__(self, obj):
         self.armature = obj
+        self.constraint_name = "ActionforConstraint"
+        self.action_frame = 60
 
     def make_action(self):
         action = bpy.data.actions.new(self.constraint_name)
@@ -491,8 +487,6 @@ class ActionConstraintUtils():
         pass
 
 class MeshUtils():
-    object = None
-    vertices = None
     def __init__(self, obj):
         if obj.type != "MESH":
             return None
@@ -1073,8 +1067,6 @@ def checkIfIsInCameraView(obj,freeze=True,camera_extend=False):
     return False
 
 class NodeUtils():
-    node = None
-
     def __init__(self, node):
         self.node = node
         pass
@@ -1094,16 +1086,14 @@ class NodeUtils():
     pass
 
 class NodetreeUtils():
-    treeholder = None
-    tree = None
-    nodes = None
-    links = None
-
-    posx = 0
-    posy = 0
-
     def __init__(self, treeholder):
         self.treeholder = treeholder
+        self.tree = None
+        self.nodes = None
+        self.links = None
+
+        self.posx = 0
+        self.posy = 0
         pass
 
     def activate(self):
@@ -1156,10 +1146,6 @@ class NodetreeUtils():
 
 class VertexGroupUtils():
     #https://blender.stackexchange.com/questions/39653/how-to-set-vertex-weights-from-python
-
-    obj = None
-    groupname = ""
-    
     def __init__(self, obj, groupname):
         self.obj = obj
         self.groupname = groupname
@@ -1206,13 +1192,12 @@ def get_material(matname):
 
 
 class ViewState():
-    viewstates = []
-
     def store_current_viewstate(self):
         for obj in bpy.data.objects:
             self.viewstates.append([obj,obj.hide,obj.hide_render])
 
     def __init__(self):
+        self.viewstates = []
         self.store_current_viewstate()
         pass
 
@@ -1224,6 +1209,47 @@ class ViewState():
 
     def delete(self):
         del self.viewstates
+
+
+class KDTreeUtils():
+    #https://docs.blender.org/api/blender_python_api_2_78c_release/mathutils.kdtree.html
+    def __init__(self):
+        self.items = []
+        self.kd = None
+
+    def append_data(self, co, item):
+        self.items.append([co,item])
+
+    def construct_kd_tree(self):
+        self.kd = kdtree.KDTree(len(self.items))
+        for index, value in enumerate(self.items):
+            self.kd.insert(value[0], index)
+        self.kd.balance()
+
+    def get_item(self, index):
+        print(self.items[index])
+        return self.items[index][1]
+
+    def find(self, co):
+        kddata = self.kd.find(co)
+        return self.get_item(kddata[1])
+
+    def find_n(self, co, n):
+        kddatas = self.kd.find_n(co, n)
+        result = []
+        for kddata in kddatas:
+            result.append(self.get_item(kddata[1]))
+        return result
+
+    def find_range(self, co, radius):
+        kddatas = self.kd.find_range(co, radius)
+        result = []
+        for kddata in kddatas:
+            result.append(self.get_item(kddata[1]))
+        return result
+        
+    def finish(self):
+        self.kd = kdtree.KDTree(0)
 
 
 # class OnetimeHandler():
