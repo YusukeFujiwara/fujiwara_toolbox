@@ -177,6 +177,8 @@ class FJWSelector(bpy.types.Panel):#メインパネル
         active.label("")
         active.operator("fjw_selector.select_bone_nearest_to_cursor_hand_l")
         active = boxlayout.row(align=True)
+        active.operator("fjw_selector.select_bone_nearest_to_cursor_body_master")
+        active = boxlayout.row(align=True)
         active.label("")
         active.operator("fjw_selector.select_bone_nearest_to_cursor_knee_r")
         active.label("")
@@ -459,6 +461,13 @@ class SelectBoneNearestToCursor_Chest(bpy.types.Operator):
     bl_label = "胸"
     def execute(self,context):
         select_bone_nearest_to_cursor(bpy.context.scene.objects, "chest")
+        return {"FINISHED"}
+class SelectBoneNearestToCursor_BodyMaster(bpy.types.Operator):
+    """ボーン選択。"""
+    bl_idname="fjw_selector.select_bone_nearest_to_cursor_body_master"
+    bl_label = "ボディ親"
+    def execute(self,context):
+        select_bone_nearest_to_cursor(bpy.context.scene.objects, "ボディ親")
         return {"FINISHED"}
 class SelectBoneNearestToCursor_Spine(bpy.types.Operator):
     """ボーン選択。"""
