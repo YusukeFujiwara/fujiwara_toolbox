@@ -132,15 +132,15 @@ class setshift_to_cursor(bpy.types.Operator):
     bl_label = "3Dカーソルにシフト"
 
     def execute(self, context):
-        prev_shift_x = bpy.context.object.data.shift_x
-        prev_shift_y = bpy.context.object.data.shift_y
+        camera = bpy.context.scene.camera
+        prev_shift_x = camera.data.shift_x
+        prev_shift_y = camera.data.shift_y
 
         #シフトの計算意味わからんのでいっかいゼロにしてから、現在のシフトを足す。
-        bpy.context.object.data.shift_x = 0
-        bpy.context.object.data.shift_y = 0
+        camera.data.shift_x = 0
+        camera.data.shift_y = 0
 
         from bpy_extras.object_utils import world_to_camera_view
-        camera = bpy.context.scene.camera
         cursor = fjw.get_area("VIEW_3D").spaces[0].cursor_location
         x, y, z = world_to_camera_view(bpy.context.scene, camera, cursor)
         self.report({"INFO"},"%f|%f|%f" % (x, y, z))
@@ -151,8 +151,8 @@ class setshift_to_cursor(bpy.types.Operator):
         shift_x = camera_co_to_shift_co_single(x) * fix_x
         shift_y = camera_co_to_shift_co_single(y) * fix_y
 
-        bpy.context.object.data.shift_x = shift_x + prev_shift_x
-        bpy.context.object.data.shift_y = shift_y + prev_shift_y
+        camera.data.shift_x = shift_x + prev_shift_x
+        camera.data.shift_y = shift_y + prev_shift_y
 
         return {"FINISHED"}
     
