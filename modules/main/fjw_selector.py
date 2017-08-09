@@ -105,7 +105,7 @@ class FJWSelector(bpy.types.Panel):#メインパネル
                 active.operator("object.border_fromfile")
 
 
-        active = box.row(align=True)
+        active = layout.row(align=True)
         active.label("3Dカーソル付近選択")
         active = layout.row(align=True)
         active.label("マップ", icon="OUTLINER_OB_ARMATURE")
