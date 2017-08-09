@@ -74,10 +74,13 @@ class PageUtils(bpy.types.Panel):#メインパネル
             row = layout.row(align=True)
             row.operator("pageutils.tocell",icon="FILE_FOLDER")
             row.operator("pageutils.tocell_newwindwow",icon="BLENDER")
-            row = layout.row(align=True)
+            col = layout.column(align=True)
+            row = col.row(align=True)
             row.prop(bpy.context.scene, "newcell_name",text="")
             row.operator("pageutils.newcell",icon="NEW")
             row.operator("pageutils.newcell_copy",icon="GHOST")
+            row = col.row(align=True)
+            row.operator("pageutils.newcell_copy_browser",icon="GHOST")
             row = layout.row(align=True)
             col = layout.column(align=True)
             col.label("ページ:" + os.path.splitext(os.path.basename(dir))[0])
@@ -480,6 +483,42 @@ class newcell(bpy.types.Operator):
 
         return {"FINISHED"}
 
+def new_cell_copy(path):
+    templatepath = path
+
+    #保存
+    bpy.ops.wm.save_mainfile()
+
+    #ファイル名
+    blendname = bpy.context.scene.newcell_name
+    dir = os.path.dirname(bpy.data.filepath)
+
+    if blendname == "":
+        for n in range(1,20):
+            if str(n) not in bpy.data.objects:
+                blendname = str(n) + ".blend"
+                #存在しなければコピーする。
+                if not os.path.exists(dir + os.sep + blendname):
+                    shutil.copyfile(templatepath, dir + os.sep + blendname)
+                break
+    else:
+        blendname += ".blend"
+        #存在しなければコピーする。
+        if not os.path.exists(dir + os.sep + blendname):
+            shutil.copyfile(templatepath, dir + os.sep + blendname)
+
+
+    #レンダリング
+    #レンダ設定
+    #renderpath = dir + os.sep + "pageutils" + os.sep + "page.png"
+    renderpath = dir + os.sep + "page.png"
+    render(renderpath)
+
+
+    #ページファイルを開く
+    bpy.ops.wm.open_mainfile(filepath=dir + os.sep + blendname)
+    
+
 class newcell_copy(bpy.types.Operator):
     """コマをコピーして新規作成　未登録のコマが既に存在した場合はそのコマを開く"""
     bl_idname = "pageutils.newcell_copy"
@@ -490,40 +529,37 @@ class newcell_copy(bpy.types.Operator):
         #Drive\C#\VS2015projects\3D作業セットアップ\3D作業セットアップ\bin\Debug\単ページ Z固定 レイ影
         #簡略化オン.blend"
         templatepath = dir + os.sep + bpy.context.scene.objects.active.name + ".blend"
-
-        #保存
-        bpy.ops.wm.save_mainfile()
-
-
-        #ファイル名
-        blendname = bpy.context.scene.newcell_name
-        if blendname == "":
-            for n in range(1,20):
-                if str(n) not in bpy.data.objects:
-                    blendname = str(n) + ".blend"
-                    #存在しなければコピーする。
-                    if not os.path.exists(dir + os.sep + blendname):
-                        shutil.copyfile(templatepath, dir + os.sep + blendname)
-                    break
-        else:
-            blendname += ".blend"
-            #存在しなければコピーする。
-            if not os.path.exists(dir + os.sep + blendname):
-                shutil.copyfile(templatepath, dir + os.sep + blendname)
-
-
-        #レンダリング
-        #レンダ設定
-        #renderpath = dir + os.sep + "pageutils" + os.sep + "page.png"
-        renderpath = dir + os.sep + "page.png"
-        render(renderpath)
-
-
-        #ページファイルを開く
-        bpy.ops.wm.open_mainfile(filepath=dir + os.sep + blendname)
+        new_cell_copy(templatepath)
 
         return {"FINISHED"}
 
+class newcell_copy_FileBrowser(bpy.types.Operator):
+    """ファイルをコピーしてコマを作成"""
+    bl_idname = "pageutils.newcell_copy_browser"
+    bl_label = "ブラウザから選択"
+    
+    filename = bpy.props.StringProperty(subtype="FILE_NAME")
+    filepath = bpy.props.StringProperty(subtype="FILE_PATH")
+    directory = bpy.props.StringProperty(subtype="DIR_PATH")
+#    http://blender.stackexchange.com/questions/30678/bpy-file-browser-get-selected-file-names
+    files = bpy.props.CollectionProperty(type=bpy.types.PropertyGroup)
+    
+    @classmethod
+    def poll(cls, context):
+        return True
+
+    def execute(self, context):
+        if len(self.files) > 0:
+            file = self.files[0]
+            templatepath = self.directory + file.name
+            new_cell_copy(templatepath)
+
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        self.directory = os.path.dirname(bpy.data.filepath)
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
 
 class openprevpage(bpy.types.Operator):
     """前のページを開く"""
