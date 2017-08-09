@@ -73,36 +73,36 @@ class FJWSelector(bpy.types.Panel):#メインパネル
         # active.operator("fjw_selector.select_object_nearest_to_cursor")
         # active.operator("fjw_selector.select_bone_nearest_to_cursor")
 
-        if bpy.context.scene.objects.active == bpy.context.scene.camera:
-            if bpy.context.scene.objects.active.select:
-                #便利ツール
-                active = layout.row(align=True)
-                active.label("")
-                box = layout.box()
-                box.label("Camera Prop")
-                cam = bpy.context.scene.camera.data
-                split = box.split()
-                active = split.column(align=True)
-                if hasattr(bpy.context.scene, "ct_dz_camera_lens"):
-                    active.label("dolly zoom")
-                    active.prop(bpy.context.scene, "ct_dz_camera_lens")
-                active = split.column(align=True)
-                active.label("焦点距離")
-                active.prop(cam, "lens")
+        # if bpy.context.scene.objects.active == bpy.context.scene.camera:
+        #     if bpy.context.scene.objects.active.select:
+        #便利ツール
+        active = layout.row(align=True)
+        active.label("")
+        box = layout.box()
+        box.label("Camera Prop")
+        cam = bpy.context.scene.camera.data
+        split = box.split()
+        active = split.column(align=True)
+        if hasattr(bpy.context.scene, "ct_dz_camera_lens"):
+            active.label("dolly zoom")
+            active.prop(bpy.context.scene, "ct_dz_camera_lens")
+        active = split.column(align=True)
+        active.label("焦点距離")
+        active.prop(cam, "lens")
 
-                split = box.split()
-                col = split.column(align=True)
-                col.label(text="Shift:")
-                col.prop(cam, "shift_x", text="X")
-                col.prop(cam, "shift_y", text="Y")
+        split = box.split()
+        col = split.column(align=True)
+        col.label(text="Shift:")
+        col.prop(cam, "shift_x", text="X")
+        col.prop(cam, "shift_y", text="Y")
 
-                col = split.column(align=True)
-                col.label(text="Clipping:")
-                col.prop(cam, "clip_start", text="Start")
-                col.prop(cam, "clip_end", text="End")
-                active = box.row(align=True)
-                active.operator("object.setshift_to_cursor")
-                active.operator("object.border_fromfile")
+        col = split.column(align=True)
+        col.label(text="Clipping:")
+        col.prop(cam, "clip_start", text="Start")
+        col.prop(cam, "clip_end", text="End")
+        active = box.row(align=True)
+        active.operator("object.setshift_to_cursor")
+        active.operator("object.border_fromfile")
 
 
         active = layout.row(align=True)
@@ -166,9 +166,7 @@ class FJWSelector(bpy.types.Panel):#メインパネル
         active.operator("fjw_selector.select_bone_nearest_to_cursor_shoulder_l")
         active = boxlayout.row(align=True)
         active.operator("fjw_selector.select_bone_nearest_to_cursor_elbow_r")
-        active.label("")
         active.operator("fjw_selector.select_bone_nearest_to_cursor_chest")
-        active.label("")
         active.operator("fjw_selector.select_bone_nearest_to_cursor_elbow_l")
         active = boxlayout.row(align=True)
         active.operator("fjw_selector.select_bone_nearest_to_cursor_hand_r")
@@ -308,12 +306,24 @@ def select_bone_nearest_to_cursor(objects, namepattern=".*"):
         if obj.type != "ARMATURE":
             continue
         armu = fjw.ArmatureUtils(obj)
+
         for pbone in armu.pose_bones:
             if name_re.search(pbone.name) is None:
                 continue
             loc = armu.get_pbone_world_co(pbone.head)
             data = [obj, pbone.name]
             kdu.append_data(loc, data)
+
+        #ジオメトリ用処理
+        if namepattern == "geometry":
+            #人体判定
+            if "neck" in armu.pose_bones:
+                gbone = armu.GetGeometryBone()
+                if gbone is not None:
+                    loc = armu.get_pbone_world_co(gbone.head)
+                    data = [obj, gbone.name]
+                    kdu.append_data(loc, data)
+                
     #ターゲットがなければ終了
     if len(kdu.items) == 0:
         return
