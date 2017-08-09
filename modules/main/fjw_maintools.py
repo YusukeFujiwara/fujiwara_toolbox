@@ -332,11 +332,12 @@ class MyaddonView3DPanel(bpy.types.Panel):#メインパネル
     bl_region_type = "TOOLS"
     bl_category = "Fujiwara Tool Box"
 
-    def draw(self, context):
+    @classmethod
+    def poll(cls, context):
         pref = fujiwara_toolbox.conf.get_pref()
-        if not pref.maintools:
-            return
+        return pref.maintools
 
+    def draw(self, context):
         l = self.layout
         r = l.row()
         #b = r.box()
@@ -2768,7 +2769,6 @@ class FUJIWARATOOLBOX_998634(bpy.types.Operator):#無マテリアルに白を割
                 obj.data.materials.append(mat)
         return {'FINISHED'}
 ########################################
-
 
 
 #---------------------------------------------
@@ -5751,7 +5751,7 @@ class FUJIWARATOOLBOX_357169(bpy.types.Operator):#グリッドスナップ
     uiitem.button(bl_idname,bl_label,icon="SNAP_GRID",mode="none")
 
     def execute(self, context):
-        bpy.context.scene.tool_settings.use_snap = True
+        # bpy.context.scene.tool_settings.use_snap = True
         bpy.context.scene.tool_settings.snap_element = 'INCREMENT'
         bpy.context.scene.tool_settings.use_snap_grid_absolute = True
         
@@ -14335,6 +14335,31 @@ class CATEGORYBUTTON_81935(bpy.types.Operator):#Substance/テクスチャ
         return {'FINISHED'}
 ########################################
 ################################################################################
+
+
+########################################
+#リンク切れテクスチャを削除
+########################################
+#bpy.ops.fujiwara_toolbox.disable_textures_img_not_found() #リンク切れテクスチャを無効化
+class FUJIWARATOOLBOX_disable_textures_img_not_found(bpy.types.Operator):
+    """リンク切れテクスチャを削除する。"""
+    bl_idname = "fujiwara_toolbox.disable_textures_img_not_found"
+    bl_label = "リンク切れテクスチャを削除"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        for texture in bpy.data.textures:
+            image = texture.image
+            if image is not None:
+                if image.resolution == Vector((0,0)):
+                    bpy.data.textures.remove(texture,True)
+
+        return {'FINISHED'}
+########################################
+
 
 
 ############################################################################################################################

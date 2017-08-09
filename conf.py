@@ -115,6 +115,10 @@ class FujiwaraToolBoxPreferences(AddonPreferences):
            name="Asset Sketcher Helper",
             default=False,
             )
+    fjwselector = BoolProperty(
+           name="FJW Selector",
+            default=False,
+            )
     
     #特殊設定
     assetdir = StringProperty(
@@ -141,7 +145,7 @@ class FujiwaraToolBoxPreferences(AddonPreferences):
         layout.prop(self, "glrenderutils_buttons")
         layout.prop(self, "localview_button")
 
-        layout.label(text="モジュール表示設定（簡易）")
+        layout.label(text="モジュール表示設定")
         layout.prop(self, "maintools")
         layout.prop(self, "roomtools")
         layout.prop(self, "pageutils")
@@ -155,6 +159,7 @@ class FujiwaraToolBoxPreferences(AddonPreferences):
         layout.prop(self, "assetdir")
         layout.prop(self, "MarvelousDesigner_dir")
         layout.prop(self, "script_loader")
+        layout.prop(self, "fjwselector")
 
 
 
