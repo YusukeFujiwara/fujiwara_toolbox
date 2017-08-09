@@ -111,6 +111,19 @@ def object(name):
     else:
         return None
 
+def objects_filter(objects, type="", name=""):
+    result = []
+    for obj in objects:
+        if type != "":
+            if obj.type != type:
+                continue
+        if name != "":
+            if obj.name != name:
+                continue
+        result.append(obj)
+    return result
+
+
 def in_localview():
     #bpy.data.screens[0].areas[1].spaces[0].local_view
     if bpy.context.space_data.local_view == None:
