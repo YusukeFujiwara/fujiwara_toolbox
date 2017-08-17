@@ -13623,19 +13623,29 @@ class FUJIWARATOOLBOX_302662(bpy.types.Operator):#オートアバター
 
         bpy.ops.object.select_all(action='SELECT')
         fjw.reject_notmesh()
-        selection = fjw.get_selected_list()
+        # selection = fjw.get_selected_list()
 
         targets = []
 
         #カメラ内アーマチュアのピックアップ
-        for obj in selection:
+        # for obj in selection:
+        for obj in bpy.context.visible_objects:
             if "Body" in obj.name:
                 modu = fjw.Modutils(obj)
                 armt = modu.find("Armature")
-                if armt != None:
-                    #カメラに映っているもののみに実行する。
-                    if fjw.checkIfIsInCameraView(obj):
-                        targets.append(armt.object)
+                if armt is None:
+                    continue
+                #カメラに映っているもののみに実行する。
+                # if fjw.checkIfIsInCameraView(obj):
+                #     targets.append(armt.object)
+                if armt.object is None:
+                    continue
+                armature = armt.object
+                armu = fjw.ArmatureUtils(armature)
+                #ボーンが一個でも範囲にはいっていたらターゲットに追加する
+                for pbone in armu.pose_bones:
+                    if fjw.checkLocationisinCameraView(armu.get_pbone_world_co(pbone.head)):
+                        targets.append(armature)
 
         # ターゲットへの実行
         for obj in targets:
@@ -13793,7 +13803,7 @@ class FUJIWARATOOLBOX_902822(bpy.types.Operator):#MD作業ファイル準備
 
 
             #ポーズだけついてるやつをポーズライブラリに登録する
-            for armature_proxy in bpy.data.objects:
+            for armature_proxy in bpy.context.visible_objects:
                 if armature_proxy.type != "ARMATURE":
                     continue
                 if "_proxy" not in armature_proxy.name:

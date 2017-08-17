@@ -535,8 +535,8 @@ class FUJIWARATOOLBOX_990292(bpy.types.Operator):#カメラ初期化
         cam.rotation_euler[0] = 1.5708
         cam.rotation_euler[1] = 0
         cam.rotation_euler[2] = 0
-        cam.data.shift_x = 0
-        cam.data.shift_y = 0
+        # cam.data.shift_x = 0
+        # cam.data.shift_y = 0
         
         return {'FINISHED'}
 ########################################

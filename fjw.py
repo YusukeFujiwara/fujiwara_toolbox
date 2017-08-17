@@ -325,6 +325,9 @@ class ArmatureUtils():
         loc = self.armature.matrix_world * co
         return loc
 
+    # def world_to_local_co(self, co):
+    #     return
+
     def dataactive(self):
         return self.armature.data.bones.active
 
