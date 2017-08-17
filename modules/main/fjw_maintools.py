@@ -13630,6 +13630,9 @@ class FUJIWARATOOLBOX_302662(bpy.types.Operator):#オートアバター
         #カメラ内アーマチュアのピックアップ
         # for obj in selection:
         for obj in bpy.context.visible_objects:
+            if not fjw.is_in_visible_layer(obj):
+                continue
+
             if "Body" in obj.name:
                 modu = fjw.Modutils(obj)
                 armt = modu.find("Armature")
@@ -13644,8 +13647,10 @@ class FUJIWARATOOLBOX_302662(bpy.types.Operator):#オートアバター
                 armu = fjw.ArmatureUtils(armature)
                 #ボーンが一個でも範囲にはいっていたらターゲットに追加する
                 for pbone in armu.pose_bones:
+                    #どうもうまくうごいてない
                     if fjw.checkLocationisinCameraView(armu.get_pbone_world_co(pbone.head)):
                         targets.append(armature)
+                        break
 
         # ターゲットへの実行
         for obj in targets:

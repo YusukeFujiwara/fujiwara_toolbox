@@ -160,10 +160,16 @@ def get_mod(mod_type):
            if mod.type == mod_type:
                result = mod
                return result
-
-
-
     return result
+
+
+def is_in_visible_layer(obj):
+    #表示レイヤーに含まれているか
+    for index, value in enumerate(bpy.context.scene.layers):
+        if value:
+            if obj.layers[index]:
+                return True
+    return False
 
 class Modutils():
     def __init__(self, obj):
@@ -1037,7 +1043,7 @@ def checkLocationisinCameraView(loc, camera_extend=False):
     x, y, z = world_to_camera_view(bpy.context.scene, cam, loc)
 
     #奥行きでリジェクト
-    if z < -1:
+    if z < 0:
         return False
 
     min = 0.0
