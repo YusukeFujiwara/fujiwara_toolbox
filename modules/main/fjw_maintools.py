@@ -13487,6 +13487,7 @@ class MarvelousDesingerUtils():
     def export_active_body_mdavatar(cls):
         cls.armature_autokey()
         rootname = fjw.get_root(fjw.active()).name
+        rootname = re.sub("\.\d+", "", rootname)
         fjw.framejump(1)
         #Bodyがあったら出力
         for child in fjw.active().children:
@@ -13616,7 +13617,29 @@ class FUJIWARATOOLBOX_302662(bpy.types.Operator):#オートアバター
 
 
     def execute(self, context):
+        self.report({"INFO"},"オートアバター開始")
         fjw.framejump(10)
+
+        #作業ファイル準備でジオメトリをゼロ化しているので、カメラ判定はここでしないといけない。
+        #プロクシを判定して、カメラ内だったらアーマチュアデータを得る
+        armature_datas = []
+        for obj in bpy.context.visible_objects:
+            if obj.type != "ARMATURE":
+                continue
+            if not fjw.is_in_visible_layer(obj):
+                continue
+            
+            armature = obj
+            armu = fjw.ArmatureUtils(armature)
+            #ボーンが一個でも範囲にはいっていたらターゲットに追加する
+            for pbone in armu.pose_bones:
+                if fjw.checkLocationisinCameraView(armu.get_pbone_world_co(pbone.head)):
+                    armature_datas.append(armature.data)
+                    break
+
+        #armature_datasのサイズがゼロならそのまま終わる
+        if len(armature_datas) == 0:
+            bpy.ops.wm.quit_blender()
 
         #MD作業ファイル準備
         bpy.ops.fujiwara_toolbox.setup_mdwork_blend()
@@ -13626,8 +13649,8 @@ class FUJIWARATOOLBOX_302662(bpy.types.Operator):#オートアバター
         # selection = fjw.get_selected_list()
 
         targets = []
-
         #カメラ内アーマチュアのピックアップ
+        #→アーマチュア準備でジオメトリゼロにしてるからダメ
         # for obj in selection:
         for obj in bpy.context.visible_objects:
             if not fjw.is_in_visible_layer(obj):
@@ -13638,19 +13661,34 @@ class FUJIWARATOOLBOX_302662(bpy.types.Operator):#オートアバター
                 armt = modu.find("Armature")
                 if armt is None:
                     continue
-                #カメラに映っているもののみに実行する。
-                # if fjw.checkIfIsInCameraView(obj):
-                #     targets.append(armt.object)
-                if armt.object is None:
-                    continue
+
+                #さっき判定したデータと合致したら、こいつをターゲットに入れる
                 armature = armt.object
-                armu = fjw.ArmatureUtils(armature)
-                #ボーンが一個でも範囲にはいっていたらターゲットに追加する
-                for pbone in armu.pose_bones:
-                    #どうもうまくうごいてない
-                    if fjw.checkLocationisinCameraView(armu.get_pbone_world_co(pbone.head)):
-                        targets.append(armature)
+                do = False
+                for adata in armature_datas:
+                    if adata == armature.data:
+                        do = True
                         break
+                if not do:
+                    continue
+
+                targets.append(armature)
+                # #カメラに映っているもののみに実行する。
+                # # if fjw.checkIfIsInCameraView(obj):
+                # #     targets.append(armt.object)
+                # if armt.object is None:
+                #     continue
+                # armature = armt.object
+                # armu = fjw.ArmatureUtils(armature)
+                # #ボーンが一個でも範囲にはいっていたらターゲットに追加する
+                # for pbone in armu.pose_bones:
+                #     #どうもうまくうごいてない
+                #     if fjw.checkLocationisinCameraView(armu.get_pbone_world_co(pbone.head)):
+                #         targets.append(armature)
+                #         break
+
+                
+
 
         # ターゲットへの実行
         for obj in targets:
@@ -13660,6 +13698,7 @@ class FUJIWARATOOLBOX_302662(bpy.types.Operator):#オートアバター
             fjw.activate(obj)
             if obj.type == "ARMATURE":
                 MarvelousDesingerUtils.export_active_body_mdavatar()
+
         
         #終了
         bpy.ops.fujiwara_toolbox.exit_mdwork()
