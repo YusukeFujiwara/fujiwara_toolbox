@@ -13764,8 +13764,8 @@ class FUJIWARATOOLBOX_302662(bpy.types.Operator):#オートアバター
             MarvelousDesingerUtils.export_active_body_mdavatar()
 
         # #終了
-        # bpy.ops.fujiwara_toolbox.exit_mdwork()
-        # print("MDWork finish")
+        bpy.ops.fujiwara_toolbox.exit_mdwork()
+        print("MDWork finish")
         return {'FINISHED'}
 ########################################
 
@@ -13917,8 +13917,8 @@ class FUJIWARATOOLBOX_487662(bpy.types.Operator):#オートインポート
         bpy.ops.fujiwara_toolbox.comic_shader_nospec()
 
         #保存して閉じる
-        # bpy.ops.wm.save_mainfile()
-        # bpy.ops.wm.quit_blender()
+        bpy.ops.wm.save_mainfile()
+        bpy.ops.wm.quit_blender()
         print("MDImport Done.")
         return {'FINISHED'}
 ########################################
