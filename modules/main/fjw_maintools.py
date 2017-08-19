@@ -7650,6 +7650,7 @@ def get_edge_control():
     empty.show_x_ray = True
     empty.show_name = True
     empty.empty_draw_type = 'SINGLE_ARROW'
+    empty.scale=(0.1,0.1,0.1)
     return empty
 
 
