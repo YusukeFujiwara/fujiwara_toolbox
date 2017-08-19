@@ -2988,7 +2988,7 @@ class FUJIWARATOOLBOX_117769(bpy.types.Operator):#漫画シェーダ
 ########################################
 #スペキュラなし
 ########################################
-#bpy.ops.fjw.comic_shader_nospec() #スペキュラなし
+#bpy.ops.fujiwara_toolbox.comic_shader_nospec() #スペキュラなし
 class FUJIWARATOOLBOX_comic_shader_nospec(bpy.types.Operator):
     """スペキュラなしの漫画シェーダ。"""
     bl_idname = "fujiwara_toolbox.comic_shader_nospec"
@@ -2999,6 +2999,7 @@ class FUJIWARATOOLBOX_comic_shader_nospec(bpy.types.Operator):
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     def execute(self, context):
+        fjw.reject_notmesh()
         set_comicshader_auto(specular=0)
         return {'FINISHED'}
 ########################################
@@ -7634,7 +7635,7 @@ class FUJIWARATOOLBOX_SetThicknessDriverwithEmpty(bpy.types.Operator):
 
 def get_edge_control():
     empty = None
-    for obj in bpy.data.objects:
+    for obj in bpy.context.visible_objects:
         if obj.type == "EMPTY":
             if "エッジ制御" in obj.name:
                 empty = obj
@@ -13485,7 +13486,7 @@ class MarvelousDesingerUtils():
 
     @classmethod
     def export_active_body_mdavatar(cls):
-        cls.armature_autokey()
+        # cls.armature_autokey()
         rootname = fjw.get_root(fjw.active()).name
         rootname = re.sub("\.\d+", "", rootname)
         fjw.framejump(1)
@@ -13641,13 +13642,58 @@ class FUJIWARATOOLBOX_302662(bpy.types.Operator):#オートアバター
         if len(armature_datas) == 0:
             bpy.ops.wm.quit_blender()
 
+
+        #armature_datas内のデータをもってないリンクは削除
+        dellist = []
+        for obj in bpy.context.scene.objects:
+            if obj.type != "EMPTY":
+                continue
+            if obj.dupli_group is None:
+                continue
+            delflag = True
+            for dupobj in obj.dupli_group.objects:
+                if dupobj.type == "ARMATURE":
+                    for armdata in armature_datas:
+                        if dupobj.data == armdata:
+                            delflag = False
+                        break
+                if not delflag:
+                    break
+            if delflag:
+                dellist.append(obj)
+        for obj in dellist:
+            print(obj.name)
+        fjw.delete(dellist)
+
+        #複製の実体化をする前に、重複してしまっている複製を除去する
+        dellist = []
+        dupli_groups = []
+        for obj in bpy.context.visible_objects:
+            if obj.type != "EMPTY":
+                continue
+            #同一のdupli_groupをもっていたら除去
+            if obj.dupli_group is not None:
+                if obj.dupli_group in dupli_groups:
+                    dellist.append(obj)
+                    continue
+
+                #中にBodyがないリンクもいらない
+                # if "Body" not in obj.dupli_group.objects:
+                #     dellist.append(obj)
+                #     continue
+                dupli_groups.append(obj.dupli_group)
+        fjw.delete(dellist)
+            
+    
         #MD作業ファイル準備
         bpy.ops.fujiwara_toolbox.setup_mdwork_blend()
+
 
         bpy.ops.object.select_all(action='SELECT')
         fjw.reject_notmesh()
         # selection = fjw.get_selected_list()
 
+        # not_to_delete_objects = []
         targets = []
         #カメラ内アーマチュアのピックアップ
         #→アーマチュア準備でジオメトリゼロにしてるからダメ
@@ -13673,40 +13719,74 @@ class FUJIWARATOOLBOX_302662(bpy.types.Operator):#オートアバター
                     continue
 
                 targets.append(armature)
-                # #カメラに映っているもののみに実行する。
-                # # if fjw.checkIfIsInCameraView(obj):
-                # #     targets.append(armt.object)
-                # if armt.object is None:
-                #     continue
-                # armature = armt.object
-                # armu = fjw.ArmatureUtils(armature)
-                # #ボーンが一個でも範囲にはいっていたらターゲットに追加する
-                # for pbone in armu.pose_bones:
-                #     #どうもうまくうごいてない
-                #     if fjw.checkLocationisinCameraView(armu.get_pbone_world_co(pbone.head)):
-                #         targets.append(armature)
-                #         break
+                fjw.get_root(obj)
+        #いらんリンク既に削除してるからいいのでは？
+        #         not_to_delete_objects.append(armature)
+        #         not_to_delete_objects.append(obj)
+        #         not_to_delete_objects.append(fjw.get_root(obj))
 
-                
+        # #↑でターゲット判定から漏れたオブジェクトの削除
+        # dellist = []
+        # for obj in bpy.context.visible_objects:
+        #     if obj not in not_to_delete_objects:
+        #         dellist.append(obj)
+        # fjw.delete(dellist)
 
-
-        # ターゲットへの実行
-        for obj in targets:
-            if obj == None:
-                continue
-            fjw.deselect()
-            fjw.activate(obj)
-            if obj.type == "ARMATURE":
-                MarvelousDesingerUtils.export_active_body_mdavatar()
+        #元の処理
+        # # ターゲットへの実行
+        # for obj in targets:
+        #     if obj == None:
+        #         continue
+        #     fjw.deselect()
+        #     fjw.activate(obj)
+        #     if obj.type == "ARMATURE":
+        #         MarvelousDesingerUtils.export_active_body_mdavatar()
 
         
-        #終了
-        bpy.ops.fujiwara_toolbox.exit_mdwork()
-        print("finish")
 
+
+
+
+        #二段階に分けてみる
+        # for obj in bpy.context.visible_objects:
+        #     if obj.type != "ARMATURE":
+        #         continue
+        #     if obj not in targets:
+        #         obj.hide = True
+
+
+
+
+        # for armature in bpy.context.visible_objects:
+        for armature in targets:
+            fjw.deselect()
+            fjw.activate(armature)
+            MarvelousDesingerUtils.export_active_body_mdavatar()
+
+        # #終了
+        # bpy.ops.fujiwara_toolbox.exit_mdwork()
+        # print("MDWork finish")
         return {'FINISHED'}
 ########################################
 
+# ########################################
+# class FUJIWARATOOLBOX_302662A(bpy.types.Operator):#オートアバター
+#     """カメラ範囲内のbodyを自動でアバター出力して終了する"""
+#     bl_idname = "fujiwara_toolbox.command_302662a"
+#     bl_label = "ステップ２"
+#     bl_options = {'REGISTER', 'UNDO'}
+
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+#     def execute(self, context):
+#         for armature in bpy.context.visible_objects:
+#             fjw.deselect()
+#             fjw.activate(armature)
+#             MarvelousDesingerUtils.export_active_body_mdavatar()
+
+#         return {'FINISHED'}
+# ########################################
 
 
 ########################################
@@ -13730,68 +13810,116 @@ class FUJIWARATOOLBOX_487662(bpy.types.Operator):#オートインポート
 
         if not os.path.exists(dir):
             self.report({"INFO"},"キャンセルされました。")
+            bpy.ops.wm.quit_blender()
             return {'CANCELLED'}
+
+        #既存のリザルトを処分
+        fjw.deselect()
+        dellist = []
+        for obj in bpy.context.scene.objects:
+            if obj.type == "MESH" and "result" in obj.name:
+                dellist.append(obj)
+        fjw.delete(dellist)
+
+        root_objects = []
+        for obj in bpy.context.scene.objects:
+            if obj.parent is None:
+                root_objects.append(obj)
 
         files = os.listdir(dir)
         for file in files:
             self.report({"INFO"},file)
+            print("MDResult found:"+file)
             targetname = file
 
-            if targetname in bpy.data.objects:
-                obj = bpy.data.objects[targetname]
-                arm = fjw.find_child_bytype(obj, "ARMATURE")
-                if arm is not None:
+            # rootobjでの設置だとルートがないとおかしなことになる
+            # dupli_groupの名前でみて、同一名のもののアーマチュアを探して、
+            # vislble_objects内のそのデータと同一のプロクシないしアーマチュア、のジオメトリを指定すればいいのでは
+
+            #fileと同名のdupli_groupを検索
+            if targetname in bpy.data.groups:
+                dgroup = bpy.data.groups[targetname]
+                #Bodyが参照しているアーマチュアのデータを取得
+                target_armature = None
+                if "Body" in dgroup.objects:
+                    Body = dgroup.objects["Body"]
+                    modu = fjw.Modutils(Body)
+                    armt = modu.find("Armature")
+                    if armt is not None:
+                        armature = armt.object
+                        if armature is not None:
+                            armature_data = armature.data
+                            for scene_amature in bpy.context.visible_objects:
+                                if scene_amature.type != "ARMATURE":
+                                    continue
+                                if scene_amature.data != armature_data:
+                                    continue
+                                #同一のアーマチュアデータを発見したのでこいつを使用する
+                                target_armature = scene_amature
+                                break
+                if target_armature is not None:
+                    arm = target_armature
+                    print("MDImport Step 0")
                     fjw.mode("OBJECT")
                     fjw.deselect()
                     fjw.activate(arm)
-
+                    print("MDImport Step 1")
                     fjw.mode("POSE")
                     armu = fjw.ArmatureUtils(arm)
                     geo = armu.GetGeometryBone()
                     armu.activate(geo)
+                    print("MDImport Step 2")
                     fjw.mode("POSE")
 
                     self.report({"INFO"},dir + file)
+                    print("MDImport Selecting GeoBone:" + dir + file)
 
                     #インポート
                     MarvelousDesingerUtils.import_mdresult(dir + file + os.sep + "result.obj")
+                    print("MDImport Import MDResult:"+dir + file + os.sep + "result.obj")
 
+            # rootobj = None
+            # for obj in root_objects:
+            #     if targetname in obj.name:
+            #        rootobj =  obj
+            #        break
+            # if rootobj is None:
+            #     continue
+            # obj = rootobj
+            # arm = fjw.find_child_bytype(obj, "ARMATURE")
+            # if arm is not None:
+            #     try:
+            #         print("MDImport Step 0")
+            #         fjw.mode("OBJECT")
+            #         fjw.deselect()
+            #         fjw.activate(arm)
 
-        ##存在確認
-        #dir = os.path.dirname(bpy.data.filepath) + os.sep + "MDData" + os.sep
-        #blendname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
+            #         print("MDImport Step 1")
+            #         fjw.mode("POSE")
+            #         armu = fjw.ArmatureUtils(arm)
+            #         geo = armu.GetGeometryBone()
+            #         armu.activate(geo)
+            #         print("MDImport Step 2")
+            #         fjw.mode("POSE")
 
-        #if not os.path.exists(dir):
-        #    return {'CANCELLED'}
+            #         self.report({"INFO"},dir + file)
+            #         print("MDImport Selecting GeoBone:" + dir + file)
 
-        #files = os.listdir(dir)
-        #for file in files:
-        #    if "_result" not in file:
-        #        continue
+            #         #インポート
+            #         MarvelousDesingerUtils.import_mdresult(dir + file + os.sep + "result.obj")
+            #         print("MDImport Import MDResult:"+dir + file + os.sep + "result.obj")
+            #     except:
+            #         print("MDImport Error Occured.")
+            #         pass
 
-        #    targetname = file
-        #    targetname = targetname.replace("avatar_","")
-        #    targetname = targetname.replace("_result","")
-        #    targetname = targetname.replace(blendname+"_","")
-        #    targetname = targetname.replace(".obj","")
+        fjw.mode("OBJECT")
+        bpy.ops.object.select_all(action='SELECT')
+        bpy.ops.fujiwara_toolbox.comic_shader_nospec()
 
-        #    if targetname in bpy.data.objects:
-        #        obj = bpy.data.objects[targetname]
-        #        arm = find_child_bytype(obj, "ARMATURE")
-        #        if arm is not None:
-        #            mode("OBJECT")
-        #            deselect()
-        #            activate(arm)
-
-        #            mode("POSE")
-        #            armu = ArmatureUtils(arm)
-        #            geo = armu.GetGeometryBone()
-        #            armu.activate(geo)
-        #            mode("POSE")
-
-        #            #インポート
-        #            import_mdresult(self,dir+file)
-
+        #保存して閉じる
+        # bpy.ops.wm.save_mainfile()
+        # bpy.ops.wm.quit_blender()
+        print("MDImport Done.")
         return {'FINISHED'}
 ########################################
 

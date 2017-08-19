@@ -697,6 +697,9 @@ def delete(objects):
     if objects == None:
         return
 
+    if len(objects) == 0:
+        return
+
     if type(objects) == "list":
         if len(objects) == 0:
             return
@@ -706,15 +709,18 @@ def delete(objects):
         tmp.append(objects)
         objects = tmp
 
-    deselect()
-
     for obj in objects:
-        obj.hide_select = False
-        obj.select = True
-        activate(obj)
-        mode("OBJECT")
+        bpy.data.objects.remove(obj,True)
 
-    bpy.ops.object.delete(use_global=False)
+    # deselect()
+
+    # for obj in objects:
+    #     obj.hide_select = False
+    #     obj.select = True
+    #     activate(obj)
+    #     mode("OBJECT")
+
+    # bpy.ops.object.delete(use_global=False)
 
 def origin_floorize():
     #原点を下に
