@@ -160,10 +160,16 @@ def get_mod(mod_type):
            if mod.type == mod_type:
                result = mod
                return result
-
-
-
     return result
+
+
+def is_in_visible_layer(obj):
+    #表示レイヤーに含まれているか
+    for index, value in enumerate(bpy.context.scene.layers):
+        if value:
+            if obj.layers[index]:
+                return True
+    return False
 
 class Modutils():
     def __init__(self, obj):
@@ -324,6 +330,9 @@ class ArmatureUtils():
         # loc = self.armature.matrix_world * self.armature.matrix_basis.inverted() * co
         loc = self.armature.matrix_world * co
         return loc
+
+    # def world_to_local_co(self, co):
+    #     return
 
     def dataactive(self):
         return self.armature.data.bones.active
@@ -688,6 +697,9 @@ def delete(objects):
     if objects == None:
         return
 
+    if len(objects) == 0:
+        return
+
     if type(objects) == "list":
         if len(objects) == 0:
             return
@@ -697,15 +709,18 @@ def delete(objects):
         tmp.append(objects)
         objects = tmp
 
-    deselect()
-
     for obj in objects:
-        obj.hide_select = False
-        obj.select = True
-        activate(obj)
-        mode("OBJECT")
+        bpy.data.objects.remove(obj,True)
 
-    bpy.ops.object.delete(use_global=False)
+    # deselect()
+
+    # for obj in objects:
+    #     obj.hide_select = False
+    #     obj.select = True
+    #     activate(obj)
+    #     mode("OBJECT")
+
+    # bpy.ops.object.delete(use_global=False)
 
 def origin_floorize():
     #原点を下に
@@ -1034,7 +1049,7 @@ def checkLocationisinCameraView(loc, camera_extend=False):
     x, y, z = world_to_camera_view(bpy.context.scene, cam, loc)
 
     #奥行きでリジェクト
-    if z < -1:
+    if z < 0:
         return False
 
     min = 0.0

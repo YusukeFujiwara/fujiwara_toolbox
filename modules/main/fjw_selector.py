@@ -73,66 +73,56 @@ class FJWSelector(bpy.types.Panel):#メインパネル
         # active.operator("fjw_selector.select_object_nearest_to_cursor")
         # active.operator("fjw_selector.select_bone_nearest_to_cursor")
 
-        if bpy.context.scene.objects.active == bpy.context.scene.camera:
-            if bpy.context.scene.objects.active.select:
-                #便利ツール
-                active = layout.row(align=True)
-                active.label("")
-                box = layout.box()
-                box.label("Camera Prop")
-                cam = bpy.context.scene.camera.data
-                split = box.split()
-                active = split.column(align=True)
-                if hasattr(bpy.context.scene, "ct_dz_camera_lens"):
-                    active.label("dolly zoom")
-                    active.prop(bpy.context.scene, "ct_dz_camera_lens")
-                active = split.column(align=True)
-                active.label("焦点距離")
-                active.prop(cam, "lens")
+        # if bpy.context.visible_objects.active == bpy.context.scene.camera:
+        #     if bpy.context.visible_objects.active.select:
+        #便利ツール
+        active = layout.row(align=True)
+        active.label("")
+        box = layout.box()
+        box.label("Camera Prop")
+        cam = bpy.context.scene.camera.data
+        split = box.split()
+        active = split.column(align=True)
+        if hasattr(bpy.context.scene, "ct_dz_camera_lens"):
+            active.label("dolly zoom")
+            active.prop(bpy.context.scene, "ct_dz_camera_lens")
+        active = split.column(align=True)
+        active.label("焦点距離")
+        active.prop(cam, "lens")
 
-                split = box.split()
-                col = split.column(align=True)
-                col.label(text="Shift:")
-                col.prop(cam, "shift_x", text="X")
-                col.prop(cam, "shift_y", text="Y")
+        split = box.split()
+        col = split.column(align=True)
+        col.label(text="Shift:")
+        col.prop(cam, "shift_x", text="X")
+        col.prop(cam, "shift_y", text="Y")
 
-                col = split.column(align=True)
-                col.label(text="Clipping:")
-                col.prop(cam, "clip_start", text="Start")
-                col.prop(cam, "clip_end", text="End")
-                active = box.row(align=True)
-                active.operator("object.setshift_to_cursor")
-                active.operator("object.border_fromfile")
+        col = split.column(align=True)
+        col.label(text="Clipping:")
+        col.prop(cam, "clip_start", text="Start")
+        col.prop(cam, "clip_end", text="End")
+        active = box.row(align=True)
+        active.operator("object.setshift_to_cursor")
+        active.operator("object.border_fromfile")
+
+        boxlayout = box.column(align=True)
+        active = boxlayout.row(align=True)
+        active = boxlayout.row(align=True)
+        active.operator("fjw_selector.camera_work", icon="CAMERA_DATA")
+        active.operator("fjw_selector.camera_work_look_at")
+        active.prop(bpy.context.space_data, "lock_camera", icon="CAMERA_DATA", text="")
+        active = boxlayout.row(align=True)
+        active.operator("fjw_selector.current_view_to_camera", icon="CAMERA_DATA",)
+        active = boxlayout.row(align=True)
+        active.operator("fjw_selector.non_camera_work")
+        active.operator("fjw_selector.non_camera_work_top")
+        active.operator("fjw_selector.non_camera_work_right")
 
 
         active = layout.row(align=True)
         active.label("3Dカーソル付近選択")
 
-        mc = False
-        for obj in bpy.context.scene.objects:
-            if "MapController" in obj.name:
-                mc = True
-        if mc:
-            active = layout.row(align=True)
-            active.label("マップ", icon="OUTLINER_OB_ARMATURE")
-            box = layout.box()
-            boxlayout = box.column(align=True)
-            active = boxlayout.row(align=True)
-            active.operator("fjw_selector.select_bone_nearest_to_cursor_top")
-            active = boxlayout.row(align=True)
-            active.label("")
-            active.operator("fjw_selector.select_bone_nearest_to_cursor_north")
-            active.label("")
-            active = boxlayout.row(align=True)
-            active.operator("fjw_selector.select_bone_nearest_to_cursor_west")
-            active.label("")
-            active.operator("fjw_selector.select_bone_nearest_to_cursor_east")
-            active = boxlayout.row(align=True)
-            active.label("")
-            active.operator("fjw_selector.select_bone_nearest_to_cursor_south")
-            active.label("")
-            active = boxlayout.row(align=True)
-            active.operator("fjw_selector.select_bone_nearest_to_cursor_bottom")
+        active = layout.row(align=True)
+        active.operator("fjw_selector.select_bone_nearest_to_cursor_all",icon="GROUP_BONE")
 
         active = layout.row(align=True)
         active.label("人体", icon="OUTLINER_OB_ARMATURE")
@@ -146,6 +136,12 @@ class FJWSelector(bpy.types.Panel):#メインパネル
         active.label("")
         active.operator("fjw_selector.select_bone_nearest_to_cursor_eyetop_l")
         active.label("左")
+        active = boxlayout.row(align=True)
+        active.label("")
+        active.operator("fjw_selector.select_bone_nearest_to_cursor_pupil_r")
+        active.label("")
+        active.operator("fjw_selector.select_bone_nearest_to_cursor_pupil_l")
+        active.label("")
         active = boxlayout.row(align=True)
         active.label("")
         active.operator("fjw_selector.select_bone_nearest_to_cursor_eyebottom_r")
@@ -166,9 +162,7 @@ class FJWSelector(bpy.types.Panel):#メインパネル
         active.operator("fjw_selector.select_bone_nearest_to_cursor_shoulder_l")
         active = boxlayout.row(align=True)
         active.operator("fjw_selector.select_bone_nearest_to_cursor_elbow_r")
-        active.label("")
         active.operator("fjw_selector.select_bone_nearest_to_cursor_chest")
-        active.label("")
         active.operator("fjw_selector.select_bone_nearest_to_cursor_elbow_l")
         active = boxlayout.row(align=True)
         active.operator("fjw_selector.select_bone_nearest_to_cursor_hand_r")
@@ -176,6 +170,8 @@ class FJWSelector(bpy.types.Panel):#メインパネル
         active.operator("fjw_selector.select_bone_nearest_to_cursor_spine")
         active.label("")
         active.operator("fjw_selector.select_bone_nearest_to_cursor_hand_l")
+        active = boxlayout.row(align=True)
+        active.operator("fjw_selector.select_bone_nearest_to_cursor_body_master")
         active = boxlayout.row(align=True)
         active.label("")
         active.operator("fjw_selector.select_bone_nearest_to_cursor_knee_r")
@@ -190,6 +186,28 @@ class FJWSelector(bpy.types.Panel):#メインパネル
         active.label("")
         active = boxlayout.row(align=True)
         active.operator("fjw_selector.select_bone_nearest_to_cursor_geometry")
+
+        active = layout.row(align=True)
+        active.label("マップ", icon="OUTLINER_OB_ARMATURE")
+        box = layout.box()
+        boxlayout = box.column(align=True)
+        active = boxlayout.row(align=True)
+        active.operator("fjw_selector.select_bone_nearest_to_cursor_top")
+        active = boxlayout.row(align=True)
+        active.label("")
+        active.operator("fjw_selector.select_bone_nearest_to_cursor_north")
+        active.label("")
+        active = boxlayout.row(align=True)
+        active.operator("fjw_selector.select_bone_nearest_to_cursor_west")
+        active.label("")
+        active.operator("fjw_selector.select_bone_nearest_to_cursor_east")
+        active = boxlayout.row(align=True)
+        active.label("")
+        active.operator("fjw_selector.select_bone_nearest_to_cursor_south")
+        active.label("")
+        active = boxlayout.row(align=True)
+        active.operator("fjw_selector.select_bone_nearest_to_cursor_bottom")
+
 
 
 
@@ -238,7 +256,7 @@ class SelectSun(bpy.types.Operator):
     def execute(self,context):
         fjw.deselect()
         sun = None
-        for obj in bpy.context.scene.objects:
+        for obj in bpy.context.visible_objects:
             if obj.type == "LAMP":
                 if "Sun" in obj.name:
                     sun = obj
@@ -247,6 +265,72 @@ class SelectSun(bpy.types.Operator):
 
         return {"FINISHED"}
 
+class CameraWork(bpy.types.Operator):
+    """カメラワークをする。"""
+    bl_idname="fjw_selector.camera_work"
+    bl_label = "カメラワーク"
+    def execute(self,context):
+        # bpy.ops.view3d.viewnumpad(type='CAMERA')
+        #https://blender.stackexchange.com/questions/30643/how-to-toggle-to-camera-view-via-python
+        bpy.context.space_data.region_3d.view_perspective = "CAMERA"
+        bpy.context.space_data.lock_camera = True
+        return {"FINISHED"}
+
+class CameraWorkLookAt(bpy.types.Operator):
+    """カメラワークをする。"""
+    bl_idname="fjw_selector.camera_work_look_at"
+    bl_label = "注視"
+    def execute(self,context):
+        # bpy.ops.view3d.viewnumpad(type='CAMERA')
+        #https://blender.stackexchange.com/questions/30643/how-to-toggle-to-camera-view-via-python
+        bpy.context.space_data.region_3d.view_perspective = "CAMERA"
+        bpy.context.space_data.lock_camera = True
+        bpy.ops.view3d.view_selected(use_all_regions=False)
+        return {"FINISHED"}
+
+class CurrentViewToCamera(bpy.types.Operator):
+    """カメラワークをする。"""
+    bl_idname="fjw_selector.current_view_to_camera"
+    bl_label = "現在の視点を採用"
+    def execute(self,context):
+        #https://blender.stackexchange.com/questions/30643/how-to-toggle-to-camera-view-via-python
+        # bpy.context.space_data.region_3d.view_perspective = "CAMERA"
+        bpy.context.space_data.lock_camera = False
+        bpy.ops.view3d.camera_to_view()
+        return {"FINISHED"}
+
+
+class NonCameraWork(bpy.types.Operator):
+    """ノンカメラワークをする。"""
+    bl_idname="fjw_selector.non_camera_work"
+    bl_label = "ノンカメラワーク"
+    def execute(self,context):
+        # bpy.ops.view3d.viewnumpad(type='CAMERA')
+        #https://blender.stackexchange.com/questions/30643/how-to-toggle-to-camera-view-via-python
+        bpy.context.space_data.region_3d.view_perspective = "ORTHO"
+        bpy.context.space_data.lock_camera = False
+        return {"FINISHED"}
+
+class NonCameraWorkTop(bpy.types.Operator):
+    """ノンカメラワークをする。"""
+    bl_idname="fjw_selector.non_camera_work_top"
+    bl_label = "↑"
+    def execute(self,context):
+        bpy.ops.view3d.viewnumpad(type='TOP')
+        bpy.context.space_data.lock_camera = False
+        return {"FINISHED"}
+
+class NonCameraWorkRight(bpy.types.Operator):
+    """ノンカメラワークをする。"""
+    bl_idname="fjw_selector.non_camera_work_right"
+    bl_label = "→"
+    def execute(self,context):
+        bpy.ops.view3d.viewnumpad(type='RIGHT')
+        bpy.context.space_data.lock_camera = False
+        return {"FINISHED"}
+
+
+
 class SelectMapController(bpy.types.Operator):
     """マップコントローラ"""
     bl_idname="fjw_selector.select_mapcontroller"
@@ -254,7 +338,7 @@ class SelectMapController(bpy.types.Operator):
     def execute(self,context):
         fjw.deselect()
         mc = None
-        for obj in bpy.context.scene.objects:
+        for obj in bpy.context.visible_objects:
             if obj.type == "ARMATURE":
                 if "MapController" in obj.name:
                     mc = obj
@@ -294,7 +378,7 @@ class SelectObjectNearestToCursor(bpy.types.Operator):
     bl_idname="fjw_selector.select_object_nearest_to_cursor"
     bl_label = "オブジェクト"
     def execute(self,context):
-        select_object_nearest_to_cursor(bpy.context.scene.objects)
+        select_object_nearest_to_cursor(bpy.context.visible_objects)
         return {"FINISHED"}
 
 def select_bone_nearest_to_cursor(objects, namepattern=".*"):
@@ -306,12 +390,24 @@ def select_bone_nearest_to_cursor(objects, namepattern=".*"):
         if obj.type != "ARMATURE":
             continue
         armu = fjw.ArmatureUtils(obj)
+
         for pbone in armu.pose_bones:
             if name_re.search(pbone.name) is None:
                 continue
             loc = armu.get_pbone_world_co(pbone.head)
             data = [obj, pbone.name]
             kdu.append_data(loc, data)
+
+        #ジオメトリ用処理
+        if namepattern == "geometry":
+            #人体判定
+            if "neck" in armu.pose_bones:
+                gbone = armu.GetGeometryBone()
+                if gbone is not None:
+                    loc = armu.get_pbone_world_co(gbone.head)
+                    data = [obj, gbone.name]
+                    kdu.append_data(loc, data)
+                
     #ターゲットがなければ終了
     if len(kdu.items) == 0:
         return
@@ -334,7 +430,7 @@ class SelectBoneNearestToCursor(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor"
     bl_label = "ボーン"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.scene.objects)
+        select_bone_nearest_to_cursor(bpy.context.visible_objects)
         return {"FINISHED"}
 
 
@@ -343,7 +439,7 @@ class SelectBoneNearestToCursor_Top(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_top"
     bl_label = "天"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.scene.objects, "天")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "天")
         return {"FINISHED"}
 
 class SelectBoneNearestToCursor_Bottom(bpy.types.Operator):
@@ -351,7 +447,7 @@ class SelectBoneNearestToCursor_Bottom(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_bottom"
     bl_label = "地"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.scene.objects, "地")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "地")
         return {"FINISHED"}
 
 class SelectBoneNearestToCursor_North(bpy.types.Operator):
@@ -359,7 +455,7 @@ class SelectBoneNearestToCursor_North(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_north"
     bl_label = "北"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.scene.objects, "北")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "北")
         return {"FINISHED"}
 
 class SelectBoneNearestToCursor_South(bpy.types.Operator):
@@ -367,7 +463,7 @@ class SelectBoneNearestToCursor_South(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_south"
     bl_label = "南"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.scene.objects, "南")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "南")
         return {"FINISHED"}
 
 class SelectBoneNearestToCursor_East(bpy.types.Operator):
@@ -375,7 +471,7 @@ class SelectBoneNearestToCursor_East(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_east"
     bl_label = "東"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.scene.objects, "東")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "東")
         return {"FINISHED"}
 
 class SelectBoneNearestToCursor_West(bpy.types.Operator):
@@ -383,7 +479,17 @@ class SelectBoneNearestToCursor_West(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_west"
     bl_label = "西"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.scene.objects, "西")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "西")
+        return {"FINISHED"}
+
+
+class SelectBoneNearestToCursor_All(bpy.types.Operator):
+    """ボーン選択。"""
+    bl_idname="fjw_selector.select_bone_nearest_to_cursor_all"
+    bl_label = "全ボーン"
+    def execute(self,context):
+        select_bone_nearest_to_cursor(bpy.context.visible_objects)
+        bpy.ops.pose.select_all(action='SELECT')
         return {"FINISHED"}
 
 
@@ -395,7 +501,7 @@ class SelectBoneNearestToCursor_Eyetarget(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_eyetarget"
     bl_label = "視線"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.scene.objects, "eyetarget")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "eyetarget")
         return {"FINISHED"}
 
 class SelectBoneNearestToCursor_EyetopR(bpy.types.Operator):
@@ -403,7 +509,7 @@ class SelectBoneNearestToCursor_EyetopR(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_eyetop_r"
     bl_label = "上"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.scene.objects, "eyetop_r")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "eyetop_r")
         return {"FINISHED"}
 
 class SelectBoneNearestToCursor_EyetopL(bpy.types.Operator):
@@ -411,15 +517,32 @@ class SelectBoneNearestToCursor_EyetopL(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_eyetop_l"
     bl_label = "上"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.scene.objects, "eyetop_l")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "eyetop_l")
         return {"FINISHED"}
+
+class SelectBoneNearestToCursor_PupilR(bpy.types.Operator):
+    """ボーン選択。"""
+    bl_idname="fjw_selector.select_bone_nearest_to_cursor_pupil_r"
+    bl_label = "目"
+    def execute(self,context):
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "pupil_r")
+        return {"FINISHED"}
+
+class SelectBoneNearestToCursor_PupilL(bpy.types.Operator):
+    """ボーン選択。"""
+    bl_idname="fjw_selector.select_bone_nearest_to_cursor_pupil_l"
+    bl_label = "目"
+    def execute(self,context):
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "pupil_l")
+        return {"FINISHED"}
+
 
 class SelectBoneNearestToCursor_EyebottomR(bpy.types.Operator):
     """ボーン選択。"""
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_eyebottom_r"
     bl_label = "下"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.scene.objects, "eyebottom_r")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "eyebottom_r")
         return {"FINISHED"}
 
 class SelectBoneNearestToCursor_EyebottomL(bpy.types.Operator):
@@ -427,7 +550,7 @@ class SelectBoneNearestToCursor_EyebottomL(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_eyebottom_l"
     bl_label = "下"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.scene.objects, "eyebottom_l")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "eyebottom_l")
         return {"FINISHED"}
 
 
@@ -436,7 +559,7 @@ class SelectBoneNearestToCursor_Geometry(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_geometry"
     bl_label = "ジオメトリ"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.scene.objects, "geometry")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "geometry")
         return {"FINISHED"}
 
 class SelectBoneNearestToCursor_Head(bpy.types.Operator):
@@ -444,28 +567,35 @@ class SelectBoneNearestToCursor_Head(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_head"
     bl_label = "頭"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.scene.objects, "head")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "head")
         return {"FINISHED"}
 class SelectBoneNearestToCursor_Neck(bpy.types.Operator):
     """ボーン選択。"""
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_neck"
     bl_label = "首"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.scene.objects, "neck")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "neck")
         return {"FINISHED"}
 class SelectBoneNearestToCursor_Chest(bpy.types.Operator):
     """ボーン選択。"""
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_chest"
     bl_label = "胸"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.scene.objects, "chest")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "chest")
+        return {"FINISHED"}
+class SelectBoneNearestToCursor_BodyMaster(bpy.types.Operator):
+    """ボーン選択。"""
+    bl_idname="fjw_selector.select_bone_nearest_to_cursor_body_master"
+    bl_label = "ボディ親"
+    def execute(self,context):
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "ボディ親")
         return {"FINISHED"}
 class SelectBoneNearestToCursor_Spine(bpy.types.Operator):
     """ボーン選択。"""
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_spine"
     bl_label = "腰"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.scene.objects, "spine")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "spine")
         return {"FINISHED"}
 
 
@@ -475,14 +605,14 @@ class SelectBoneNearestToCursor_ShoulderR(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_shoulder_r"
     bl_label = "肩"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.scene.objects, "肩\.R")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "肩\.R")
         return {"FINISHED"}
 class SelectBoneNearestToCursor_ShoulderL(bpy.types.Operator):
     """ボーン選択。"""
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_shoulder_l"
     bl_label = "肩"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.scene.objects, "肩\.L")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "肩\.L")
         return {"FINISHED"}
 
 class SelectBoneNearestToCursor_ElbowR(bpy.types.Operator):
@@ -490,28 +620,28 @@ class SelectBoneNearestToCursor_ElbowR(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_elbow_r"
     bl_label = "肘"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.scene.objects, "肘\.R")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "肘\.R")
         return {"FINISHED"}
 class SelectBoneNearestToCursor_ElbowL(bpy.types.Operator):
     """ボーン選択。"""
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_elbow_l"
     bl_label = "肘"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.scene.objects, "肘\.L")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "肘\.L")
         return {"FINISHED"}
 class SelectBoneNearestToCursor_HandR(bpy.types.Operator):
     """ボーン選択。"""
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_hand_r"
     bl_label = "手"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.scene.objects, "腕\.R")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "腕\.R")
         return {"FINISHED"}
 class SelectBoneNearestToCursor_HandL(bpy.types.Operator):
     """ボーン選択。"""
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_hand_l"
     bl_label = "手"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.scene.objects, "腕\.L")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "腕\.L")
         return {"FINISHED"}
 
 
@@ -520,28 +650,28 @@ class SelectBoneNearestToCursor_KneeR(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_knee_r"
     bl_label = "膝"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.scene.objects, "脚\.R")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "脚\.R")
         return {"FINISHED"}
 class SelectBoneNearestToCursor_KneeL(bpy.types.Operator):
     """ボーン選択。"""
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_knee_l"
     bl_label = "膝"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.scene.objects, "脚\.L")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "脚\.L")
         return {"FINISHED"}
 class SelectBoneNearestToCursor_FootR(bpy.types.Operator):
     """ボーン選択。"""
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_foot_r"
     bl_label = "足"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.scene.objects, "足\.R")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "足\.R")
         return {"FINISHED"}
 class SelectBoneNearestToCursor_FootL(bpy.types.Operator):
     """ボーン選択。"""
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_foot_l"
     bl_label = "足"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.scene.objects, "足\.L")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "足\.L")
         return {"FINISHED"}
 
 
