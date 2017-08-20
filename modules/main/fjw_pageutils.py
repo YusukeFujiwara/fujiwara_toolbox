@@ -148,6 +148,7 @@ def render(renderpath, komarender=False):
         bpy.context.scene.render.use_raytrace = True
         bpy.context.scene.render.use_textures = True
         bpy.context.scene.render.use_antialiasing = False
+        bpy.context.scene.render.use_freestyle = False
 
 
         bpy.data.scenes["Scene"].render.filepath = renderpath
