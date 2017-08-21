@@ -3160,7 +3160,9 @@ class FUJIWARATOOLBOX_979047(bpy.types.Operator):#GLレンダ
     def execute(self, context):
         viewstate = fjw.ViewState()
 
-        bpy.context.scene.render.use_simplify = False
+        #再計算回避
+        if bpy.context.scene.render.use_simplify:
+            bpy.context.scene.render.use_simplify = False
         # if bpy.context.scene.render.simplify_subdivision < 2:
         #     bpy.context.scene.render.simplify_subdivision = 2
 
@@ -13546,11 +13548,11 @@ class MarvelousDesingerUtils():
             if current.mode == "POSE":
                 armu = fjw.ArmatureUtils(current)
                 pbone = armu.poseactive()
-                loc = current.matrix_world * pbone.location
+                armu.get_pbone_world_co(pbone.head)
+                loc = armu.get_pbone_world_co(pbone.head)
                 qrot = pbone.rotation_quaternion
 
                 #boneはYupなので入れ替え
-                loc = Vector((loc.x,loc.z * -1,loc.y))
                 qrot = Quaternion((qrot.w, qrot.x, qrot.z * -1, qrot.y))
 
             fjw.mode("OBJECT")
@@ -13922,6 +13924,23 @@ class FUJIWARATOOLBOX_md_auto_avater_non_quit(bpy.types.Operator):
         return {'FINISHED'}
 ########################################
 
+########################################
+#オートインポートのみ
+########################################
+#bpy.ops.fujiwara_toolbox.mdresult_autoimport_only() #オートインポートのみ
+class FUJIWARATOOLBOX_mdresult_autoimport_only(bpy.types.Operator):
+    """オートインポートのみ"""
+    bl_idname = "fujiwara_toolbox.mdresult_autoimport_only"
+    bl_label = "オートインポートのみ"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        mdresult_auto_import_main(self,context)
+        return {'FINISHED'}
+########################################
 
 ########################################
 #オートインポートしてGLレンダ
@@ -14067,6 +14086,18 @@ class FUJIWARATOOLBOX_902822(bpy.types.Operator):#MD作業ファイル準備
 
 
     def execute(self, context):
+        bpy.ops.fujiwara_toolbox.command_700665()#subdiv2
+        # なんかうまくうごかん
+        for obj in fjw.get_selected_list():
+            fjw.get_root(obj).select = True
+        #選択オブジェクトを親子選択→反転削除
+        bpy.ops.fujiwara_toolbox.command_24259()#親子選択
+        #プロクシも選択
+        for obj in bpy.context.scene.objects:
+            if "proxy" in obj.name:
+                obj.select = True
+        bpy.ops.object.select_all(action='INVERT')
+        bpy.ops.object.delete(use_global=False)
         setup_mdwork_main(self,context)
         return {'FINISHED'}
 ########################################
@@ -17639,6 +17670,17 @@ class MD_export_active_body_mdavatar(bpy.types.Operator):
         MarvelousDesingerUtils.export_active_body_mdavatar()
         return {"FINISHED"}
 
+#アバター出力して、シミュレーションを走らせる
+class MD_export_active_body_mdavatar_sim(bpy.types.Operator):
+    """アバター出力"""
+    bl_idname = "fujiwara_toolbox.export_mdavatar_uwsc"
+    bl_label = "アバター出力して、uwsc経由でシミュレーションを走らせる"
+
+    def execute(self, context):
+        MarvelousDesingerUtils.export_active_body_mdavatar()
+        bpy.ops.fujiwara_toolbox.uwsc_sim_control()
+        return {"FINISHED"}
+
 class framejump_1(bpy.types.Operator):
     """フレーム移動　1"""
     bl_idname = "fujiwara_toolbox.framejump_1"
@@ -17780,7 +17822,7 @@ def menu_func_VIEW3D_HT_header(self, context):
         #active.operator("fujiwara_toolbox.framejump_15",icon="TRIA_RIGHT_BAR", text="")
         active.operator("fujiwara_toolbox.set_key", icon="KEYINGSET", text="")
         active.operator("fujiwara_toolbox.del_key", icon="KEY_DEHLT", text="")
-        active.operator("fujiwara_toolbox.export_active_body_mdavatar", icon="EXPORT", text="")
+        active.operator("fujiwara_toolbox.export_mdavatar_uwsc", icon="EXPORT", text="")
 
     if pref.glrenderutils_buttons:
         active = layout.row(align = True)

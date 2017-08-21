@@ -60,6 +60,53 @@ class FJWSelector(bpy.types.Panel):#メインパネル
         # active.operator("",icon="", text="")
         active = layout.row(align=True)
 
+
+        # if bpy.context.visible_objects.active == bpy.context.scene.camera:
+        #     if bpy.context.visible_objects.active.select:
+        #便利ツール
+        if bpy.context.scene.camera is not None:
+            active = layout.row(align=True)
+            active.label("")
+            box = layout.box()
+            box.label("Camera Prop")
+            cam = bpy.context.scene.camera.data
+            split = box.split()
+            active = split.column(align=True)
+            if hasattr(bpy.context.scene, "ct_dz_camera_lens"):
+                active.label("dolly zoom")
+                active.prop(bpy.context.scene, "ct_dz_camera_lens")
+            active = split.column(align=True)
+            active.label("焦点距離")
+            active.prop(cam, "lens")
+
+            split = box.split()
+            col = split.column(align=True)
+            col.label(text="Shift:")
+            col.prop(cam, "shift_x", text="X")
+            col.prop(cam, "shift_y", text="Y")
+
+            col = split.column(align=True)
+            col.label(text="Clipping:")
+            col.prop(cam, "clip_start", text="Start")
+            col.prop(cam, "clip_end", text="End")
+            active = box.row(align=True)
+            active.operator("object.setshift_to_cursor")
+            active.operator("object.border_fromfile")
+
+            boxlayout = box.column(align=True)
+            active = boxlayout.row(align=True)
+            active = boxlayout.row(align=True)
+            active.operator("fjw_selector.camera_work", icon="CAMERA_DATA")
+            active.operator("fjw_selector.camera_work_look_at")
+            active.prop(bpy.context.space_data, "lock_camera", icon="CAMERA_DATA", text="")
+            active = boxlayout.row(align=True)
+            active.operator("fjw_selector.current_view_to_camera", icon="CAMERA_DATA",)
+            active = boxlayout.row(align=True)
+            active.operator("fjw_selector.non_camera_work")
+            active.operator("fjw_selector.non_camera_work_top")
+            active.operator("fjw_selector.non_camera_work_right")
+
+
         active = layout.row(align=True)
         active.label("セレクタ")
         active = layout.row(align=True)
@@ -72,50 +119,6 @@ class FJWSelector(bpy.types.Panel):#メインパネル
         # active = layout.row(align=True)
         # active.operator("fjw_selector.select_object_nearest_to_cursor")
         # active.operator("fjw_selector.select_bone_nearest_to_cursor")
-
-        # if bpy.context.visible_objects.active == bpy.context.scene.camera:
-        #     if bpy.context.visible_objects.active.select:
-        #便利ツール
-        active = layout.row(align=True)
-        active.label("")
-        box = layout.box()
-        box.label("Camera Prop")
-        cam = bpy.context.scene.camera.data
-        split = box.split()
-        active = split.column(align=True)
-        if hasattr(bpy.context.scene, "ct_dz_camera_lens"):
-            active.label("dolly zoom")
-            active.prop(bpy.context.scene, "ct_dz_camera_lens")
-        active = split.column(align=True)
-        active.label("焦点距離")
-        active.prop(cam, "lens")
-
-        split = box.split()
-        col = split.column(align=True)
-        col.label(text="Shift:")
-        col.prop(cam, "shift_x", text="X")
-        col.prop(cam, "shift_y", text="Y")
-
-        col = split.column(align=True)
-        col.label(text="Clipping:")
-        col.prop(cam, "clip_start", text="Start")
-        col.prop(cam, "clip_end", text="End")
-        active = box.row(align=True)
-        active.operator("object.setshift_to_cursor")
-        active.operator("object.border_fromfile")
-
-        boxlayout = box.column(align=True)
-        active = boxlayout.row(align=True)
-        active = boxlayout.row(align=True)
-        active.operator("fjw_selector.camera_work", icon="CAMERA_DATA")
-        active.operator("fjw_selector.camera_work_look_at")
-        active.prop(bpy.context.space_data, "lock_camera", icon="CAMERA_DATA", text="")
-        active = boxlayout.row(align=True)
-        active.operator("fjw_selector.current_view_to_camera", icon="CAMERA_DATA",)
-        active = boxlayout.row(align=True)
-        active.operator("fjw_selector.non_camera_work")
-        active.operator("fjw_selector.non_camera_work_top")
-        active.operator("fjw_selector.non_camera_work_right")
 
 
         active = layout.row(align=True)
