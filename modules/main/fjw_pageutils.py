@@ -329,7 +329,7 @@ class refresh(bpy.types.Operator):
         for n in range(10):
             if not refresh_command(self):
                 break
-
+        bpy.ops.file.make_paths_relative()
         return {"FINISHED"}
     def invoke(self, context, event):
 #        return context.window_manager.invoke_props_dialog(self)
