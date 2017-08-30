@@ -329,7 +329,7 @@ class refresh(bpy.types.Operator):
         for n in range(10):
             if not refresh_command(self):
                 break
-
+        bpy.ops.file.make_paths_relative()
         return {"FINISHED"}
     def invoke(self, context, event):
 #        return context.window_manager.invoke_props_dialog(self)
@@ -713,6 +713,8 @@ class openprevcell(bpy.types.Operator):
             return {'CANCELLED'}
         target = filepaths[selfindex - 1]
 
+        bpy.context.space_data.lock_camera = False
+
         #保存
         bpy.ops.wm.save_mainfile()
 
@@ -738,6 +740,8 @@ class opennextcell(bpy.types.Operator):
             self.report({"INFO"},"ファイルが存在しません")
             return {'CANCELLED'}
         target = filepaths[selfindex + 1]
+
+        bpy.context.space_data.lock_camera = False
 
         #保存
         bpy.ops.wm.save_mainfile()
@@ -797,6 +801,8 @@ class topage(bpy.types.Operator):
                     pass
 
 
+
+        bpy.context.space_data.lock_camera = False
 
         #保存
         bpy.ops.wm.save_mainfile()
