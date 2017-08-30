@@ -82,6 +82,9 @@ function excute(){
 	}
 	outtext = IDreplace(outtext, "idname");//.replace(/☆ButtonTitle/g, ButtonTitle);
 
+	//大文字化
+	outtext = outtext.replace(/FUJIWARATOOLBOX_[_|a-z|A-Z]+/g,function(match){return match.toUpperCase()})
+
 
 	$("#output").val(outtext);
 

@@ -14,6 +14,20 @@ import sys
 import mathutils
 from collections import OrderedDict
 
+from bpy.props import (StringProperty,
+                       BoolProperty,
+                       IntProperty,
+                       FloatProperty,
+                       FloatVectorProperty,
+                       EnumProperty,
+                       PointerProperty,
+                       )
+from bpy.types import (Panel,
+                       Operator,
+                       AddonPreferences,
+                       PropertyGroup,
+                       )
+
 
 fujiwara_toolbox = __import__(__package__)
 try:
@@ -861,50 +875,50 @@ class FUJIWARATOOLBOX_559881(bpy.types.Operator):#保存して開き直す
 
 
 
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
+# #---------------------------------------------
+# uiitem().vertical()
+# #---------------------------------------------
 
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
+# #---------------------------------------------
+# uiitem().horizontal()
+# #---------------------------------------------
 
 
 
-########################################
-#メモ設置
-########################################
-class FUJIWARATOOLBOX_350101(bpy.types.Operator):#メモ設置
-    """メモ設置"""
-    bl_idname = "fujiwara_toolbox.command_350101"
-    bl_label = "メモ設置"
-    bl_options = {'REGISTER', 'UNDO'}
+# ########################################
+# #メモ設置
+# ########################################
+# class FUJIWARATOOLBOX_350101(bpy.types.Operator):#メモ設置
+#     """メモ設置"""
+#     bl_idname = "fujiwara_toolbox.command_350101"
+#     bl_label = "メモ設置"
+#     bl_options = {'REGISTER', 'UNDO'}
 
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="OUTLINER_OB_EMPTY",mode="")
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="OUTLINER_OB_EMPTY",mode="")
 
-    def execute(self, context):
-        bpy.ops.object.empty_add(type='SINGLE_ARROW', radius=1, view_align=False, location=bpy.context.space_data.cursor_location, layers=(True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False))
-        obj = bpy.context.scene.objects.active
-        obj.rotation_euler[1] = 3.14159
-        obj.show_name = True
-        obj.show_x_ray = True
-        obj.name = "MEMO:"
-        obj.location[2] += 1
+#     def execute(self, context):
+#         bpy.ops.object.empty_add(type='SINGLE_ARROW', radius=1, view_align=False, location=bpy.context.space_data.cursor_location, layers=(True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False))
+#         obj = bpy.context.scene.objects.active
+#         obj.rotation_euler[1] = 3.14159
+#         obj.show_name = True
+#         obj.show_x_ray = True
+#         obj.name = "MEMO:"
+#         obj.location[2] += 1
 
-        #右上レイヤーにまとめる
-        obj.layers[9] = True
-        obj.layers[0] = False
-        bpy.context.scene.layers[9] = True
+#         #右上レイヤーにまとめる
+#         obj.layers[9] = True
+#         obj.layers[0] = False
+#         bpy.context.scene.layers[9] = True
 
-        #グループ化
-        if "MEMO" not in bpy.data.groups:
-            bpy.ops.group.create(name="MEMO")
-        else:
-            bpy.data.groups["MEMO"].objects.link(obj)
+#         #グループ化
+#         if "MEMO" not in bpy.data.groups:
+#             bpy.ops.group.create(name="MEMO")
+#         else:
+#             bpy.data.groups["MEMO"].objects.link(obj)
         
-        return {'FINISHED'}
-########################################
+#         return {'FINISHED'}
+# ########################################
 
 
 
@@ -914,244 +928,244 @@ class FUJIWARATOOLBOX_350101(bpy.types.Operator):#メモ設置
 
 
 
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
+# #---------------------------------------------
+# uiitem().vertical()
+# #---------------------------------------------
 
 
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
+# #---------------------------------------------
+# uiitem().horizontal()
+# #---------------------------------------------
 
 
 
-########################################
-#カルテレンダ
-########################################
-class FUJIWARATOOLBOX_317755(bpy.types.Operator):#カルテレンダ
-    """カルテレンダ"""
-    bl_idname = "fujiwara_toolbox.command_317755"
-    bl_label = "カルテレンダ"
-    bl_options = {'REGISTER', 'UNDO'}
+# ########################################
+# #カルテレンダ
+# ########################################
+# class FUJIWARATOOLBOX_317755(bpy.types.Operator):#カルテレンダ
+#     """カルテレンダ"""
+#     bl_idname = "fujiwara_toolbox.command_317755"
+#     bl_label = "カルテレンダ"
+#     bl_options = {'REGISTER', 'UNDO'}
 
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
     
-    def execute(self, context):
-        #ジオメトリの選択
-        if "ジオメトリ" not in bpy.context.scene.objects.active.name:
-            self.report({"INFO"},"素体ジオメトリを指定してください")
-            return {'FINISHED'}
-        geo = bpy.context.scene.objects.active
+#     def execute(self, context):
+#         #ジオメトリの選択
+#         if "ジオメトリ" not in bpy.context.scene.objects.active.name:
+#             self.report({"INFO"},"素体ジオメトリを指定してください")
+#             return {'FINISHED'}
+#         geo = bpy.context.scene.objects.active
         
         
-        #現状保存
-        bpy.ops.wm.save_mainfile()
+#         #現状保存
+#         bpy.ops.wm.save_mainfile()
         
         
-        #ゼロ位置に
-        bpy.ops.object.location_clear()
-        bpy.ops.object.rotation_clear()
+#         #ゼロ位置に
+#         bpy.ops.object.location_clear()
+#         bpy.ops.object.rotation_clear()
         
-        #カメラ位置を設定
-        cam = bpy.context.scene.camera
-#        cam.data.lens = 100
+#         #カメラ位置を設定
+#         cam = bpy.context.scene.camera
+# #        cam.data.lens = 100
         
-#        cam.location[0] = 0
-#        cam.location[1] = -7.66724
-#        cam.location[2] = 1.58621
-#        cam.rotation_euler[0] = -1.5708
-#        cam.rotation_euler[1] = 3.14159
-#        cam.rotation_euler[2] = 3.14159
-#        cam.rotation_mode = 'XYZ'
+# #        cam.location[0] = 0
+# #        cam.location[1] = -7.66724
+# #        cam.location[2] = 1.58621
+# #        cam.rotation_euler[0] = -1.5708
+# #        cam.rotation_euler[1] = 3.14159
+# #        cam.rotation_euler[2] = 3.14159
+# #        cam.rotation_mode = 'XYZ'
         
-#        cam.data.shift_x = 0
-#        cam.data.shift_y = -0.188
-        
-        
-        #レンダ準備
-        bpy.context.scene.render.use_shadows = False
-        bpy.context.scene.render.use_raytrace = False
-        bpy.context.scene.render.use_textures = True
-        bpy.context.scene.render.use_antialiasing = False
-        bpy.context.scene.render.layers["RenderLayer"].use_solid = True
-        bpy.context.scene.render.layers["RenderLayer"].use_ztransp = True
-        bpy.context.scene.render.layers["RenderLayer"].use_freestyle = False
-        bpy.context.scene.render.use_freestyle = False
-        bpy.context.scene.render.use_edge_enhance = False
-        bpy.context.scene.render.edge_threshold = 255
-        
-        dir = bpy.data.filepath.replace(bpy.path.basename(bpy.data.filepath), "")
-#        name = bpy.path.display_name_from_filepath(bpy.data.filepath)
-        pathbase = dir + os.sep + "render" + os.sep + "karte_"
-        
-        #正面
-        geo.rotation_euler[0] = 0
-        geo.rotation_euler[1] = 0
-        geo.rotation_euler[2] = 0
-        bpy.context.scene.render.filepath = pathbase + "front.png"
-        bpy.ops.render.render(write_still=True)
+# #        cam.data.shift_x = 0
+# #        cam.data.shift_y = -0.188
         
         
+#         #レンダ準備
+#         bpy.context.scene.render.use_shadows = False
+#         bpy.context.scene.render.use_raytrace = False
+#         bpy.context.scene.render.use_textures = True
+#         bpy.context.scene.render.use_antialiasing = False
+#         bpy.context.scene.render.layers["RenderLayer"].use_solid = True
+#         bpy.context.scene.render.layers["RenderLayer"].use_ztransp = True
+#         bpy.context.scene.render.layers["RenderLayer"].use_freestyle = False
+#         bpy.context.scene.render.use_freestyle = False
+#         bpy.context.scene.render.use_edge_enhance = False
+#         bpy.context.scene.render.edge_threshold = 255
         
-        #背面
-        geo.rotation_euler[2] = -3.14159
-        bpy.ops.object.location_clear()
-        bpy.context.scene.render.filepath = pathbase + "back.png"
-        bpy.ops.render.render(write_still=True)
+#         dir = bpy.data.filepath.replace(bpy.path.basename(bpy.data.filepath), "")
+# #        name = bpy.path.display_name_from_filepath(bpy.data.filepath)
+#         pathbase = dir + os.sep + "render" + os.sep + "karte_"
         
-        #左側
-        #cam.data.shift_x = 0.125
-        geo.rotation_euler[2] = -1.5708 / 2
-        bpy.ops.object.location_clear()
-        bpy.context.scene.render.filepath = pathbase + "left.png"
-        bpy.ops.render.render(write_still=True)
-        
-        
-        #右側
-        #cam.data.shift_x = -0.125
-        geo.rotation_euler[2] = 1.5708 / 2
-        bpy.ops.object.location_clear()
-        bpy.context.scene.render.filepath = pathbase + "right.png"
-        bpy.ops.render.render(write_still=True)
-        
-        
-#        #トップ
-#        cam.data.shift_x = 0
-#        cam.data.shift_y = -0.125
-#        #現在の高さZとジオメトリまでの距離Yたせば同じ距離感の頭までの距離になるぞ。
-##        cam.location[0] = 0
-#        cam.location[1] = (cam.location[2] + (cam.location[1] * -1)) * -1
-#        cam.location[2] = 0
-#        geo.rotation_euler[0] = 1.5708
-#        geo.rotation_euler[1] = 0
-#        geo.rotation_euler[2] = 0
-#        bpy.ops.object.location_clear()
-#        bpy.context.scene.render.filepath = pathbase + "top.png"
-#        bpy.ops.render.render(write_still=True)
+#         #正面
+#         geo.rotation_euler[0] = 0
+#         geo.rotation_euler[1] = 0
+#         geo.rotation_euler[2] = 0
+#         bpy.context.scene.render.filepath = pathbase + "front.png"
+#         bpy.ops.render.render(write_still=True)
         
         
         
+#         #背面
+#         geo.rotation_euler[2] = -3.14159
+#         bpy.ops.object.location_clear()
+#         bpy.context.scene.render.filepath = pathbase + "back.png"
+#         bpy.ops.render.render(write_still=True)
         
-        #開きなおし
-        bpy.ops.wm.revert_mainfile(use_scripts=True)
+#         #左側
+#         #cam.data.shift_x = 0.125
+#         geo.rotation_euler[2] = -1.5708 / 2
+#         bpy.ops.object.location_clear()
+#         bpy.context.scene.render.filepath = pathbase + "left.png"
+#         bpy.ops.render.render(write_still=True)
         
-        return {'FINISHED'}
-########################################
-
-
-########################################
-#VRExport
-########################################
-class FUJIWARATOOLBOX_871849(bpy.types.Operator):#VRExport
-    """VRExport"""
-    bl_idname = "fujiwara_toolbox.command_871849"
-    bl_label = "VRExport"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-    def execute(self, context):
-        #basepath = bpy.data.filepath
-
-        ##現状保存
-        #bpy.ops.wm.save_mainfile()
-
-        #deselect()
-
-        ##いらないものの削除
-        #delete(match("ConstructionArea"))
-        #delete(match("Grid_"))
         
-        #deselect()
+#         #右側
+#         #cam.data.shift_x = -0.125
+#         geo.rotation_euler[2] = 1.5708 / 2
+#         bpy.ops.object.location_clear()
+#         bpy.context.scene.render.filepath = pathbase + "right.png"
+#         bpy.ops.render.render(write_still=True)
+        
+        
+# #        #トップ
+# #        cam.data.shift_x = 0
+# #        cam.data.shift_y = -0.125
+# #        #現在の高さZとジオメトリまでの距離Yたせば同じ距離感の頭までの距離になるぞ。
+# ##        cam.location[0] = 0
+# #        cam.location[1] = (cam.location[2] + (cam.location[1] * -1)) * -1
+# #        cam.location[2] = 0
+# #        geo.rotation_euler[0] = 1.5708
+# #        geo.rotation_euler[1] = 0
+# #        geo.rotation_euler[2] = 0
+# #        bpy.ops.object.location_clear()
+# #        bpy.context.scene.render.filepath = pathbase + "top.png"
+# #        bpy.ops.render.render(write_still=True)
+        
+        
+        
+        
+#         #開きなおし
+#         bpy.ops.wm.revert_mainfile(use_scripts=True)
+        
+#         return {'FINISHED'}
+# ########################################
 
-        #for obj in bpy.data.objects:
-        #    obj.hide = False
 
-        ##非表示レイヤー削除
-        ##レイヤー表示を反転して全選択削除してもどす？
-        ##オブジェクトが表示レイヤーをもってれば除外する
-        ##layers = bpy.context.scene.layers
-        ##dellist = []
-        ##for obj in bpy.data.objects:
-        ##    delflag = True
-        ##    for n in range(0,20):
-        ##        if obj.layers[n] == True:
-        ##            if layers[n] == True:
-        ##                delflag = False
-        ##                break
-        ##    if delflag:
-        ##        dellist.append(obj)
+# ########################################
+# #VRExport
+# ########################################
+# class FUJIWARATOOLBOX_871849(bpy.types.Operator):#VRExport
+#     """VRExport"""
+#     bl_idname = "fujiwara_toolbox.command_871849"
+#     bl_label = "VRExport"
+#     bl_options = {'REGISTER', 'UNDO'}
 
-        ##for n in range(0,20):
-        ##    bpy.context.scene.layers[n] = True
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-        ##delete(dellist)
-        #for n in range(0,20):
-        #    bpy.context.scene.layers[n] = not bpy.context.scene.layers[n]
-        #bpy.ops.object.select_all(action='SELECT')
-        #delete(get_selected_list())
-        #for n in range(0,20):
-        #    bpy.context.scene.layers[n] = not bpy.context.scene.layers[n]
+#     def execute(self, context):
+#         #basepath = bpy.data.filepath
+
+#         ##現状保存
+#         #bpy.ops.wm.save_mainfile()
+
+#         #deselect()
+
+#         ##いらないものの削除
+#         #delete(match("ConstructionArea"))
+#         #delete(match("Grid_"))
+        
+#         #deselect()
+
+#         #for obj in bpy.data.objects:
+#         #    obj.hide = False
+
+#         ##非表示レイヤー削除
+#         ##レイヤー表示を反転して全選択削除してもどす？
+#         ##オブジェクトが表示レイヤーをもってれば除外する
+#         ##layers = bpy.context.scene.layers
+#         ##dellist = []
+#         ##for obj in bpy.data.objects:
+#         ##    delflag = True
+#         ##    for n in range(0,20):
+#         ##        if obj.layers[n] == True:
+#         ##            if layers[n] == True:
+#         ##                delflag = False
+#         ##                break
+#         ##    if delflag:
+#         ##        dellist.append(obj)
+
+#         ##for n in range(0,20):
+#         ##    bpy.context.scene.layers[n] = True
+
+#         ##delete(dellist)
+#         #for n in range(0,20):
+#         #    bpy.context.scene.layers[n] = not bpy.context.scene.layers[n]
+#         #bpy.ops.object.select_all(action='SELECT')
+#         #delete(get_selected_list())
+#         #for n in range(0,20):
+#         #    bpy.context.scene.layers[n] = not bpy.context.scene.layers[n]
         
 
-        ##mod適用
-        #deselect()
-        #for obj in bpy.data.objects:
-        #    if obj.type == "MESH":
-        #        obj.select = True
-        #apply_mods()
-        #deselect()
+#         ##mod適用
+#         #deselect()
+#         #for obj in bpy.data.objects:
+#         #    if obj.type == "MESH":
+#         #        obj.select = True
+#         #apply_mods()
+#         #deselect()
 
-        #bpy.ops.object.select_all(action='SELECT')
-        #reject_notmesh()
-        #bpy.ops.object.transform_apply(location=True, rotation=True,
-        #scale=True)
-
-
-        #deselect()
-        #for obj in bpy.data.objects:
-        #    #テキストも重くなるのでいらない
-        #    if obj.type == "FONT":
-        #        obj.select = True
-
-        #    #非表示オブジェクト削除
-        #    if obj.type == "MESH":
-        #        if obj.draw_type == "WIRE" or obj.draw_type == "BOUNDS":
-        #            obj.select = True
-        #    #if obj.hide == True:
-        #    # obj.hide = False
-        #    # obj.select = True
+#         #bpy.ops.object.select_all(action='SELECT')
+#         #reject_notmesh()
+#         #bpy.ops.object.transform_apply(location=True, rotation=True,
+#         #scale=True)
 
 
+#         #deselect()
+#         #for obj in bpy.data.objects:
+#         #    #テキストも重くなるのでいらない
+#         #    if obj.type == "FONT":
+#         #        obj.select = True
 
-        #delete(get_selected_list())
-
-        #シェルでコピーしたほうがいいんじゃね？
-        #bpy.ops.wm.save_mainfile(filepath=fujiwara_toolbox.conf.maintools_vrexportpath)
-
-        #####
-
-        #非レンダオブジェクトを選択から除外
-        selection = fjw.get_selected_list()
-        for obj in selection:
-            if obj.hide_render:
-                obj.select = False
-
-        bpy.context.scene.render.use_simplify = True
-        bpy.context.scene.render.simplify_subdivision = 2
-        #objで出す方がマシだ
-        bpy.ops.export_scene.obj(filepath= fujiwara_toolbox.conf.maintools_vrexportdir + os.sep + "VRRoom.obj", use_selection=True)
+#         #    #非表示オブジェクト削除
+#         #    if obj.type == "MESH":
+#         #        if obj.draw_type == "WIRE" or obj.draw_type == "BOUNDS":
+#         #            obj.select = True
+#         #    #if obj.hide == True:
+#         #    # obj.hide = False
+#         #    # obj.select = True
 
 
-        #出力フォルダを開く
-        os.system("EXPLORER " + fujiwara_toolbox.conf.maintools_vrexportdir)
-        ##time.sleep(5)
-        #bpy.ops.wm.open_mainfile(filepath=basepath)
 
-        return {'FINISHED'}
-########################################
+#         #delete(get_selected_list())
+
+#         #シェルでコピーしたほうがいいんじゃね？
+#         #bpy.ops.wm.save_mainfile(filepath=fujiwara_toolbox.conf.maintools_vrexportpath)
+
+#         #####
+
+#         #非レンダオブジェクトを選択から除外
+#         selection = fjw.get_selected_list()
+#         for obj in selection:
+#             if obj.hide_render:
+#                 obj.select = False
+
+#         bpy.context.scene.render.use_simplify = True
+#         bpy.context.scene.render.simplify_subdivision = 2
+#         #objで出す方がマシだ
+#         bpy.ops.export_scene.obj(filepath= fujiwara_toolbox.conf.maintools_vrexportdir + os.sep + "VRRoom.obj", use_selection=True)
+
+
+#         #出力フォルダを開く
+#         os.system("EXPLORER " + fujiwara_toolbox.conf.maintools_vrexportdir)
+#         ##time.sleep(5)
+#         #bpy.ops.wm.open_mainfile(filepath=basepath)
+
+#         return {'FINISHED'}
+# ########################################
 
 
 #---------------------------------------------
@@ -1159,6 +1173,262 @@ uiitem().vertical()
 #---------------------------------------------
 
 
+
+############################################################################################################################
+uiitem("リンクユーティリティ")
+############################################################################################################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#フォルダを開く
+########################################
+#bpy.ops.fujiwara_toolbox.open_linkedfolder() #フォルダを開く
+class FUJIWARATOOLBOX_OPEN_LINKEDFOLDER(bpy.types.Operator):
+    """リンク先ファイルのあるフォルダを開く"""
+    bl_idname = "fujiwara_toolbox.open_linkedfolder"
+    bl_label = "フォルダを開く"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        obj = fjw.active()
+
+        if obj.type != "EMPTY":
+            self.report({"INFO"},"リンクオブジェクトを選択してください。")
+
+        linkedpath = bpy.path.abspath(obj.dupli_group.library.filepath)
+        self.report({"INFO"},linkedpath)
+        os.system("EXPLORER " + os.path.dirname(linkedpath)+os.sep)
+        return {'FINISHED'}
+########################################
+
+########################################
+#ファイルを開く
+########################################
+#bpy.ops.fujiwara_toolbox.open_linkedfile() #ファイルを開く
+class FUJIWARATOOLBOX_OPEN_LINKEDFILE(bpy.types.Operator):
+    """リンク先ファイルを開く"""
+    bl_idname = "fujiwara_toolbox.open_linkedfile"
+    bl_label = "ファイルを開く"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        obj = fjw.active()
+
+        if obj.type != "EMPTY":
+            self.report({"INFO"},"リンクオブジェクトを選択してください。")
+
+        linkedpath = bpy.path.abspath(obj.dupli_group.library.filepath)
+        self.report({"INFO"},linkedpath)
+        os.system("EXPLORER " + linkedpath)
+        return {'FINISHED'}
+########################################
+
+########################################
+#グループを追加リンクする
+########################################
+#bpy.ops.fujiwara_toolbox.link_additional_group() #グループを追加リンクする
+class FUJIWARATOOLBOX_LINK_ADDITIONAL_GROUP(bpy.types.Operator):
+    """グループを追加リンクする"""
+    bl_idname = "fujiwara_toolbox.link_additional_group"
+    bl_label = "グループを追加リンクする"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    #http://qiita.com/nutti/items/9ec0a61d182350e44319
+    groups = []
+    linkedpath = ""
+    def get_object_list_callback(scene, context):
+        global link_additional_group_groups
+        items = []
+        # itemsに項目を追加する処理...
+        for g in link_additional_group_groups:
+            items.append((g,g,""))
+        #items.append(("aswea","aswea",""))
+        return items    
+
+    group_list = EnumProperty(
+        name = "Group List",               # 名称
+        description = "Group List",        # 説明文
+        items = get_object_list_callback)   # 項目リストを作成する関数
+
+
+
+    def execute(self, context):
+        #print(self.group_list)
+        base = fjw.active()
+
+        group = self.group_list
+        _groupname = group
+        _filepath = self.linkedpath + os.sep + "Group" + os.sep
+
+        bpy.ops.wm.link(filepath=_filepath, filename=_groupname, directory=_filepath)
+        linked = fjw.active()
+
+        linked.location = base.location
+        linked.rotation_euler = base.rotation_euler
+        linked.rotation_quaternion = base.rotation_quaternion
+        linked.scale = base.scale
+        activate(base)
+        bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
+
+
+        return {"FINISHED"}
+
+    def invoke(self, context, event):
+        global link_additional_group_groups
+        link_additional_group_groups = []
+        self.groups = []
+        self.linkedpath = ""
+        obj = fjw.active()
+        if obj.type == "EMPTY":
+            self.linkedpath = bpy.path.abspath(obj.dupli_group.library.filepath)
+
+
+            with bpy.data.libraries.load(self.linkedpath, link=False, relative=True) as (data_from, data_to):
+                for groupname in data_from.groups:
+                    self.groups.append(groupname)
+        link_additional_group_groups = self.groups
+        return context.window_manager.invoke_props_dialog(self)
+########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#ファイル差し替え
+########################################
+#bpy.ops.fujiwara_toolbox.replace_link_file() #ファイル差し替え
+class FUJIWARATOOLBOX_REPLACE_LINK_FILE(bpy.types.Operator):
+    """リンク先のファイルを差し替える。保存して開き直すまで反映されないので注意。"""
+    bl_idname = "fujiwara_toolbox.replace_link_file"
+    bl_label = "ファイル差し替え"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    filename = bpy.props.StringProperty(subtype="FILE_NAME")
+    filepath = bpy.props.StringProperty(subtype="FILE_PATH")
+    directory = bpy.props.StringProperty(subtype="DIR_PATH")
+    files = bpy.props.CollectionProperty(type=bpy.types.PropertyGroup)
+
+    @classmethod
+    def poll(cls, context):
+        obj = fjw.active()
+        if obj is None:
+            return {'CANCELLED'}
+        if obj.type != "EMPTY":
+            return {'CANCELLED'}
+        if obj.dupli_group.library.filepath == "":
+            return {'CANCELLED'}
+        return True
+
+    def invoke(self, context, event):
+        if bpy.context.user_preferences.filepaths.save_version == 0:
+            self.report({"WARNING"},"バージョン保存を有効にしてください：ユーザー設定 -> ファイル -> バージョンを保存")
+            return {'CANCELLED'}
+
+        self.obj = fjw.active()
+        self.directory = self.obj.dupli_group.library.filepath
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+    def execute(self, context):
+        basepath = self.obj.dupli_group.library.filepath
+        self.obj.dupli_group.library.filepath = self.directory + self.files[0].name
+        bpy.ops.file.make_paths_relative()
+        self.report({"INFO"},"差し替えました。ファイルを保存して開き直してください。：" + basepath + " -> " + self.obj.dupli_group.library.filepath)
+        return {'FINISHED'}
+########################################
+
+
+link_additional_group_groups = []
+########################################
+#グループ差し替え
+########################################
+#bpy.ops.fujiwara_toolbox.replace_link_group() #グループ差し替え
+class FUJIWARATOOLBOX_REPLACE_LINK_GROUP(bpy.types.Operator):
+    """リンク先のグループを差し替える。保存して開き直すまで反映されないので注意。"""
+    bl_idname = "fujiwara_toolbox.replace_link_group"
+    bl_label = "グループ差し替え"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    groups = []
+
+    def get_object_list_callback(self, context):
+        global link_additional_group_groups
+        items = []
+        # itemsに項目を追加する処理...
+        for g in link_additional_group_groups:
+            items.append((g,g,""))
+        return items
+
+    group_list = EnumProperty(
+        name = "Group List",               # 名称
+        description = "Group List",        # 説明文
+        items = get_object_list_callback)   # 項目リストを作成する関数
+
+    def invoke(self, context, event):
+        if bpy.context.user_preferences.filepaths.save_version == 0:
+            self.report({"WARNING"},"バージョン保存を有効にしてください：ユーザー設定 -> ファイル -> バージョンを保存")
+            return {'CANCELLED'}
+            
+
+        global link_additional_group_groups
+        link_additional_group_groups = []
+        linkedpath = ""
+        obj = fjw.active()
+        if obj.type != "EMPTY":
+            return {'CANCELLED'}
+
+        linkedpath = bpy.path.abspath(obj.dupli_group.library.filepath)
+
+        with bpy.data.libraries.load(linkedpath, link=False, relative=True) as (data_from, data_to):
+            for groupname in data_from.groups:
+                link_additional_group_groups.append(groupname)
+
+        return context.window_manager.invoke_props_dialog(self)
+
+
+    def execute(self, context):
+        obj = fjw.active()
+        basename = obj.dupli_group.name
+        groupname = self.group_list
+        obj.dupli_group.name = groupname
+        self.report({"INFO"},"差し替えました。ファイルを保存して開き直してください。：" + basename+ " -> " + groupname)
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
 
 
 
