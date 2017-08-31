@@ -3428,6 +3428,8 @@ class FUJIWARATOOLBOX_979047(bpy.types.Operator):#GLレンダ
 
 
     def execute(self, context):
+        starttime = time.time()
+
         viewstate = fjw.ViewState()
 
         #再計算回避
@@ -3467,7 +3469,10 @@ class FUJIWARATOOLBOX_979047(bpy.types.Operator):#GLレンダ
         selfname = fjw.blendname() + "_layerAll_OpenGL_A_Main"
         # render_opengl(selfname,True)
         render_opengl(selfname)
-        self.report({"INFO"},"レンダ完了")
+
+        endtime = time.time()
+
+        self.report({"INFO"},"レンダ完了　{0:.2f}秒".format(endtime - starttime))
 
 
         return {'FINISHED'}
