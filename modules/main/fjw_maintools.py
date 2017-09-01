@@ -13867,6 +13867,9 @@ uiitem().vertical()
 ############################################################################################################################
 uiitem("コリジョン")
 ############################################################################################################################
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
 
 ########################################
 #コリジョン化
@@ -13894,6 +13897,30 @@ class FUJIWARATOOLBOX_MAKE_THIS_COLLISION(bpy.types.Operator):
 
         return {'FINISHED'}
 ########################################
+
+########################################
+#球コリジョン追加
+########################################
+#bpy.ops.fujiwara_toolbox.add_sphere_collision() #球コリジョン追加
+class FUJIWARATOOLBOX_ADD_SPHERE_COLLISION(bpy.types.Operator):
+    """球コリジョンを追加する"""
+    bl_idname = "fujiwara_toolbox.add_sphere_collision"
+    bl_label = "球コリジョン追加"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        bpy.ops.mesh.primitive_ico_sphere_add(size=1, view_align=False, enter_editmode=False, location=fjw.cursor(), layers=bpy.context.scene.layers)
+        bpy.ops.fujiwara_toolbox.make_this_collision() #コリジョン化
+
+        return {'FINISHED'}
+########################################
+
+
+
+
 
 
 
