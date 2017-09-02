@@ -375,7 +375,7 @@ class MyaddonView3DPanel(bpy.types.Panel):#メインパネル
         active = cols.column(align=True)
         active = active.row(align=True)
         #roomtools
-        active.operator("fujiwara_toolbox.command_288056",text="グループ化")#グループ化
+        active.operator("fujiwara_toolbox.command_288056",text="メイングループ化")#グループ化
         #maintools内
         # active.operator("fujiwara_toolbox.command_b424289a",text="Proxy")#プロクシ作成
         active.operator("fujiwara_toolbox.command_248120",text="Full Proxy")#プロクシ作成
