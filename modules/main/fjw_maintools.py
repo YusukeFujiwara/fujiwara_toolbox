@@ -1345,6 +1345,7 @@ class FUJIWARATOOLBOX_REPLACE_LINK_FILE(bpy.types.Operator):
         if bpy.context.user_preferences.filepaths.save_version == 0:
             self.report({"WARNING"},"バージョン保存を有効にしてください：ユーザー設定 -> ファイル -> バージョンを保存")
             return {'CANCELLED'}
+        bpy.ops.wm.save_mainfile()
 
         self.obj = fjw.active()
         self.directory = self.obj.dupli_group.library.filepath
@@ -1393,7 +1394,7 @@ class FUJIWARATOOLBOX_REPLACE_LINK_GROUP(bpy.types.Operator):
         if bpy.context.user_preferences.filepaths.save_version == 0:
             self.report({"WARNING"},"バージョン保存を有効にしてください：ユーザー設定 -> ファイル -> バージョンを保存")
             return {'CANCELLED'}
-            
+        bpy.ops.wm.save_mainfile()
 
         global link_additional_group_groups
         link_additional_group_groups = []
