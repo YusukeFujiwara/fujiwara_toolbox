@@ -18481,6 +18481,7 @@ class BoneRenamer(bpy.types.Panel):
         layout = self.layout
         layout.prop(bpy.context.scene,"fjw_bone_renamer_name","")
         layout.operator("fujiwara_toolbox.rename_bones")
+        layout.operator("fujiwara_toolbox.rename_bones_prefix")
 
         return
     
@@ -18546,9 +18547,24 @@ class FJW_RENAME_BONES(bpy.types.Operator):
 
         return {'FINISHED'}
 
+class FJW_RENAME_BONES_PREFIX(bpy.types.Operator):
+    """プレフィックスを追加"""
+    bl_idname = "fujiwara_toolbox.rename_bones_prefix"
+    bl_label = "プレフィックス"
+    bl_options = {'REGISTER', 'UNDO'}
+    def execute(self, context):
+        selection = []
 
+        armature = fjw.active()
+        armu = fjw.ArmatureUtils(armature)
+        name = bpy.context.scene.fjw_bone_renamer_name
+        for ebone in armu.edit_bones:
+            if ebone.select:
+                selection.append(ebone)
+        for ebone in selection:
+            ebone.name = name + "_" + ebone.name
 
-
+        return {'FINISHED'}
 
 
 
