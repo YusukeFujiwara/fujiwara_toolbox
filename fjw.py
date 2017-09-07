@@ -283,6 +283,9 @@ class Modutils():
         modlist = self.find_bytype_list("MESH_DEFORM")
         for mod in modlist:
             self.move_top(mod)
+        modlist = self.find_bytype_list("SURFACE_DEFORM")
+        for mod in modlist:
+            self.move_top(mod)
         modlist = self.find_bytype_list("ARMATURE")
         for mod in modlist:
             self.move_top(mod)
@@ -310,6 +313,7 @@ class ArmatureUtils():
         self.armature = obj
         self.pose_bones = self.armature.pose.bones
         self.data_bones = self.armature.data.bones
+        self.edit_bones = self.armature.data.edit_bones
 
     def findname(self, name):#該当するボーンの名前を返す
         for bone in self.armature.data.bones:
@@ -325,6 +329,8 @@ class ArmatureUtils():
         return self.armature.pose.bones[name]
     def databone(self, name):
         return self.armature.data.bones[name]
+    def editbone(self, name):
+        return self.armature.data.edit_bones[name]
 
     def get_pbone_world_co(self, co):#ボーンのワールド座標を返す
         # loc = self.armature.matrix_world * self.armature.matrix_basis.inverted() * co
@@ -360,7 +366,13 @@ class ArmatureUtils():
             selection.append(bone)
 
         return selection
-        pass
+
+    def get_selected_list(self):
+        selection = []
+        for bone in self.armature.data.bones:
+            if bone.select:
+                selection.append(bone)
+        return selection
 
     def deselect(self):
         for bone in self.armature.data.bones:

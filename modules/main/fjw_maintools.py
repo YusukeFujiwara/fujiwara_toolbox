@@ -375,7 +375,7 @@ class MyaddonView3DPanel(bpy.types.Panel):#メインパネル
         active = cols.column(align=True)
         active = active.row(align=True)
         #roomtools
-        active.operator("fujiwara_toolbox.command_288056",text="グループ化")#グループ化
+        active.operator("fujiwara_toolbox.command_288056",text="メイングループ化")#グループ化
         #maintools内
         # active.operator("fujiwara_toolbox.command_b424289a",text="Proxy")#プロクシ作成
         active.operator("fujiwara_toolbox.command_248120",text="Full Proxy")#プロクシ作成
@@ -1345,6 +1345,7 @@ class FUJIWARATOOLBOX_REPLACE_LINK_FILE(bpy.types.Operator):
         if bpy.context.user_preferences.filepaths.save_version == 0:
             self.report({"WARNING"},"バージョン保存を有効にしてください：ユーザー設定 -> ファイル -> バージョンを保存")
             return {'CANCELLED'}
+        bpy.ops.wm.save_mainfile()
 
         self.obj = fjw.active()
         self.directory = self.obj.dupli_group.library.filepath
@@ -1393,7 +1394,7 @@ class FUJIWARATOOLBOX_REPLACE_LINK_GROUP(bpy.types.Operator):
         if bpy.context.user_preferences.filepaths.save_version == 0:
             self.report({"WARNING"},"バージョン保存を有効にしてください：ユーザー設定 -> ファイル -> バージョンを保存")
             return {'CANCELLED'}
-            
+        bpy.ops.wm.save_mainfile()
 
         global link_additional_group_groups
         link_additional_group_groups = []
@@ -3428,6 +3429,8 @@ class FUJIWARATOOLBOX_979047(bpy.types.Operator):#GLレンダ
 
 
     def execute(self, context):
+        starttime = time.time()
+
         viewstate = fjw.ViewState()
 
         #再計算回避
@@ -3467,7 +3470,10 @@ class FUJIWARATOOLBOX_979047(bpy.types.Operator):#GLレンダ
         selfname = fjw.blendname() + "_layerAll_OpenGL_A_Main"
         # render_opengl(selfname,True)
         render_opengl(selfname)
-        self.report({"INFO"},"レンダ完了")
+
+        endtime = time.time()
+
+        self.report({"INFO"},"レンダ完了　{0:.2f}秒".format(endtime - starttime))
 
 
         return {'FINISHED'}
@@ -5855,85 +5861,85 @@ uiitem().vertical()
 
 
 
-################################################################################
-#UIカテゴリ
-########################################
-#カスタムプロパティ
-########################################
-class CATEGORYBUTTON_712442(bpy.types.Operator):#カスタムプロパティ
-    """カスタムプロパティ"""
-    bl_idname = "fujiwara_toolbox.categorybutton_712442"
-    bl_label = "カスタムプロパティ"
-    bl_options = {'REGISTER', 'UNDO'}
+# ################################################################################
+# #UIカテゴリ
+# ########################################
+# #カスタムプロパティ
+# ########################################
+# class CATEGORYBUTTON_712442(bpy.types.Operator):#カスタムプロパティ
+#     """カスタムプロパティ"""
+#     bl_idname = "fujiwara_toolbox.categorybutton_712442"
+#     bl_label = "カスタムプロパティ"
+#     bl_options = {'REGISTER', 'UNDO'}
 
-    uiitem = uiitem("カスタムプロパティ",True)
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-    uiitem.direction = "vertical"
+#     uiitem = uiitem("カスタムプロパティ",True)
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
+#     uiitem.direction = "vertical"
 
-    def execute(self, context):
-        uicategory_execute(self)
-        return {'FINISHED'}
-########################################
-################################################################################
-
-
+#     def execute(self, context):
+#         uicategory_execute(self)
+#         return {'FINISHED'}
+# ########################################
+# ################################################################################
 
 
 
 
 
 
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
 
-########################################
-#グループ情報を回収
-########################################
-class FUJIWARATOOLBOX_454471(bpy.types.Operator):#グループ情報を回収
-    """グループ情報を回収"""
-    bl_idname = "fujiwara_toolbox.command_454471"
-    bl_label = "グループ情報を回収"
-    bl_options = {'REGISTER', 'UNDO'}
 
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+# #---------------------------------------------
+# uiitem().horizontal()
+# #---------------------------------------------
 
-    def execute(self, context):
-        #まず全部除去
-        for obj in bpy.data.objects:
-            if "Groups" in obj:
-                del obj["Groups"]
+# ########################################
+# #グループ情報を回収
+# ########################################
+# class FUJIWARATOOLBOX_454471(bpy.types.Operator):#グループ情報を回収
+#     """グループ情報を回収"""
+#     bl_idname = "fujiwara_toolbox.command_454471"
+#     bl_label = "グループ情報を回収"
+#     bl_options = {'REGISTER', 'UNDO'}
 
-        for group in bpy.data.groups:
-            for obj in group.objects:
-                prop = []
-                #カスタムプロパティの確認
-                if "Groups" in obj:
-                    prop = obj["Groups"]
-                prop.append(group.name)
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-                obj["Groups"] = prop
+#     def execute(self, context):
+#         #まず全部除去
+#         for obj in bpy.data.objects:
+#             if "Groups" in obj:
+#                 del obj["Groups"]
 
-        return {'FINISHED'}
-########################################
+#         for group in bpy.data.groups:
+#             for obj in group.objects:
+#                 prop = []
+#                 #カスタムプロパティの確認
+#                 if "Groups" in obj:
+#                     prop = obj["Groups"]
+#                 prop.append(group.name)
 
-########################################
-#グループ再生
-########################################
-class FUJIWARATOOLBOX_490616(bpy.types.Operator):#グループ再生
-    """グループ再生"""
-    bl_idname = "fujiwara_toolbox.command_490616"
-    bl_label = "グループ再生"
-    bl_options = {'REGISTER', 'UNDO'}
+#                 obj["Groups"] = prop
 
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+#         return {'FINISHED'}
+# ########################################
 
-    def execute(self, context):
+# ########################################
+# #グループ再生
+# ########################################
+# class FUJIWARATOOLBOX_490616(bpy.types.Operator):#グループ再生
+#     """グループ再生"""
+#     bl_idname = "fujiwara_toolbox.command_490616"
+#     bl_label = "グループ再生"
+#     bl_options = {'REGISTER', 'UNDO'}
+
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+#     def execute(self, context):
         
-        return {'FINISHED'}
-########################################
+#         return {'FINISHED'}
+# ########################################
 
 
 
@@ -5943,38 +5949,38 @@ class FUJIWARATOOLBOX_490616(bpy.types.Operator):#グループ再生
 
 
 
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
+# #---------------------------------------------
+# uiitem().vertical()
+# #---------------------------------------------
 
 
-########################################
-#Trackto:CAMERA
-########################################
-class FUJIWARATOOLBOX_372481(bpy.types.Operator):#Trackto:CAMERA
-    """カスタムプロパティでTrackto:CAMERAをもつものに-Yのカメラトラックをつける"""
-    bl_idname = "fujiwara_toolbox.command_372481"
-    bl_label = "Trackto:CAMERA"
-    bl_options = {'REGISTER', 'UNDO'}
+# ########################################
+# #Trackto:CAMERA
+# ########################################
+# class FUJIWARATOOLBOX_372481(bpy.types.Operator):#Trackto:CAMERA
+#     """カスタムプロパティでTrackto:CAMERAをもつものに-Yのカメラトラックをつける"""
+#     bl_idname = "fujiwara_toolbox.command_372481"
+#     bl_label = "Trackto:CAMERA"
+#     bl_options = {'REGISTER', 'UNDO'}
 
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    def execute(self, context):
-        for obj in bpy.data.objects:
-            if "TrackTo" in obj:
-                if obj["TrackTo"] == "CAMERA":
-                    con = obj.constraints.new('DAMPED_TRACK')
-                    con.track_axis = 'TRACK_NEGATIVE_Y'
-                    con.target = bpy.context.scene.camera
-                    pass
+#     def execute(self, context):
+#         for obj in bpy.data.objects:
+#             if "TrackTo" in obj:
+#                 if obj["TrackTo"] == "CAMERA":
+#                     con = obj.constraints.new('DAMPED_TRACK')
+#                     con.track_axis = 'TRACK_NEGATIVE_Y'
+#                     con.target = bpy.context.scene.camera
+#                     pass
 
-        return {'FINISHED'}
-########################################
+#         return {'FINISHED'}
+# ########################################
 
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
+# #---------------------------------------------
+# uiitem().vertical()
+# #---------------------------------------------
 
 
 
@@ -7258,6 +7264,147 @@ class FUJIWARATOOLBOX_860977(bpy.types.Operator):#全て再バインド
         
         return {'FINISHED'}
 ########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+############################################################################################################################
+uiitem("ラップドサーフェスデフォーム")
+############################################################################################################################
+
+def get_wrappedsdef_objects():
+    selection = fjw.get_selected_list()
+
+    deformed_meshes = []
+
+    armatures = []
+    wrap_targets = []
+    surface_deformer_meshes = []
+
+    for obj in selection:
+        if obj.type == "ARMATURE":
+            armatures.append(obj)
+
+    for armature in armatures:
+        for child in armature.children:
+            modu = fjw.Modutils(child)
+            swrap = modu.find_bytype("SHRINKWRAP")
+            if swrap is not None:
+                surface_deformer_meshes.append(child)
+            else:
+                wrap_targets.append(child)
+    
+    for obj in selection:
+        if (obj not in armatures) and (obj not in wrap_targets) and (obj not in surface_deformer_meshes):
+            deformed_meshes.append(obj)
+
+    return deformed_meshes, armatures, wrap_targets, surface_deformer_meshes
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+def surface_deform_bind_all(obj, bound_state_flag):
+    fjw.activate(obj)
+    modu = fjw.Modutils(obj)
+    mods = modu.find_bytype_list("SURFACE_DEFORM")
+    for mod in mods:
+        if mod.is_bound != bound_state_flag:
+            bpy.ops.object.surfacedeform_bind(modifier=mod.name)
+
+########################################
+#バインド
+########################################
+#bpy.ops.fujiwara_toolbox.bind_wrapped_sdef() #バインド
+class FUJIWARATOOLBOX_BIND_WRAPPED_SDEF(bpy.types.Operator):
+    """シュリンクラップつきサーフェスデフォームをバインドする。既にある場合は再バインドされる。"""
+    bl_idname = "fujiwara_toolbox.bind_wrapped_sdef"
+    bl_label = "バインド"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        target = fjw.active()
+        target.select = False
+        selection = fjw.get_selected_list()
+
+        armature = None
+        if target.parent is not None and target.parent.type == "ARMATURE":
+            armature = target.parent
+
+        if armature is not None:
+            armature.data.pose_position = "REST"
+
+        for obj in selection:
+            modu = fjw.Modutils(obj)
+            m_sdef = modu.add("Surface Deform", "SURFACE_DEFORM")
+            m_sdef.target = target
+            surface_deform_bind_all(obj, True)
+
+        if armature is not None:
+            armature.data.pose_position = "POSE"
+
+        return {'FINISHED'}
+########################################
+
+########################################
+#再バインド
+########################################
+#bpy.ops.fujiwara_toolbox.rebind_wrapped_sdef() #再バインド
+class FUJIWARATOOLBOX_REBIND_WRAPPED_SDEF(bpy.types.Operator):
+    """再バインドする。"""
+    bl_idname = "fujiwara_toolbox.rebind_wrapped_sdef"
+    bl_label = "再バインド"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        selection = fjw.get_selected_list()
+
+        for obj in selection:
+            modu = fjw.Modutils(obj)
+            m_sdefs = modu.find_bytype_list("SURFACE_DEFORM")
+
+            armatures = []
+            for m_sdef in m_sdefs:
+                target = m_sdef.target
+                self.report({"INFO"}, "target:"+target.name)
+                
+                if target.parent is not None and target.parent.type == "ARMATURE":
+                    armatures.append(target.parent)
+            
+            surface_deform_bind_all(obj, False)
+
+            for armature in armatures:
+                armature.data.pose_position = "REST"
+                self.report({"INFO"}, "armature:"+armature.name)
+
+            surface_deform_bind_all(obj, True)
+
+            for armature in armatures:
+                armature.data.pose_position = "POSE"
+                self.report({"INFO"}, "armature:"+armature.name)
+                
+            bpy.ops.transform.translate(value=(0, 0, 0), constraint_axis=(False, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1)
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+
+
+
+
 
 #---------------------------------------------
 uiitem().vertical()
@@ -13650,6 +13797,526 @@ class FUJIWARATOOLBOX_954427(bpy.types.Operator):#多重解像度モデル化
 uiitem().vertical()
 #---------------------------------------------
 
+################################################################################
+#UIカテゴリ
+########################################
+#物理
+########################################
+class CATEGORYBUTTON_984430(bpy.types.Operator):#物理
+    """物理"""
+    bl_idname = "fujiwara_toolbox.categorybutton_984430"
+    bl_label = "物理"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem("物理",True)
+    uiitem.button(bl_idname,bl_label,icon="PHYSICS",mode="")
+    uiitem.direction = "horizontal"
+
+    def execute(self, context):
+        uicategory_execute(self)
+        return {'FINISHED'}
+########################################
+################################################################################
+
+
+
+
+########################################
+#ベイクリフレッシュ
+########################################
+class FUJIWARATOOLBOX_245059(bpy.types.Operator):#ベイクリフレッシュ
+    """ベイクリフレッシュ"""
+    bl_idname = "fujiwara_toolbox.command_245059"
+    bl_label = "ベイクリフレッシュ"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="FILE_REFRESH",mode="")
+
+    def execute(self, context):
+        bpy.context.scene.render.use_simplify = True
+        bpy.context.scene.render.simplify_subdivision = 0
+        
+        
+        bpy.ops.ptcache.free_bake_all()
+        bpy.ops.ptcache.bake_all(bake=True)
+        return {'FINISHED'}
+########################################
+
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#Pin割当
+########################################
+class FUJIWARATOOLBOX_823626(bpy.types.Operator):#Pin割当
+    """Pin割当"""
+    bl_idname = "fujiwara_toolbox.command_823626"
+    bl_label = "Pin割当"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="edit")
+
+    def execute(self, context):
+        obj = bpy.context.active_object
+        if("Pin" not in obj.vertex_groups):
+            bpy.ops.object.vertex_group_add()
+            obj.vertex_groups[len(obj.vertex_groups) - 1].name = "Pin"
+        
+        
+        obj.vertex_groups.active_index = obj.vertex_groups.find("Pin")
+        bpy.ops.object.vertex_group_assign()
+        
+        
+        
+        
+        
+        return {'FINISHED'}
+########################################
+
+#########################################
+##Total割当
+#########################################
+#class FUJIWARATOOLBOX_878504(bpy.types.Operator):#Total割当
+#    """Total割当"""
+#    bl_idname = "fujiwara_toolbox.command_878504"
+#    bl_label = "Total割当"
+#    bl_options = {'REGISTER', 'UNDO'}
+#
+#
+#    #メインパネルのボタンリストに登録
+#    ButtonList.append(bl_idname)
+#    #テキストラベルの追加
+#    LabelList.append("");
+#    #アイコンの追加
+#    IconList.append("")
+#    #モードの追加
+#    ModeList.append("")
+#
+####    def execute(self, context):
+#        for obj in bpy.context.selected_objects:
+#            bpy.context.scene.objects.active = obj
+#
+#            bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+#
+#            if("Total" not in obj.vertex_groups):
+#                bpy.ops.mesh.select_all(action='SELECT')
+#                bpy.ops.object.vertex_group_add()
+#                obj.vertex_groups[len(obj.vertex_groups)-1].name = "Total"
+#
+#
+#            obj.vertex_groups.active_index = obj.vertex_groups.find("Total")
+#            bpy.ops.object.vertex_group_assign()
+#
+#            bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+#        return {'FINISHED'}
+#########################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ########################################
+# #コリジョン用複製
+# ########################################
+# class FUJIWARATOOLBOX_205157(bpy.types.Operator):#コリジョン用複製
+#     """コリジョン用複製"""
+#     bl_idname = "fujiwara_toolbox.command_205157"
+#     bl_label = "コリジョン用複製"
+#     bl_options = {'REGISTER', 'UNDO'}
+
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+#     def execute(self, context):
+#         source = bpy.context.scene.objects.active
+#         bpy.ops.object.duplicate(linked=False, mode='TRANSLATION')
+#         target = bpy.context.scene.objects.active
+#         target.name = source.name + "_Collision"
+#         target.draw_type = 'WIRE'
+#         target.hide_render = True
+#         #Armature以外削除
+#         for mod in target.modifiers:
+#             if mod.type != "ARMATURE":
+#                 bpy.ops.object.modifier_remove(modifier=mod.name)
+        
+#         bpy.ops.object.modifier_add(type='SHRINKWRAP')
+#         for mod in target.modifiers:
+#             if mod.type == "SHRINKWRAP":
+#                 mod.target = source
+#                 mod.offset = 0.005
+#                 mod.use_keep_above_surface = True
+        
+#         #コリジョン追加
+#         bpy.ops.object.modifier_add(type='COLLISION')
+        
+        
+#         return {'FINISHED'}
+# ########################################
+
+########################################
+#サーフェスのオフセットを作成
+########################################
+class FUJIWARATOOLBOX_598876(bpy.types.Operator):#サーフェスのオフセットを作成
+    """サーフェスのオフセットを作成"""
+    bl_idname = "fujiwara_toolbox.command_598876"
+    bl_label = "サーフェスのオフセットを作成"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        source = bpy.context.scene.objects.active
+        bpy.ops.object.duplicate(linked=False, mode='TRANSLATION')
+        target = bpy.context.scene.objects.active
+        target.name = source.name + "_SurfaceOffset"
+        target.draw_type = 'TEXTURED'
+        #Armature以外削除
+        for mod in target.modifiers:
+            if mod.type != "ARMATURE":
+                bpy.ops.object.modifier_remove(modifier=mod.name)
+        
+        bpy.ops.object.modifier_add(type='SHRINKWRAP')
+        for mod in target.modifiers:
+            if mod.type == "SHRINKWRAP":
+                mod.target = source
+                mod.offset = 0.01
+                mod.use_keep_above_surface = True
+        
+        
+        
+        return {'FINISHED'}
+########################################
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+############################################################################################################################
+uiitem("コリジョン")
+############################################################################################################################
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#コリジョン化
+########################################
+#bpy.ops.fujiwara_toolbox.make_this_collision() #コリジョン化
+class FUJIWARATOOLBOX_MAKE_THIS_COLLISION(bpy.types.Operator):
+    """アクティブオブジェクトをコリジョン化する。"""
+    bl_idname = "fujiwara_toolbox.make_this_collision"
+    bl_label = "コリジョン化"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="MOD_PHYSICS",mode="")
+
+    def execute(self, context):
+        obj = fjw.active()
+        if obj.type != "MESH":
+            return {'CANCELLED'} 
+        
+        fjw.mode("OBJECT")
+        obj.hide_render = True
+        obj.draw_type = "WIRE"
+        modu = fjw.Modutils(obj)
+        modu.add("Collision", "COLLISION")
+
+        return {'FINISHED'}
+########################################
+
+########################################
+#球コリジョン追加
+########################################
+#bpy.ops.fujiwara_toolbox.add_sphere_collision() #球コリジョン追加
+class FUJIWARATOOLBOX_ADD_SPHERE_COLLISION(bpy.types.Operator):
+    """球コリジョンを追加する"""
+    bl_idname = "fujiwara_toolbox.add_sphere_collision"
+    bl_label = "球コリジョン追加"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        bpy.ops.mesh.primitive_ico_sphere_add(size=1, view_align=False, enter_editmode=False, location=fjw.cursor(), layers=bpy.context.scene.layers)
+        bpy.ops.fujiwara_toolbox.make_this_collision() #コリジョン化
+
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+
+
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+# ############################################################################################################################
+# uiitem("キャラ用")
+# ############################################################################################################################
+
+# ########################################
+# #クロスを確定して髪準備
+# ########################################
+# class FUJIWARATOOLBOX_482428(bpy.types.Operator):#クロスを確定して髪準備
+#     """クロスを確定して髪準備"""
+#     bl_idname = "fujiwara_toolbox.command_482428"
+#     bl_label = "クロスを確定して髪準備"
+#     bl_options = {'REGISTER', 'UNDO'}
+
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+
+#     def execute(self, context):
+#         selection = fjw.get_selected_list()
+#         for obj in selection:
+#             if obj.type == "MESH":
+#                 fjw.deselect()
+#                 fjw.activate(obj)
+#                 mod_cloth = None
+#                 for mod in obj.modifiers:
+#                     if mod.type == "CLOTH":
+#                         mod_cloth = mod
+#                 if mod_cloth is None:
+#                     continue
+
+#                 #布適用
+#                 bpy.ops.object.modifier_apply(modifier=mod_cloth.name)
+                
+#                 #パーティクル
+#                 psetting = fjw.append_particlesetting("髪設定")
+#                 bpy.context.object.hnMasterHairSystem = "髪設定"
+#                 bpy.ops.particle.hairnet(meshKind="SHEET")
+
+
+#         return {'FINISHED'}
+# ########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+################################################################################
+#UIカテゴリ
+########################################
+#パーティクル
+########################################
+class CATEGORYBUTTON_947832(bpy.types.Operator):
+    """パーティクル"""
+    bl_idname = "fujiwara_toolbox.categorybutton_947832"
+    bl_label = "パーティクル"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem("パーティクル",True)
+    uiitem.button(bl_idname,bl_label,icon="PARTICLES",mode="")
+    uiitem.direction = ""
+
+    def execute(self, context):
+        uicategory_execute(self)
+        return {'FINISHED'}
+################################################################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+############################################################################################################################
+uiitem("クイックシミュ")
+############################################################################################################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+########################################
+#メッシュ分割
+########################################
+#bpy.ops.fujiwara_toolbox.perticle_setup_mesh() #メッシュ分割
+class FUJIWARATOOLBOX_PERTICLE_SETUP_MESH(bpy.types.Operator):
+    """パーティクルシミュレーション用にメッシュを分割する"""
+    bl_idname = "fujiwara_toolbox.perticle_setup_mesh"
+    bl_label = "メッシュ分割"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="EDITMODE_HLT",mode="")
+
+    def execute(self, context):
+        if not is_perticle_setup_executable(self):
+            return {'CANCELLED'} 
+        
+        fjw.mode("EDIT")
+        bpy.ops.mesh.subdivide(number_cuts=1, smoothness=0)
+        bpy.ops.mesh.poke()
+        bpy.ops.mesh.tris_convert_to_quads()
+        fjw.mode("OBJECT")
+
+        return {'FINISHED'}
+########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+def is_perticle_setup_executable(self):
+    obj = fjw.active()
+    if obj.type != "MESH":
+        self.report({"INFO"},"メッシュオブジェクトを選択してください")
+        return False
+    fjw.mode("OBJECT")
+    return True
+
+def particle_setup_base(self):
+    obj = fjw.active()
+    
+    # UV作成
+    if "Particle_UV" in obj.data.uv_textures:
+        particle_uv = obj.data.uv_textures["Particle_UV"]
+    else:
+        particle_uv = obj.data.uv_textures.new(name="Particle_UV")
+
+    # パーティクル作成
+    modu = fjw.Modutils(obj)
+    pmod = modu.add("ParticleSystem","PARTICLE_SYSTEM")
+    particle_system = pmod.particle_system
+    particle_system.settings.render_type = "NONE"
+
+    # Explode追加
+    emod = modu.add("Explode", "EXPLODE")
+    emod.use_edge_cut = True
+    emod.particle_uv = particle_uv.name
+    # protect
+    # rna_type
+    # show_alive
+    # show_dead
+    # show_expanded
+    # show_in_editmode
+    # show_on_cage
+    # show_render
+    # show_unborn
+    # show_viewport
+    # use_apply_on_spline
+    # use_edge_cut
+    # use_size
+    # vertex_group
+
+    smod = modu.add("Solidify", "SOLIDIFY")
+    fjw.framejump(1)
+
+    return (particle_system.settings, emod)
+
+########################################
+#崩壊
+########################################
+#bpy.ops.fujiwara_toolbox.perticle_setup_collaption() #崩壊
+class FUJIWARATOOLBOX_PERTICLE_SETUP_COLLAPTION(bpy.types.Operator):
+    """崩壊をセットアップ"""
+    bl_idname = "fujiwara_toolbox.perticle_setup_collaption"
+    bl_label = "崩壊"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="PARTICLES",mode="")
+
+    def execute(self, context):
+        if not is_perticle_setup_executable(self):
+            return {'CANCELLED'} 
+        (psett, emod) = particle_setup_base(self)
+        psett.normal_factor = 1.0
+        psett.factor_random = 1.0
+        psett.use_rotations = True
+        psett.use_dynamic_rotation = True
+
+        return {'FINISHED'}
+########################################
+
+########################################
+#侵食
+########################################
+#bpy.ops.fujiwara_toolbox.perticle_setup_erosion() #侵食
+class FUJIWARATOOLBOX_PERTICLE_SETUP_EROSION(bpy.types.Operator):
+    """侵食"""
+    bl_idname = "fujiwara_toolbox.perticle_setup_erosion"
+    bl_label = "侵食"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="PARTICLES",mode="")
+
+    def execute(self, context):
+        if not is_perticle_setup_executable(self):
+            return {'CANCELLED'} 
+        (psett, emod) = particle_setup_base(self)
+        emod.show_alive = False
+
+        return {'FINISHED'}
+########################################
+
+########################################
+#破砕
+########################################
+#bpy.ops.fujiwara_toolbox.perticle_setup_crush() #破砕
+class FUJIWARATOOLBOX_PERTICLE_SETUP_CRUSH(bpy.types.Operator):
+    """破砕"""
+    bl_idname = "fujiwara_toolbox.perticle_setup_crush"
+    bl_label = "破砕"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="PARTICLES",mode="")
+
+    def execute(self, context):
+        if not is_perticle_setup_executable(self):
+            return {'CANCELLED'} 
+        (psett, emod) = particle_setup_base(self)
+        psett.frame_start = 1
+        psett.frame_end = 1
+        psett.lifetime = 250
+        psett.normal_factor = 0
+        psett.factor_random = 0
+        psett.use_rotations = True
+        psett.use_dynamic_rotation = True
+        psett.angular_velocity_factor = 1.0
+        psett.effector_weights.gravity = 0
+        bpy.ops.transform.translate(value=(0, 0, 0), constraint_axis=(False, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1)
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+
+
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
 
 
 ################################################################################
@@ -15939,259 +16606,7 @@ uiitem().vertical()
 #---------------------------------------------
 
 
-################################################################################
-#UIカテゴリ
-########################################
-#物理
-########################################
-class CATEGORYBUTTON_984430(bpy.types.Operator):#物理
-    """物理"""
-    bl_idname = "fujiwara_toolbox.categorybutton_984430"
-    bl_label = "物理"
-    bl_options = {'REGISTER', 'UNDO'}
 
-    uiitem = uiitem("物理",True)
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-    uiitem.direction = "horizontal"
-
-    def execute(self, context):
-        uicategory_execute(self)
-        return {'FINISHED'}
-########################################
-################################################################################
-
-
-
-
-########################################
-#ベイクリフレッシュ
-########################################
-class FUJIWARATOOLBOX_245059(bpy.types.Operator):#ベイクリフレッシュ
-    """ベイクリフレッシュ"""
-    bl_idname = "fujiwara_toolbox.command_245059"
-    bl_label = "ベイクリフレッシュ"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="FILE_REFRESH",mode="")
-
-    def execute(self, context):
-        bpy.context.scene.render.use_simplify = True
-        bpy.context.scene.render.simplify_subdivision = 0
-        
-        
-        bpy.ops.ptcache.free_bake_all()
-        bpy.ops.ptcache.bake_all(bake=True)
-        return {'FINISHED'}
-########################################
-
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
-
-########################################
-#Pin割当
-########################################
-class FUJIWARATOOLBOX_823626(bpy.types.Operator):#Pin割当
-    """Pin割当"""
-    bl_idname = "fujiwara_toolbox.command_823626"
-    bl_label = "Pin割当"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="edit")
-
-    def execute(self, context):
-        obj = bpy.context.active_object
-        if("Pin" not in obj.vertex_groups):
-            bpy.ops.object.vertex_group_add()
-            obj.vertex_groups[len(obj.vertex_groups) - 1].name = "Pin"
-        
-        
-        obj.vertex_groups.active_index = obj.vertex_groups.find("Pin")
-        bpy.ops.object.vertex_group_assign()
-        
-        
-        
-        
-        
-        return {'FINISHED'}
-########################################
-
-#########################################
-##Total割当
-#########################################
-#class FUJIWARATOOLBOX_878504(bpy.types.Operator):#Total割当
-#    """Total割当"""
-#    bl_idname = "fujiwara_toolbox.command_878504"
-#    bl_label = "Total割当"
-#    bl_options = {'REGISTER', 'UNDO'}
-#
-#
-#    #メインパネルのボタンリストに登録
-#    ButtonList.append(bl_idname)
-#    #テキストラベルの追加
-#    LabelList.append("");
-#    #アイコンの追加
-#    IconList.append("")
-#    #モードの追加
-#    ModeList.append("")
-#
-####    def execute(self, context):
-#        for obj in bpy.context.selected_objects:
-#            bpy.context.scene.objects.active = obj
-#
-#            bpy.ops.object.mode_set(mode='EDIT', toggle=False)
-#
-#            if("Total" not in obj.vertex_groups):
-#                bpy.ops.mesh.select_all(action='SELECT')
-#                bpy.ops.object.vertex_group_add()
-#                obj.vertex_groups[len(obj.vertex_groups)-1].name = "Total"
-#
-#
-#            obj.vertex_groups.active_index = obj.vertex_groups.find("Total")
-#            bpy.ops.object.vertex_group_assign()
-#
-#            bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-#        return {'FINISHED'}
-#########################################
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-########################################
-#コリジョン用複製
-########################################
-class FUJIWARATOOLBOX_205157(bpy.types.Operator):#コリジョン用複製
-    """コリジョン用複製"""
-    bl_idname = "fujiwara_toolbox.command_205157"
-    bl_label = "コリジョン用複製"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-    def execute(self, context):
-        source = bpy.context.scene.objects.active
-        bpy.ops.object.duplicate(linked=False, mode='TRANSLATION')
-        target = bpy.context.scene.objects.active
-        target.name = source.name + "_Collision"
-        target.draw_type = 'WIRE'
-        target.hide_render = True
-        #Armature以外削除
-        for mod in target.modifiers:
-            if mod.type != "ARMATURE":
-                bpy.ops.object.modifier_remove(modifier=mod.name)
-        
-        bpy.ops.object.modifier_add(type='SHRINKWRAP')
-        for mod in target.modifiers:
-            if mod.type == "SHRINKWRAP":
-                mod.target = source
-                mod.offset = 0.005
-                mod.use_keep_above_surface = True
-        
-        #コリジョン追加
-        bpy.ops.object.modifier_add(type='COLLISION')
-        
-        
-        return {'FINISHED'}
-########################################
-
-########################################
-#サーフェスのオフセットを作成
-########################################
-class FUJIWARATOOLBOX_598876(bpy.types.Operator):#サーフェスのオフセットを作成
-    """サーフェスのオフセットを作成"""
-    bl_idname = "fujiwara_toolbox.command_598876"
-    bl_label = "サーフェスのオフセットを作成"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-    def execute(self, context):
-        source = bpy.context.scene.objects.active
-        bpy.ops.object.duplicate(linked=False, mode='TRANSLATION')
-        target = bpy.context.scene.objects.active
-        target.name = source.name + "_SurfaceOffset"
-        target.draw_type = 'TEXTURED'
-        #Armature以外削除
-        for mod in target.modifiers:
-            if mod.type != "ARMATURE":
-                bpy.ops.object.modifier_remove(modifier=mod.name)
-        
-        bpy.ops.object.modifier_add(type='SHRINKWRAP')
-        for mod in target.modifiers:
-            if mod.type == "SHRINKWRAP":
-                mod.target = source
-                mod.offset = 0.01
-                mod.use_keep_above_surface = True
-        
-        
-        
-        return {'FINISHED'}
-########################################
-
-
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-
-
-
-############################################################################################################################
-uiitem("キャラ用")
-############################################################################################################################
-
-########################################
-#クロスを確定して髪準備
-########################################
-class FUJIWARATOOLBOX_482428(bpy.types.Operator):#クロスを確定して髪準備
-    """クロスを確定して髪準備"""
-    bl_idname = "fujiwara_toolbox.command_482428"
-    bl_label = "クロスを確定して髪準備"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        selection = fjw.get_selected_list()
-        for obj in selection:
-            if obj.type == "MESH":
-                fjw.deselect()
-                fjw.activate(obj)
-                mod_cloth = None
-                for mod in obj.modifiers:
-                    if mod.type == "CLOTH":
-                        mod_cloth = mod
-                if mod_cloth is None:
-                    continue
-
-                #布適用
-                bpy.ops.object.modifier_apply(modifier=mod_cloth.name)
-                
-                #パーティクル
-                psetting = fjw.append_particlesetting("髪設定")
-                bpy.context.object.hnMasterHairSystem = "髪設定"
-                bpy.ops.particle.hairnet(meshKind="SHEET")
-
-
-        return {'FINISHED'}
-########################################
 
 
 
@@ -18034,6 +18449,104 @@ class DialogMain(bpy.types.Operator,MyaddonView3DPanel):
 ############################################################################################################################
 uiitem("メモ：T/NパネルはF5で位置入替えできる")
 ############################################################################################################################
+
+
+
+
+############################################################################################################################
+# ボーンリネーマパネル
+############################################################################################################################
+bpy.types.Scene.fjw_bone_renamer_name = bpy.props.StringProperty()
+class BoneRenamer(bpy.types.Panel):
+    bl_label = "Bone Renamer"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "TOOLS"
+    bl_category = "Tools"
+
+    @classmethod
+    def poll(cls, context):
+        pref = fujiwara_toolbox.conf.get_pref()
+
+        if not pref.maintools:
+            return pref.maintools
+
+        active = fjw.active()
+        if active is not None:
+            if active.type == "ARMATURE" and active.mode == "EDIT":
+                return True
+
+        return False
+
+    def draw(self, context):
+        layout = self.layout
+        layout.prop(bpy.context.scene,"fjw_bone_renamer_name","")
+        layout.operator("fujiwara_toolbox.rename_bones")
+
+        return
+    
+class FJW_RENAME_BONES(bpy.types.Operator):
+    """選択ボーンをリネームする。自動で左右が付加される。"""
+    bl_idname = "fujiwara_toolbox.rename_bones"
+    bl_label = "リネーム"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        """
+        ・真ん中
+        ・2個選択
+        ・ボーン群
+        """
+        name = bpy.context.scene.fjw_bone_renamer_name
+        armature = fjw.active()
+
+        if armature is None or armature.type != "ARMATURE":
+            self.report({"INFO"},"ボーンを選択してください")
+            return {'CANCELLED'}
+
+        self.report({"INFO"},name)
+
+        armu = fjw.ArmatureUtils(armature)
+        dbones = armu.data_bones
+        active_dbone = armu.dataactive()
+        selection = []
+
+        for ebone in armu.edit_bones:
+            if ebone.select:
+                selection.append(ebone)
+
+        centers = []
+        left_sides = []
+        right_sides = []
+
+        for ebone in selection:
+            if ebone.head.x == 0.0:
+                centers.append(ebone)
+                self.report({"INFO"},"%f"%(ebone.head.x))
+                continue
+            if ebone.head.x > 0.0:
+                left_sides.append(ebone)
+                self.report({"INFO"},"%f"%(ebone.head.x))
+                continue
+            if ebone.head.x < 0.0:
+                right_sides.append(ebone)
+                self.report({"INFO"},"%f"%(ebone.head.x))
+                continue
+
+        for ebone in centers:
+            ebone.name = name
+            self.report({"INFO"},"center "+ebone.name+" %f"%(ebone.head.x))
+        for ebone in left_sides:
+            ebone.name = name
+            ebone.name = ebone.name + "_L"
+            self.report({"INFO"},"left "+ebone.name+" %f"%(ebone.head.x))
+        for ebone in right_sides:
+            ebone.name = name
+            ebone.name = ebone.name + "_R"
+            self.report({"INFO"},"right "+ebone.name+" %f"%(ebone.head.x))
+
+        return {'FINISHED'}
+
+
 
 
 

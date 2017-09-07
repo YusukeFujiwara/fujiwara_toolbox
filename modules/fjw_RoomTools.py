@@ -3619,12 +3619,12 @@ uiitem().vertical()
 #---------------------------------------------
 
 ########################################
-#ファイル名でグループ化
+#メイングループ化
 ########################################
 class FUJIWARATOOLBOX_288056(bpy.types.Operator):#ファイル名でグループ化
-    """選択物をファイル名でグループ化する。カメラは除外される。選択物がない場合は全てのオブジェクトを自動でグループ化する"""
+    """選択物をMainGroupにグループ化する。カメラは除外される。選択物がない場合は全てのオブジェクトを自動でグループ化する"""
     bl_idname = "fujiwara_toolbox.command_288056"
-    bl_label = "ファイル名でグループ化"
+    bl_label = "メイングループ化"
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
@@ -3635,28 +3635,29 @@ class FUJIWARATOOLBOX_288056(bpy.types.Operator):#ファイル名でグループ
     ###################################
     def execute(self, context):
         current = fjw.active()
-        fjw.mode("OBJECT")
-        for obj in fjw.get_selected_list():
+        selection = fjw.get_selected_list() 
+
+        if current is None:
+            if len(selection) == 0:
+                self.report({"INFO"},"選択オブジェクトがありません")
+
+        #全てオブジェクトモードに
+        for obj in selection:
             fjw.activate(obj)
             fjw.mode("OBJECT")
 
-        #ほぼ全オブジェクトを選択
-        #選択オブジェクトのみ。いろいろ除外
+        #いろいろ除外
         for obj in bpy.data.objects:
             #if obj.type == "LAMP" or obj.type == "CAMERA":
             if obj.type == "CAMERA":
                 obj.select = False
         
-        if len(bpy.context.selected_objects) == 0:
-            for obj in bpy.data.objects:
-                if obj.type == "CAMERA":
-                    continue
-                obj.select = True
+        selection = fjw.get_selected_list() 
         
-        groupname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
+        # groupname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
+        groupname = "MainGroup"
         if groupname in bpy.data.groups:
             #グループ化してた
-            bpy.context.scene.objects.active = bpy.data.groups[groupname].objects[0]
             bpy.ops.group.objects_add_active(group=groupname)
         else:
             #してなかった
