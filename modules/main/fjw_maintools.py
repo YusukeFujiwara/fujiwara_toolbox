@@ -7269,6 +7269,147 @@ class FUJIWARATOOLBOX_860977(bpy.types.Operator):#全て再バインド
 uiitem().vertical()
 #---------------------------------------------
 ############################################################################################################################
+uiitem("ラップドサーフェスデフォーム")
+############################################################################################################################
+
+def get_wrappedsdef_objects():
+    selection = fjw.get_selected_list()
+
+    deformed_meshes = []
+
+    armatures = []
+    wrap_targets = []
+    surface_deformer_meshes = []
+
+    for obj in selection:
+        if obj.type == "ARMATURE":
+            armatures.append(obj)
+
+    for armature in armatures:
+        for child in armature.children:
+            modu = fjw.Modutils(child)
+            swrap = modu.find_bytype("SHRINKWRAP")
+            if swrap is not None:
+                surface_deformer_meshes.append(child)
+            else:
+                wrap_targets.append(child)
+    
+    for obj in selection:
+        if (obj not in armatures) and (obj not in wrap_targets) and (obj not in surface_deformer_meshes):
+            deformed_meshes.append(obj)
+
+    return deformed_meshes, armatures, wrap_targets, surface_deformer_meshes
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+def surface_deform_bind_all(obj, bound_state_flag):
+    fjw.activate(obj)
+    modu = fjw.Modutils(obj)
+    mods = modu.find_bytype_list("SURFACE_DEFORM")
+    for mod in mods:
+        if mod.is_bound != bound_state_flag:
+            bpy.ops.object.surfacedeform_bind(modifier=mod.name)
+
+########################################
+#バインド
+########################################
+#bpy.ops.fujiwara_toolbox.bind_wrapped_sdef() #バインド
+class FUJIWARATOOLBOX_BIND_WRAPPED_SDEF(bpy.types.Operator):
+    """シュリンクラップつきサーフェスデフォームをバインドする。既にある場合は再バインドされる。"""
+    bl_idname = "fujiwara_toolbox.bind_wrapped_sdef"
+    bl_label = "バインド"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        target = fjw.active()
+        target.select = False
+        selection = fjw.get_selected_list()
+
+        armature = None
+        if target.parent is not None and target.parent.type == "ARMATURE":
+            armature = target.parent
+
+        if armature is not None:
+            armature.data.pose_position = "REST"
+
+        for obj in selection:
+            modu = fjw.Modutils(obj)
+            m_sdef = modu.add("Surface Deform", "SURFACE_DEFORM")
+            m_sdef.target = target
+            surface_deform_bind_all(obj, True)
+
+        if armature is not None:
+            armature.data.pose_position = "POSE"
+
+        return {'FINISHED'}
+########################################
+
+########################################
+#再バインド
+########################################
+#bpy.ops.fujiwara_toolbox.rebind_wrapped_sdef() #再バインド
+class FUJIWARATOOLBOX_REBIND_WRAPPED_SDEF(bpy.types.Operator):
+    """再バインドする。"""
+    bl_idname = "fujiwara_toolbox.rebind_wrapped_sdef"
+    bl_label = "再バインド"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        selection = fjw.get_selected_list()
+
+        for obj in selection:
+            modu = fjw.Modutils(obj)
+            m_sdefs = modu.find_bytype_list("SURFACE_DEFORM")
+
+            armatures = []
+            for m_sdef in m_sdefs:
+                target = m_sdef.target
+                self.report({"INFO"}, "target:"+target.name)
+                
+                if target.parent is not None and target.parent.type == "ARMATURE":
+                    armatures.append(target.parent)
+            
+            surface_deform_bind_all(obj, False)
+
+            for armature in armatures:
+                armature.data.pose_position = "REST"
+                self.report({"INFO"}, "armature:"+armature.name)
+
+            surface_deform_bind_all(obj, True)
+
+            for armature in armatures:
+                armature.data.pose_position = "POSE"
+                self.report({"INFO"}, "armature:"+armature.name)
+                
+            bpy.ops.transform.translate(value=(0, 0, 0), constraint_axis=(False, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1)
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+
+
+
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+############################################################################################################################
 uiitem("その他")
 ############################################################################################################################
 
@@ -18308,6 +18449,104 @@ class DialogMain(bpy.types.Operator,MyaddonView3DPanel):
 ############################################################################################################################
 uiitem("メモ：T/NパネルはF5で位置入替えできる")
 ############################################################################################################################
+
+
+
+
+############################################################################################################################
+# ボーンリネーマパネル
+############################################################################################################################
+bpy.types.Scene.fjw_bone_renamer_name = bpy.props.StringProperty()
+class BoneRenamer(bpy.types.Panel):
+    bl_label = "Bone Renamer"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "TOOLS"
+    bl_category = "Tools"
+
+    @classmethod
+    def poll(cls, context):
+        pref = fujiwara_toolbox.conf.get_pref()
+
+        if not pref.maintools:
+            return pref.maintools
+
+        active = fjw.active()
+        if active is not None:
+            if active.type == "ARMATURE" and active.mode == "EDIT":
+                return True
+
+        return False
+
+    def draw(self, context):
+        layout = self.layout
+        layout.prop(bpy.context.scene,"fjw_bone_renamer_name","")
+        layout.operator("fujiwara_toolbox.rename_bones")
+
+        return
+    
+class FJW_RENAME_BONES(bpy.types.Operator):
+    """選択ボーンをリネームする。自動で左右が付加される。"""
+    bl_idname = "fujiwara_toolbox.rename_bones"
+    bl_label = "リネーム"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        """
+        ・真ん中
+        ・2個選択
+        ・ボーン群
+        """
+        name = bpy.context.scene.fjw_bone_renamer_name
+        armature = fjw.active()
+
+        if armature is None or armature.type != "ARMATURE":
+            self.report({"INFO"},"ボーンを選択してください")
+            return {'CANCELLED'}
+
+        self.report({"INFO"},name)
+
+        armu = fjw.ArmatureUtils(armature)
+        dbones = armu.data_bones
+        active_dbone = armu.dataactive()
+        selection = []
+
+        for ebone in armu.edit_bones:
+            if ebone.select:
+                selection.append(ebone)
+
+        centers = []
+        left_sides = []
+        right_sides = []
+
+        for ebone in selection:
+            if ebone.head.x == 0.0:
+                centers.append(ebone)
+                self.report({"INFO"},"%f"%(ebone.head.x))
+                continue
+            if ebone.head.x > 0.0:
+                left_sides.append(ebone)
+                self.report({"INFO"},"%f"%(ebone.head.x))
+                continue
+            if ebone.head.x < 0.0:
+                right_sides.append(ebone)
+                self.report({"INFO"},"%f"%(ebone.head.x))
+                continue
+
+        for ebone in centers:
+            ebone.name = name
+            self.report({"INFO"},"center "+ebone.name+" %f"%(ebone.head.x))
+        for ebone in left_sides:
+            ebone.name = name
+            ebone.name = ebone.name + "_L"
+            self.report({"INFO"},"left "+ebone.name+" %f"%(ebone.head.x))
+        for ebone in right_sides:
+            ebone.name = name
+            ebone.name = ebone.name + "_R"
+            self.report({"INFO"},"right "+ebone.name+" %f"%(ebone.head.x))
+
+        return {'FINISHED'}
+
+
 
 
 
