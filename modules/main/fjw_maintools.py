@@ -14305,18 +14305,236 @@ class FUJIWARATOOLBOX_PERTICLE_SETUP_CRUSH(bpy.types.Operator):
         return {'FINISHED'}
 ########################################
 
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
 
 
+################################################################################
+#UIカテゴリ
+########################################
+#コンストレイント
+########################################
+class CATEGORYBUTTON_104280(bpy.types.Operator):
+    """コンストレイント"""
+    bl_idname = "fujiwara_toolbox.categorybutton_104280"
+    bl_label = "コンストレイント"
+    bl_options = {'REGISTER', 'UNDO'}
 
+    uiitem = uiitem("コンストレイント",True)
+    uiitem.button(bl_idname,bl_label,icon="CONSTRAINT",mode="")
+    uiitem.direction = "vertical"
 
-
-
-
-
+    def execute(self, context):
+        uicategory_execute(self)
+        return {'FINISHED'}
+################################################################################
 
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
+
+############################################################################################################################
+uiitem("カメラトラッカ")
+############################################################################################################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+def add_camtracker(axis):
+    selection = fjw.get_selected_list()
+    for obj in selection:
+        cnstu = fjw.ConstraintUtils(obj)
+
+        tracker = cnstu.find("FJW Camera Tracker")
+
+        if tracker is None:
+            tracker = cnstu.add("FJW Camera Tracker", "DAMPED_TRACK")
+        
+        tracker.track_axis = axis
+        tracker.target = bpy.context.scene.camera
+        correct_tracker_axis(obj)
+    
+
+########################################
+#Z+
+########################################
+#bpy.ops.fujiwara_toolbox.set_camera_tracker_constraint_z() #Z+
+class FUJIWARATOOLBOX_SET_CAMERA_TRACKER_CONSTRAINT_Z(bpy.types.Operator):
+    """カメラをトラッキングするコンストレイントを追加する。"""
+    bl_idname = "fujiwara_toolbox.set_camera_tracker_constraint_z"
+    bl_label = "上面"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        cam = bpy.context.scene.camera
+        if cam is None:
+            return {'CANCELLED'}
+        add_camtracker("TRACK_Z")
+        return {'FINISHED'}
+########################################
+
+########################################
+#Y-
+########################################
+#bpy.ops.fujiwara_toolbox.set_camera_tracker_constraint_y() #Y-
+class FUJIWARATOOLBOX_SET_CAMERA_TRACKER_CONSTRAINT_Y(bpy.types.Operator):
+    """カメラをトラッキングするコンストレイントを追加する。"""
+    bl_idname = "fujiwara_toolbox.set_camera_tracker_constraint_y"
+    bl_label = "前面"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        cam = bpy.context.scene.camera
+        if cam is None:
+            return {'CANCELLED'}
+        add_camtracker("TRACK_NEGATIVE_Y")
+        return {'FINISHED'}
+########################################
+
+########################################
+#ターゲットカメラ設定
+########################################
+#bpy.ops.fujiwara_toolbox.set_camtracker_target() #ターゲットカメラ設定
+class FUJIWARATOOLBOX_SET_CAMTRACKER_TARGET(bpy.types.Operator):
+    """カメラトラック用コンストレイントのターゲットを自動設定する。"""
+    bl_idname = "fujiwara_toolbox.set_camtracker_target"
+    bl_label = "ターゲットカメラ設定"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        cam = bpy.context.scene.camera
+        if cam is None:
+            return {'CANCELLED'}
+
+        for obj in  bpy.context.visible_objects:
+            cnstu = fjw.ConstraintUtils(obj)
+            tracker = cnstu.find("FJW Camera Tracker")
+            if tracker is None:
+                continue
+            tracker.target = cam
+        return {'FINISHED'}
+########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+############################################################################################################################
+uiitem("ターゲットトラッカ（カメラトラッカ併用）")
+############################################################################################################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+def correct_tracker_axis(obj):
+    cnstru = fjw.ConstraintUtils(obj)
+    ltracker = cnstru.find("FJW Target Tracker")
+    if ltracker is None:
+        return
+    camtracker = cnstru.find("FJW Camera Tracker")
+
+    if "Z" in camtracker.track_axis:
+        ltracker.track_axis = ltracker.track_axis.replace("Z", "Y")
+        ltracker.lock_axis = ltracker.lock_axis.replace("Y", "Z")
+    if "Y" in camtracker.track_axis:
+        ltracker.track_axis = ltracker.track_axis.replace("Y", "Z")
+        ltracker.lock_axis = ltracker.lock_axis.replace("Z", "Y")
+    
+    
+
+def set_target_tracker(positive=True):
+    target = fjw.active()
+    selection = fjw.get_selected_list()
+    for obj in selection:
+        if obj == target:
+            continue
+
+        cnstru = fjw.ConstraintUtils(obj)
+        camtracker = cnstru.find("FJW Camera Tracker")
+
+        if positive:
+            track_axis = "TRACK_Z"
+        else:
+            track_axis = "TRACK_NEGATIVE_Z"
+        lock_axis = "LOCK_Y"
+
+        # if camtracker is not None:
+        #     if camtracker.track_axis == "TRACK_Z":
+        #         track_axis = track_axis.replace("Z", "Y")
+        #         lock_axis = lock_axis.replace("Y", "Z")
+
+        ltracker = cnstru.find("FJW Target Tracker")
+        if ltracker is None:
+            ltracker = cnstru.add("FJW Target Tracker","LOCKED_TRACK")
+        ltracker.track_axis = track_axis
+        ltracker.lock_axis = lock_axis
+        ltracker.target = target
+
+        correct_tracker_axis(obj)
+    return
+
+########################################
+#上方向
+########################################
+#bpy.ops.fujiwara_toolbox.set_target_tracker_withcamtrack_top() #上方向
+class FUJIWARATOOLBOX_SET_TARGET_TRACKER_WITHCAMTRACK_TOP(bpy.types.Operator):
+    """アクティブオブジェクトをターゲットとして、カメラトラッカと併用するターゲットトラッカを設定する。"""
+    bl_idname = "fujiwara_toolbox.set_target_tracker_withcamtrack_top"
+    bl_label = "上方向"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        set_target_tracker(True)
+        return {'FINISHED'}
+########################################
+
+########################################
+#下方向
+########################################
+#bpy.ops.fujiwara_toolbox.set_target_tracker_withcamtrack_bottom() #下方向
+class FUJIWARATOOLBOX_SET_TARGET_TRACKER_WITHCAMTRACK_BOTTOM(bpy.types.Operator):
+    """アクティブオブジェクトをターゲットとして、カメラトラッカと併用するターゲットトラッカを設定する。"""
+    bl_idname = "fujiwara_toolbox.set_target_tracker_withcamtrack_bottom"
+    bl_label = "下方向"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        set_target_tracker(False)
+        return {'FINISHED'}
+########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+
+
+
+
 
 
 ################################################################################
@@ -16606,53 +16824,18 @@ uiitem().vertical()
 #---------------------------------------------
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ################################################################################
 #UIカテゴリ
 ########################################
-#Plane
+#その他
 ########################################
-class CATEGORYBUTTON_814784(bpy.types.Operator):#Plane
-    """Plane"""
-    bl_idname = "fujiwara_toolbox.categorybutton_814784"
-    bl_label = "Plane"
+class CATEGORYBUTTON_207003(bpy.types.Operator):#その他
+    """その他"""
+    bl_idname = "fujiwara_toolbox.categorybutton_207003"
+    bl_label = "その他"
     bl_options = {'REGISTER', 'UNDO'}
 
-    uiitem = uiitem("Plane",True)
+    uiitem = uiitem("その他",True)
     uiitem.button(bl_idname,bl_label,icon="",mode="")
     uiitem.direction = ""
 
@@ -16662,8 +16845,13 @@ class CATEGORYBUTTON_814784(bpy.types.Operator):#Plane
 ########################################
 ################################################################################
 
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
 
-
+############################################################################################################################
+uiitem("Plane")
+############################################################################################################################
 
 
 
@@ -16796,48 +16984,6 @@ class FUJIWARATOOLBOX_718267(bpy.types.Operator):#DPIを揃える
 
         return {'FINISHED'}
 ########################################
-
-
-
-
-
-
-
-
-
-
-
-
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-
-
-
-
-
-
-
-################################################################################
-#UIカテゴリ
-########################################
-#その他
-########################################
-class CATEGORYBUTTON_207003(bpy.types.Operator):#その他
-    """その他"""
-    bl_idname = "fujiwara_toolbox.categorybutton_207003"
-    bl_label = "その他"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem("その他",True)
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-    uiitem.direction = ""
-
-    def execute(self, context):
-        uicategory_execute(self)
-        return {'FINISHED'}
-########################################
-################################################################################
 
 
 ############################################################################################################################
