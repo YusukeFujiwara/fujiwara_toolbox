@@ -1282,7 +1282,7 @@ class FUJIWARATOOLBOX_LINK_ADDITIONAL_GROUP(bpy.types.Operator):
         linked.rotation_euler = base.rotation_euler
         linked.rotation_quaternion = base.rotation_quaternion
         linked.scale = base.scale
-        activate(base)
+        fjw.activate(base)
         bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
 
 
@@ -15028,7 +15028,10 @@ def mdresult_auto_import_main(self, context):
         #         pass
 
     fjw.mode("OBJECT")
-    bpy.ops.object.select_all(action='SELECT')
+    # bpy.ops.object.select_all(action='SELECT')
+    for obj in bpy.context.visible_objects:
+        if "result" in obj.name:
+            obj.select = True
     bpy.ops.fujiwara_toolbox.comic_shader_nospec()
 
 ########################################

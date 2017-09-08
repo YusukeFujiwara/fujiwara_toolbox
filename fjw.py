@@ -971,17 +971,33 @@ def make_proxy_all():
 #        directory=_directory)
     
 #    return bpy.data.node_groups[name]
-def append_nodetree(name):
-    if name not in bpy.data.node_groups:
-        dir = get_resourcesdir() + "nodes"
 
-        _dataname = name
-        _filename = name + ".blend"
-        _directory = dir + os.sep + _filename + os.sep + "NodeTree" + os.sep
-        _filepath = _directory + _filename
-        bpy.ops.wm.append(filepath=_filepath, filename=_dataname, directory=_directory)
-    
-    return bpy.data.node_groups[name]
+def append_nodetree(name):
+    #既にある場合はそれを使用する
+    if name in bpy.data.node_groups:
+        for ng in bpy.data.node_groups:
+            if ng.library is not None:
+                #リンクは使わない
+                continue
+            if name == ng.name:
+                return ng
+
+    # なかったのでアペンド
+    dir = get_resourcesdir() + "nodes"
+
+    _dataname = name
+    _filename = name + ".blend"
+    # _directory = dir + os.sep + _filename + os.sep + "NodeTree" + os.sep
+    _filepath = dir + os.sep + _filename
+    # bpy.ops.wm.append(filepath=_filepath, filename=_dataname, directory=_directory)
+    #↑これだと既にリンク済みのものがある場合、それをひっぱってしまう！自前実装！
+    with bpy.data.libraries.load(_filepath, link=False, relative=True) as (data_from, data_to):
+        if _dataname in data_from.node_groups:
+            data_to.node_groups = [_dataname]
+    if len(data_to.node_groups) != 0:
+        print("appended node_group:"+data_to.node_groups[0].name)
+        return data_to.node_groups[0]
+    return None
 
 
 def append_material(name):
