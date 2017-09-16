@@ -118,14 +118,19 @@ class FJWSelector(bpy.types.Panel):#メインパネル
         # active.label("3Dカーソル選択")
         # active = layout.row(align=True)
         # active.operator("fjw_selector.select_object_nearest_to_cursor")
-        # active.operator("fjw_selector.select_bone_nearest_to_cursor")
-
 
         active = layout.row(align=True)
+        active.label("")
+        active = layout.row(align=True)
+        active.operator("fjw_selector.prepare_for_posing")
+        active.operator("fjw_selector.set_face_lamp")
+
+        active = layout.row()
         active.label("3Dカーソル付近選択")
 
         active = layout.row(align=True)
         active.operator("fjw_selector.select_bone_nearest_to_cursor_all",icon="GROUP_BONE")
+        active.operator("fjw_selector.select_bone_nearest_to_cursor",icon="BONE_DATA")
 
         active = layout.row(align=True)
         active.label("人体", icon="OUTLINER_OB_ARMATURE")
@@ -496,6 +501,31 @@ class SelectBoneNearestToCursor_All(bpy.types.Operator):
         return {"FINISHED"}
 
 
+class PrepareForPosing(bpy.types.Operator):
+    """ポージング準備"""
+    bl_idname = "fjw_selector.prepare_for_posing"
+    bl_label = "ポージング準備"
+    def execute(self, context):
+        bpy.context.space_data.show_only_render = False
+        bpy.context.scene.render.use_simplify = True
+        bpy.context.scene.render.simplify_subdivision = 1
+        bpy.context.space_data.lock_camera = False
+        #全部のAO無効化する
+        for screen in bpy.data.screens:
+            for area in screen.areas:
+                for space in area.spaces:
+                    if space.type == "VIEW_3D":
+                        space.fx_settings.use_ssao = False
+        return {"FINISHED"}
+
+class SetFaceLamp(bpy.types.Operator):
+    """顔用ランプ設置"""
+    bl_idname = "fjw_selector.set_face_lamp"
+    bl_label = "顔用ランプ設置"
+    def execute(self, context):
+        bpy.ops.object.lamp_add(type='POINT', radius=0.2, view_align=True, location=bpy.context.space_data.cursor_location, layers=bpy.context.scene.layers)
+        bpy.context.object.data.use_specular = False
+        return {"FINISHED"}
 
 
 #人体ボーン選択

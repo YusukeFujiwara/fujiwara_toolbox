@@ -3436,8 +3436,9 @@ class FUJIWARATOOLBOX_979047(bpy.types.Operator):#GLレンダ
         #再計算回避
         if bpy.context.scene.render.use_simplify:
             bpy.context.scene.render.use_simplify = False
-        # if bpy.context.scene.render.simplify_subdivision < 2:
-        #     bpy.context.scene.render.simplify_subdivision = 2
+
+        #ビューロック解除
+        bpy.context.space_data.lock_camera = False
 
         #下書き非表示
         bpy.context.space_data.show_background_images = False
@@ -7269,7 +7270,7 @@ class FUJIWARATOOLBOX_860977(bpy.types.Operator):#全て再バインド
 uiitem().vertical()
 #---------------------------------------------
 ############################################################################################################################
-uiitem("ラップドサーフェスデフォーム")
+uiitem("サーフェスデフォーム")
 ############################################################################################################################
 
 def get_wrappedsdef_objects():
@@ -11444,6 +11445,7 @@ def update_armaturesystem(self, context, mute_consraints):
     if fjw.active().type != "ARMATURE":
         return
 
+
     armature = fjw.active()
     fjw.mode("OBJECT")
     bpy.ops.object.select_grouped(type='CHILDREN_RECURSIVE')
@@ -11451,8 +11453,21 @@ def update_armaturesystem(self, context, mute_consraints):
     fjw.deselect()
     fjw.activate(armature)
 
-    #コンストレイントを無効にする
+    #ポーズが左右対称でない場合警告を出して終了する
+    armu = fjw.ArmatureUtils(armature)
+    for pbone in armu.pose_bones:
+        if "_L" in pbone.name:
+            lbone = pbone
+            rname = pbone.name.replace("_L", "_R")
+            if rname in armu.pose_bones:
+                rbone = armu.pose_bones[rname]
+                if rbone.head.x != (lbone.head.x * -1):
+                    self.report({"INFO"}, "ボーンが左右非対称です")
+                    return
 
+
+
+    #コンストレイントを無効にする
     fjw.activate(armature)
     fjw.mode("POSE")
     bpy.ops.pose.select_all(action='SELECT')
@@ -14356,7 +14371,9 @@ def add_camtracker(axis):
             tracker = cnstu.add("FJW Camera Tracker", "DAMPED_TRACK")
         
         tracker.track_axis = axis
-        tracker.target = bpy.context.scene.camera
+        cam = bpy.context.scene.camera
+        if cam is not None:
+            tracker.target = cam
         correct_tracker_axis(obj)
     
 
@@ -14374,9 +14391,6 @@ class FUJIWARATOOLBOX_SET_CAMERA_TRACKER_CONSTRAINT_Z(bpy.types.Operator):
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     def execute(self, context):
-        cam = bpy.context.scene.camera
-        if cam is None:
-            return {'CANCELLED'}
         add_camtracker("TRACK_Z")
         return {'FINISHED'}
 ########################################
@@ -14395,9 +14409,6 @@ class FUJIWARATOOLBOX_SET_CAMERA_TRACKER_CONSTRAINT_Y(bpy.types.Operator):
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     def execute(self, context):
-        cam = bpy.context.scene.camera
-        if cam is None:
-            return {'CANCELLED'}
         add_camtracker("TRACK_NEGATIVE_Y")
         return {'FINISHED'}
 ########################################
