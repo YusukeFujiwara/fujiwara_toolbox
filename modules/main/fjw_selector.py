@@ -122,8 +122,8 @@ class FJWSelector(bpy.types.Panel):#メインパネル
         active = layout.row(align=True)
         active.label("")
         active = layout.row(align=True)
-        active.operator("fjw_selector.prepare_for_posing")
-        active.operator("fjw_selector.set_face_lamp")
+        active.operator("fjw_selector.prepare_for_posing", icon="POSE_HLT")
+        active.operator("fjw_selector.set_face_lamp", icon="LAMP_POINT")
 
         active = layout.row()
         active.label("3Dカーソル付近選択")
