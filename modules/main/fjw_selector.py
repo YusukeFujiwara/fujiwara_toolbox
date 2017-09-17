@@ -92,6 +92,10 @@ class FJWSelector(bpy.types.Panel):#メインパネル
             active = box.row(align=True)
             active.operator("object.setshift_to_cursor")
             active.operator("object.border_fromfile")
+            active = box.row(align=True)
+            active.operator("fujiwara_toolbox.command_990292")
+            active.operator("object.set_resolution_to_bgimg")
+            
 
             boxlayout = box.column(align=True)
             active = boxlayout.row(align=True)
