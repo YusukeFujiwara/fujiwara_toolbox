@@ -157,13 +157,25 @@ class setshift_to_cursor(bpy.types.Operator):
         return {"FINISHED"}
     
 
+class SetResolutionToBgimg(bpy.types.Operator):
+    """背景画像にレンダサイズをあわせる"""
+    bl_idname = "object.set_resolution_to_bgimg"
+    bl_label = "背景にレンダサイズをあわせる"
+
+    def execute(self, context):
+        for img in bpy.data.images:
+            if "background.png" in img.name:
+                if img.size[0] != 0 and img.size[1] != 0:
+                    bpy.context.scene.render.resolution_x = img.size[0]
+                    bpy.context.scene.render.resolution_y = img.size[1]
+                break
+        return {"FINISHED"}
+
 
 class fromfile(bpy.types.Operator):
     """../komaフォルダから情報を取得して設定"""
     bl_idname = "object.border_fromfile"
     bl_label = "../komaフォルダから設定"
-
-
 
     def execute(self, context):
         filename = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
@@ -250,6 +262,7 @@ def cameratools_ui(self, context):
     row = col.row(align=True)
     row.operator("object.setshift_to_cursor")
     layout.operator("object.border_fromfile")
+    layout.operator("object.set_resolution_to_bgimg")
 
     l = self.layout
     r = l.row()
