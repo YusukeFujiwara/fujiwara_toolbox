@@ -87,8 +87,8 @@ for scriptpath in args:
                     label_str = re.sub('\"', "", label_str)
                     docadd("### %s" % label_str)
 
-    if script_label_name != "":
-        scriptname = script_label_name
+    # if script_label_name != "":
+    #     scriptname = script_label_name
     docpath = docdir + os.sep + scriptname + ".md"
     with codecs.open(docpath , "w", "utf-8") as f:
         f.write(docstr)

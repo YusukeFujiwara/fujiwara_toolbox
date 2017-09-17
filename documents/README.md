@@ -9,9 +9,11 @@ Fujiwara Tool Boxの[トップページ](https://github.com/YusukeFujiwara/fujiw
 
 英訳については、藤原佑介が用意する予定はいまのところありません。
 
+## 機能一覧
+* [機能一覧](generated_documents/README.md)
+
 ## 各機能ドキュメント
 * [ページユーティリティ](pageutils.md)
-
 under construction...
 
 ## Blender参考ページ
