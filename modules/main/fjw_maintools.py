@@ -14558,9 +14558,18 @@ uiitem().horizontal()
 ########################################
 #オリジナルを反映
 ########################################
+
+def find_proxy(original):
+    for obj in bpy.context.scene.objects:
+        if obj.proxy is None:
+            continue
+        if obj.proxy == original:
+            return obj
+    return original
+
 #bpy.ops.fujiwara_toolbox.bone_constraints_from_original() #オリジナルを反映
 class FUJIWARATOOLBOX_BONE_CONSTRAINTS_FROM_ORIGINAL(bpy.types.Operator):
-    """コンストレイントがないボーンにオリジナルのコンストレイントを反映する。プロパティはそのままコピーされる。"""
+    """コンストレイントがないボーンにオリジナルのコンストレイントを反映する。"""
     bl_idname = "fujiwara_toolbox.bone_constraints_from_original"
     bl_label = "オリジナルを反映"
     bl_options = {'REGISTER', 'UNDO'}
@@ -14596,6 +14605,8 @@ class FUJIWARATOOLBOX_BONE_CONSTRAINTS_FROM_ORIGINAL(bpy.types.Operator):
                 props = dir(orig_bone_constraint)
                 for prop in props:
                     val = getattr(orig_bone_constraint, prop)
+                    if type(val) == bpy.types.Object:
+                        val = find_proxy(val)
                     try:
                         setattr(prox_constraint, prop, val)
                     except:
