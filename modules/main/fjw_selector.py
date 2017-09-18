@@ -527,6 +527,7 @@ class SetFaceLamp(bpy.types.Operator):
     bl_idname = "fjw_selector.set_face_lamp"
     bl_label = "顔用ランプ設置"
     def execute(self, context):
+        fjw.mode("OBJECT")
         bpy.ops.object.lamp_add(type='POINT', radius=0.2, view_align=True, location=bpy.context.space_data.cursor_location, layers=bpy.context.scene.layers)
         bpy.context.object.data.use_specular = False
         return {"FINISHED"}

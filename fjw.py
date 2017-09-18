@@ -314,6 +314,13 @@ class ArmatureUtils():
         self.pose_bones = self.armature.pose.bones
         self.data_bones = self.armature.data.bones
         self.edit_bones = self.armature.data.edit_bones
+    
+    @property
+    def is_proxy(self):
+        if self.armature.proxy is None:
+            return False
+        else:
+            return True
 
     def findname(self, name):#該当するボーンの名前を返す
         for bone in self.armature.data.bones:

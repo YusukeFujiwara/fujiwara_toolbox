@@ -14544,7 +14544,70 @@ uiitem().vertical()
 
 
 
+############################################################################################################################
+uiitem("プロクシ")
+############################################################################################################################
 
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#オリジナルを反映
+########################################
+#bpy.ops.fujiwara_toolbox.bone_constraints_from_original() #オリジナルを反映
+class FUJIWARATOOLBOX_BONE_CONSTRAINTS_FROM_ORIGINAL(bpy.types.Operator):
+    """コンストレイントがないボーンにオリジナルのコンストレイントを反映する。プロパティはそのままコピーされる。"""
+    bl_idname = "fujiwara_toolbox.bone_constraints_from_original"
+    bl_label = "オリジナルを反映"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        armature = fjw.active()
+        if armature is None or armature.type != "ARMATURE":
+            return {'CANCELLED'}
+
+        armu = fjw.ArmatureUtils(armature)
+        if not armu.is_proxy:
+            return {'CANCELLED'}
+
+        prox_armu = armu
+        orig_armu = fjw.ArmatureUtils(prox_armu.armature.proxy)
+
+        for prox_pbone in prox_armu.pose_bones:
+            if len(prox_pbone.constraints) != 0:
+                continue
+            orig_pbone = orig_armu.posebone(prox_pbone.name)
+            if len(orig_pbone.constraints) == 0:
+                continue
+            #オリジナルにはコンストレイントがあるのにプロクシにない
+            for orig_bone_constraint in orig_pbone.constraints:
+                #各コンストレイントをコピーする。
+                #とりあえず、ターゲットとかもそのままコピーする。
+                #http://www.yoheim.net/blog.php?q=20161002
+                prox_constraint = prox_pbone.constraints.new(orig_bone_constraint.type)
+                # prox_constraint.name = orig_bone_constraint.name
+                props = dir(orig_bone_constraint)
+                for prop in props:
+                    val = getattr(orig_bone_constraint, prop)
+                    try:
+                        setattr(prox_constraint, prop, val)
+                    except:
+                        continue
+
+
+        return {'FINISHED'}
+########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
 
 
 
