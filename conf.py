@@ -119,7 +119,10 @@ class FujiwaraToolBoxPreferences(AddonPreferences):
            name="FJW Selector",
             default=False,
             )
-    
+    fjw_billboard_drawer = BoolProperty(
+           name="FJW Billboad Drawer",
+            default=False,
+            )
     #特殊設定
     assetdir = StringProperty(
             name="アセットマネージャ用ファイルパス",
@@ -154,6 +157,7 @@ class FujiwaraToolBoxPreferences(AddonPreferences):
         layout.prop(self, "greasepenciltools")
         layout.prop(self, "quickmeshdeldiss")
         layout.prop(self, "assetsketcherhelper")
+        layout.prop(self, "fjw_billboard_drawer")
 
         layout.label(text="特殊設定")
         layout.prop(self, "assetdir")
