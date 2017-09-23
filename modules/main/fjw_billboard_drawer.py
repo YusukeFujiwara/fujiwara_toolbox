@@ -106,7 +106,7 @@ def make_buillboard(width, height):
     tslot.texture = tex
     billboard.data.materials.append(mat)
 
-    scale = 1024*4
+    scale = 1024*2
     dim_x = width/scale
     dim_y = height/scale
 
@@ -115,7 +115,6 @@ def make_buillboard(width, height):
     bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 
     bpy.context.space_data.viewport_shade = 'MATERIAL'
-    bpy.context.space_data.show_only_render = False
 
     return billboard
 
@@ -187,7 +186,6 @@ class DRAW_BRUSH(bpy.types.Operator):
         brush.blend = 'MIX'
 
         bpy.context.scene.tool_settings.image_paint.brush = brush
-        bpy.context.space_data.show_only_render = True
 
         fjw.active().show_wire = True
 
@@ -214,7 +212,6 @@ class ERASE_BRUSH(bpy.types.Operator):
         brush.blend = 'ERASE_ALPHA'
 
         bpy.context.scene.tool_settings.image_paint.brush = brush
-        bpy.context.space_data.show_only_render = True
 
         fjw.active().show_wire = True
         return {"FINISHED"}
@@ -233,7 +230,6 @@ class SAVE_IMAGES(bpy.types.Operator):
             obj.show_wire = False
 
         fjw.mode("OBJECT")
-        bpy.context.space_data.show_only_render = True
         return {"FINISHED"}
 
 
