@@ -52,20 +52,23 @@ class FJWBillboadDrawer(bpy.types.Panel):#メインパネル
 
         layout = self.layout
         layout = layout.column(align=True)
+
         active = layout.row(align=True)
-        active.label("作成")
+        active.label("加筆用カーブ")
+        active = layout.row(align=True)
+        active.operator("fjw_billboard_drawer.curve_black",icon="NONE")
+        active.operator("fjw_billboard_drawer.curve_white",icon="NONE")
+
+        active = layout.row(align=True)
+        active.label("ビルボード描画")
         active = layout.row(align=True)
         # active.operator("fjw_billboard_drawer.add_bd128")
         # active.operator("fjw_billboard_drawer.add_bd256")
         active.operator("fjw_billboard_drawer.add_bd512",icon="IMAGE_DATA")
         active.operator("fjw_billboard_drawer.add_bd1024",icon="IMAGE_DATA")
         active = layout.row(align=True)
-        active.label("ブラシ")
-        active = layout.row(align=True)
         active.operator("fjw_billboard_drawer.draw_brush",icon="GREASEPENCIL")
         active.operator("fjw_billboard_drawer.erase_brush",icon="TEXTURE_SHADED")
-        active = layout.row(align=True)
-        active.label("保存")
         active = layout.row(align=True)
         active.operator("fjw_billboard_drawer.save_images", icon="FILE_TICK")
 
@@ -230,6 +233,67 @@ class SAVE_IMAGES(bpy.types.Operator):
             obj.show_wire = False
 
         fjw.mode("OBJECT")
+        return {"FINISHED"}
+
+
+def add_drawing_curve(name, color, bvel_depth):
+    bpy.context.scene.tool_settings.curve_paint_settings.curve_type = 'POLY'
+    bpy.context.scene.tool_settings.curve_paint_settings.use_pressure_radius = True
+    bpy.context.scene.tool_settings.curve_paint_settings.radius_min = 0
+    bpy.context.scene.tool_settings.curve_paint_settings.radius_max = 1
+    bpy.context.scene.tool_settings.curve_paint_settings.depth_mode = 'SURFACE'
+    bpy.context.scene.tool_settings.curve_paint_settings.surface_offset = 1
+    bpy.context.scene.tool_settings.curve_paint_settings.use_offset_absolute = False
+    bpy.context.scene.tool_settings.curve_paint_settings.use_stroke_endpoints = False
+
+    for obj in bpy.context.visible_objects:
+        if name in obj.name:
+            return obj
+
+    bpy.ops.curve.primitive_bezier_curve_add(radius=1, view_align=False, enter_editmode=False, location=(0, 0, 0), layers=bpy.context.scene.layers)
+    curve = fjw.active().data
+    fjw.active().name = name
+    curve.fill_mode = "FULL"
+    curve.bevel_depth = bvel_depth
+
+    curve.show_handles = False
+    curve.show_normal_face = False
+
+    mat = bpy.data.materials.new(name)
+    mat.use_shadeless = True
+    mat.diffuse_color = color
+    mat.use_cast_shadows = False
+    curve.materials.append(mat)
+
+    fjw.mode("EDIT")
+    bpy.ops.curve.select_all(action='SELECT')
+    bpy.ops.curve.dissolve_verts()
+    fjw.mode("OBJECT")
+
+    return fjw.active()
+
+class CURVE_BLACK(bpy.types.Operator):
+    """加筆用の黒カーブ"""
+    bl_idname="fjw_billboard_drawer.curve_black"
+    bl_label = "黒カーブ"
+    bl_options = {'REGISTER', 'UNDO'}
+    def execute(self,context):
+        fjw.mode("OBJECT")
+        curve_obj = add_drawing_curve("加筆カーブ黒", (0,0,0), 0.001)
+        fjw.activate(curve_obj)
+        fjw.mode("EDIT")
+        return {"FINISHED"}
+
+class CURVE_WHITE(bpy.types.Operator):
+    """加筆用の白カーブ"""
+    bl_idname="fjw_billboard_drawer.curve_white"
+    bl_label = "白カーブ"
+    bl_options = {'REGISTER', 'UNDO'}
+    def execute(self,context):
+        fjw.mode("OBJECT")
+        curve_obj = add_drawing_curve("加筆カーブ白", (1,1,1), 0.003)
+        fjw.activate(curve_obj)
+        fjw.mode("EDIT")
         return {"FINISHED"}
 
 
