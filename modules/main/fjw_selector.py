@@ -127,7 +127,10 @@ class FJWSelector(bpy.types.Panel):#メインパネル
         active.label("")
         active = layout.row(align=True)
         active.operator("fjw_selector.prepare_for_posing", icon="POSE_HLT")
+        active = layout.row(align=True)
         active.operator("fjw_selector.set_face_lamp", icon="LAMP_POINT")
+        active.operator("fjw_selector.set_hemi_lamp", icon="LAMP_HEMI")
+        active.operator("fujiwara_toolbox.command_96315", icon="LAMP_SUN")
 
         active = layout.row()
         active.label("3Dカーソル付近選択")
@@ -530,6 +533,18 @@ class SetFaceLamp(bpy.types.Operator):
         fjw.mode("OBJECT")
         bpy.ops.object.lamp_add(type='POINT', radius=0.2, view_align=True, location=bpy.context.space_data.cursor_location, layers=bpy.context.scene.layers)
         bpy.context.object.data.use_specular = False
+        bpy.context.object.data.distance = 0.2
+        return {"FINISHED"}
+
+class SetHemiLamp(bpy.types.Operator):
+    """ヘミランプ設置"""
+    bl_idname = "fjw_selector.set_hemi_lamp"
+    bl_label = "ヘミランプ設置"
+    def execute(self, context):
+        fjw.mode("OBJECT")
+        bpy.ops.object.lamp_add(type='HEMI', radius=0.2, view_align=True, location=bpy.context.space_data.cursor_location, layers=bpy.context.scene.layers)
+        bpy.context.object.data.use_specular = False
+        bpy.context.object.data.energy = 0.07
         return {"FINISHED"}
 
 

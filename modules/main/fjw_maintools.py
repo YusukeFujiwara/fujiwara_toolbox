@@ -3429,6 +3429,7 @@ class FUJIWARATOOLBOX_979047(bpy.types.Operator):#GLレンダ
 
 
     def execute(self, context):
+        fjw.mode("OBJECT")
         starttime = time.time()
 
         viewstate = fjw.ViewState()
@@ -3496,6 +3497,7 @@ class FUJIWARATOOLBOX_171760(bpy.types.Operator):#GLレンダMASK
 
 
     def execute(self, context):
+        fjw.mode("OBJECT")
         bpy.context.space_data.show_only_render = True
         bpy.context.space_data.viewport_shade = 'MATERIAL'
 
@@ -12021,28 +12023,85 @@ class FUJIWARATOOLBOX_make_action_constraint_with_current_poselib(bpy.types.Oper
 ########################################
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
 
 
 
+############################################################################################################################
+uiitem("プロクシ")
+############################################################################################################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#オリジナルを反映
+########################################
+
+def find_proxy(original):
+    for obj in bpy.context.scene.objects:
+        if obj.proxy is None:
+            continue
+        if obj.proxy == original:
+            return obj
+    return original
+
+#bpy.ops.fujiwara_toolbox.bone_constraints_from_original() #オリジナルを反映
+class FUJIWARATOOLBOX_BONE_CONSTRAINTS_FROM_ORIGINAL(bpy.types.Operator):
+    """コンストレイントがないボーンにオリジナルのコンストレイントを反映する。"""
+    bl_idname = "fujiwara_toolbox.bone_constraints_from_original"
+    bl_label = "オリジナルを反映"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        armature = fjw.active()
+        if armature is None or armature.type != "ARMATURE":
+            return {'CANCELLED'}
+
+        armu = fjw.ArmatureUtils(armature)
+        if not armu.is_proxy:
+            return {'CANCELLED'}
+
+        prox_armu = armu
+        orig_armu = fjw.ArmatureUtils(prox_armu.armature.proxy)
+
+        for prox_pbone in prox_armu.pose_bones:
+            if len(prox_pbone.constraints) != 0:
+                continue
+            orig_pbone = orig_armu.posebone(prox_pbone.name)
+            if len(orig_pbone.constraints) == 0:
+                continue
+            #オリジナルにはコンストレイントがあるのにプロクシにない
+            for orig_bone_constraint in orig_pbone.constraints:
+                #各コンストレイントをコピーする。
+                #http://www.yoheim.net/blog.php?q=20161002
+                prox_constraint = prox_pbone.constraints.new(orig_bone_constraint.type)
+                props = dir(orig_bone_constraint)
+                for prop in props:
+                    val = getattr(orig_bone_constraint, prop)
+                    if type(val) == bpy.types.Object:
+                        val = find_proxy(val)
+                    try:
+                        setattr(prox_constraint, prop, val)
+                    except:
+                        continue
+
+
+        return {'FINISHED'}
+########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
 
 
 ################################################################################
@@ -14544,81 +14603,6 @@ uiitem().vertical()
 
 
 
-############################################################################################################################
-uiitem("プロクシ")
-############################################################################################################################
-
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
-
-########################################
-#オリジナルを反映
-########################################
-
-def find_proxy(original):
-    for obj in bpy.context.scene.objects:
-        if obj.proxy is None:
-            continue
-        if obj.proxy == original:
-            return obj
-    return original
-
-#bpy.ops.fujiwara_toolbox.bone_constraints_from_original() #オリジナルを反映
-class FUJIWARATOOLBOX_BONE_CONSTRAINTS_FROM_ORIGINAL(bpy.types.Operator):
-    """コンストレイントがないボーンにオリジナルのコンストレイントを反映する。"""
-    bl_idname = "fujiwara_toolbox.bone_constraints_from_original"
-    bl_label = "オリジナルを反映"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-    def execute(self, context):
-        armature = fjw.active()
-        if armature is None or armature.type != "ARMATURE":
-            return {'CANCELLED'}
-
-        armu = fjw.ArmatureUtils(armature)
-        if not armu.is_proxy:
-            return {'CANCELLED'}
-
-        prox_armu = armu
-        orig_armu = fjw.ArmatureUtils(prox_armu.armature.proxy)
-
-        for prox_pbone in prox_armu.pose_bones:
-            if len(prox_pbone.constraints) != 0:
-                continue
-            orig_pbone = orig_armu.posebone(prox_pbone.name)
-            if len(orig_pbone.constraints) == 0:
-                continue
-            #オリジナルにはコンストレイントがあるのにプロクシにない
-            for orig_bone_constraint in orig_pbone.constraints:
-                #各コンストレイントをコピーする。
-                #とりあえず、ターゲットとかもそのままコピーする。
-                #http://www.yoheim.net/blog.php?q=20161002
-                prox_constraint = prox_pbone.constraints.new(orig_bone_constraint.type)
-                # prox_constraint.name = orig_bone_constraint.name
-                props = dir(orig_bone_constraint)
-                for prop in props:
-                    val = getattr(orig_bone_constraint, prop)
-                    if type(val) == bpy.types.Object:
-                        val = find_proxy(val)
-                    try:
-                        setattr(prox_constraint, prop, val)
-                    except:
-                        continue
-
-
-        return {'FINISHED'}
-########################################
-
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
 
 
 
