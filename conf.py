@@ -119,8 +119,8 @@ class FujiwaraToolBoxPreferences(AddonPreferences):
            name="FJW Selector",
             default=False,
             )
-    fjw_billboard_drawer = BoolProperty(
-           name="FJW Billboad Drawer",
+    draw_tools = BoolProperty(
+           name="FJW Draw Tools",
             default=False,
             )
     #特殊設定
@@ -157,7 +157,7 @@ class FujiwaraToolBoxPreferences(AddonPreferences):
         layout.prop(self, "greasepenciltools")
         layout.prop(self, "quickmeshdeldiss")
         layout.prop(self, "assetsketcherhelper")
-        layout.prop(self, "fjw_billboard_drawer")
+        layout.prop(self, "draw_tools")
 
         layout.label(text="特殊設定")
         layout.prop(self, "assetdir")

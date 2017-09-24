@@ -36,7 +36,7 @@ bl_info = {
 
 #メインパネル
 class FJWBillboadDrawer(bpy.types.Panel):#メインパネル
-    bl_label = "ビルボード描画"
+    bl_label = "描画ツール"
     bl_space_type = "VIEW_3D"
     bl_region_type = "TOOLS"
     bl_category = "Fujiwara Tool Box"
@@ -44,7 +44,7 @@ class FJWBillboadDrawer(bpy.types.Panel):#メインパネル
     @classmethod
     def poll(cls, context):
         pref = fujiwara_toolbox.conf.get_pref()
-        return pref.fjw_billboard_drawer
+        return pref.draw_tools
 
     def draw(self, context):
         filename = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
@@ -278,6 +278,11 @@ class CURVE_BLACK(bpy.types.Operator):
     bl_label = "黒カーブ"
     bl_options = {'REGISTER', 'UNDO'}
     def execute(self,context):
+        if bpy.context.scene.render.use_simplify:
+            bpy.context.scene.render.use_simplify = False
+        bpy.context.space_data.show_only_render = True
+        bpy.context.space_data.lock_camera = False
+
         fjw.mode("OBJECT")
         curve_obj = add_drawing_curve("加筆カーブ黒", (0,0,0), 0.001)
         fjw.activate(curve_obj)
@@ -290,6 +295,11 @@ class CURVE_WHITE(bpy.types.Operator):
     bl_label = "白カーブ"
     bl_options = {'REGISTER', 'UNDO'}
     def execute(self,context):
+        if bpy.context.scene.render.use_simplify:
+            bpy.context.scene.render.use_simplify = False
+        bpy.context.space_data.show_only_render = True
+        bpy.context.space_data.lock_camera = False
+
         fjw.mode("OBJECT")
         curve_obj = add_drawing_curve("加筆カーブ白", (1,1,1), 0.003)
         fjw.activate(curve_obj)

@@ -3429,6 +3429,7 @@ class FUJIWARATOOLBOX_979047(bpy.types.Operator):#GLレンダ
 
 
     def execute(self, context):
+        fjw.mode("OBJECT")
         starttime = time.time()
 
         viewstate = fjw.ViewState()
@@ -3496,6 +3497,7 @@ class FUJIWARATOOLBOX_171760(bpy.types.Operator):#GLレンダMASK
 
 
     def execute(self, context):
+        fjw.mode("OBJECT")
         bpy.context.space_data.show_only_render = True
         bpy.context.space_data.viewport_shade = 'MATERIAL'
 
