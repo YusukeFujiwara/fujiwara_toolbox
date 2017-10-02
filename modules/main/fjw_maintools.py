@@ -6035,7 +6035,7 @@ class FUJIWARATOOLBOX_357169(bpy.types.Operator):#グリッドスナップ
     uiitem.button(bl_idname,bl_label,icon="SNAP_GRID",mode="none")
 
     def execute(self, context):
-        # bpy.context.scene.tool_settings.use_snap = True
+        bpy.context.scene.tool_settings.use_snap = False
         bpy.context.scene.tool_settings.snap_element = 'INCREMENT'
         bpy.context.scene.tool_settings.use_snap_grid_absolute = True
         
@@ -12099,6 +12099,66 @@ class FUJIWARATOOLBOX_BONE_CONSTRAINTS_FROM_ORIGINAL(bpy.types.Operator):
         return {'FINISHED'}
 ########################################
 
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+############################################################################################################################
+uiitem("Rigify")
+############################################################################################################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+########################################
+#Genrigして再ペアレント
+########################################
+#bpy.ops.fujiwara_toolbox.genrig_reparent() #Genrigして再ペアレント
+class FUJIWARATOOLBOX_GENRIG_REPARENT(bpy.types.Operator):
+    """Generate Rigしてから、子オブジェクトを再び自動ウェイトでくくりつける。Metarigは非表示にする。"""
+    bl_idname = "fujiwara_toolbox.genrig_reparent"
+    bl_label = "Genrigして再ペアレント"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        armature = fjw.active()
+        if armature.type != "ARMATURE":
+            return {'CANCELLED'}
+        if "rig" in armature.data:
+            return {'CANCELLED'}
+
+        fjw.mode("OBJECT")
+
+        bpy.ops.pose.rigify_generate()
+
+        rig = fjw.active()
+
+        if len(rig.children) > 0:
+            for child in rig.children:
+                if child.type == "MESH":
+                    child.select = True
+            bpy.ops.object.parent_set(type='ARMATURE_AUTO')
+        
+        armature.hide = True
+
+
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+
+
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
@@ -14419,7 +14479,7 @@ uiitem().vertical()
 uiitem().horizontal()
 #---------------------------------------------
 
-def add_camtracker(axis):
+def add_camtracker(axis, type="DAMPED_TRACK"):
     selection = fjw.get_selected_list()
     for obj in selection:
         cnstu = fjw.ConstraintUtils(obj)
@@ -14427,7 +14487,7 @@ def add_camtracker(axis):
         tracker = cnstu.find("FJW Camera Tracker")
 
         if tracker is None:
-            tracker = cnstu.add("FJW Camera Tracker", "DAMPED_TRACK")
+            tracker = cnstu.add("FJW Camera Tracker", type)
         
         tracker.track_axis = axis
         cam = bpy.context.scene.camera
@@ -14471,6 +14531,43 @@ class FUJIWARATOOLBOX_SET_CAMERA_TRACKER_CONSTRAINT_Y(bpy.types.Operator):
         add_camtracker("TRACK_NEGATIVE_Y")
         return {'FINISHED'}
 ########################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#軸固定　前面
+########################################
+#bpy.ops.fujiwara_toolbox.set_camera_tracker_constraint_yz() #軸固定　前面
+class FUJIWARATOOLBOX_SET_CAMERA_TRACKER_CONSTRAINT_YZ(bpy.types.Operator):
+    """軸固定トラックを設定する。Yを向けてZを固定する。"""
+    bl_idname = "fujiwara_toolbox.set_camera_tracker_constraint_yz"
+    bl_label = "軸固定　前面"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        add_camtracker("TRACK_NEGATIVE_Y", "LOCKED_TRACK")
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
 
 ########################################
 #ターゲットカメラ設定
@@ -14493,9 +14590,15 @@ class FUJIWARATOOLBOX_SET_CAMTRACKER_TARGET(bpy.types.Operator):
         for obj in  bpy.context.visible_objects:
             cnstu = fjw.ConstraintUtils(obj)
             tracker = cnstu.find("FJW Camera Tracker")
-            if tracker is None:
-                continue
-            tracker.target = cam
+            if tracker is not None:
+                tracker.target = cam
+
+            if obj.type == "ARMATURE":
+                armu = fjw.ArmatureUtils(obj)
+                for pbone in armu.pose_bones:
+                    for bc in pbone.constraints:
+                        if "FJW Camera Tracker" in bc.name:
+                            bc.target = cam
         return {'FINISHED'}
 ########################################
 
