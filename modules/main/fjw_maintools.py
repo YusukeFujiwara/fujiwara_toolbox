@@ -12114,6 +12114,16 @@ uiitem().vertical()
 #---------------------------------------------
 uiitem().horizontal()
 #---------------------------------------------
+class ChildInfo:
+    def __init__(self, obj):
+        self.obj = obj
+        self.parent_type = obj.parent_type
+        self.parent_bone = obj.parent_bone
+        self.print_info()
+
+    def print_info(self):
+        print("%s : %s, %s"%(self.obj.name, self.parent_type, self.parent_bone))
+
 ########################################
 #Genrigして再ペアレント
 ########################################
@@ -12134,17 +12144,86 @@ class FUJIWARATOOLBOX_GENRIG_REPARENT(bpy.types.Operator):
         if "rig" in armature.data:
             return {'CANCELLED'}
 
+        rigname = ""
+        win = bpy.context.window_manager
+        if hasattr(win, "rigify_target_rig"):
+            rigname = win.rigify_target_rig
+        if rigname == "":
+            rigname = "rig"
+
+        rig = None
+        children_info = []
+        if rigname in bpy.data.objects:
+            rig = bpy.data.objects[rigname]
+        
+            fjw.deselect()
+            for child in rig.children:
+                children_info.append(ChildInfo(child))
+                child.select = True
+            bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
+
+
+            #再生成だと10分かかるのが新規だと10秒だったりするので一回消しとく
+            fjw.delete([rig])
+
         fjw.mode("OBJECT")
+        fjw.activate(armature)
+        print("GENRIG START")
 
         bpy.ops.pose.rigify_generate()
 
+        print("GENRIG FINISHED")
         rig = fjw.active()
 
-        if len(rig.children) > 0:
-            for child in rig.children:
-                if child.type == "MESH":
-                    child.select = True
-            bpy.ops.object.parent_set(type='ARMATURE_AUTO')
+        # if len(rig.children) > 0:
+        #     for child in rig.children:
+        #         if child.type == "MESH":
+        #             child.select = True
+        #     bpy.ops.object.parent_set(type='ARMATURE_AUTO')
+        for info in children_info:
+            obj = info.obj
+            modu = fjw.Modutils(obj)
+            mod_arm = modu.find_bytype("ARMATURE")
+
+            print("PARENTING")
+            info.print_info()
+
+            if mod_arm is None:
+                # これだと位置ズレする
+                # obj.parent = rig
+                # obj.parent_type = info.parent_type
+                # obj.parent_bone = info.parent_bone
+                # ので、ボーン相対とかで処理
+                fjw.mode("OBJECT")
+                fjw.deselect()
+                obj.select = True
+                fjw.activate(rig)
+
+                if info.parent_type == "OBJECT":
+                    bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
+                elif info.parent_type == "BONE":
+                    if info.parent_bone in rig.data.bones:
+                        fjw.mode("POSE")
+
+                        layerstates = []
+                        for state in rig.data.layers:
+                            layerstates.append(state)
+
+                        rig.data.layers = [True for i in range(len(rig.data.layers))]
+
+                        rig.data.bones.active = rig.data.bones[info.parent_bone]
+                        bpy.ops.object.parent_set(type='BONE_RELATIVE')
+
+                        rig.data.layers = layerstates
+
+
+
+            else:
+                fjw.deselect()
+                obj.select = True
+                fjw.activate(rig)
+                bpy.ops.object.parent_set(type='ARMATURE_AUTO')
+
         
         armature.hide = True
 
