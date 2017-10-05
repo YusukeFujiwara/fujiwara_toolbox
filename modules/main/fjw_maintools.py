@@ -12129,7 +12129,7 @@ class ChildInfo:
 ########################################
 #bpy.ops.fujiwara_toolbox.genrig_reparent() #Genrigして再ペアレント
 class FUJIWARATOOLBOX_GENRIG_REPARENT(bpy.types.Operator):
-    """Generate Rigしてから、子オブジェクトを再び自動ウェイトでくくりつける。Metarigは非表示にする。"""
+    """Generate Rigしてから、子オブジェクトを再び自動ウェイトでくくりつける。ボーン相対も反映する。Metarigは非表示にする。常に新規リグに差し替わる。"""
     bl_idname = "fujiwara_toolbox.genrig_reparent"
     bl_label = "Genrigして再ペアレント"
     bl_options = {'REGISTER', 'UNDO'}
