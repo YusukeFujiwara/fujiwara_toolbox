@@ -6035,7 +6035,7 @@ class FUJIWARATOOLBOX_357169(bpy.types.Operator):#グリッドスナップ
     uiitem.button(bl_idname,bl_label,icon="SNAP_GRID",mode="none")
 
     def execute(self, context):
-        # bpy.context.scene.tool_settings.use_snap = True
+        bpy.context.scene.tool_settings.use_snap = False
         bpy.context.scene.tool_settings.snap_element = 'INCREMENT'
         bpy.context.scene.tool_settings.use_snap_grid_absolute = True
         
@@ -12099,6 +12099,220 @@ class FUJIWARATOOLBOX_BONE_CONSTRAINTS_FROM_ORIGINAL(bpy.types.Operator):
         return {'FINISHED'}
 ########################################
 
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+############################################################################################################################
+uiitem("Rigify")
+############################################################################################################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+class ChildInfo:
+    def __init__(self, obj):
+        self.obj = obj
+        self.parent_type = obj.parent_type
+        self.parent_bone = obj.parent_bone
+        self.print_info()
+
+    def print_info(self):
+        print("%s : %s, %s"%(self.obj.name, self.parent_type, self.parent_bone))
+
+class BoneInfo:
+    def __init__(self, bone):
+        self.name = bone.name
+        self.use_deform = bone.use_deform
+        self.hide = bone.hide
+
+########################################
+#Genrigして再ペアレント
+########################################
+#bpy.ops.fujiwara_toolbox.genrig_reparent() #Genrigして再ペアレント
+class FUJIWARATOOLBOX_GENRIG_REPARENT(bpy.types.Operator):
+    """Generate Rigしてから、子オブジェクトを再び自動ウェイトでくくりつける。ボーン相対も反映する。Metarigは非表示にする。常に新規リグに差し替わる。"""
+    bl_idname = "fujiwara_toolbox.genrig_reparent"
+    bl_label = "Genrigして再ペアレント"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        armature = fjw.active()
+        if armature.type != "ARMATURE":
+            return {'CANCELLED'}
+        if "rig" in armature.data:
+            return {'CANCELLED'}
+
+        rigname = ""
+        win = bpy.context.window_manager
+        if hasattr(win, "rigify_target_rig"):
+            rigname = win.rigify_target_rig
+        if rigname == "":
+            rigname = "rig"
+
+        rig = None
+        children_info = []
+        bones_info = []
+        if rigname in bpy.data.objects:
+            rig = bpy.data.objects[rigname]
+        
+            fjw.deselect()
+            for child in rig.children:
+                children_info.append(ChildInfo(child))
+                child.select = True
+            bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
+
+            #リグの骨の状態を取得しておく
+            for bone in rig.data.bones:
+                bones_info.append(BoneInfo(bone))
+
+
+            #再生成だと10分かかるのが新規だと10秒だったりするので一回消しとく
+            fjw.delete([rig])
+
+        fjw.mode("OBJECT")
+        fjw.activate(armature)
+        print("GENRIG START")
+
+        bpy.ops.pose.rigify_generate()
+
+        print("GENRIG FINISHED")
+        rig = fjw.active()
+
+        #ボーン設定のレストア
+        for binfo in bones_info:
+            if binfo.name in rig.data.bones:
+                bone = rig.data.bones[binfo.name]
+                bone.use_deform = binfo.use_deform
+                bone.hide = binfo.hide
+
+        for info in children_info:
+            obj = info.obj
+            modu = fjw.Modutils(obj)
+            mod_arm = modu.find_bytype("ARMATURE")
+
+            print("PARENTING")
+            info.print_info()
+
+            if mod_arm is None:
+                fjw.mode("OBJECT")
+                fjw.deselect()
+                obj.select = True
+                fjw.activate(rig)
+
+                if info.parent_type == "OBJECT":
+                    bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
+                elif info.parent_type == "BONE":
+                    if info.parent_bone in rig.data.bones:
+                        fjw.mode("POSE")
+
+                        layerstates = []
+                        for state in rig.data.layers:
+                            layerstates.append(state)
+
+                        rig.data.layers = [True for i in range(len(rig.data.layers))]
+
+                        rig.data.bones.active = rig.data.bones[info.parent_bone]
+                        bpy.ops.object.parent_set(type='BONE_RELATIVE')
+
+                        rig.data.layers = layerstates
+            else:
+                #既存のアーマチュアmodを除去する
+                mod_arms = modu.find_bytype_list("ARMATURE")
+                for mod in mod_arms:
+                    modu.remove(mod)
+
+                fjw.deselect()
+                obj.select = True
+                fjw.activate(rig)
+                bpy.ops.object.parent_set(type='ARMATURE_AUTO')
+                fjw.activate(obj)
+                modu.sort()
+
+        
+        armature.hide = True
+
+
+        return {'FINISHED'}
+########################################
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+def set_rigify_ik_fk(value):
+    obj = fjw.active()
+    fjw.mode("POSE")
+    for pb in obj.pose.bones:
+        if "IK_FK" in pb:
+            pb["IK_FK"] = value
+
+    for bn in obj.data.bones:
+        bn.select = True
+    
+    bpy.ops.transform.translate(value=(0, 0, 0), constraint_axis=(False, False, False), constraint_orientation='NORMAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=0)
+    
+
+########################################
+#IK All
+########################################
+#bpy.ops.fujiwara_toolbox.rigify_ik_all() #IK All
+class FUJIWARATOOLBOX_RIGIFY_IK_ALL(bpy.types.Operator):
+    """全てのボーンのIK/FK値を0にする。"""
+    bl_idname = "fujiwara_toolbox.rigify_ik_all"
+    bl_label = "IK All"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        obj = fjw.active()
+        if obj.type != "ARMATURE":
+            return {"CANCELLED"}
+
+        set_rigify_ik_fk(0)
+
+        return {'FINISHED'}
+########################################
+
+########################################
+#FK All
+########################################
+#bpy.ops.fujiwara_toolbox.rigify_fk_all() #FK All
+class FUJIWARATOOLBOX_RIGIFY_FK_ALL(bpy.types.Operator):
+    """全てのボーンのIK/FK値を1にする。"""
+    bl_idname = "fujiwara_toolbox.rigify_fk_all"
+    bl_label = "FK All"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        obj = fjw.active()
+        if obj.type != "ARMATURE":
+            return {"CANCELLED"}
+
+        set_rigify_ik_fk(1)
+
+        return {'FINISHED'}
+########################################
+
+
+
+
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
@@ -14419,7 +14633,7 @@ uiitem().vertical()
 uiitem().horizontal()
 #---------------------------------------------
 
-def add_camtracker(axis):
+def add_camtracker(axis, type="DAMPED_TRACK"):
     selection = fjw.get_selected_list()
     for obj in selection:
         cnstu = fjw.ConstraintUtils(obj)
@@ -14427,7 +14641,7 @@ def add_camtracker(axis):
         tracker = cnstu.find("FJW Camera Tracker")
 
         if tracker is None:
-            tracker = cnstu.add("FJW Camera Tracker", "DAMPED_TRACK")
+            tracker = cnstu.add("FJW Camera Tracker", type)
         
         tracker.track_axis = axis
         cam = bpy.context.scene.camera
@@ -14471,6 +14685,43 @@ class FUJIWARATOOLBOX_SET_CAMERA_TRACKER_CONSTRAINT_Y(bpy.types.Operator):
         add_camtracker("TRACK_NEGATIVE_Y")
         return {'FINISHED'}
 ########################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#軸固定　前面
+########################################
+#bpy.ops.fujiwara_toolbox.set_camera_tracker_constraint_yz() #軸固定　前面
+class FUJIWARATOOLBOX_SET_CAMERA_TRACKER_CONSTRAINT_YZ(bpy.types.Operator):
+    """軸固定トラックを設定する。Yを向けてZを固定する。"""
+    bl_idname = "fujiwara_toolbox.set_camera_tracker_constraint_yz"
+    bl_label = "軸固定　前面"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        add_camtracker("TRACK_NEGATIVE_Y", "LOCKED_TRACK")
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
 
 ########################################
 #ターゲットカメラ設定
@@ -14493,9 +14744,15 @@ class FUJIWARATOOLBOX_SET_CAMTRACKER_TARGET(bpy.types.Operator):
         for obj in  bpy.context.visible_objects:
             cnstu = fjw.ConstraintUtils(obj)
             tracker = cnstu.find("FJW Camera Tracker")
-            if tracker is None:
-                continue
-            tracker.target = cam
+            if tracker is not None:
+                tracker.target = cam
+
+            if obj.type == "ARMATURE":
+                armu = fjw.ArmatureUtils(obj)
+                for pbone in armu.pose_bones:
+                    for bc in pbone.constraints:
+                        if "FJW Camera Tracker" in bc.name:
+                            bc.target = cam
         return {'FINISHED'}
 ########################################
 
