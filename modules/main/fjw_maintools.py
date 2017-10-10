@@ -12244,8 +12244,71 @@ class FUJIWARATOOLBOX_GENRIG_REPARENT(bpy.types.Operator):
 ########################################
 
 
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
 
+def set_rigify_ik_fk(value):
+    obj = fjw.active()
+    fjw.mode("POSE")
+    for pb in obj.pose.bones:
+        if "IK_FK" in pb:
+            pb["IK_FK"] = value
 
+    for bn in obj.data.bones:
+        bn.select = True
+    
+    bpy.ops.transform.translate(value=(0, 0, 0), constraint_axis=(False, False, False), constraint_orientation='NORMAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=0)
+    
+
+########################################
+#IK All
+########################################
+#bpy.ops.fujiwara_toolbox.rigify_ik_all() #IK All
+class FUJIWARATOOLBOX_RIGIFY_IK_ALL(bpy.types.Operator):
+    """全てのボーンのIK/FK値を0にする。"""
+    bl_idname = "fujiwara_toolbox.rigify_ik_all"
+    bl_label = "IK All"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        obj = fjw.active()
+        if obj.type != "ARMATURE":
+            return {"CANCELLED"}
+
+        set_rigify_ik_fk(0)
+
+        return {'FINISHED'}
+########################################
+
+########################################
+#FK All
+########################################
+#bpy.ops.fujiwara_toolbox.rigify_fk_all() #FK All
+class FUJIWARATOOLBOX_RIGIFY_FK_ALL(bpy.types.Operator):
+    """全てのボーンのIK/FK値を1にする。"""
+    bl_idname = "fujiwara_toolbox.rigify_fk_all"
+    bl_label = "FK All"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        obj = fjw.active()
+        if obj.type != "ARMATURE":
+            return {"CANCELLED"}
+
+        set_rigify_ik_fk(1)
+
+        return {'FINISHED'}
+########################################
 
 
 
