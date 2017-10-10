@@ -12124,6 +12124,12 @@ class ChildInfo:
     def print_info(self):
         print("%s : %s, %s"%(self.obj.name, self.parent_type, self.parent_bone))
 
+class BoneInfo:
+    def __init__(self, bone):
+        self.name = bone.name
+        self.use_deform = bone.use_deform
+        self.hide = bone.hide
+
 ########################################
 #Genrigして再ペアレント
 ########################################
@@ -12153,6 +12159,7 @@ class FUJIWARATOOLBOX_GENRIG_REPARENT(bpy.types.Operator):
 
         rig = None
         children_info = []
+        bones_info = []
         if rigname in bpy.data.objects:
             rig = bpy.data.objects[rigname]
         
@@ -12161,6 +12168,10 @@ class FUJIWARATOOLBOX_GENRIG_REPARENT(bpy.types.Operator):
                 children_info.append(ChildInfo(child))
                 child.select = True
             bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
+
+            #リグの骨の状態を取得しておく
+            for bone in rig.data.bones:
+                bones_info.append(BoneInfo(bone))
 
 
             #再生成だと10分かかるのが新規だと10秒だったりするので一回消しとく
@@ -12175,11 +12186,13 @@ class FUJIWARATOOLBOX_GENRIG_REPARENT(bpy.types.Operator):
         print("GENRIG FINISHED")
         rig = fjw.active()
 
-        # if len(rig.children) > 0:
-        #     for child in rig.children:
-        #         if child.type == "MESH":
-        #             child.select = True
-        #     bpy.ops.object.parent_set(type='ARMATURE_AUTO')
+        #ボーン設定のレストア
+        for binfo in bones_info:
+            if binfo.name in rig.data.bones:
+                bone = rig.data.bones[binfo.name]
+                bone.use_deform = binfo.use_deform
+                bone.hide = binfo.hide
+
         for info in children_info:
             obj = info.obj
             modu = fjw.Modutils(obj)
@@ -12189,11 +12202,6 @@ class FUJIWARATOOLBOX_GENRIG_REPARENT(bpy.types.Operator):
             info.print_info()
 
             if mod_arm is None:
-                # これだと位置ズレする
-                # obj.parent = rig
-                # obj.parent_type = info.parent_type
-                # obj.parent_bone = info.parent_bone
-                # ので、ボーン相対とかで処理
                 fjw.mode("OBJECT")
                 fjw.deselect()
                 obj.select = True
@@ -12215,14 +12223,18 @@ class FUJIWARATOOLBOX_GENRIG_REPARENT(bpy.types.Operator):
                         bpy.ops.object.parent_set(type='BONE_RELATIVE')
 
                         rig.data.layers = layerstates
-
-
-
             else:
+                #既存のアーマチュアmodを除去する
+                mod_arms = modu.find_bytype_list("ARMATURE")
+                for mod in mod_arms:
+                    modu.remove(mod)
+
                 fjw.deselect()
                 obj.select = True
                 fjw.activate(rig)
                 bpy.ops.object.parent_set(type='ARMATURE_AUTO')
+                fjw.activate(obj)
+                modu.sort()
 
         
         armature.hide = True
