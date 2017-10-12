@@ -11463,8 +11463,9 @@ def update_armaturesystem(self, context, mute_consraints):
             rname = pbone.name.replace("_L", "_R")
             if rname in armu.pose_bones:
                 rbone = armu.pose_bones[rname]
-                if rbone.head.x != (lbone.head.x * -1):
-                    self.report({"INFO"}, "ボーンが左右非対称です")
+                #微妙に誤差が出ることがあるので丸める
+                if round(rbone.head.x*100) != round((lbone.head.x * -1)*100):
+                    self.report({"INFO"}, "ボーンが左右非対称です。 %s, %s"%(rbone.name, lbone.name))
                     return
 
 
@@ -12158,10 +12159,15 @@ class FUJIWARATOOLBOX_GENRIG_REPARENT(bpy.types.Operator):
             rigname = "rig"
 
         rig = None
+        rigdata_name = "rig"
+        rig_groups = ()
+        rig_show_x_ray = False
         children_info = []
         bones_info = []
         if rigname in bpy.data.objects:
             rig = bpy.data.objects[rigname]
+            rig_groups = rig.users_group
+            rig_show_x_ray = rig.show_x_ray
         
             fjw.deselect()
             for child in rig.children:
@@ -12172,7 +12178,10 @@ class FUJIWARATOOLBOX_GENRIG_REPARENT(bpy.types.Operator):
             #リグの骨の状態を取得しておく
             for bone in rig.data.bones:
                 bones_info.append(BoneInfo(bone))
-
+            
+            rigdata_name = rig.data.name
+            #リグ削除するまえに、再生生後のリグデータ名がかぶらないようにリネームする
+            rig.data.name = rig.data.name + "_prev"
 
             #再生成だと10分かかるのが新規だと10秒だったりするので一回消しとく
             fjw.delete([rig])
@@ -12185,6 +12194,12 @@ class FUJIWARATOOLBOX_GENRIG_REPARENT(bpy.types.Operator):
 
         print("GENRIG FINISHED")
         rig = fjw.active()
+        rig.data.name = rigdata_name
+        rig.show_x_ray = rig_show_x_ray
+
+        #グループの反映
+        for gr in rig_groups:
+            fjw.group(gr.name, [rig])
 
         #ボーン設定のレストア
         for binfo in bones_info:
