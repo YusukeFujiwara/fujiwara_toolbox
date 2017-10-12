@@ -75,6 +75,23 @@ def blenddir():
     return dir
 
 
+# def group(name, objects):
+#     group = None
+#     for gr in bpy.data.groups:
+#         if name == gr.name:
+#             if gr.library is None:
+#                 group = gr
+#                 break
+    
+#     if group is None:
+#         group = bpy.data.groups.new(name)
+
+#     for ob in selection:
+#         if ob.name not in group.objects:
+#             group.objects.link(ob)
+
+#     return group
+
 def find(name):
     for obj in bpy.data.objects:
         if name in obj.name:
@@ -1071,15 +1088,24 @@ def checkLink(obj):
     return None
 
 
-def group(group_name):
-    #グループ化
-    if group_name not in bpy.data.groups:
-        bpy.ops.group.create(name=group_name)
-    else:
-        for obj in get_selected_list():
-            if obj.name not in bpy.data.groups[group_name].objects:
-                bpy.data.groups[group_name].objects.link(obj)
-    return bpy.data.groups[group_name]
+def group(name, objects=None):
+    group = None
+    if objects is None:
+        objects = get_selected_list()
+    for gr in bpy.data.groups:
+        if name == gr.name:
+            if gr.library is None:
+                group = gr
+                break
+    
+    if group is None:
+        group = bpy.data.groups.new(name)
+
+    for ob in objects:
+        if ob.name not in group.objects:
+            group.objects.link(ob)
+
+    return group
 
 
 

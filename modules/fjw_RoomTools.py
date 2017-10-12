@@ -3634,36 +3634,7 @@ class FUJIWARATOOLBOX_288056(bpy.types.Operator):#ファイル名でグループ
     #処理部分
     ###################################
     def execute(self, context):
-        current = fjw.active()
-        selection = fjw.get_selected_list() 
-
-        if current is None:
-            if len(selection) == 0:
-                self.report({"INFO"},"選択オブジェクトがありません")
-
-        #全てオブジェクトモードに
-        for obj in selection:
-            fjw.activate(obj)
-            fjw.mode("OBJECT")
-
-        #いろいろ除外
-        for obj in bpy.data.objects:
-            #if obj.type == "LAMP" or obj.type == "CAMERA":
-            if obj.type == "CAMERA":
-                obj.select = False
-        
-        selection = fjw.get_selected_list() 
-        
-        # groupname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
-        groupname = "MainGroup"
-        if groupname in bpy.data.groups:
-            #グループ化してた
-            bpy.ops.group.objects_add_active(group=groupname)
-        else:
-            #してなかった
-            bpy.ops.group.create(name=groupname)
-        
-        fjw.activate(current)
+        fjw.group("MainGroup")
 
         return {'FINISHED'}
 ########################################
