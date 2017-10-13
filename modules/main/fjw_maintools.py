@@ -12136,7 +12136,9 @@ class BoneInfo:
 ########################################
 #bpy.ops.fujiwara_toolbox.genrig_reparent() #Genrigして再ペアレント
 class FUJIWARATOOLBOX_GENRIG_REPARENT(bpy.types.Operator):
-    """Generate Rigしてから、子オブジェクトを再び自動ウェイトでくくりつける。ボーン相対も反映する。Metarigは非表示にする。常に新規リグに差し替わる。"""
+    """Generate Rigしてから、子オブジェクトを再び自動ウェイトでくくりつける。ボーン相対も反映する。Metarigは非表示にする。常に新規リグに差し替わる。
+    ペアレントタイプはカスタムプロパティ"rigify_parenting"があればそれを優先する。
+    """
     bl_idname = "fujiwara_toolbox.genrig_reparent"
     bl_label = "Genrigして再ペアレント"
     bl_options = {'REGISTER', 'UNDO'}
@@ -12247,7 +12249,10 @@ class FUJIWARATOOLBOX_GENRIG_REPARENT(bpy.types.Operator):
                 fjw.deselect()
                 obj.select = True
                 fjw.activate(rig)
-                bpy.ops.object.parent_set(type='ARMATURE_AUTO')
+                if "rigify_parenting" in obj:
+                    bpy.ops.object.parent_set(type=obj["rigify_parenting"])
+                else:
+                    bpy.ops.object.parent_set(type='ARMATURE_AUTO')
                 fjw.activate(obj)
                 modu.sort()
 
