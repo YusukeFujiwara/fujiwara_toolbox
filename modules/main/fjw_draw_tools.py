@@ -58,6 +58,10 @@ class FJWBillboadDrawer(bpy.types.Panel):#メインパネル
         active = layout.row(align=True)
         active.operator("fjw_billboard_drawer.curve_black",icon="NONE")
         active.operator("fjw_billboard_drawer.curve_white",icon="NONE")
+        active = layout.row(align=True)
+        active.label("ユーティリティ")
+        active = layout.row(align=True)
+        active.operator("fjw_billboard_drawer.dissolve_active_spline",icon="NONE")
 
         active = layout.row(align=True)
         active.label("ビルボード描画")
@@ -305,6 +309,42 @@ class CURVE_WHITE(bpy.types.Operator):
         fjw.activate(curve_obj)
         fjw.mode("EDIT")
         return {"FINISHED"}
+
+class DISSOLVE_ACTIVE_SPLINE(bpy.types.Operator):
+    """アクティブスプラインの頂点数を半分に溶解する。"""
+    bl_idname="fjw_billboard_drawer.dissolve_active_spline"
+    bl_label = "半分に溶解"
+    bl_options = {'REGISTER', 'UNDO'}
+    def execute(self,context):
+        obj = fjw.active()
+        if obj is None or obj.type != "CURVE" or obj.mode != "EDIT":
+            return {"CANCELLED"}
+
+        curve = obj.data
+        spline = curve.splines.active
+        if spline is None:
+            return {"CANCELLED"}
+
+        for p in spline.points:
+            p.select = False
+
+        #交互に選択
+        select = False
+        for p in spline.points:
+            p.select = select
+            select = not select
+
+        spline.points[0].select = False
+        spline.points[-1].select = False
+        bpy.ops.curve.dissolve_verts()
+
+        for p in spline.points:
+            p.select = True
+        curve.splines.active = spline
+
+        return {"FINISHED"}
+
+
 
 
 ############################################################################################################################
