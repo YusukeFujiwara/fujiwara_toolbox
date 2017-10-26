@@ -6553,6 +6553,41 @@ class FUJIWARATOOLBOX_234815(bpy.types.Operator):#適用・隠す
 uiitem().vertical()
 #---------------------------------------------
 
+########################################
+#MODソート
+########################################
+#bpy.ops.fujiwara_toolbox.sort_mod() #MODソート
+class FUJIWARATOOLBOX_SORT_MOD(bpy.types.Operator):
+    """モディファイアの順番を整列する。"""
+    bl_idname = "fujiwara_toolbox.sort_mod"
+    bl_label = "MODソート"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        selection = fjw.get_selected_list()
+        active = fjw.active()
+        for obj in selection:
+            if obj.type == "MESH":
+                fjw.activate(obj)
+                modu = fjw.Modutils(obj)
+                modu.sort()
+        if active is not None:
+            fjw.activate(active)
+
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
 
 ########################################
 #厚み用拡縮適用
@@ -8902,6 +8937,28 @@ class FUJIWARATOOLBOX_65984(bpy.types.Operator):#ワイヤー
         for obj in objs:
             obj.draw_type = "WIRE"
         
+        return {'FINISHED'}
+########################################
+
+########################################
+#ソリッド
+########################################
+#bpy.ops.fujiwara_toolbox.command_807675() #ソリッド
+class FUJIWARATOOLBOX_COMMAND_807675(bpy.types.Operator):
+    """ソリッド"""
+    bl_idname = "fujiwara_toolbox.command_807675"
+    bl_label = "ソリッド"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        fjw.reject_notmesh()
+        objs = fjw.get_selected_list()
+
+        for obj in objs:
+            obj.draw_type = "SOLID"
         return {'FINISHED'}
 ########################################
 
