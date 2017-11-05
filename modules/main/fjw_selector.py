@@ -128,6 +128,8 @@ class FJWSelector(bpy.types.Panel):#メインパネル
         active = layout.row(align=True)
         active.operator("fjw_selector.prepare_for_posing", icon="POSE_HLT")
         active = layout.row(align=True)
+        active.operator("fjw_selector.reset_pose", icon="POSE_HLT")
+        active = layout.row(align=True)
         active.operator("fjw_selector.set_face_lamp", icon="LAMP_POINT")
         active.operator("fjw_selector.set_hemi_lamp", icon="LAMP_HEMI")
         active.operator("fujiwara_toolbox.command_96315", icon="LAMP_SUN")
@@ -512,6 +514,7 @@ class PrepareForPosing(bpy.types.Operator):
     """ポージング準備"""
     bl_idname = "fjw_selector.prepare_for_posing"
     bl_label = "ポージング準備"
+    bl_options = {'REGISTER', 'UNDO'}
     def execute(self, context):
         bpy.context.space_data.show_only_render = False
         bpy.context.scene.render.use_simplify = True
@@ -523,6 +526,24 @@ class PrepareForPosing(bpy.types.Operator):
                 for space in area.spaces:
                     if space.type == "VIEW_3D":
                         space.fx_settings.use_ssao = False
+        return {"FINISHED"}
+
+class ResetPose(bpy.types.Operator):
+    """ポーズのリセット"""
+    bl_idname = "fjw_selector.reset_pose"
+    bl_label = "ポーズリセット"
+    bl_options = {'REGISTER', 'UNDO'}
+    def execute(self, context):
+        obj = fjw.active()
+        if obj.type != "ARMATURE":
+            return {"CANCELLED"}
+
+        for pb in obj.pose.bones:
+            pb.location = (0.0,0.0,0.0)
+            pb.scale = (1,1,1)
+            pb.rotation_euler = (0.0,0.0,0.0)
+            pb.rotation_quaternion = (1.0,0.0,0.0,0.0)
+        
         return {"FINISHED"}
 
 class SetFaceLamp(bpy.types.Operator):
