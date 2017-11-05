@@ -18497,20 +18497,8 @@ uiitem().vertical()
 #         return {'FINISHED'}
 # ########################################
 
-########################################
-#プロクシ作成（全）
-########################################
-class FUJIWARATOOLBOX_248120(bpy.types.Operator):#プロクシ作成（全）
-    """グループに含まれるすべてのEmptyとArmatureから親子構造を維持したプロクシを作成する。"""
-    bl_idname = "fujiwara_toolbox.command_248120"
-    bl_label = "Full Proxy"
-    bl_options = {'REGISTER', 'UNDO'}
 
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
+def full_proxy(self):
         #プロクシ＝アニメつけるってことだからオート記録オンに
         bpy.context.scene.tool_settings.use_keyframe_insert_auto = True
 
@@ -18593,7 +18581,24 @@ class FUJIWARATOOLBOX_248120(bpy.types.Operator):#プロクシ作成（全）
                 fjw.mode("OBJECT")
                 pass
 
+########################################
+#プロクシ作成（全）
+########################################
+class FUJIWARATOOLBOX_248120(bpy.types.Operator):#プロクシ作成（全）
+    """グループに含まれるすべてのEmptyとArmatureから親子構造を維持したプロクシを作成する。"""
+    bl_idname = "fujiwara_toolbox.command_248120"
+    bl_label = "Full Proxy"
+    bl_options = {'REGISTER', 'UNDO'}
 
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+
+    def execute(self, context):
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            fjw.activate(obj)
+            full_proxy(self)
 
         return {'FINISHED'}
 ########################################
