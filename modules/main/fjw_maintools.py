@@ -15041,26 +15041,40 @@ class MarvelousDesingerUtils():
 
     @classmethod
     def export_mdavatar_to_mddata(cls,name):
+        """
+            MDDataフォルダにデータをエクスポートして、
+            ディレクトリとデータ名（拡張子なし）を返す。
+        """
         blendname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
         blendname = blendname.replace("_MDWork","")
-        dir = cls.get_mddatadir()
-        dir += blendname + os.sep + name + os.sep
-        cls.export_mdavatar(dir, name, False)
+        mddir = cls.get_mddatadir()
+        mddir += blendname + os.sep + name + os.sep
+        cls.export_mdavatar(mddir, name, False)
+        print("export_mdavatar_to_mddata %s, %s"%(mddir,name))
+        return mddir, name
 
     @classmethod
     def export_active_body_mdavatar(cls):
+        """
+            アクティブなオブジェクトからルートオブジェクトを取得して、
+            その名前でexport_mdavatar_to_mddataする。
+            export_mdavatar_to_mddataのディレクトリ・名前ペアのリストを
+            返す。
+        """
         # cls.armature_autokey()
         rootname = fjw.get_root(fjw.active()).name
         rootname = re.sub("\.\d+", "", rootname)
         fjw.framejump(1)
+        exports = []
         #Bodyがあったら出力
         for child in fjw.active().children:
             if child.type == "MESH":
                 if "Body" in child.name:
                     fjw.activate(child)
-                    cls.export_mdavatar_to_mddata(rootname)
+                    exports.append(cls.export_mdavatar_to_mddata(rootname))
                     break
         fjw.framejump(10)
+        return exports
 
 
     @classmethod
@@ -15146,7 +15160,22 @@ class MarvelousDesingerUtils():
             bpy.ops.fujiwara_toolbox.command_318722()#裏ポリエッジ付加
             bpy.ops.fujiwara_toolbox.set_thickness_driver_with_empty_auto() #指定Emptyで厚み制御
 
-
+    @classmethod
+    def mdsim(cls, avatar_path, animation_path, garment_path, result_path):
+        """
+            アバター .obj
+            アニメーション .mdd
+            衣装ファイル.zpac
+            リザルトパス
+        """
+        # toolpath = os.path.basename(fjw.__file__) + os.sep + "tools" + os.sep + "mdcontrol" + os.sep + "mdcontrol.py"
+        toolpath = fujiwara_toolbox.__path__[0] + os.sep + "tools" + os.sep + "mdcontrol" + os.sep + "mdcontrol.py"
+        cmdstr = 'python "%s" "%s" "%s" "%s" "%s"'%(toolpath, avatar_path, animation_path, garment_path, result_path)
+        print(cmdstr)
+        p = subprocess.Popen(cmdstr)
+        p.wait(5*60)
+        print("mdsim done.")
+        return
 
 
 
@@ -15166,138 +15195,138 @@ uiitem().horizontal()
 #---------------------------------------------
 
 
-def md_auto_avater_main(self,context,quit_flag=True):
-    self.report({"INFO"},"オートアバター開始")
-    fjw.framejump(10)
+# def md_auto_avater_main(self,context,quit_flag=True):
+#     self.report({"INFO"},"オートアバター開始")
+#     fjw.framejump(10)
 
-    #作業ファイル準備でジオメトリをゼロ化しているので、カメラ判定はここでしないといけない。
-    #プロクシを判定して、カメラ内だったらアーマチュアデータを得る
-    #→どうもうまく判定できてない
-    armature_datas = []
-    for obj in bpy.context.visible_objects:
-        if obj.type != "ARMATURE":
-            continue
-        if not fjw.is_in_visible_layer(obj):
-            continue
+#     #作業ファイル準備でジオメトリをゼロ化しているので、カメラ判定はここでしないといけない。
+#     #プロクシを判定して、カメラ内だったらアーマチュアデータを得る
+#     #→どうもうまく判定できてない
+#     armature_datas = []
+#     for obj in bpy.context.visible_objects:
+#         if obj.type != "ARMATURE":
+#             continue
+#         if not fjw.is_in_visible_layer(obj):
+#             continue
         
-        armature = obj
-        armu = fjw.ArmatureUtils(armature)
-        #ボーンが一個でも範囲にはいっていたらターゲットに追加する
-        for pbone in armu.pose_bones:
-            if fjw.checkLocationisinCameraView(armu.get_pbone_world_co(pbone.head)):
-                armature_datas.append(armature.data)
-                break
+#         armature = obj
+#         armu = fjw.ArmatureUtils(armature)
+#         #ボーンが一個でも範囲にはいっていたらターゲットに追加する
+#         for pbone in armu.pose_bones:
+#             if fjw.checkLocationisinCameraView(armu.get_pbone_world_co(pbone.head)):
+#                 armature_datas.append(armature.data)
+#                 break
 
-    #armature_datasのサイズがゼロならそのまま終わる
-    if len(armature_datas) == 0:
-        if quit_flag:
-            bpy.ops.wm.quit_blender()
+#     #armature_datasのサイズがゼロならそのまま終わる
+#     if len(armature_datas) == 0:
+#         if quit_flag:
+#             bpy.ops.wm.quit_blender()
 
 
-    #armature_datas内のデータをもってないリンクは削除
-    dellist = []
-    for obj in bpy.context.scene.objects:
-        if obj.type != "EMPTY":
-            continue
-        if obj.dupli_group is None:
-            continue
-        delflag = True
-        for dupobj in obj.dupli_group.objects:
-            if dupobj.type == "ARMATURE":
-                for armdata in armature_datas:
-                    if dupobj.data == armdata:
-                        delflag = False
-                    break
-            if not delflag:
-                break
-        if delflag:
-            dellist.append(obj)
-    for obj in dellist:
-        print(obj.name)
-    fjw.delete(dellist)
+#     #armature_datas内のデータをもってないリンクは削除
+#     dellist = []
+#     for obj in bpy.context.scene.objects:
+#         if obj.type != "EMPTY":
+#             continue
+#         if obj.dupli_group is None:
+#             continue
+#         delflag = True
+#         for dupobj in obj.dupli_group.objects:
+#             if dupobj.type == "ARMATURE":
+#                 for armdata in armature_datas:
+#                     if dupobj.data == armdata:
+#                         delflag = False
+#                     break
+#             if not delflag:
+#                 break
+#         if delflag:
+#             dellist.append(obj)
+#     for obj in dellist:
+#         print(obj.name)
+#     fjw.delete(dellist)
 
-    #複製の実体化をする前に、重複してしまっている複製を除去する
-    dellist = []
-    dupli_groups = []
-    for obj in bpy.context.visible_objects:
-        if obj.type != "EMPTY":
-            continue
-        #同一のdupli_groupをもっていたら除去
-        if obj.dupli_group is not None:
-            if obj.dupli_group in dupli_groups:
-                dellist.append(obj)
-                continue
+#     #複製の実体化をする前に、重複してしまっている複製を除去する
+#     dellist = []
+#     dupli_groups = []
+#     for obj in bpy.context.visible_objects:
+#         if obj.type != "EMPTY":
+#             continue
+#         #同一のdupli_groupをもっていたら除去
+#         if obj.dupli_group is not None:
+#             if obj.dupli_group in dupli_groups:
+#                 dellist.append(obj)
+#                 continue
 
-            #中にBodyがないリンクもいらない
-            # if "Body" not in obj.dupli_group.objects:
-            #     dellist.append(obj)
-            #     continue
-            dupli_groups.append(obj.dupli_group)
-    fjw.delete(dellist)
+#             #中にBodyがないリンクもいらない
+#             # if "Body" not in obj.dupli_group.objects:
+#             #     dellist.append(obj)
+#             #     continue
+#             dupli_groups.append(obj.dupli_group)
+#     fjw.delete(dellist)
         
 
-    #MD作業ファイル準備
-    # bpy.ops.fujiwara_toolbox.setup_mdwork_blend()
-    setup_mdwork_main(self,context)
+#     #MD作業ファイル準備
+#     # bpy.ops.fujiwara_toolbox.setup_mdwork_blend()
+#     setup_mdwork_main(self,context)
 
 
-    bpy.ops.object.select_all(action='SELECT')
-    fjw.reject_notmesh()
-    # selection = fjw.get_selected_list()
+#     bpy.ops.object.select_all(action='SELECT')
+#     fjw.reject_notmesh()
+#     # selection = fjw.get_selected_list()
 
-    targets = []
-    for obj in bpy.context.visible_objects:
-        if not fjw.is_in_visible_layer(obj):
-            continue
+#     targets = []
+#     for obj in bpy.context.visible_objects:
+#         if not fjw.is_in_visible_layer(obj):
+#             continue
 
-        if "Body" in obj.name:
-            modu = fjw.Modutils(obj)
-            armt = modu.find("Armature")
-            if armt is None:
-                continue
+#         if "Body" in obj.name:
+#             modu = fjw.Modutils(obj)
+#             armt = modu.find("Armature")
+#             if armt is None:
+#                 continue
 
-            #さっき判定したデータと合致したら、こいつをターゲットに入れる
-            armature = armt.object
-            do = False
-            for adata in armature_datas:
-                if adata == armature.data:
-                    do = True
-                    break
-            if not do:
-                continue
+#             #さっき判定したデータと合致したら、こいつをターゲットに入れる
+#             armature = armt.object
+#             do = False
+#             for adata in armature_datas:
+#                 if adata == armature.data:
+#                     do = True
+#                     break
+#             if not do:
+#                 continue
 
-            targets.append(armature)
-            fjw.get_root(obj)
-
-
-    for armature in targets:
-        fjw.deselect()
-        fjw.activate(armature)
-        MarvelousDesingerUtils.export_active_body_mdavatar()
-    # #終了
-    if quit_flag:
-        bpy.ops.fujiwara_toolbox.exit_mdwork()
-    print("MDWork finish")
-
-#バックグラウンドじゃキーフレーム挿入できないの留意
-########################################
-#オートアバター
-########################################
-class FUJIWARATOOLBOX_302662(bpy.types.Operator):#オートアバター
-    """カメラ範囲内のbodyを自動でアバター出力して終了する"""
-    bl_idname = "fujiwara_toolbox.command_302662"
-    bl_label = "オートアバター"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+#             targets.append(armature)
+#             fjw.get_root(obj)
 
 
-    def execute(self, context):
-        md_auto_avater_main(self,context,quit_flag=True)
+#     for armature in targets:
+#         fjw.deselect()
+#         fjw.activate(armature)
+#         MarvelousDesingerUtils.export_active_body_mdavatar()
+#     # #終了
+#     if quit_flag:
+#         bpy.ops.fujiwara_toolbox.exit_mdwork()
+#     print("MDWork finish")
 
-        return {'FINISHED'}
-########################################
+# #バックグラウンドじゃキーフレーム挿入できないの留意
+# ########################################
+# #オートアバター
+# ########################################
+# class FUJIWARATOOLBOX_302662(bpy.types.Operator):#オートアバター
+#     """カメラ範囲内のbodyを自動でアバター出力して終了する"""
+#     bl_idname = "fujiwara_toolbox.command_302662"
+#     bl_label = "オートアバター"
+#     bl_options = {'REGISTER', 'UNDO'}
+
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+
+#     def execute(self, context):
+#         md_auto_avater_main(self,context,quit_flag=True)
+
+#         return {'FINISHED'}
+# ########################################
 
 # ########################################
 # class FUJIWARATOOLBOX_302662A(bpy.types.Operator):#オートアバター
@@ -15437,28 +15466,28 @@ def mdresult_auto_import_main(self, context):
             obj.select = True
     bpy.ops.fujiwara_toolbox.comic_shader_nospec()
 
-########################################
-#オートインポート
-########################################
-class FUJIWARATOOLBOX_487662(bpy.types.Operator):#オートインポート
-    """オートインポート"""
-    bl_idname = "fujiwara_toolbox.command_487662"
-    bl_label = "オートインポートして終了"
-    bl_options = {'REGISTER', 'UNDO'}
+# ########################################
+# #オートインポート
+# ########################################
+# class FUJIWARATOOLBOX_487662(bpy.types.Operator):#オートインポート
+#     """オートインポート"""
+#     bl_idname = "fujiwara_toolbox.command_487662"
+#     bl_label = "オートインポートして終了"
+#     bl_options = {'REGISTER', 'UNDO'}
 
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    def execute(self, context):
-        mdresult_auto_import_main(self,context)
+#     def execute(self, context):
+#         mdresult_auto_import_main(self,context)
 
-        #保存して閉じる
-        bpy.ops.wm.save_mainfile()
-        bpy.ops.wm.quit_blender()
-        print("MDImport Done.")
-        return {'FINISHED'}
-########################################
+#         #保存して閉じる
+#         bpy.ops.wm.save_mainfile()
+#         bpy.ops.wm.quit_blender()
+#         print("MDImport Done.")
+#         return {'FINISHED'}
+# ########################################
 
 #---------------------------------------------
 uiitem().vertical()
@@ -15467,32 +15496,32 @@ uiitem().vertical()
 uiitem().horizontal()
 #---------------------------------------------
 
-########################################
-#オートアバター（終了しない）
-########################################
-#bpy.ops.fujiwara_toolbox.md_auto_avater_non_quit() #オートアバター（終了しない）
-class FUJIWARATOOLBOX_md_auto_avater_non_quit(bpy.types.Operator):
-    """オートアバター（終了しない）"""
-    bl_idname = "fujiwara_toolbox.md_auto_avater_non_quit"
-    bl_label = "オートアバター（終了しない）"
-    bl_options = {'REGISTER', 'UNDO'}
+# ########################################
+# #オートアバター（終了しない）
+# ########################################
+# #bpy.ops.fujiwara_toolbox.md_auto_avater_non_quit() #オートアバター（終了しない）
+# class FUJIWARATOOLBOX_md_auto_avater_non_quit(bpy.types.Operator):
+#     """オートアバター（終了しない）"""
+#     bl_idname = "fujiwara_toolbox.md_auto_avater_non_quit"
+#     bl_label = "オートアバター（終了しない）"
+#     bl_options = {'REGISTER', 'UNDO'}
 
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    def execute(self, context):
-        md_auto_avater_main(self,context,quit_flag=False)
-        return {'FINISHED'}
-########################################
+#     def execute(self, context):
+#         md_auto_avater_main(self,context,quit_flag=False)
+#         return {'FINISHED'}
+# ########################################
 
 ########################################
-#オートインポートのみ
+#オートインポート
 ########################################
 #bpy.ops.fujiwara_toolbox.mdresult_autoimport_only() #オートインポートのみ
 class FUJIWARATOOLBOX_mdresult_autoimport_only(bpy.types.Operator):
-    """オートインポートのみ"""
+    """オートインポート"""
     bl_idname = "fujiwara_toolbox.mdresult_autoimport_only"
-    bl_label = "オートインポートのみ"
+    bl_label = "オートインポート"
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
@@ -15576,7 +15605,23 @@ def setup_mdwork_main(self,context):
 
         fjw.mode("OBJECT")
         bpy.ops.object.select_all(action='SELECT')
-        bpy.ops.object.duplicates_make_real(use_base_parent=True,use_hierarchy=True)
+
+        bpy.ops.file.make_paths_absolute()
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            # obj.dupli_group.library.filepath
+            link_path = ""
+            if obj.dupli_group is not None and obj.dupli_group.library is not None:
+                link_path = obj.dupli_group.library.filepath
+            if link_path == "" or link_path is None:
+                continue
+
+            fjw.deselect()
+            fjw.activate(obj)
+            bpy.ops.object.duplicates_make_real(use_base_parent=True,use_hierarchy=True)
+            realized_objects = fjw.get_selected_list()
+            for robj in realized_objects:
+                robj["linked_path"] = link_path
 
         #proxyの処理
         #同一のアーマチュアデータを使っているものを探してポーズライブラリを設定する。
@@ -15647,6 +15692,7 @@ class FUJIWARATOOLBOX_902822(bpy.types.Operator):#MD作業ファイル準備
 
 
     def execute(self, context):
+        bpy.context.space_data.show_only_render = False
         bpy.ops.fujiwara_toolbox.command_700665()#subdiv2
         # なんかうまくうごかん
         for obj in fjw.get_selected_list():
@@ -15658,7 +15704,8 @@ class FUJIWARATOOLBOX_902822(bpy.types.Operator):#MD作業ファイル準備
             if "proxy" in obj.name:
                 obj.select = True
         bpy.ops.object.select_all(action='INVERT')
-        bpy.ops.object.delete(use_global=False)
+        selection = fjw.get_selected_list()
+        fjw.delete(selection)
         setup_mdwork_main(self,context)
         return {'FINISHED'}
 ########################################
@@ -15735,43 +15782,82 @@ uiitem().vertical()
 uiitem().horizontal()
 #---------------------------------------------
 
+# ########################################
+# #UWSCシミュ制御
+# ########################################
+# #bpy.ops.fujiwara_toolbox.uwsc_sim_control() #UWSCシミュ制御
+# class FUJIWARATOOLBOX_uwsc_sim_control(bpy.types.Operator):
+#     """MarvelousDesigner、服データフォルダを起動しておくこと"""
+#     bl_idname = "fujiwara_toolbox.uwsc_sim_control"
+#     bl_label = "UWSCシミュ制御"
+#     bl_options = {'REGISTER', 'UNDO'}
+
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+#     def execute(self, context):
+#         root = fjw.get_root(fjw.active())
+#         root_name = root.name
+#         root_name = re.sub("\.\d+", "", root_name)
+#         blendname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
+#         blendname = re.sub("_MDWork", "", blendname)
+#         dir = os.path.dirname(bpy.data.filepath) + os.sep + "MDData" + os.sep + blendname + os.sep
+        
+#         if not os.path.exists(dir):
+#             self.report({"INFO"},"キャンセルされました。")
+#             return {'CANCELLED'}
+        
+#         folderpath = dir+root_name
+#         os.system("EXPLORER " + folderpath)
+
+#         time.sleep(1)
+
+#         uwsc_path = r"Z:\soft\uwsc5302\UWSC.exe"
+#         uwsc_script_path = r"Z:\soft\uwsc5302\myscripts\MarvelousDesignerオートシミュ.uws"
+#         cmdstr = fjw.qq(uwsc_path) + " " + fjw.qq(uwsc_script_path) + " " + fjw.qq(root_name)
+#         subprocess.Popen(cmdstr)
+
+#         return {'FINISHED'}
+# ########################################
+
 ########################################
-#UWSCシミュ制御
+#全てシミュレート
 ########################################
-#bpy.ops.fujiwara_toolbox.uwsc_sim_control() #UWSCシミュ制御
-class FUJIWARATOOLBOX_uwsc_sim_control(bpy.types.Operator):
-    """MarvelousDesigner、服データフォルダを起動しておくこと"""
-    bl_idname = "fujiwara_toolbox.uwsc_sim_control"
-    bl_label = "UWSCシミュ制御"
+#bpy.ops.fujiwara_toolbox.md_sim_all() #全てシミュレート
+class FUJIWARATOOLBOX_MD_SIM_ALL(bpy.types.Operator):
+    """全てのアバターをシミュレートさせる。通常はシミュレートして、ファイルを開き直す。MD作業ファイル上で実行すると、特に開き直さない。"""
+    bl_idname = "fujiwara_toolbox.md_sim_all"
+    bl_label = "全てシミュレート"
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     def execute(self, context):
-        root = fjw.get_root(fjw.active())
-        root_name = root.name
-        root_name = re.sub("\.\d+", "", root_name)
-        blendname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
-        blendname = re.sub("_MDWork", "", blendname)
-        dir = os.path.dirname(bpy.data.filepath) + os.sep + "MDData" + os.sep + blendname + os.sep
-        
-        if not os.path.exists(dir):
-            self.report({"INFO"},"キャンセルされました。")
-            return {'CANCELLED'}
-        
-        folderpath = dir+root_name
-        os.system("EXPLORER " + folderpath)
+        back = False
+        if "_MDWork" not in bpy.data.filepath:
+            bpy.ops.fujiwara_toolbox.setup_mdwork_blend()
+            back = True
 
-        time.sleep(1)
-
-        uwsc_path = r"Z:\soft\uwsc5302\UWSC.exe"
-        uwsc_script_path = r"Z:\soft\uwsc5302\myscripts\MarvelousDesignerオートシミュ.uws"
-        cmdstr = fjw.qq(uwsc_path) + " " + fjw.qq(uwsc_script_path) + " " + fjw.qq(root_name)
-        subprocess.Popen(cmdstr)
-
+        for obj in bpy.context.visible_objects:
+            if obj.type == "ARMATURE":
+                #一番上の階層にあるアーマチュアに対して実行する
+                parent_armature = fjw.find_parent_bytype(obj, "ARMATURE")
+                if parent_armature is None:
+                    fjw.deselect()
+                    fjw.activate(obj)
+                    bpy.ops.fujiwara_toolbox.export_mdavatar_uwsc()
+                    print("bpy.ops.fujiwara_toolbox.export_mdavatar_uwsc "+obj.name)
+        self.report({"INFO"},"シミュレート完了。")
+        if back:
+            bpy.ops.fujiwara_toolbox.return_from_mdwork()
         return {'FINISHED'}
 ########################################
+
+
+
+
+
 
 
 #---------------------------------------------
@@ -18919,8 +19005,17 @@ class MD_export_active_body_mdavatar_sim(bpy.types.Operator):
     bl_label = "アバター出力して、uwsc経由でシミュレーションを走らせる"
 
     def execute(self, context):
-        MarvelousDesingerUtils.export_active_body_mdavatar()
-        bpy.ops.fujiwara_toolbox.uwsc_sim_control()
+        linkpath = fjw.active()["linked_path"]
+        exportedlist = MarvelousDesingerUtils.export_active_body_mdavatar()
+        for exported in exportedlist:
+            exdir = exported[0]
+            exname = exported[1]
+            avatar_path = exdir +  exname + ".obj"
+            animation_path = exdir +  exname + ".mdd"
+            garment_path = os.path.dirname(linkpath) + os.sep + exname + ".zpac"
+            result_path = exdir + "result.obj"
+            MarvelousDesingerUtils.mdsim(avatar_path, animation_path, garment_path, result_path)
+        # bpy.ops.fujiwara_toolbox.uwsc_sim_control()
         return {"FINISHED"}
 
 class framejump_1(bpy.types.Operator):

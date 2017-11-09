@@ -118,6 +118,17 @@ def find_child_bytype(parent,type):
             return result
     return None
 
+def find_parent_bytype(obj,type):
+    parent = obj.parent
+
+    if parent is None:
+        return None
+
+    if parent.type == type:
+        return parent
+    
+    return find_parent_bytype(parent, type)
+
 def object(name):
     #オブジェクトが突っ込まれたらそのままかえす
     if type(name) == bpy.types.Object:
