@@ -57,7 +57,7 @@ class MD():
         """
         print(self.title)
         uwsc.activate(self.title)
-        self.wait(0.5)
+        self.wait(1)
 
     def set_scale(self, filename):
         """
@@ -130,6 +130,7 @@ class MDMacro():
     def new_file(self):
         md = MD()
         if not md.is_initialized:
+            print("###MD is not initialized.")
             return()
         md.activate()
         if not md.click("file"):
@@ -147,6 +148,7 @@ class MDMacro():
     def open_avatar(self,filepath):
         md = MD()
         if not md.is_initialized:
+            print("###MD is not initialized.")
             return()
 
         if not md.click("file"):
@@ -165,7 +167,8 @@ class MDMacro():
     def add_garment(self, filepath):
         md = MD()
         if not md.is_initialized:
-            return()
+            print("###MD is not initialized.")
+            return
 
         md.activate()
         if not md.click("file"):
@@ -180,6 +183,7 @@ class MDMacro():
     def add_mdd(self, filepath):
         md = MD()
         if not md.is_initialized:
+            print("###MD is not initialized.")
             return()
 
         md.activate()
@@ -198,7 +202,8 @@ class MDMacro():
     def simulate(self, time):
         md = MD()
         if not md.is_initialized:
-            return()
+            print("###MD is not initialized.")
+            return
 
         md.activate()
         md.click("sim_off")
@@ -210,7 +215,7 @@ class MDMacro():
     def select_all(self):
         md = MD()
         if not md.is_initialized:
-            return()
+            return
 
         md.activate()
         type("a",Key.CTRL)
@@ -219,7 +224,8 @@ class MDMacro():
     def export_obj(self, filepath):
         md = MD()
         if not md.is_initialized:
-            return()
+            print("###MD is not initialized.")
+            return
 
         md.activate()
         md.click("file")
@@ -230,7 +236,7 @@ class MDMacro():
         uwsc.click_item("はい")
         MD.wait(0.5)
         md.click("single_object")
-        md.click("combine_objects")
+        # md.click("combine_objects")
         md.click("thick")
         md.click("m")
         md.click("ok")

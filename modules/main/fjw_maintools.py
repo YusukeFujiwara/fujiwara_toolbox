@@ -1432,6 +1432,90 @@ uiitem().vertical()
 #---------------------------------------------
 
 
+############################################################################################################################
+uiitem("freezed.blend")
+############################################################################################################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+class GetFreezedBlend():
+    @classmethod
+    def apply_mods(cls):
+        apply_mod_list = ["SOLIDIFY", "BEVEL", "BOOLEAN"]
+        #modの適用
+        for obj in bpy.context.visible_objects:
+            modu = fjw.Modutils(obj)
+            for mod in modu.mods:
+                if mod.type in apply_mod_list:
+                    modu.apply(mod)
+    
+    @classmethod
+    def scale_images_half(cls):
+        for img in bpy.data.images:
+            w = img.size[0]
+            h = img.size[1]
+            img.scale(w/2,h/2)
+            img.pack(as_png=True)
+
+        # scale_name = "%d%%"%(tex_scale*100)
+    
+    @classmethod
+    def saveas(cls, filepath, scale_str):
+        blenddir = os.path.dirname(filepath)
+        blendname = os.path.basename(filepath)
+        name,ext = os.path.splitext(blendname)
+
+        savepath = blenddir + os.sep + name + "_freezed_tex" + scale_str + ".blend"
+        bpy.ops.wm.save_as_mainfile(filepath=savepath)
+
+    
+
+########################################
+#_freezed.blend生成
+########################################
+#bpy.ops.fujiwara_toolbox.gen_freezed_blend() #_freezed.blend生成
+class FUJIWARATOOLBOX_GEN_FREEZED_BLEND(bpy.types.Operator):
+    """最低限のmodなどを適用した_freezed.blendファイルを生成する。テクスチャ解像度を変えたサブパターンが生成される。"""
+    bl_idname = "fujiwara_toolbox.gen_freezed_blend"
+    bl_label = "フリーズドモデル生成"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        basepath = bpy.data.filepath
+        bpy.ops.wm.save_mainfile()
+        
+        GetFreezedBlend.apply_mods()
+        bpy.ops.file.pack_all()
+        GetFreezedBlend.saveas(basepath,"100")
+        GetFreezedBlend.scale_images_half()
+        GetFreezedBlend.saveas(basepath,"50")
+        GetFreezedBlend.scale_images_half()
+        GetFreezedBlend.saveas(basepath,"25")
+        GetFreezedBlend.scale_images_half()
+        GetFreezedBlend.saveas(basepath,"13")
+        GetFreezedBlend.scale_images_half()
+
+        bpy.ops.wm.open_mainfile(filepath=basepath)
+
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
 
 ############################################################################################################################
 uiitem("tmp.fbx")
@@ -15467,7 +15551,7 @@ def mdresult_auto_import_main(self, context):
     bpy.ops.fujiwara_toolbox.comic_shader_nospec()
 
 # ########################################
-# #オートインポート
+#ｙ６７
 # ########################################
 # class FUJIWARATOOLBOX_487662(bpy.types.Operator):#オートインポート
 #     """オートインポート"""
@@ -15519,7 +15603,7 @@ uiitem().horizontal()
 ########################################
 #bpy.ops.fujiwara_toolbox.mdresult_autoimport_only() #オートインポートのみ
 class FUJIWARATOOLBOX_mdresult_autoimport_only(bpy.types.Operator):
-    """オートインポート"""
+    """オートインポート MarvelousDesigner7はデータが不正で読み込めないことがあるので注意。6.5推奨。"""
     bl_idname = "fujiwara_toolbox.mdresult_autoimport_only"
     bl_label = "オートインポート"
     bl_options = {'REGISTER', 'UNDO'}
