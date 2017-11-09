@@ -1446,11 +1446,14 @@ class GetFreezedBlend():
     @classmethod
     def apply_mods(cls):
         apply_mod_list = ["SOLIDIFY", "BEVEL", "BOOLEAN"]
+        ignore_name_list = ["裏ポリエッジ"]
         #modの適用
         for obj in bpy.context.visible_objects:
             modu = fjw.Modutils(obj)
             for mod in modu.mods:
                 if mod.type in apply_mod_list:
+                    if mod.name in ignore_name_list:
+                        continue
                     modu.apply(mod)
     
     @classmethod
