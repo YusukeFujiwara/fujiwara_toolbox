@@ -112,6 +112,9 @@ class FJWSelector(bpy.types.Panel):#メインパネル
             active.operator("fjw_selector.camera_work_look_at")
             active.prop(bpy.context.space_data, "lock_camera", icon="CAMERA_DATA", text="")
             active = boxlayout.row(align=True)
+            active.operator("fjw_selector.camerawork_turntable", icon="CAMERA_DATA",)
+            active.operator("fjw_selector.camera_unlock", icon="CAMERA_DATA",)
+            active = boxlayout.row(align=True)
             active.operator("fjw_selector.current_view_to_camera", icon="CAMERA_DATA",)
             active = boxlayout.row(align=True)
             active.operator("fjw_selector.non_camera_work")
@@ -307,13 +310,48 @@ class CameraWork(bpy.types.Operator):
 class CameraWorkLookAt(bpy.types.Operator):
     """カメラワークをする。"""
     bl_idname="fjw_selector.camera_work_look_at"
-    bl_label = "注視"
+    bl_label = "Emptyで注視"
+
+    lookobj = None
+
     def execute(self,context):
         # bpy.ops.view3d.viewnumpad(type='CAMERA')
         #https://blender.stackexchange.com/questions/30643/how-to-toggle-to-camera-view-via-python
         bpy.context.space_data.region_3d.view_perspective = "CAMERA"
         bpy.context.space_data.lock_camera = True
-        bpy.ops.view3d.view_selected(use_all_regions=False)
+
+        cam = bpy.context.scene.camera
+        lockstate = (cam.lock_rotation[0], cam.lock_rotation[1], cam.lock_rotation[2])
+        cam.lock_rotation = (True, True, True)
+        cursor = bpy.context.space_data.cursor_location
+        if CameraWorkLookAt.lookobj is None:
+            bpy.ops.object.empty_add(type='PLAIN_AXES', view_align=False, location=cursor, layers=(True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False))
+            CameraWorkLookAt.lookobj = fjw.active()
+            CameraWorkLookAt.lookobj.name = "LookPoint"
+        CameraWorkLookAt.lookobj.location = cursor
+
+        bpy.ops.view3d.view_selected()
+        cam.lock_rotation = lockstate
+        return {"FINISHED"}
+
+class CameraWorkTurntable(bpy.types.Operator):
+    """カメラの動きをターンテーブルに制限する。"""
+    bl_idname="fjw_selector.camerawork_turntable"
+    bl_label = "ターンテーブル"
+    def execute(self,context):
+        cam = bpy.context.scene.camera
+        cam.lock_location = (False, False, True)
+        cam.lock_rotation = (True, True, False)
+        return {"FINISHED"}
+
+class CameraUnlock(bpy.types.Operator):
+    """カメラのロックを解除する。"""
+    bl_idname="fjw_selector.camera_unlock"
+    bl_label = "アンロック"
+    def execute(self,context):
+        cam = bpy.context.scene.camera
+        cam.lock_location = (False, False, False)
+        cam.lock_rotation = (False, False, False)
         return {"FINISHED"}
 
 class CurrentViewToCamera(bpy.types.Operator):
