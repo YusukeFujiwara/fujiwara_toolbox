@@ -81,6 +81,8 @@ class PageUtils(bpy.types.Panel):#メインパネル
             row.operator("pageutils.newcell_copy",icon="GHOST")
             row = col.row(align=True)
             row.operator("pageutils.newcell_copy_browser",icon="GHOST")
+            row = col.row(align=True)
+            row.operator("pageutils.newcell_copyfromtemplate_browser")
             row = layout.row(align=True)
             col = layout.column(align=True)
             col.label("ページ:" + os.path.splitext(os.path.basename(dir))[0])
@@ -99,6 +101,12 @@ class PageUtils(bpy.types.Panel):#メインパネル
             row = layout.row(align=True)
             row.operator("pageutils.opennextcell",icon="FRAME_PREV")
             row.operator("pageutils.openprevcell",icon="FRAME_NEXT")
+            row = layout.row(align=True)
+            row.label("テンプレート")
+            row = layout.row(align=True)
+            row.prop(bpy.context.scene, "template_name",text="")
+            row = layout.row(align=True)
+            row.operator("pageutils.saveastemplate")
 
 
 ############################################################################################################################
@@ -453,7 +461,6 @@ class newcell(bpy.types.Operator):
         #保存
         bpy.ops.wm.save_mainfile()
 
-
         #ファイル名
         blendname = bpy.context.scene.newcell_name
         if blendname == "":
@@ -558,6 +565,36 @@ class newcell_copy_FileBrowser(bpy.types.Operator):
 
     def invoke(self, context, event):
         self.directory = os.path.dirname(bpy.data.filepath)
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+class necell_copyfromtemplate_FileBrowser(bpy.types.Operator):
+    """テンプレートからコピーしてコマを作成"""
+    bl_idname = "pageutils.newcell_copyfromtemplate_browser"
+    bl_label = "テンプレートから選択"
+    
+    filename = bpy.props.StringProperty(subtype="FILE_NAME")
+    filepath = bpy.props.StringProperty(subtype="FILE_PATH")
+    directory = bpy.props.StringProperty(subtype="DIR_PATH")
+#    http://blender.stackexchange.com/questions/30678/bpy-file-browser-get-selected-file-names
+    files = bpy.props.CollectionProperty(type=bpy.types.PropertyGroup)
+    
+    @classmethod
+    def poll(cls, context):
+        return True
+
+    def execute(self, context):
+        if len(self.files) > 0:
+            file = self.files[0]
+            templatepath = self.directory + file.name
+            new_cell_copy(templatepath)
+
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        pagesdir = os.path.dirname(os.path.dirname(bpy.data.filepath))
+        templatedir = pagesdir + os.sep + "temlpates"
+        self.directory = templatedir
         context.window_manager.fileselect_add(self)
         return {'RUNNING_MODAL'}
 
@@ -758,6 +795,27 @@ class opennextcell(bpy.types.Operator):
         bpy.ops.wm.open_mainfile(filepath=target)
         return {"FINISHED"}
 
+class SaveAsTemplate(bpy.types.Operator):
+    """このコマをテンプレートフォルダに保存する"""
+    bl_idname = "pageutils.saveastemplate"
+    bl_label = "テンプレートとして保存"
+    def execute(self,context):
+        pagesdir = os.path.dirname(os.path.dirname(bpy.data.filepath))
+        templatedir = pagesdir + os.sep + "temlpates"
+        
+        if not os.path.exists(templatedir):
+            os.mkdir(templatedir)
+
+        blendname = bpy.context.scene.template_name
+        templatepath = templatedir + os.sep + blendname + ".blend"
+
+        if blendname == "":
+            self.report({"INFO"},"ファイル名を入力してください。")
+
+        bpy.ops.wm.save_as_mainfile(filepath=templatepath,copy=True)
+        self.report({"INFO"},templatepath)
+        return {"FINISHED"}
+
 ############################################################################################################################
 #コマモード
 ############################################################################################################################
@@ -859,6 +917,7 @@ def save_pre(context):
 def sub_registration():
     bpy.app.handlers.load_post.append(load_post)
     bpy.types.Scene.newcell_name = bpy.props.StringProperty()
+    bpy.types.Scene.template_name = bpy.props.StringProperty()
     bpy.app.handlers.save_pre.append(save_pre)
     pass
 
