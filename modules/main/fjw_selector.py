@@ -18,6 +18,14 @@ try:
 except:
     fjw = fujiwara_toolbox.fjw
 
+from bpy.props import (StringProperty,
+                       BoolProperty,
+                       IntProperty,
+                       FloatProperty,
+                       FloatVectorProperty,
+                       EnumProperty,
+                       PointerProperty,
+                       )
 
 
 bl_info = {
@@ -129,6 +137,9 @@ class FJWSelector(bpy.types.Panel):#メインパネル
         active.operator("fjw_selector.prepare_for_posing", icon="POSE_HLT")
         active = layout.row(align=True)
         active.operator("fjw_selector.reset_pose", icon="POSE_HLT")
+        active = layout.row(align=True)
+        active.operator("fjw_selector.load_pose_lib", icon="POSE_HLT")
+        active.operator("fjw_selector.brouse_pose")
         active = layout.row(align=True)
         active.operator("fjw_selector.set_face_lamp", icon="LAMP_POINT")
         active.operator("fjw_selector.set_hemi_lamp", icon="LAMP_HEMI")
@@ -544,6 +555,97 @@ class ResetPose(bpy.types.Operator):
             pb.rotation_euler = (0.0,0.0,0.0)
             pb.rotation_quaternion = (1.0,0.0,0.0,0.0)
         
+        return {"FINISHED"}
+
+class LoadPoseLib(bpy.types.Operator):
+    """選択アーマチュアに、アセットライブラリのposelibフォルダ内のblendファイルからポーズライブラリを取得して設定する。既に同名ライブラリがある場合はそれを設定する。"""
+    bl_idname = "fjw_selector.load_pose_lib"
+    bl_label = "load Poselib"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    poselibdir = ""
+    libexists = False
+
+    def get_blend_list_callback(self,context):
+        items=[]
+        if LoadPoseLib.poselibdir == "":
+            assetdir = fujiwara_toolbox.conf.get_pref().assetdir
+            LoadPoseLib.poselibdir = assetdir + os.sep + "poselib"
+            LoadPoseLib.libexists = os.path.exists(LoadPoseLib.poselibdir)
+
+        if not LoadPoseLib.libexists:
+            return [("None","Pose Dir Not Found.","")]
+
+        files = os.listdir(LoadPoseLib.poselibdir)
+        if len(files) == 0:
+            return [("None","Blend FIle Not Found.","")]
+
+        for filename in files:
+            name,ext = os.path.splitext(filename)
+            if ext == ".blend":
+                items.append((name,name,""))
+
+        return items
+
+    blend_list = EnumProperty(
+        name = "Blend List",               # 名称
+        description = "Blend List",        # 説明文
+        items = get_blend_list_callback)   # 項目リストを作成する関数
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self)
+
+    def execute(self, context):
+        blendname = self.blend_list
+        self.report({"INFO"},blendname)
+
+        poselib = None
+        for action in bpy.data.actions:
+            if blendname == action.name:
+                if action.library == None:
+                    poselib = action
+                    break
+        
+        if poselib is None:
+            _dataname = blendname
+            _filename = blendname + ".blend"
+            _filepath = LoadPoseLib.poselibdir + os.sep + _filename
+            with bpy.data.libraries.load(_filepath, link=False, relative=True) as (data_from, data_to):
+                if _dataname in data_from.actions:
+                    data_to.actions = [_dataname]
+            if len(data_to.actions) != 0:
+                poselib = data_to.actions[0]
+        
+        if poselib is not None:
+            selection = fjw.get_selected_list()
+            for obj in selection:
+                if obj.type == "ARMATURE":
+                    obj.pose_library = poselib
+
+
+        return {"FINISHED"}
+
+class BrousePose(bpy.types.Operator):
+    """ポーズを閲覧する。非ポーズモードの場合、ポーズモードに入ってジオメトリ以外に適用する。ポーズモードの場合ジオメトリ以外の選択ボーンに適用する。"""
+    bl_idname = "fjw_selector.brouse_pose"
+    bl_label = "ポーズ閲覧"
+    def execute(self, context):
+        armature = fjw.active()
+        if armature.type != "ARMATURE":
+            self.report({"INFO"},"アーマチュアを選択してください。")
+            return {"CANCELLED"}
+
+        if armature.mode != "POSE":
+            fjw.mode("POSE")
+            bpy.ops.pose.select_all(action='SELECT')
+
+        armu = fjw.ArmatureUtils(armature)
+        geobone = armu.GetGeometryBone()
+        if geobone is not None:
+            geobone = armu.databone(geobone.name)
+            geobone.select = False
+
+        bpy.ops.poselib.browse_interactive("INVOKE_DEFAULT")
         return {"FINISHED"}
 
 class SetFaceLamp(bpy.types.Operator):
