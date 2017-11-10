@@ -23,7 +23,10 @@ def call(command, *args):
 
 def wait():
     global uwsc_process
-    uwsc_process.wait(10)
+    try:
+        uwsc_process.wait(1)
+    except:
+        pass
     uwsc_process = None
 
 def click_item(name):
