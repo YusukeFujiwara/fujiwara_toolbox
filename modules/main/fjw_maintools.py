@@ -15198,54 +15198,72 @@ class MarvelousDesingerUtils():
 
     @classmethod
     def import_mdresult(cls,resultpath):
-            current = fjw.active()
+        current = fjw.active()
 
-            loc = Vector((0,0,0))
-            qrot = Quaternion()
+        loc = Vector((0,0,0))
+        qrot = Quaternion()
 
-            #もしボーンが選択されていたらそのボーンにトランスフォームをあわせる
-            if current.mode == "POSE":
-                armu = fjw.ArmatureUtils(current)
-                pbone = armu.poseactive()
-                armu.get_pbone_world_co(pbone.head)
-                loc = armu.get_pbone_world_co(pbone.head)
-                qrot = pbone.rotation_quaternion
+        #もしボーンが選択されていたらそのボーンにトランスフォームをあわせる
+        if current.mode == "POSE":
+            armu = fjw.ArmatureUtils(current)
+            pbone = armu.poseactive()
+            armu.get_pbone_world_co(pbone.head)
+            loc = armu.get_pbone_world_co(pbone.head)
+            qrot = pbone.rotation_quaternion
 
-                #boneはYupなので入れ替え
-                qrot = Quaternion((qrot.w, qrot.x, qrot.z * -1, qrot.y))
+            #boneはYupなので入れ替え
+            qrot = Quaternion((qrot.w, qrot.x, qrot.z * -1, qrot.y))
 
-            fjw.mode("OBJECT")
+        fjw.mode("OBJECT")
 
+        fname, ext = os.path.splitext(resultpath)
+        if ext == ".obj":
             bpy.ops.import_scene.obj(filepath=resultpath)
-            #インポート後処理
-            #回転を適用
-            bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
+        # if ext == ".abc":
+        ##alembicのインポート、インポート直後はシーンにオブジェクトが追加されてない…
+        #     bpy.ops.wm.alembic_import(filepath=resultpath)
+        #     bpy.context.scene.update()
+        #     selection = fjw.get_selected_list("MESH") 
+        #     print("*****************************")
+        #     print(selection)
+        #     print("*****************************")
+        #     for obj in selection:
+        #         obj.name = "result"
+        #     bpy.ops.fujiwara_toolbox.command_590395() #ノーマルを揃える
+    #     bpy.app.handlers.scene_update_post.append(MarvelousDesingerUtils.import_mdresult_step2)
 
-            selection = fjw.get_selected_list()
-            for obj in selection:
-                if obj.type == "MESH":
-                    bpy.context.scene.objects.active = obj
-                    bpy.ops.object.mode_set(mode='EDIT', toggle=False)
-                    bpy.ops.mesh.remove_doubles()
-                    bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-                    
-                    #服はエッジ出ない方がいい 裏ポリで十分
-                    for slot in obj.material_slots:
-                        mat = slot.material
-                        mat.use_transparency = True
-                        mat.transparency_method = 'RAYTRACE'
+    # @classmethod
+    # def import_mdresult_step2(cls, context):
+    #     bpy.app.handlers.scene_update_post.remove(MarvelousDesingerUtils.import_mdresult_step2)
+        #インポート後処理
+        #回転を適用
+        bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
+
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            if obj.type == "MESH":
+                bpy.context.scene.objects.active = obj
+                bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+                bpy.ops.mesh.remove_doubles()
+                bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+                
+                #服はエッジ出ない方がいい 裏ポリで十分
+                for slot in obj.material_slots:
+                    mat = slot.material
+                    mat.use_transparency = True
+                    mat.transparency_method = 'RAYTRACE'
 
 
-                    obj.location = loc
-                    obj.rotation_quaternion = obj.rotation_quaternion * qrot
-                    obj.rotation_euler = obj.rotation_quaternion.to_euler()
-            
-                    #読み先にレイヤーをそろえる
-                    obj.layers = current.layers
-            
-            
-            bpy.ops.fujiwara_toolbox.command_318722()#裏ポリエッジ付加
-            bpy.ops.fujiwara_toolbox.set_thickness_driver_with_empty_auto() #指定Emptyで厚み制御
+                obj.location = loc
+                obj.rotation_quaternion = obj.rotation_quaternion * qrot
+                obj.rotation_euler = obj.rotation_quaternion.to_euler()
+        
+                #読み先にレイヤーをそろえる
+                obj.layers = current.layers
+        
+        
+        bpy.ops.fujiwara_toolbox.command_318722()#裏ポリエッジ付加
+        bpy.ops.fujiwara_toolbox.set_thickness_driver_with_empty_auto() #指定Emptyで厚み制御
 
     @classmethod
     def mdsim(cls, avatar_path, animation_path, garment_path, result_path):
@@ -15940,6 +15958,44 @@ class FUJIWARATOOLBOX_MD_SIM_ALL(bpy.types.Operator):
             bpy.ops.fujiwara_toolbox.return_from_mdwork()
         return {'FINISHED'}
 ########################################
+
+########################################
+#エクスポートのみ
+########################################
+#bpy.ops.fujiwara_toolbox.md_exportonly() #エクスポートのみ
+class FUJIWARATOOLBOX_MD_EXPORTONLY(bpy.types.Operator):
+    """MarvelousDesignerでシミュレートするためのデータをエクスポートする。"""
+    bl_idname = "fujiwara_toolbox.md_exportonly"
+    bl_label = "エクスポートのみ"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        back = False
+        if "_MDWork" not in bpy.data.filepath:
+            bpy.ops.fujiwara_toolbox.setup_mdwork_blend()
+            back = True
+
+        for obj in bpy.context.visible_objects:
+            if obj.type == "ARMATURE":
+                #一番上の階層にあるアーマチュアに対して実行する
+                parent_armature = fjw.find_parent_bytype(obj, "ARMATURE")
+                if parent_armature is None:
+                    fjw.deselect()
+                    fjw.activate(obj)
+                    bpy.ops.fujiwara_toolbox.export_active_body_mdavatar()
+                    print("bpy.ops.fujiwara_toolbox.export_mdavatar "+obj.name)
+        self.report({"INFO"},"エクスポート完了。")
+        if back:
+            bpy.ops.fujiwara_toolbox.return_from_mdwork()
+        return {'FINISHED'}
+########################################
+
+
+
+
 
 
 

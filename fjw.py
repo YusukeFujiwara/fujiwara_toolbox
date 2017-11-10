@@ -434,6 +434,12 @@ class ArmatureUtils():
             geoname = self.findname("geo")
 
         if geoname == None:
+            geoname = self.findname("Root")
+
+        if geoname == None:
+            geoname = self.findname("root")
+
+        if geoname == None:
             #head位置が0,0,0のものを探してやればいいのでは？
             for ebone in self.armature.data.bones:
                 if ebone.head == Vector((0,0,0)):

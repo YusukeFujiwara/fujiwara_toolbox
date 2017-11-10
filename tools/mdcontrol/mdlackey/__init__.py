@@ -240,3 +240,23 @@ class MDMacro():
         md.click("thick")
         md.click("m")
         md.click("ok")
+
+    @classmethod
+    def export_abc(self, filepath):
+        md = MD()
+        if not md.is_initialized:
+            print("###MD is not initialized.")
+            return
+
+        md.activate()
+        md.click("file")
+        md.click("export")
+        md.click("alembic_ogawa")
+        MD.wait(0.5)
+        self.paste_str(filepath)
+        uwsc.click_item("はい")
+        MD.wait(1)
+        md.click("single_object")
+        md.click("thick")
+        md.click("m")
+        md.click("ok")
