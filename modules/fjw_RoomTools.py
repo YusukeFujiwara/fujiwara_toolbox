@@ -3218,11 +3218,33 @@ uiitem().vertical()
 #---------------------------------------------
 uiitem().horizontal()
 #---------------------------------------------
+
+def get_mapgeo(name):
+    mapgeo = None
+    mgname = "mapgeo_" + name
+    flag_geoexists = False
+
+    for obj in bpy.data.objects:
+        if obj.name == mgname and obj.library is None:
+            mapgeo = obj
+            fjw.activate(mapgeo)
+            flag_geoexists = True
+    else:
+        bpy.ops.object.empty_add(type='PLAIN_AXES', radius=0.3, view_align=False, location=bpy.context.space_data.cursor_location, layers=fjw.layers(0))
+        mapgeo = fjw.active()
+        mapgeo.name = mgname
+    mapgeo.show_x_ray = True
+    mapgeo.hide = False
+    return mapgeo, flag_geoexists
+
 def maputil_ungroup_target(target):
     selection = fjw.get_selected_list()
     fjw.ungroup(target, selection)
 
 def maputil_ungroup():
+    active = fjw.active()
+    print("maputil_ungroup")
+    print(active)
     maputil_ungroup_target('天')
     maputil_ungroup_target('地')
     maputil_ungroup_target('北')
@@ -3230,6 +3252,7 @@ def maputil_ungroup():
     maputil_ungroup_target('西')
     maputil_ungroup_target('東')
     maputil_ungroup_target('床上')
+    fjw.activate(active)
 
 def maputil_group(name):
     active = fjw.active()
@@ -3237,7 +3260,9 @@ def maputil_group(name):
     fjw.group(name, selection)
 
     #emptyがなければ作成してペアレントつけて、さらにそのemptyをコントローラに紐付ける
-    pos = bpy.context.scene.objects.active
+    pos = active
+    print("pos")
+    print(pos)
     bpy.ops.view3d.snap_cursor_to_selected()
 
     targets = []
@@ -3247,20 +3272,7 @@ def maputil_group(name):
         targets.append(obj)
 
 
-    flag_geoexists = False
-    mapgeo = None
-    mgname = "mapgeo_" + name
-    if mgname in bpy.data.objects:
-        mapgeo = bpy.data.objects[mgname]
-        bpy.context.scene.objects.active = mapgeo
-        flag_geoexists = True
-
-    else:
-        bpy.ops.object.empty_add(type='PLAIN_AXES', radius=0.3, view_align=False, location=bpy.context.space_data.cursor_location, layers=fjw.layers(0))
-        mapgeo = bpy.context.scene.objects.active
-        mapgeo.name = mgname
-    mapgeo.show_x_ray = True
-    mapgeo.hide = False
+    mapgeo, flag_geoexists = get_mapgeo(name)
 
     for target in targets:
         target.select = True
@@ -3291,8 +3303,6 @@ def maputil_group(name):
             if l != tolayern:
                 obj.layers[l] = False
 
-
-
     #親子付処理
     children = []
     selection = fjw.get_selected_list()
@@ -3310,10 +3320,15 @@ def maputil_group(name):
     fjw.deselect()
     fjw.select(children)
 
+    print("###parenting")
+    print(pos)
     #元のアクティブオブジェクトは除外しない
     pos.select = True
 
     #mapgeoに親子づけ
+    print("mapgeo")
+    print(mapgeo)
+    fjw.activate(mapgeo)
     bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
 
     for obj in bpy.data.objects:
