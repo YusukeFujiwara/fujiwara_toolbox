@@ -877,7 +877,8 @@ def apply_mods():
 def activate(obj):
     bpy.context.scene.objects.active = obj
     #あんまり意識しない形にするとマズいか？
-    obj.select = True
+    if obj is not None:
+        obj.select = True
     return obj
 
 def active():
@@ -1124,7 +1125,13 @@ def group(name, objects=None):
 
     return group
 
-
+def ungroup(name, objects):
+    for g in bpy.data.groups:
+        if g.name == name and g.library is None:
+            for obj in objects:
+                if obj.name in g.objects:
+                    g.objects.unlink(obj)
+            break
 
 #def TransferPose(src, dest):
 #    if src.type == "ARMATURE" and dest.type == "ARMATURE":
@@ -1159,6 +1166,7 @@ def group(name, objects=None):
 
 #        bpy.ops.anim.keyframe_insert_menu(type='WholeCharacter')
 #        mode("OBJECT")
+
 def framejump(frameto):
     bpy.ops.screen.frame_jump(end=False)
     bpy.ops.screen.frame_offset(delta=frameto - 1)

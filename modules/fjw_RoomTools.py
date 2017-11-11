@@ -2957,6 +2957,22 @@ MapControllerの作成
 uiitem().horizontal()
 #---------------------------------------------
 
+def get_map_controller():
+    active = fjw.active()
+    mc = None
+    for obj in bpy.context.scene.objects:
+        if "MapController" == obj.name:
+            if obj.library is None:
+                mc = obj
+    if mc is None:
+        #なかったのでマップコントローラを追加する
+        bpy.ops.object.armature_add(radius=1, view_align=False, enter_editmode=False, location=(0, 0, 0), layers=fjw.layers(0))
+        mc = fjw.active()
+        mc.name = "MapController"
+        mc.data.bones[0].name = "Geometry"
+    fjw.activate(active)
+    return mc
+
 ########################################
 #コントローラの追加
 ########################################
@@ -2977,47 +2993,31 @@ class FUJIWARATOOLBOX_660859(bpy.types.Operator):#コントローラの追加
             self.report({"INFO"},"アクティブオブジェクトがありません。")
             return {'CANCELLED'}
     
+        mc = get_map_controller()
+
         #ターゲットを確保
-        target_active = bpy.context.scene.objects.active
+        target_active = fjw.active()
 
         targets = []
-        for obj in bpy.context.selected_objects:
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            if obj == mc:
+                continue
             #親があるものを除外
             if obj.parent != None:
-                mc = None
-                if "MapController" in bpy.data.objects:
-                    mc = bpy.data.objects["MapController"]
-
                 #parentがありかつ、それがmcではない
                 #mcがもともとなかった場合はNoneと比べるわけで、!=Noneは確かだからOK.
                 #アクティブオブジェクトは除外しない
                 if obj.parent != mc and obj != target_active:
                     obj.select = False
                     continue
-
             targets.append(obj)
 
-        if "MapController" not in bpy.data.objects:
-            #なかったのでマップコントローラを追加する
-            #カーソルをゼロに
-            bpy.context.space_data.cursor_location[0] = 0
-            bpy.context.space_data.cursor_location[1] = 0
-            bpy.context.space_data.cursor_location[2] = 0
-            bpy.ops.object.armature_add(radius=1, view_align=False, enter_editmode=False, location=(0, 0, 0), layers=fjw.layers(0))
-            obj = bpy.context.scene.objects.active
-            obj.name = "MapController"
-            obj.data.show_names = True
-
-            #初めのボーンをジオメトリ用にする
-            obj.data.bones[0].name = "Geometry"
-
-        mc = bpy.data.objects["MapController"]
+        mc = get_map_controller()
         mc.select = False
         mc.show_x_ray = True
-        #mc.data.draw_type = "STICK"
         mc.draw_type = 'WIRE'
         mc.hide = False
-
 
         #くくりつける対象のボーンの存在確認
         if target_active.name not in mc.data.bones:
@@ -3029,7 +3029,8 @@ class FUJIWARATOOLBOX_660859(bpy.types.Operator):#コントローラの追加
             bpy.ops.view3d.snap_cursor_to_selected()
 
             bpy.context.scene.objects.active = mc
-            bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+            fjw.mode("EDIT")
+
             #bpy.ops.armature.bone_primitive_add()
 
             #ここが問題 プリミティブ追加してもそれがアクティブボーンになるわけじゃない
@@ -3048,10 +3049,8 @@ class FUJIWARATOOLBOX_660859(bpy.types.Operator):#コントローラの追加
             bpy.ops.armature.bone_primitive_add()
 
             #一回なんかしらしとかないと骨リストが更新されない
-            bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-            bpy.ops.object.mode_set(mode='EDIT', toggle=False)
-
-            #self.report({"INFO"},str(len(mc.data.bones)))
+            fjw.mode("OBJECT")
+            fjw.mode("EDIT")
             
             bone = None
             for b in mc.data.bones:
@@ -3064,8 +3063,8 @@ class FUJIWARATOOLBOX_660859(bpy.types.Operator):#コントローラの追加
             bone.name = target_active.name
 
             #一回なんかしらしとかないと骨リストが更新されない
-            bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-            bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+            fjw.mode("OBJECT")
+            fjw.mode("EDIT")
 
             #ジオメトリ用にくくりつける
             mc.data.edit_bones[target_active.name].select = True
@@ -3220,17 +3219,8 @@ uiitem().vertical()
 uiitem().horizontal()
 #---------------------------------------------
 def maputil_ungroup_target(target):
-    if target in bpy.data.groups:
-        group = bpy.data.groups[target]
-        flag = False
-        
-        for obj in bpy.context.selected_objects:
-            if obj.name in group.objects:
-                flag = True
-                break
-
-        if flag:
-            bpy.ops.group.objects_remove(group=target)
+    selection = fjw.get_selected_list()
+    fjw.ungroup(target, selection)
 
 def maputil_ungroup():
     maputil_ungroup_target('天')
@@ -3241,27 +3231,19 @@ def maputil_ungroup():
     maputil_ungroup_target('東')
     maputil_ungroup_target('床上')
 
-
 def maputil_group(name):
-    if name in bpy.data.groups:
-        group = bpy.data.groups[name]
-        for obj in bpy.context.selected_objects:
-            group.objects.link(obj)
-    else:    
-        bpy.ops.group.create(name=name)
-
+    active = fjw.active()
+    selection = fjw.get_selected_list()
+    fjw.group(name, selection)
 
     #emptyがなければ作成してペアレントつけて、さらにそのemptyをコントローラに紐付ける
     pos = bpy.context.scene.objects.active
     bpy.ops.view3d.snap_cursor_to_selected()
 
-    #bpy.context.space_data.cursor_location = pos.location
-
     targets = []
     for obj in bpy.context.selected_objects:
         if obj.name == "MapController":
             continue
-
         targets.append(obj)
 
 
@@ -3346,7 +3328,7 @@ def maputil_group(name):
 
     fjw.mode("OBJECT")
     bpy.context.scene.layers[tolayern] = False
-
+    fjw.activate(active)
 
 ########################################
 #
