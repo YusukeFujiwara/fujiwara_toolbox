@@ -7469,6 +7469,7 @@ class FUJIWARATOOLBOX_BIND_WRAPPED_SDEF(bpy.types.Operator):
             modu = fjw.Modutils(obj)
             m_sdef = modu.add("Surface Deform", "SURFACE_DEFORM")
             m_sdef.target = target
+            modu.sort()
             surface_deform_bind_all(obj, True)
 
         if armature is not None:
@@ -7520,6 +7521,36 @@ class FUJIWARATOOLBOX_REBIND_WRAPPED_SDEF(bpy.types.Operator):
             bpy.ops.transform.translate(value=(0, 0, 0), constraint_axis=(False, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1)
         return {'FINISHED'}
 ########################################
+
+
+########################################
+#バインド解除
+########################################
+#bpy.ops.fujiwara_toolbox.surfacedeform_unbind() #バインド解除
+class FUJIWARATOOLBOX_SURFACEDEFORM_UNBIND(bpy.types.Operator):
+    """サーフェスデフォームのバインドを解除する。"""
+    bl_idname = "fujiwara_toolbox.surfacedeform_unbind"
+    bl_label = "バインド解除"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            if obj.type == "MESH":
+                fjw.activate(obj)
+                modu = fjw.Modutils(obj)
+                sd = modu.find_bytype("SURFACE_DEFORM")
+                if sd is not None:
+                    if sd.is_bound:
+                        bpy.ops.object.surfacedeform_bind(modifier=sd.name)
+        return {'FINISHED'}
+########################################
+
+
+
 
 
 
@@ -17264,6 +17295,32 @@ uiitem().vertical()
 uiitem().horizontal()
 #---------------------------------------------
 
+def find_binders(target):
+    """
+        objをバインドターゲットにしているオブジェクトを検索する
+    """
+    result = []
+    for obj in bpy.context.scene.objects:
+        if obj.type == "MESH" and obj.library is None:
+            modu = fjw.Modutils(obj)
+            sd = modu.find_bytype("SURFACE_DEFORM")
+            md = modu.find_bytype("MESH_DEFORM")
+            if sd is None and md is None:
+                continue
+            print(obj)
+            print("mod found")
+            if sd is not None:
+                print(sd.target)
+                if sd.target == target:
+                    result.append(obj)
+            if md is not None:
+                print(md.object)
+                if md.object == target:
+                    result.append(obj)
+    print(result)
+    return result
+
+
 
 ########################################
 #開きにする
@@ -17279,18 +17336,32 @@ class FUJIWARATOOLBOX_521395(bpy.types.Operator):#開きにする
 
 
     def execute(self, context):
+        active = fjw.active()
+        binders = find_binders(active)
+        for obj in binders:
+            obj.select = True
+        bpy.ops.fujiwara_toolbox.surfacedeform_unbind() #バインド解除
+        bpy.ops.fujiwara_toolbox.command_44204()#バインド解除
+        fjw.activate(active)
+
         #data.shape_keys = bpy.data.keys["Key.007"]みたいになってる
         #個別のシェイプキーは、
         #bpy.data.shape_keys["Key.007"].key_blocks["Flat"].mute = True
         #という形で、key_blocksに入っている
-        fjw.active().data.shape_keys.eval_time = 10
+        shape_keys = fjw.active().data.shape_keys
+        shape_keys.eval_time = 10
+
+        if "UV_Shape_key" in shape_keys.key_blocks:
+            sk =shape_keys.key_blocks["UV_Shape_key"]
+            sk.value = 1
+            sk.mute = False
 
         #アーマチュア非表示
         modu = fjw.Modutils(fjw.active())
         mod_armature = modu.find_bytype("ARMATURE")
         modu.hide(mod_armature)
 
-        bpy.ops.view3d.viewnumpad(type="FRONT", align_active=True)
+        # bpy.ops.view3d.viewnumpad(type="FRONT", align_active=True)
         
         
         return {'FINISHED'}
@@ -17310,10 +17381,24 @@ class FUJIWARATOOLBOX_17323(bpy.types.Operator):#立体化
 
 
     def execute(self, context):
-        fjw.active().data.shape_keys.eval_time = 0
+        active = fjw.active()
+        binders = find_binders(active)
+
+        for obj in binders:
+            obj.select = True
+        bpy.ops.fujiwara_toolbox.command_860977()#再バインド
+        bpy.ops.fujiwara_toolbox.rebind_wrapped_sdef() #再バインド
+
+        fjw.activate(active)
+        shape_keys = active.data.shape_keys
+        shape_keys.eval_time = 0
         
+        if "UV_Shape_key" in shape_keys.key_blocks:
+            sk =shape_keys.key_blocks["UV_Shape_key"]
+            sk.mute = True
+
         #アーマチュア表示
-        modu = fjw.Modutils(fjw.active())
+        modu = fjw.Modutils(active)
         mod_armature = modu.find_bytype("ARMATURE")
         modu.show(mod_armature)
 
