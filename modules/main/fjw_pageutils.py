@@ -800,6 +800,7 @@ class SaveAsTemplate(bpy.types.Operator):
     bl_idname = "pageutils.saveastemplate"
     bl_label = "テンプレートとして保存"
     def execute(self,context):
+        bpy.ops.wm.save_mainfile()
         pagesdir = os.path.dirname(os.path.dirname(bpy.data.filepath))
         templatedir = pagesdir + os.sep + "temlpates"
         
@@ -812,7 +813,9 @@ class SaveAsTemplate(bpy.types.Operator):
         if blendname == "":
             self.report({"INFO"},"ファイル名を入力してください。")
 
-        bpy.ops.wm.save_as_mainfile(filepath=templatepath,copy=True)
+        # bpy.ops.wm.save_as_mainfile(filepath=templatepath,copy=True)
+        shutil.copyfile(bpy.data.filepath, templatepath)
+
         self.report({"INFO"},templatepath)
         return {"FINISHED"}
 
