@@ -17285,6 +17285,71 @@ uiitem().vertical()
 uiitem("藤原用")
 ############################################################################################################################
 
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#ケージセットアップ
+########################################
+#bpy.ops.fujiwara_toolbox.setup_uv_deform_cage() #ケージセットアップ
+class FUJIWARATOOLBOX_SETUP_UV_DEFORM_CAGE(bpy.types.Operator):
+    """選択オブジェクトを髪用ケージとしてセットアップする。"""
+    bl_idname = "fujiwara_toolbox.setup_uv_deform_cage"
+    bl_label = "ケージセットアップ"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="OUTLINER_OB_LATTICE",mode="")
+
+    def execute(self, context):
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            fjw.deselect()
+            fjw.activate(obj)
+
+            if len(obj.data.uv_layers) == 0:
+                bpy.context.scene.use_active_uv_for_shape = True
+            else:
+                bpy.context.scene.use_active_uv_for_shape = False
+            bpy.ops.object.shape_from_uv()
+
+            spu = fjw.ShapeKeyUtils(obj)
+            if spu.find_key("Solid_Fix") is None:
+                spu.set_value("Solid_Fix", 1.0)
+            
+            obj.hide_render = True
+            obj.draw_type = "WIRE"
+
+        return {'FINISHED'}
+########################################
+
+
+########################################
+#アクティブにバインド
+########################################
+#bpy.ops.fujiwara_toolbox.uv_deform_bind_to_active() #アクティブにバインド
+class FUJIWARATOOLBOX_UV_DEFORM_BIND_TO_ACTIVE(bpy.types.Operator):
+    """アクティブオブジェクトにサーフェスデフォームでバインドする。"""
+    bl_idname = "fujiwara_toolbox.uv_deform_bind_to_active"
+    bl_label = "アクティブにバインド"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="MOD_MESHDEFORM",mode="")
+
+    def execute(self, context):
+        bpy.ops.fujiwara_toolbox.bind_wrapped_sdef() #バインド
+        return {'FINISHED'}
+########################################
+
+
+
 
 #---------------------------------------------
 uiitem().vertical()
@@ -17321,7 +17386,6 @@ def find_binders(target):
     return result
 
 
-
 ########################################
 #開きにする
 ########################################
@@ -17332,7 +17396,7 @@ class FUJIWARATOOLBOX_521395(bpy.types.Operator):#開きにする
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+    uiitem.button(bl_idname,bl_label,icon="MESH_PLANE",mode="")
 
 
     def execute(self, context):
@@ -17351,10 +17415,12 @@ class FUJIWARATOOLBOX_521395(bpy.types.Operator):#開きにする
         shape_keys = fjw.active().data.shape_keys
         shape_keys.eval_time = 10
 
-        if "UV_Shape_key" in shape_keys.key_blocks:
-            sk =shape_keys.key_blocks["UV_Shape_key"]
-            sk.value = 1
-            sk.mute = False
+        key_blocks = shape_keys.key_blocks
+        
+        spu = fjw.ShapeKeyUtils(active)
+        spu.set_value_and_key("UV_Shape_key", 1, False)
+        spu.set_value_and_key("Solid_Fix", 1, True)
+        spu.set_active_key("UV_Shape_key")
 
         #アーマチュア非表示
         modu = fjw.Modutils(fjw.active())
@@ -17377,7 +17443,7 @@ class FUJIWARATOOLBOX_17323(bpy.types.Operator):#立体化
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+    uiitem.button(bl_idname,bl_label,icon="MESH_CUBE",mode="")
 
 
     def execute(self, context):
@@ -17393,9 +17459,10 @@ class FUJIWARATOOLBOX_17323(bpy.types.Operator):#立体化
         shape_keys = active.data.shape_keys
         shape_keys.eval_time = 0
         
-        if "UV_Shape_key" in shape_keys.key_blocks:
-            sk =shape_keys.key_blocks["UV_Shape_key"]
-            sk.mute = True
+        spu = fjw.ShapeKeyUtils(active)
+        spu.set_value_and_key("UV_Shape_key", 1, True)
+        spu.set_value_and_key("Solid_Fix", 1, False)
+        spu.set_active_key("Solid_Fix")
 
         #アーマチュア表示
         modu = fjw.Modutils(active)
