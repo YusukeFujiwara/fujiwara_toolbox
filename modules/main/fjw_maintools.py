@@ -17326,6 +17326,14 @@ class FUJIWARATOOLBOX_SETUP_UV_DEFORM_CAGE(bpy.types.Operator):
             obj.hide_render = True
             obj.draw_type = "WIRE"
 
+            modu = fjw.Modutils(obj)
+            sld = modu.find_bytype("SOLIDIFY")
+            if sld is None:
+                sld = modu.add("Solidify", "SOLIDIFY")
+                sld.thickness = 0.2
+                sld.offset = 1
+
+
         return {'FINISHED'}
 ########################################
 
@@ -17344,7 +17352,9 @@ class FUJIWARATOOLBOX_UV_DEFORM_BIND_TO_ACTIVE(bpy.types.Operator):
     uiitem.button(bl_idname,bl_label,icon="MOD_MESHDEFORM",mode="")
 
     def execute(self, context):
-        bpy.ops.fujiwara_toolbox.bind_wrapped_sdef() #バインド
+        # bpy.ops.fujiwara_toolbox.bind_wrapped_sdef() #バインド
+        bpy.ops.fujiwara_toolbox.command_384891()#メッシュデフォーム　精度5
+
         return {'FINISHED'}
 ########################################
 
