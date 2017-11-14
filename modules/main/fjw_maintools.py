@@ -17314,9 +17314,9 @@ class FUJIWARATOOLBOX_SETUP_UV_DEFORM_CAGE(bpy.types.Operator):
             fjw.activate(obj)
 
             if len(obj.data.uv_layers) == 0:
-                bpy.context.scene.use_active_uv_for_shape = True
-            else:
                 bpy.context.scene.use_active_uv_for_shape = False
+            else:
+                bpy.context.scene.use_active_uv_for_shape = True
             bpy.ops.object.shape_from_uv()
 
             spu = fjw.ShapeKeyUtils(obj)
@@ -17330,9 +17330,8 @@ class FUJIWARATOOLBOX_SETUP_UV_DEFORM_CAGE(bpy.types.Operator):
             sld = modu.find_bytype("SOLIDIFY")
             if sld is None:
                 sld = modu.add("Solidify", "SOLIDIFY")
-                sld.thickness = 0.2
-                sld.offset = 1
-
+                sld.thickness = 0.03
+                sld.offset = 0
 
         return {'FINISHED'}
 ########################################
@@ -17410,34 +17409,44 @@ class FUJIWARATOOLBOX_521395(bpy.types.Operator):#開きにする
 
 
     def execute(self, context):
-        active = fjw.active()
-        binders = find_binders(active)
-        for obj in binders:
-            obj.select = True
-        bpy.ops.fujiwara_toolbox.surfacedeform_unbind() #バインド解除
-        bpy.ops.fujiwara_toolbox.command_44204()#バインド解除
-        fjw.activate(active)
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            fjw.deselect()
+            fjw.activate(obj)
+            active = fjw.active()
 
-        #data.shape_keys = bpy.data.keys["Key.007"]みたいになってる
-        #個別のシェイプキーは、
-        #bpy.data.shape_keys["Key.007"].key_blocks["Flat"].mute = True
-        #という形で、key_blocksに入っている
-        shape_keys = fjw.active().data.shape_keys
-        shape_keys.eval_time = 10
+            spu = fjw.ShapeKeyUtils(active)
+            sp_uv = spu.find_key("UV_Shape_key")
+            if sp_uv is None:
+                continue
 
-        key_blocks = shape_keys.key_blocks
-        
-        spu = fjw.ShapeKeyUtils(active)
-        spu.set_value_and_key("UV_Shape_key", 1, False)
-        spu.set_value_and_key("Solid_Fix", 1, True)
-        spu.set_active_key("UV_Shape_key")
+            # binders = find_binders(active)
+            # for obj in binders:
+            #     obj.select = True
+            # bpy.ops.fujiwara_toolbox.surfacedeform_unbind() #バインド解除
+            # bpy.ops.fujiwara_toolbox.command_44204()#バインド解除
+            fjw.activate(active)
 
-        #アーマチュア非表示
-        modu = fjw.Modutils(fjw.active())
-        mod_armature = modu.find_bytype("ARMATURE")
-        modu.hide(mod_armature)
+            #data.shape_keys = bpy.data.keys["Key.007"]みたいになってる
+            #個別のシェイプキーは、
+            #bpy.data.shape_keys["Key.007"].key_blocks["Flat"].mute = True
+            #という形で、key_blocksに入っている
+            shape_keys = fjw.active().data.shape_keys
+            shape_keys.eval_time = 10
 
-        # bpy.ops.view3d.viewnumpad(type="FRONT", align_active=True)
+            key_blocks = shape_keys.key_blocks
+            
+            spu = fjw.ShapeKeyUtils(active)
+            spu.set_value_and_key("UV_Shape_key", 1, False)
+            spu.set_value_and_key("Solid_Fix", 1, True)
+            spu.set_active_key("UV_Shape_key")
+
+            #アーマチュア非表示
+            modu = fjw.Modutils(fjw.active())
+            mod_armature = modu.find_bytype("ARMATURE")
+            modu.hide(mod_armature)
+
+            # bpy.ops.view3d.viewnumpad(type="FRONT", align_active=True)
         
         
         return {'FINISHED'}
@@ -17457,27 +17466,37 @@ class FUJIWARATOOLBOX_17323(bpy.types.Operator):#立体化
 
 
     def execute(self, context):
-        active = fjw.active()
-        binders = find_binders(active)
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            fjw.deselect()
+            fjw.activate(obj)
+            active = fjw.active()
 
-        for obj in binders:
-            obj.select = True
-        bpy.ops.fujiwara_toolbox.command_860977()#再バインド
-        bpy.ops.fujiwara_toolbox.rebind_wrapped_sdef() #再バインド
+            spu = fjw.ShapeKeyUtils(active)
+            sp_uv = spu.find_key("UV_Shape_key")
+            if sp_uv is None:
+                continue
 
-        fjw.activate(active)
-        shape_keys = active.data.shape_keys
-        shape_keys.eval_time = 0
-        
-        spu = fjw.ShapeKeyUtils(active)
-        spu.set_value_and_key("UV_Shape_key", 1, True)
-        spu.set_value_and_key("Solid_Fix", 1, False)
-        spu.set_active_key("Solid_Fix")
+            binders = find_binders(active)
 
-        #アーマチュア表示
-        modu = fjw.Modutils(active)
-        mod_armature = modu.find_bytype("ARMATURE")
-        modu.show(mod_armature)
+            for obj in binders:
+                obj.select = True
+            # bpy.ops.fujiwara_toolbox.command_860977()#再バインド
+            # bpy.ops.fujiwara_toolbox.rebind_wrapped_sdef() #再バインド
+
+            fjw.activate(active)
+            shape_keys = active.data.shape_keys
+            shape_keys.eval_time = 0
+            
+            spu = fjw.ShapeKeyUtils(active)
+            spu.set_value_and_key("UV_Shape_key", 1, True)
+            spu.set_value_and_key("Solid_Fix", 1, False)
+            spu.set_active_key("Solid_Fix")
+
+            #アーマチュア表示
+            modu = fjw.Modutils(active)
+            mod_armature = modu.find_bytype("ARMATURE")
+            modu.show(mod_armature)
 
         return {'FINISHED'}
 ########################################
