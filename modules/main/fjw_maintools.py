@@ -17330,29 +17330,8 @@ class FUJIWARATOOLBOX_SETUP_UV_DEFORM_CAGE(bpy.types.Operator):
             sld = modu.find_bytype("SOLIDIFY")
             if sld is None:
                 sld = modu.add("Solidify", "SOLIDIFY")
-                sld.thickness = 0.03
+                sld.thickness = 0.05
                 sld.offset = 0
-
-        return {'FINISHED'}
-########################################
-
-
-########################################
-#アクティブにバインド
-########################################
-#bpy.ops.fujiwara_toolbox.uv_deform_bind_to_active() #アクティブにバインド
-class FUJIWARATOOLBOX_UV_DEFORM_BIND_TO_ACTIVE(bpy.types.Operator):
-    """アクティブオブジェクトにサーフェスデフォームでバインドする。"""
-    bl_idname = "fujiwara_toolbox.uv_deform_bind_to_active"
-    bl_label = "アクティブにバインド"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="MOD_MESHDEFORM",mode="")
-
-    def execute(self, context):
-        # bpy.ops.fujiwara_toolbox.bind_wrapped_sdef() #バインド
-        bpy.ops.fujiwara_toolbox.command_384891()#メッシュデフォーム　精度5
 
         return {'FINISHED'}
 ########################################
@@ -17501,10 +17480,295 @@ class FUJIWARATOOLBOX_17323(bpy.types.Operator):#立体化
         return {'FINISHED'}
 ########################################
 
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+############################################################################################################################
+uiitem("メッシュ・サーフェスデフォーム")
+############################################################################################################################
 
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+
+########################################
+#アクティブにバインド
+########################################
+#bpy.ops.fujiwara_toolbox.uv_deform_bind_to_active() #アクティブにバインド
+class FUJIWARATOOLBOX_UV_DEFORM_BIND_TO_ACTIVE(bpy.types.Operator):
+    """アクティブオブジェクトにサーフェスデフォームでバインドする。"""
+    bl_idname = "fujiwara_toolbox.uv_deform_bind_to_active"
+    bl_label = "アクティブにバインド"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="MOD_MESHDEFORM",mode="")
+
+    def execute(self, context):
+        # bpy.ops.fujiwara_toolbox.bind_wrapped_sdef() #バインド
+        bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
+        bpy.ops.fujiwara_toolbox.command_384891()#メッシュデフォーム　精度5
+        return {'FINISHED'}
+########################################
+
+########################################
+#再バインド
+########################################
+#bpy.ops.fujiwara_toolbox.hair_rebind() #再バインド
+class FUJIWARATOOLBOX_HAIR_REBIND(bpy.types.Operator):
+    """選択オブジェクトのサーフェスデフォーム、メッシュデフォームを再バインドする。"""
+    bl_idname = "fujiwara_toolbox.hair_rebind"
+    bl_label = "再バインド"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
+        bpy.ops.fujiwara_toolbox.command_860977()
+        bpy.ops.fujiwara_toolbox.rebind_wrapped_sdef()
+        return {'FINISHED'}
+########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+############################################################################################################################
+uiitem("ランダム化")
+############################################################################################################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#位置X
+########################################
+#bpy.ops.fujiwara_toolbox.randomize_loc_x() #位置X
+class FUJIWARATOOLBOX_RANDOMIZE_LOC_X(bpy.types.Operator):
+    """ランダム化"""
+    bl_idname = "fujiwara_toolbox.randomize_loc_x"
+    bl_label = "位置X"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        # bpy.ops.object.randomize_transform(loc=(0.06, 0, 0), rot=(0.00261799, 0, 0), scale_even=True, scale=(1.06, 1, 1))
+        rnd = random.random()*10000
+        value=0.005
+        bpy.ops.object.randomize_transform(random_seed=rnd,loc=(value,0,0))
+        return {'FINISHED'}
+########################################
+
+########################################
+#Y
+########################################
+#bpy.ops.fujiwara_toolbox.randomize_loc_y() #Y
+class FUJIWARATOOLBOX_RANDOMIZE_LOC_Y(bpy.types.Operator):
+    """ランダム化"""
+    bl_idname = "fujiwara_toolbox.randomize_loc_y"
+    bl_label = "Y"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        rnd = random.random()*10000
+        value=0.005
+        bpy.ops.object.randomize_transform(random_seed=rnd,loc=(0,value,0))
+        return {'FINISHED'}
+########################################
+
+########################################
+#Z
+########################################
+#bpy.ops.fujiwara_toolbox.randomize_loc_z() #Z
+class FUJIWARATOOLBOX_RANDOMIZE_LOC_Z(bpy.types.Operator):
+    """ランダム化"""
+    bl_idname = "fujiwara_toolbox.randomize_loc_z"
+    bl_label = "Z"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        rnd = random.random()*10000
+        value=0.005
+        bpy.ops.object.randomize_transform(random_seed=rnd,loc=(0,0,value))
+        return {'FINISHED'}
+########################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#回転X
+########################################
+#bpy.ops.fujiwara_toolbox.randomize_rot_x() #回転X
+class FUJIWARATOOLBOX_RANDOMIZE_ROT_X(bpy.types.Operator):
+    """ランダム化"""
+    bl_idname = "fujiwara_toolbox.randomize_rot_x"
+    bl_label = "回転X"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        rnd = random.random()*10000
+        value=0.44663
+        bpy.ops.object.randomize_transform(random_seed=rnd,rot=(value,0,0))
+        return {'FINISHED'}
+########################################
+
+########################################
+#Y
+########################################
+#bpy.ops.fujiwara_toolbox.randomize_rot_y() #Y
+class FUJIWARATOOLBOX_RANDOMIZE_ROT_Y(bpy.types.Operator):
+    """ランダム化"""
+    bl_idname = "fujiwara_toolbox.randomize_rot_y"
+    bl_label = "Y"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        rnd = random.random()*10000
+        value=0.44663
+        bpy.ops.object.randomize_transform(random_seed=rnd,rot=(0,value,0))
+        return {'FINISHED'}
+########################################
+
+########################################
+#Z
+########################################
+#bpy.ops.fujiwara_toolbox.randomize_rot_z() #Z
+class FUJIWARATOOLBOX_RANDOMIZE_ROT_Z(bpy.types.Operator):
+    """ランダム化"""
+    bl_idname = "fujiwara_toolbox.randomize_rot_z"
+    bl_label = "Z"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        rnd = random.random()*10000
+        value=0.44663
+        bpy.ops.object.randomize_transform(random_seed=rnd,rot=(0,0,value))
+        return {'FINISHED'}
+########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+########################################
+#拡縮X
+########################################
+#bpy.ops.fujiwara_toolbox.randomize_scale_x() #拡縮X
+class FUJIWARATOOLBOX_RANDOMIZE_SCALE_X(bpy.types.Operator):
+    """ランダム化"""
+    bl_idname = "fujiwara_toolbox.randomize_scale_x"
+    bl_label = "拡縮X"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        rnd = random.random()*10000
+        value=1.1
+        bpy.ops.object.randomize_transform(random_seed=rnd,scale=(value,0,0))
+        return {'FINISHED'}
+########################################
+
+########################################
+#Y
+########################################
+#bpy.ops.fujiwara_toolbox.randomize_scale_y() #Y
+class FUJIWARATOOLBOX_RANDOMIZE_SCALE_Y(bpy.types.Operator):
+    """ランダム化"""
+    bl_idname = "fujiwara_toolbox.randomize_scale_y"
+    bl_label = "Y"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        rnd = random.random()*10000
+        value=1.1
+        bpy.ops.object.randomize_transform(random_seed=rnd,scale=(0,value,0))
+        return {'FINISHED'}
+########################################
+
+########################################
+#Z
+########################################
+#bpy.ops.fujiwara_toolbox.randomize_scale_z() #Z
+class FUJIWARATOOLBOX_RANDOMIZE_SCALE_Z(bpy.types.Operator):
+    """ランダム化"""
+    bl_idname = "fujiwara_toolbox.randomize_scale_z"
+    bl_label = "Z"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        rnd = random.random()*10000
+        value=1.1
+        bpy.ops.object.randomize_transform(random_seed=rnd,scale=(0,0,value))
+        return {'FINISHED'}
+########################################
+
+########################################
+#全て
+########################################
+#bpy.ops.fujiwara_toolbox.randomize_scale_all() #全て
+class FUJIWARATOOLBOX_RANDOMIZE_SCALE_ALL(bpy.types.Operator):
+    """ランダム化"""
+    bl_idname = "fujiwara_toolbox.randomize_scale_all"
+    bl_label = "全て"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        rnd = random.random()*10000
+        value=1.1
+        bpy.ops.object.randomize_transform(random_seed=rnd,scale=(value,value,value),scale_even=True)
+        return {'FINISHED'}
+########################################
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+
 
 ################################################################################
 #UIカテゴリ
