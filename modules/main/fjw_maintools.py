@@ -7788,6 +7788,102 @@ class FUJIWARATOOLBOX_288910(bpy.types.Operator):#MOD整列
 ########################################
 
 
+########################################
+#シームレスラップ
+########################################
+#bpy.ops.fujiwara_toolbox.setup_normalcopy_wrap() #シームレスラップ
+class FUJIWARATOOLBOX_SETUP_NORMALCOPY_WRAP(bpy.types.Operator):
+    """選択オブジェクトをターゲットとして、選択面に対して法線コピーで馴染むシュリンクラップをセットアップする。"""
+    bl_idname = "fujiwara_toolbox.setup_normalcopy_wrap"
+    bl_label = "シームレスラップ"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def set_weight_and_selectless(self, value):
+        bpy.context.scene.tool_settings.vertex_group_weight = value
+        bpy.ops.object.vertex_group_assign()
+        bpy.ops.mesh.select_less(use_face_step=True)
+
+    def has_vertex_group(self, obj):
+        vg_index = obj.vertex_groups.find("Shrinkwrap")
+        if vg_index == -1:
+            return False
+        return True
+
+    def set_active_group(self, obj, name):
+        vg_index = obj.vertex_groups.find(name)
+        if vg_index == -1:
+            gname = name
+            obj.vertex_groups.new(name=gname)
+            vg_index = obj.vertex_groups.find(name)
+        obj.vertex_groups.active_index = vg_index
+
+    def assign_weights(self, obj, name):
+        self.set_active_group(obj,name)
+
+        #頂点グループにアサイン
+        bpy.ops.object.vertex_group_assign()
+        bpy.ops.mesh.region_to_loop()
+        bpy.ops.mesh.bevel(offset=0.01, segments=4, vertex_only=False)
+        bpy.ops.object.vertex_group_assign()
+        bpy.ops.object.vertex_group_select()
+        self.set_weight_and_selectless(0)
+        self.set_weight_and_selectless(0.2)
+        self.set_weight_and_selectless(0.4)
+        self.set_weight_and_selectless(0.6)
+        self.set_weight_and_selectless(0.8)
+        self.set_weight_and_selectless(1)
+
+    def execute(self, context):
+        active = fjw.active()
+        target = None
+
+        #ターゲットの取得
+        for obj in fjw.get_selected_list():
+            if obj != active:
+                target = obj
+                break
+
+        fjw.mode("EDIT")
+        #"Shrinkwrap"が存在しないければ自動アサインする
+        if not self.has_vertex_group(active):
+            self.assign_weights(active, "Shrinkwrap")
+        else:
+            self.set_active_group(active, "Shrinkwrap")
+        fjw.mode("OBJECT")
+
+        #モディファイアの設定
+        modu = fjw.Modutils(active)
+        sw = modu.find_bytype("SHRINKWRAP")
+        if sw is None:
+            sw = modu.add("Shrinkwrap", "SHRINKWRAP")
+        sw.target = target
+        sw.vertex_group = "Shrinkwrap"
+
+        dt = modu.find_bytype("DATA_TRANSFER")
+        if dt is None:
+            dt = modu.add("DataTransfer", "DATA_TRANSFER")
+        dt.object = target
+        dt.use_loop_data = True
+        dt.data_types_loops = {"CUSTOM_NORMAL"}
+        dt.vertex_group = "Shrinkwrap"
+
+        fjw.mode("OBJECT")
+        fjw.deselect()
+        fjw.activate(active)
+        bpy.ops.object.shade_smooth()
+        active.data.use_auto_smooth = True
+
+
+        return {'FINISHED'}
+########################################
+
+
+
+
+
 
 
 
@@ -9196,7 +9292,9 @@ class FUJIWARATOOLBOX_676177(bpy.types.Operator):#境界クリース
 ########################################
 
 
-
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
 #---------------------------------------------
 uiitem().horizontal()
 #---------------------------------------------
@@ -9228,6 +9326,61 @@ class FUJIWARATOOLBOX_31891(bpy.types.Operator):#自動スムーズ
         return {'FINISHED'}
 ########################################
 
+########################################
+#スムーズのみ
+########################################
+#bpy.ops.fujiwara_toolbox.smooth_only() #スムーズのみ
+class FUJIWARATOOLBOX_SMOOTH_ONLY(bpy.types.Operator):
+    """自動スムーズオフの普通のスムーズを設定する。"""
+    bl_idname = "fujiwara_toolbox.smooth_only"
+    bl_label = "スムーズのみ"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        bpy.ops.object.shade_smooth()
+
+        for obj in fjw.get_selected_list("MESH"):
+            obj.data.use_auto_smooth = False
+        return {'FINISHED'}
+########################################
+
+########################################
+#フラット
+########################################
+#bpy.ops.fujiwara_toolbox.flat() #フラット
+class FUJIWARATOOLBOX_FLAT(bpy.types.Operator):
+    """フラットシェーディングの設定。"""
+    bl_idname = "fujiwara_toolbox.flat"
+    bl_label = "フラット"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        bpy.ops.object.shade_flat()
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+
+
+
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
 
 ########################################
 #法線を反転
@@ -17390,6 +17543,11 @@ class FUJIWARATOOLBOX_521395(bpy.types.Operator):#開きにする
     def execute(self, context):
         selection = fjw.get_selected_list()
         for obj in selection:
+            if obj.type != "MESH":
+                obj.select = False
+
+        selection = fjw.get_selected_list()
+        for obj in selection:
             fjw.deselect()
             fjw.activate(obj)
             active = fjw.active()
@@ -17445,6 +17603,10 @@ class FUJIWARATOOLBOX_17323(bpy.types.Operator):#立体化
 
 
     def execute(self, context):
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            if obj.type != "MESH":
+                obj.select = False
         selection = fjw.get_selected_list()
         for obj in selection:
             fjw.deselect()
