@@ -15234,13 +15234,17 @@ class CATEGORYBUTTON_425599(bpy.types.Operator):#MarvelousDesigner
 
 
 class MarvelousDesingerUtils():
+    def __init__(self):
+        self.mddata_dir = self.get_mddatadir()
+        self.exported_list = []
+
     @classmethod
-    def export_mdavatar(cls, dir, name, openfolder=True):
+    def export_mdavatar(cls, dir, name, export_type="obj", openfolder=True):
         #アクティブオブジェクトのみ。
         #メッシュ以外だったら戻る
         obj = fjw.active()
         if obj.type != "MESH":
-            return {'CANCELLED'}
+            return
 
         if not os.path.exists(dir):
             os.makedirs(dir)
@@ -15256,22 +15260,24 @@ class MarvelousDesingerUtils():
 
         #フレーム1に移動
         bpy.ops.screen.frame_jump(end=False)
-        #obj出力
-        bpy.ops.export_scene.obj(filepath= dir + os.sep + name + ".obj", use_selection=True)
-        #PointCache出力
-        bpy.ops.export_shape.mdd(filepath= dir + os.sep + name + ".mdd", fps=6,frame_start=1,frame_end=10)
 
-        #結果用の空ファイルを作っておく
-        if not os.path.exists(dir+"result.obj"):
-            f = open(dir + "result.obj","w")
-            f.close()
+        if export_type == "obj":
+            #obj出力
+            bpy.ops.export_scene.obj(filepath= dir + os.sep + name + ".obj", use_selection=True)
+            #PointCache出力
+            bpy.ops.export_shape.mdd(filepath= dir + os.sep + name + ".mdd", fps=6,frame_start=1,frame_end=10)
+
+        """
+            bpy.ops.wm.alembic_export(filepath=r"G:\SSD作業\自分の\test\#0\3D\pages\test\MDData\C\test.abc", start=1, end=10, selected=True, visible_layers_only=True, flatten=True, apply_subdiv=True, compression_type='OGAWA')
+            #書き出しに若干ラグがあるのに注意
+            #モディファイアはレンダーをミュートしないと反映されてしまう。
+        """
+        if export_type == "abc":
+            bpy.ops.wm.alembic_export(filepath= dir + os.sep + name + ".abc", start=1, end=10, selected=True, visible_layers_only=True, flatten=True, apply_subdiv=True, compression_type='OGAWA')
 
         #出力フォルダを開く
         if openfolder:
             os.system("EXPLORER " + dir)
-
-
-
 
     @classmethod
     def setkey(cls):
@@ -15345,7 +15351,7 @@ class MarvelousDesingerUtils():
                     exports.append(cls.export_mdavatar_to_mddata(rootname))
                     break
         fjw.framejump(10)
-        return exports
+        self.exported_list.extend(exports)
 
 
     @classmethod
@@ -15403,22 +15409,7 @@ class MarvelousDesingerUtils():
         fname, ext = os.path.splitext(resultpath)
         if ext == ".obj":
             bpy.ops.import_scene.obj(filepath=resultpath)
-        # if ext == ".abc":
-        ##alembicのインポート、インポート直後はシーンにオブジェクトが追加されてない…
-        #     bpy.ops.wm.alembic_import(filepath=resultpath)
-        #     bpy.context.scene.update()
-        #     selection = fjw.get_selected_list("MESH") 
-        #     print("*****************************")
-        #     print(selection)
-        #     print("*****************************")
-        #     for obj in selection:
-        #         obj.name = "result"
-        #     bpy.ops.fujiwara_toolbox.command_590395() #ノーマルを揃える
-    #     bpy.app.handlers.scene_update_post.append(MarvelousDesingerUtils.import_mdresult_step2)
-
-    # @classmethod
-    # def import_mdresult_step2(cls, context):
-    #     bpy.app.handlers.scene_update_post.remove(MarvelousDesingerUtils.import_mdresult_step2)
+        # .abc対応しようと思ったけどコマンド直後はシーン内にオブジェクトが存在しないので無理。
         #インポート後処理
         #回転を適用
         bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
@@ -15466,6 +15457,18 @@ class MarvelousDesingerUtils():
         print("mdsim done.")
         return
 
+    @classmethod
+    def mdsim_exportedlist(cls):
+        for exported in self.exported_list:
+            exdir = exported[0]
+            exname = exported[1]
+            avatar_path = exdir +  exname + ".obj"
+            animation_path = exdir +  exname + ".mdd"
+            garment_path = os.path.dirname(linkpath) + os.sep + exname + ".zpac"
+            result_path = exdir + "result.obj"
+            cls.mdsim(avatar_path, animation_path, garment_path, result_path)
+
+
 
 
 
@@ -15482,161 +15485,6 @@ uiitem().vertical()
 #---------------------------------------------
 uiitem().horizontal()
 #---------------------------------------------
-
-
-# def md_auto_avater_main(self,context,quit_flag=True):
-#     self.report({"INFO"},"オートアバター開始")
-#     fjw.framejump(10)
-
-#     #作業ファイル準備でジオメトリをゼロ化しているので、カメラ判定はここでしないといけない。
-#     #プロクシを判定して、カメラ内だったらアーマチュアデータを得る
-#     #→どうもうまく判定できてない
-#     armature_datas = []
-#     for obj in bpy.context.visible_objects:
-#         if obj.type != "ARMATURE":
-#             continue
-#         if not fjw.is_in_visible_layer(obj):
-#             continue
-        
-#         armature = obj
-#         armu = fjw.ArmatureUtils(armature)
-#         #ボーンが一個でも範囲にはいっていたらターゲットに追加する
-#         for pbone in armu.pose_bones:
-#             if fjw.checkLocationisinCameraView(armu.get_pbone_world_co(pbone.head)):
-#                 armature_datas.append(armature.data)
-#                 break
-
-#     #armature_datasのサイズがゼロならそのまま終わる
-#     if len(armature_datas) == 0:
-#         if quit_flag:
-#             bpy.ops.wm.quit_blender()
-
-
-#     #armature_datas内のデータをもってないリンクは削除
-#     dellist = []
-#     for obj in bpy.context.scene.objects:
-#         if obj.type != "EMPTY":
-#             continue
-#         if obj.dupli_group is None:
-#             continue
-#         delflag = True
-#         for dupobj in obj.dupli_group.objects:
-#             if dupobj.type == "ARMATURE":
-#                 for armdata in armature_datas:
-#                     if dupobj.data == armdata:
-#                         delflag = False
-#                     break
-#             if not delflag:
-#                 break
-#         if delflag:
-#             dellist.append(obj)
-#     for obj in dellist:
-#         print(obj.name)
-#     fjw.delete(dellist)
-
-#     #複製の実体化をする前に、重複してしまっている複製を除去する
-#     dellist = []
-#     dupli_groups = []
-#     for obj in bpy.context.visible_objects:
-#         if obj.type != "EMPTY":
-#             continue
-#         #同一のdupli_groupをもっていたら除去
-#         if obj.dupli_group is not None:
-#             if obj.dupli_group in dupli_groups:
-#                 dellist.append(obj)
-#                 continue
-
-#             #中にBodyがないリンクもいらない
-#             # if "Body" not in obj.dupli_group.objects:
-#             #     dellist.append(obj)
-#             #     continue
-#             dupli_groups.append(obj.dupli_group)
-#     fjw.delete(dellist)
-        
-
-#     #MD作業ファイル準備
-#     # bpy.ops.fujiwara_toolbox.setup_mdwork_blend()
-#     setup_mdwork_main(self,context)
-
-
-#     bpy.ops.object.select_all(action='SELECT')
-#     fjw.reject_notmesh()
-#     # selection = fjw.get_selected_list()
-
-#     targets = []
-#     for obj in bpy.context.visible_objects:
-#         if not fjw.is_in_visible_layer(obj):
-#             continue
-
-#         if "Body" in obj.name:
-#             modu = fjw.Modutils(obj)
-#             armt = modu.find("Armature")
-#             if armt is None:
-#                 continue
-
-#             #さっき判定したデータと合致したら、こいつをターゲットに入れる
-#             armature = armt.object
-#             do = False
-#             for adata in armature_datas:
-#                 if adata == armature.data:
-#                     do = True
-#                     break
-#             if not do:
-#                 continue
-
-#             targets.append(armature)
-#             fjw.get_root(obj)
-
-
-#     for armature in targets:
-#         fjw.deselect()
-#         fjw.activate(armature)
-#         MarvelousDesingerUtils.export_active_body_mdavatar()
-#     # #終了
-#     if quit_flag:
-#         bpy.ops.fujiwara_toolbox.exit_mdwork()
-#     print("MDWork finish")
-
-# #バックグラウンドじゃキーフレーム挿入できないの留意
-# ########################################
-# #オートアバター
-# ########################################
-# class FUJIWARATOOLBOX_302662(bpy.types.Operator):#オートアバター
-#     """カメラ範囲内のbodyを自動でアバター出力して終了する"""
-#     bl_idname = "fujiwara_toolbox.command_302662"
-#     bl_label = "オートアバター"
-#     bl_options = {'REGISTER', 'UNDO'}
-
-#     uiitem = uiitem()
-#     uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-#     def execute(self, context):
-#         md_auto_avater_main(self,context,quit_flag=True)
-
-#         return {'FINISHED'}
-# ########################################
-
-# ########################################
-# class FUJIWARATOOLBOX_302662A(bpy.types.Operator):#オートアバター
-#     """カメラ範囲内のbodyを自動でアバター出力して終了する"""
-#     bl_idname = "fujiwara_toolbox.command_302662a"
-#     bl_label = "ステップ２"
-#     bl_options = {'REGISTER', 'UNDO'}
-
-#     uiitem = uiitem()
-#     uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-#     def execute(self, context):
-#         for armature in bpy.context.visible_objects:
-#             fjw.deselect()
-#             fjw.activate(armature)
-#             MarvelousDesingerUtils.export_active_body_mdavatar()
-
-#         return {'FINISHED'}
-# ########################################
-
-
 
 def mdresult_auto_import_main(self, context):
     #存在確認
@@ -15714,69 +15562,11 @@ def mdresult_auto_import_main(self, context):
                 MarvelousDesingerUtils.import_mdresult(dir + file + os.sep + "result.obj")
                 print("MDImport Import MDResult:"+dir + file + os.sep + "result.obj")
 
-        # rootobj = None
-        # for obj in root_objects:
-        #     if targetname in obj.name:
-        #        rootobj =  obj
-        #        break
-        # if rootobj is None:
-        #     continue
-        # obj = rootobj
-        # arm = fjw.find_child_bytype(obj, "ARMATURE")
-        # if arm is not None:
-        #     try:
-        #         print("MDImport Step 0")
-        #         fjw.mode("OBJECT")
-        #         fjw.deselect()
-        #         fjw.activate(arm)
-
-        #         print("MDImport Step 1")
-        #         fjw.mode("POSE")
-        #         armu = fjw.ArmatureUtils(arm)
-        #         geo = armu.GetGeometryBone()
-        #         armu.activate(geo)
-        #         print("MDImport Step 2")
-        #         fjw.mode("POSE")
-
-        #         self.report({"INFO"},dir + file)
-        #         print("MDImport Selecting GeoBone:" + dir + file)
-
-        #         #インポート
-        #         MarvelousDesingerUtils.import_mdresult(dir + file + os.sep + "result.obj")
-        #         print("MDImport Import MDResult:"+dir + file + os.sep + "result.obj")
-        #     except:
-        #         print("MDImport Error Occured.")
-        #         pass
-
     fjw.mode("OBJECT")
-    # bpy.ops.object.select_all(action='SELECT')
     for obj in bpy.context.visible_objects:
         if "result" in obj.name:
             obj.select = True
     bpy.ops.fujiwara_toolbox.comic_shader_nospec()
-
-# ########################################
-#ｙ６７
-# ########################################
-# class FUJIWARATOOLBOX_487662(bpy.types.Operator):#オートインポート
-#     """オートインポート"""
-#     bl_idname = "fujiwara_toolbox.command_487662"
-#     bl_label = "オートインポートして終了"
-#     bl_options = {'REGISTER', 'UNDO'}
-
-#     uiitem = uiitem()
-#     uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-#     def execute(self, context):
-#         mdresult_auto_import_main(self,context)
-
-#         #保存して閉じる
-#         bpy.ops.wm.save_mainfile()
-#         bpy.ops.wm.quit_blender()
-#         print("MDImport Done.")
-#         return {'FINISHED'}
-# ########################################
 
 #---------------------------------------------
 uiitem().vertical()
@@ -15784,25 +15574,6 @@ uiitem().vertical()
 #---------------------------------------------
 uiitem().horizontal()
 #---------------------------------------------
-
-# ########################################
-# #オートアバター（終了しない）
-# ########################################
-# #bpy.ops.fujiwara_toolbox.md_auto_avater_non_quit() #オートアバター（終了しない）
-# class FUJIWARATOOLBOX_md_auto_avater_non_quit(bpy.types.Operator):
-#     """オートアバター（終了しない）"""
-#     bl_idname = "fujiwara_toolbox.md_auto_avater_non_quit"
-#     bl_label = "オートアバター（終了しない）"
-#     bl_options = {'REGISTER', 'UNDO'}
-
-#     uiitem = uiitem()
-#     uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-#     def execute(self, context):
-#         md_auto_avater_main(self,context,quit_flag=False)
-#         return {'FINISHED'}
-# ########################################
-
 ########################################
 #オートインポート
 ########################################
@@ -16015,7 +15786,6 @@ class FUJIWARATOOLBOX_179920(bpy.types.Operator):#元を開く（別窓）
     def execute(self, context):
         path = bpy.data.filepath.replace("_MDWork","")
         subprocess.Popen("EXPLORER " + path)
-        
         return {'FINISHED'}
 ########################################
 
@@ -16060,7 +15830,6 @@ class FUJIWARATOOLBOX_628306(bpy.types.Operator):#終了
         if "_MDWork" in bpy.data.filepath:
             os.remove(bpy.data.filepath)
             bpy.ops.wm.quit_blender()
-        
         return {'FINISHED'}
 ########################################
 
@@ -16070,44 +15839,6 @@ uiitem().vertical()
 #---------------------------------------------
 uiitem().horizontal()
 #---------------------------------------------
-
-# ########################################
-# #UWSCシミュ制御
-# ########################################
-# #bpy.ops.fujiwara_toolbox.uwsc_sim_control() #UWSCシミュ制御
-# class FUJIWARATOOLBOX_uwsc_sim_control(bpy.types.Operator):
-#     """MarvelousDesigner、服データフォルダを起動しておくこと"""
-#     bl_idname = "fujiwara_toolbox.uwsc_sim_control"
-#     bl_label = "UWSCシミュ制御"
-#     bl_options = {'REGISTER', 'UNDO'}
-
-#     uiitem = uiitem()
-#     uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-#     def execute(self, context):
-#         root = fjw.get_root(fjw.active())
-#         root_name = root.name
-#         root_name = re.sub("\.\d+", "", root_name)
-#         blendname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
-#         blendname = re.sub("_MDWork", "", blendname)
-#         dir = os.path.dirname(bpy.data.filepath) + os.sep + "MDData" + os.sep + blendname + os.sep
-        
-#         if not os.path.exists(dir):
-#             self.report({"INFO"},"キャンセルされました。")
-#             return {'CANCELLED'}
-        
-#         folderpath = dir+root_name
-#         os.system("EXPLORER " + folderpath)
-
-#         time.sleep(1)
-
-#         uwsc_path = r"Z:\soft\uwsc5302\UWSC.exe"
-#         uwsc_script_path = r"Z:\soft\uwsc5302\myscripts\MarvelousDesignerオートシミュ.uws"
-#         cmdstr = fjw.qq(uwsc_path) + " " + fjw.qq(uwsc_script_path) + " " + fjw.qq(root_name)
-#         subprocess.Popen(cmdstr)
-
-#         return {'FINISHED'}
-# ########################################
 
 ########################################
 #全てシミュレート
@@ -16176,379 +15907,6 @@ class FUJIWARATOOLBOX_MD_EXPORTONLY(bpy.types.Operator):
             bpy.ops.fujiwara_toolbox.return_from_mdwork()
         return {'FINISHED'}
 ########################################
-
-
-
-
-
-
-
-
-
-
-
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-
-
-
-
-
-############################################################################################################################
-uiitem("obj+PointCache")
-############################################################################################################################
-
-
-########################################
-#アバター出力
-########################################
-class FUJIWARATOOLBOX_738210(bpy.types.Operator):#アバター出力
-    """アバター出力"""
-    bl_idname = "fujiwara_toolbox.command_738210"
-    bl_label = "アバター出力"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        # MarvelousDesingerUtils.export_mdavatar(fujiwara_toolbox.conf.MarvelousDesigner_dir, "avatar")
-        MarvelousDesingerUtils.export_mdavatar_to_mddata("avatar")
-        return {'FINISHED'}
-########################################
-
-
-########################################
-#アバターのみ
-########################################
-class FUJIWARATOOLBOX_287546(bpy.types.Operator):#アバターのみ
-    """アバターのみ"""
-    bl_idname = "fujiwara_toolbox.command_287546"
-    bl_label = "アバターのみ"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        #アクティブオブジェクトのみ。
-        #メッシュ以外だったら戻る
-        obj = fjw.active()
-        if obj.type != "MESH":
-            self.report({"INFO"},"")
-            return {'CANCELLED'}
-
-        bpy.ops.wm.save_mainfile()
-
-        #簡略化2
-        bpy.context.scene.render.use_simplify = True
-        bpy.context.scene.render.simplify_subdivision = 2
-
-        #裏ポリエッジオフ
-        for mod in obj.modifiers:
-            if "裏ポリエッジ" in mod.name:
-                mod.show_viewport = False
-
-        #フレーム1に移動
-        bpy.ops.screen.frame_jump(end=False)
-        #obj出力
-        dir = MarvelousDesingerUtils.get_mddatadir()
-        bpy.ops.export_scene.obj(filepath= dir + "avatar.obj", use_selection=True)
-
-
-        #出力フォルダを開く
-        os.system("EXPLORER " + dir)
-        
-        return {'FINISHED'}
-########################################
-
-########################################
-#プロップ出力
-########################################
-class FUJIWARATOOLBOX_341922(bpy.types.Operator):#プロップ出力
-    """プロップ出力"""
-    bl_idname = "fujiwara_toolbox.command_341922"
-    bl_label = "プロップ出力"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        #アクティブオブジェクトのみ。
-        #メッシュ以外だったら戻る
-        obj = fjw.active()
-        if obj.type != "MESH":
-            self.report({"INFO"},"")
-            return {'CANCELLED'}
-
-        bpy.ops.wm.save_mainfile()
-
-        #簡略化2
-        bpy.context.scene.render.use_simplify = True
-        bpy.context.scene.render.simplify_subdivision = 2
-
-        #フレーム1に移動→しない！
-        #bpy.ops.screen.frame_jump(end=False)
-        #obj出力
-        dir = MarvelousDesingerUtils.get_mddatadir()
-        bpy.ops.export_scene.obj(filepath= dir + "prop.obj", use_selection=True)
-
-
-        #出力フォルダを開く
-        os.system("EXPLORER " + dir)
-        
-        return {'FINISHED'}
-########################################
-
-
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-
-
-# ############################################################################################################################
-# uiitem("ジェネラル")
-# ############################################################################################################################
-
-# ########################################
-# #base出力
-# ########################################
-# class FUJIWARATOOLBOX_518498(bpy.types.Operator):#base出力
-#     """base出力"""
-#     bl_idname = "fujiwara_toolbox.command_518498"
-#     bl_label = "base出力"
-#     bl_options = {'REGISTER', 'UNDO'}
-
-#     uiitem = uiitem()
-#     uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-#     def execute(self, context):
-#         #アクティブオブジェクトをルートと仮定する
-#         #root = active()
-
-
-#         #現状保存
-#         bpy.ops.wm.save_mainfile()
-        
-#         fjw.mode("OBJECT")
-        
-#         #レイヤー全表示
-#         bpy.context.scene.layers = [True for n in range(20)]
-#         #複数親子選択
-#         bpy.ops.fujiwara_toolbox.command_24259()
-
-
-#         selection = fjw.get_selected_list()
-
-#         fjw.deselect()
-        
-#         #root.select = True
-#         ##ジオメトリのトランスフォームを解除
-        
-#         #子アーマチュアを全てレスト位置に
-#         for obj in selection:
-#             if obj.type == "ARMATURE":
-#                 obj.data.pose_position = 'REST'
-
-#         #全てシングル化
-#         bpy.ops.object.make_single_user(type='ALL', object=True, obdata=True, material=False, texture=False, animation=False)
-
-
-#         #ミラーとアーマチュアの適用
-#         #オブジェクト側：アーマチュア適用
-#         for obj in selection:
-#             if obj.type == "MESH":
-#                 bpy.context.scene.objects.active = obj
-#                 for mod in obj.modifiers:
-#                     if mod.type == "MIRROR":
-#                         #アーマチュアより上位にあるミラーを適用しないと齟齬がでたので仕方なくミラー適用
-#                         bpy.ops.object.modifier_apply(modifier=mod.name)
-#                     if mod.type == "ARMATURE":
-#                         #適用する
-#                         self.report({"INFO"},obj.name + ":" + mod.name)
-#                         try:
-#                             bpy.ops.object.modifier_apply(modifier=mod.name)
-#                             pass
-#                         except  :
-#                             pass
-                        
-#                     if "裏ポリエッジ" in mod.name:
-#                         bpy.ops.object.modifier_remove(modifier=mod.name)
-#         ##親子解除
-#         #select(selection)
-#         #bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
-
-#         #トランスフォームのアプライ
-#         bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-#         #ノーマルの再計算
-#         bpy.ops.fujiwara_toolbox.command_590395()
-        
-#         #簡略化2
-#         bpy.context.scene.render.use_simplify = True
-#         bpy.context.scene.render.simplify_subdivision = 2
-
-
-#         fjw.deselect()
-#         fjw.select(selection)
-#         fjw.reject_notmesh()
-#         #ワイヤーフレーム除外
-#         for obj in bpy.context.selected_objects:
-#            if obj.type == "MESH":
-#                if obj.draw_type == "WIRE":
-#                    obj.select = False
-#         #ノンレンダ除外
-#         for obj in bpy.context.selected_objects:
-#             if obj.hide_render == True:
-#                    obj.select = False
-
-
-
-
-#         dir = fujiwara_toolbox.conf.MarvelousDesigner_dir
-#         bpy.ops.export_scene.obj(filepath=dir + "base.obj", use_selection=True,)
-        
-#         #開きなおし
-#         bpy.ops.wm.revert_mainfile(use_scripts=True)
-        
-#         return {'FINISHED'}
-# ########################################
-
-
-
-# ########################################
-# #poseTo出力
-# ########################################
-# class FUJIWARATOOLBOX_178092(bpy.types.Operator):#poseTo出力
-#     """poseTo出力"""
-#     bl_idname = "fujiwara_toolbox.command_178092"
-#     bl_label = "poseTo出力"
-#     bl_options = {'REGISTER', 'UNDO'}
-
-#     uiitem = uiitem()
-#     uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-#     def execute(self, context):
-#         root = fjw.active()
-
-#         #現状保存
-#         bpy.ops.wm.save_mainfile()
-        
-#         fjw.mode("OBJECT")
-
-#         #レイヤー全表示
-#         bpy.context.scene.layers = [True for n in range(20)]
-#         #複数親子選択
-#         bpy.ops.fujiwara_toolbox.command_24259()
-
-
-#         selection = fjw.get_selected_list()
-
-#         regist_pose("PoseTo",selection)
-#         fjw.activate(root)
-#         bpy.ops.wm.save_mainfile()
-#         fjw.mode("OBJECT")
-
-#         fjw.deselect()
-        
-#         fjw.activate(root)
-#         root.select = True
-#         #ジオメトリのトランスフォームを解除
-#         bpy.ops.object.location_clear()
-# #        bpy.ops.object.rotation_clear()
-        
-#         #ジオメトリの子を選択
-#         fjw.select(selection)
-        
-#         #全てシングル化
-#         bpy.ops.object.make_single_user(type='ALL', object=True, obdata=True, material=False, texture=False, animation=False)
-        
-#         #ミラーとアーマチュアの適用
-#         #オブジェクト側：アーマチュア適用
-#         for obj in selection:
-#             if obj.type == "MESH":
-#                 bpy.context.scene.objects.active = obj
-#                 for mod in obj.modifiers:
-#                     if mod.type == "MIRROR":
-#                         #アーマチュアより上位にあるミラーを適用しないと齟齬がでたので仕方なくミラー適用
-#                         bpy.ops.object.modifier_apply(modifier=mod.name)
-#                     if mod.type == "ARMATURE":
-#                         #適用する
-#                         self.report({"INFO"},obj.name + ":" + mod.name)
-#                         try:
-#                             bpy.ops.object.modifier_apply(modifier=mod.name)
-#                             pass
-#                         except  :
-#                             pass
-                        
-#                     if "裏ポリエッジ" in mod.name:
-#                         bpy.ops.object.modifier_remove(modifier=mod.name)
-#         #親子解除
-#         #for obj in bpy.context.selected_objects:
-#         #    bpy.context.scene.objects.active = obj
-#         #    bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
-        
-#         #トランスフォームのアプライ
-#         bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-#         #ノーマルの再計算
-#         bpy.ops.fujiwara_toolbox.command_590395()
-        
-#         #簡略化2
-#         bpy.context.scene.render.use_simplify = True
-#         bpy.context.scene.render.simplify_subdivision = 2
-
-
-#         fjw.deselect()
-#         fjw.select(selection)
-#         fjw.reject_notmesh()
-#         #ワイヤーフレーム除外
-#         for obj in bpy.context.selected_objects:
-#            if obj.type == "MESH":
-#                if obj.draw_type == "WIRE":
-#                    obj.select = False
-#         #ノンレンダ除外
-#         for obj in bpy.context.selected_objects:
-#             if obj.hide_render == True:
-#                    obj.select = False
-
-#         dir = fujiwara_toolbox.conf.MarvelousDesigner_dir
-#         bpy.ops.export_scene.obj(filepath=dir + "poseTo.obj", use_selection=True,)
-
-        
-#         #開きなおし
-#         bpy.ops.wm.revert_mainfile(use_scripts=True)
-        
-#         return {'FINISHED'}
-# ########################################
-
-
-
-# ########################################
-# #インポート
-# ########################################
-# class FUJIWARATOOLBOX_86482(bpy.types.Operator):#インポート
-#     """インポート"""
-#     bl_idname = "fujiwara_toolbox.command_86482"
-#     bl_label = "インポート"
-#     bl_options = {'REGISTER', 'UNDO'}
-
-#     uiitem = uiitem()
-#     uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-#     def execute(self, context):
-#         dir = fujiwara_toolbox.conf.MarvelousDesigner_dir
-#         import_mdresult(self,dir + "result.obj")
-
-#         return {'FINISHED'}
-# ########################################
-
 
 #---------------------------------------------
 uiitem().vertical()
@@ -19722,7 +19080,6 @@ class MD_SETKEY(bpy.types.Operator):
             fjw.deselect()
             fjw.activate(obj)
             MarvelousDesingerUtils.setkey()
-            # MarvelousDesingerUtils.armature_autokey()
         return {"FINISHED"}
 
 
@@ -19756,16 +19113,9 @@ class MD_export_active_body_mdavatar_sim(bpy.types.Operator):
 
     def execute(self, context):
         linkpath = fjw.active()["linked_path"]
-        exportedlist = MarvelousDesingerUtils.export_active_body_mdavatar()
-        for exported in exportedlist:
-            exdir = exported[0]
-            exname = exported[1]
-            avatar_path = exdir +  exname + ".obj"
-            animation_path = exdir +  exname + ".mdd"
-            garment_path = os.path.dirname(linkpath) + os.sep + exname + ".zpac"
-            result_path = exdir + "result.obj"
-            MarvelousDesingerUtils.mdsim(avatar_path, animation_path, garment_path, result_path)
-        # bpy.ops.fujiwara_toolbox.uwsc_sim_control()
+        mdu = MarvelousDesingerUtils()
+        mdu.export_active_body_mdavatar()
+        mdu.mdsim_exportedlist()
         return {"FINISHED"}
 
 class framejump_1(bpy.types.Operator):
