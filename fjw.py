@@ -32,6 +32,7 @@ fujiwara_toolbox = __import__(__package__)
 def qq(str):
     return '"' + str + '"'
 
+
 def get_resourcesdir():
     scrdir = os.path.dirname(__file__)
     resourcesdir = scrdir + os.sep + "resources" + os.sep

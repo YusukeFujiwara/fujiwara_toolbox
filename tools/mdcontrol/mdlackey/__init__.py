@@ -103,6 +103,7 @@ class MD():
 
         if m is not None:
             region.click(m)
+            print(filename)
             return True
 
         return False
@@ -162,6 +163,27 @@ class MDMacro():
 
         md.click("ok")
         md.click("close")
+        md.activate()
+
+    @classmethod
+    def open_avatar_abc(self, filepath):
+        md = MD()
+        if not md.is_initialized:
+            print("###MD is not initialized.")
+            return()
+
+        if not md.click("file"):
+            return
+        md.click("import")
+        md.click("alembic")
+
+        # uwsc.click_item(filename)
+        MD.wait(0.5)
+        self.paste_str(filepath)
+        md.click("m")
+        md.click("ok")
+        md.click("close")
+        md.activate()
 
     @classmethod
     def add_garment(self, filepath):
@@ -207,6 +229,7 @@ class MDMacro():
 
         md.activate()
         md.click("sim_off")
+        MD.wait(1)
         md.click("anim_off")
         MD.wait(time)
         md.click("sim_on")
@@ -233,6 +256,7 @@ class MDMacro():
         md.click("obj_selected_only")
         MD.wait(0.5)
         self.paste_str(filepath)
+        MD.wait(0.5)
         uwsc.click_item("はい")
         MD.wait(0.5)
         md.click("single_object")
