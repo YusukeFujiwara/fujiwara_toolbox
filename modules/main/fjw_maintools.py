@@ -15356,7 +15356,7 @@ class MDObject():
         avatar_path = os.path.normpath(self.export_dir + os.sep + self.mdname + ".abc")
         animation_path = "none"
         garment_path = os.path.normpath(self.get_garment_path())
-        result_path = os.path.normpath(self.export_dir + os.sep + "result.obj")
+        result_path = os.path.normpath(self.export_dir + os.sep + "result.abc")
 
         cmdstr = 'python "%s" "%s" "%s" "%s" "%s"'%(toolpath, avatar_path, animation_path, garment_path, result_path)
         print(cmdstr)
@@ -15590,7 +15590,12 @@ class MarvelousDesingerUtils():
         fname, ext = os.path.splitext(resultpath)
         if ext == ".obj":
             bpy.ops.import_scene.obj(filepath=resultpath)
-        # .abc対応しようと思ったけどコマンド直後はシーン内にオブジェクトが存在しないので無理。
+        if ext == ".abc":
+            bpy.ops.wm.alembic_import(filepath=resultpath, as_background_job=False)
+            selection = fjw.get_selected_list()
+            for obj in selection:
+                obj.name = "result"
+
         #インポート後処理
         #回転を適用
         bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
@@ -15696,8 +15701,9 @@ class MarvelousDesingerUtils():
                     print("MDImport Selecting GeoBone:" + dir + file)
 
                     #インポート
-                    MarvelousDesingerUtils.import_mdresult(dir + file + os.sep + "result.obj")
-                    print("MDImport Import MDResult:"+dir + file + os.sep + "result.obj")
+                    mdresultpath = dir + file + os.sep + "result.abc"
+                    MarvelousDesingerUtils.import_mdresult(mdresultpath)
+                    print("MDImport Import MDResult:"+mdresultpath)
 
         fjw.mode("OBJECT")
         for obj in bpy.context.visible_objects:

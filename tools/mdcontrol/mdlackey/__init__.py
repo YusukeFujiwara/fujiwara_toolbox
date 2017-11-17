@@ -163,6 +163,7 @@ class MDMacro():
 
         md.click("ok")
         md.click("close")
+        md.activate()
 
     @classmethod
     def open_avatar_abc(self, filepath):
@@ -181,6 +182,8 @@ class MDMacro():
         self.paste_str(filepath)
         md.click("m")
         md.click("ok")
+        md.click("close")
+        md.activate()
 
     @classmethod
     def add_garment(self, filepath):
