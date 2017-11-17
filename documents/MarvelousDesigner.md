@@ -1,5 +1,9 @@
 ﻿# MarvelousDesigner関係機能
 
+## 必要機能のインストール
+1. [python3](https://www.python.org/downloads/)をインストールする。
+1. fujiwara_toolbox\tools\install dependencies（管理者として実行）.batを管理者として実行する。
+
 ## 前提
 * キャラにはジオメトリ用ボーンとして"Geometry","geometry","geo"のいずれかのボーンが必要
 * キャラのポージングは、プロクシやリンクのトランスフォームは初期値にして、ジオメトリ用ボーンで全体の位置を変更する。
