@@ -15245,10 +15245,11 @@ md_export_id int このパーツのエクスポートID　このプロパティ�
 運用設定
 md_garment_index    パスリストの何番目の衣装を使うか。なければ-1として扱う。
                     ない場合はリンク先フォルダの同名.zpacを使う。
-md_export_depth     intもしくはintのlist
+md_export_depth     intかintのlist
                     IDのどのレベルまでエクスポートするか。
                     listだった場合は該当レベルを個別に有効にする。
                     なければ0。
+こっちの値、作業ファイル準備時に反映しなければならない！
 
 カスタムプロパティはいずれのオブジェクトにつけてもいい。
 MDObjectにわたされたオブジェクト群の中で検索する。
@@ -15267,7 +15268,8 @@ class MDObject():
         self.mdname = mdname
         self.objects = objects
         if export_dir == "MDData":
-            self.__set_export_dir(self.__get_mddatadir() + os.sep + mdname)
+            blendname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
+            self.__set_export_dir(self.__get_mddatadir() + os.sep + blendname.replace("_MDWork", "") + os.sep + mdname)
         else:
             self.export_dir = export_dir
 
@@ -15351,7 +15353,7 @@ class MDObject():
         # toolpath = os.path.basename(fjw.__file__) + os.sep + "tools" + os.sep + "mdcontrol" + os.sep + "mdcontrol.py"
         toolpath = fujiwara_toolbox.__path__[0] + os.sep + "tools" + os.sep + "mdcontrol" + os.sep + "mdcontrol.py"
         avatar_path = os.path.normpath(self.export_dir + os.sep + self.mdname + ".abc")
-        animation_path = ""
+        animation_path = "none"
         garment_path = os.path.normpath(self.get_garment_path())
         result_path = os.path.normpath(self.export_dir + os.sep + "result.obj")
 
@@ -15466,6 +15468,7 @@ class MDObjectManager():
 
         for mdobj in self.mdobjects:
             mdobj.export_to_mddata()
+
         if run_simulate:
             for mdobj in self.mdobjects:
                 mdobj.md_sim()
@@ -15702,6 +15705,16 @@ class MarvelousDesingerUtils():
         bpy.ops.fujiwara_toolbox.comic_shader_nospec()
 
     @classmethod
+    def __get_prop(cls, obj, name):
+        """
+        カスタムプロパティを取得する。
+        なければNone
+        """
+        if name in obj:
+            return obj[name]
+        return None
+
+    @classmethod
     def setup_mdwork_main(cls, self,context):
         if "_MDWork" not in bpy.data.filepath:
             fjw.framejump(10)
@@ -15715,7 +15728,6 @@ class MarvelousDesingerUtils():
                 bpy.context.scene.layers[i + 1] = False
             for i in range(5):
                 bpy.context.scene.layers[i] = True
-
 
             #ポーズだけついてるやつをポーズライブラリに登録する
             for armature_proxy in bpy.context.visible_objects:
@@ -15736,6 +15748,11 @@ class MarvelousDesingerUtils():
             bpy.ops.file.make_paths_absolute()
             selection = fjw.get_selected_list()
             for obj in selection:
+                md_garment_path_list = cls.__get_prop(obj, "md_garment_path_list")
+                md_export_id = cls.__get_prop(obj, "md_export_id")
+                md_garment_index = cls.__get_prop(obj, "md_garment_index")
+                md_export_depth = cls.__get_prop(obj, "md_export_depth")
+
                 # obj.dupli_group.library.filepath
                 link_path = ""
                 if obj.dupli_group is not None and obj.dupli_group.library is not None:
@@ -15749,6 +15766,16 @@ class MarvelousDesingerUtils():
                 realized_objects = fjw.get_selected_list()
                 for robj in realized_objects:
                     robj["linked_path"] = link_path
+
+                    root = fjw.get_root(robj)
+                    if md_garment_path_list is not None:
+                        root["md_garment_path_list"] = md_garment_path_list
+                    if md_export_id is not None:
+                        root["md_export_id"] = md_export_id
+                    if md_garment_index is not None:
+                        root["md_garment_index"] = md_garment_index
+                    if md_export_depth is not None:
+                        root["md_export_depth"] = md_export_depth
 
             #proxyの処理
             #同一のアーマチュアデータを使っているものを探してポーズライブラリを設定する。
@@ -15865,8 +15892,6 @@ uiitem("MDWorkファイル")
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
-
-
 #---------------------------------------------
 uiitem().horizontal()
 #---------------------------------------------
@@ -15976,13 +16001,13 @@ uiitem().horizontal()
 #---------------------------------------------
 
 ########################################
-#全てシミュレート
+#選択物を全てシミュレート
 ########################################
 #bpy.ops.fujiwara_toolbox.md_sim_all() #全てシミュレート
 class FUJIWARATOOLBOX_MD_SIM_ALL(bpy.types.Operator):
-    """全てのアバターをシミュレートさせる。通常はシミュレートして、ファイルを開き直す。MD作業ファイル上で実行すると、特に開き直さない。"""
+    """選択された全てのアバターをシミュレートさせる。通常はシミュレートして、ファイルを開き直す。MD作業ファイル上で実行すると、特に開き直さない。"""
     bl_idname = "fujiwara_toolbox.md_sim_all"
-    bl_label = "全てシミュレート"
+    bl_label = "選択物を全てシミュレート"
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
@@ -16039,7 +16064,261 @@ class FUJIWARATOOLBOX_MD_EXPORTONLY(bpy.types.Operator):
 uiitem().vertical()
 #---------------------------------------------
 
+############################################################################################################################
+uiitem("MD用オブジェクトセットアップ")
+############################################################################################################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+########################################
+#衣装パスを追加
+########################################
+#bpy.ops.fujiwara_toolbox.add_garment_path() #衣装パスを追加
+class FUJIWARATOOLBOX_MD_ADD_GARMENT_PATH(bpy.types.Operator):
+    """リストに、衣装のパスを追加する。ルートオブジェクトが設定を保持する。"""
+    bl_idname = "fujiwara_toolbox.md_add_garment_path"
+    bl_label = "衣装パスを追加"
+    bl_options = {'REGISTER', 'UNDO'}
 
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    """
+    ファイルブラウザのフィルタ
+    https://blender.stackexchange.com/questions/7890/add-a-filter-for-the-extension-of-a-file-in-the-file-browser
+    https://blenderartists.org/forum/showthread.php?301263-Filter-filetype-on-open-select-dialog
+    """
+
+    filter_glob = StringProperty(default="*.zpac", options={"HIDDEN"})
+
+    filename = bpy.props.StringProperty(subtype="FILE_NAME")
+    filepath = bpy.props.StringProperty(subtype="FILE_PATH")
+    directory = bpy.props.StringProperty(subtype="DIR_PATH")
+    files = bpy.props.CollectionProperty(type=bpy.types.PropertyGroup)
+
+    def invoke(self, context, event):
+        self.directory = os.path.dirname(bpy.data.filepath)
+        self.report({"INFO"}, "%s"%(self.directory))
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+    def execute(self, context):
+        # self.report({"INFO"}, "%s, %s"%(self.directory,self.filename))
+        if self.filename == "":
+            return {"CANCELLED"}
+
+        path = os.path.normpath(self.directory + os.sep + self.filename)
+        active = fjw.active()
+        if active is None:
+            return {"CANCELLED"}
+
+        root = fjw.get_root(active)
+        pathlist = []
+        if "md_garment_path_list" in root:
+            pathlist = root["md_garment_path_list"]
+
+        if path not in pathlist:
+            pathlist.append(path)
+
+        root["md_garment_path_list"] = pathlist
+
+
+        return {'FINISHED'}
+########################################
+
+########################################
+#エクスポートIDを設定
+########################################
+#bpy.ops.fujiwara_toolbox.md_set_export_id() #エクスポートIDを設定
+class FUJIWARATOOLBOX_MD_SET_EXPORT_ID(bpy.types.Operator):
+    """選択オブジェクトのエクスポートIDを設定する。"""
+    bl_idname = "fujiwara_toolbox.md_set_export_id"
+    bl_label = "エクスポートIDを設定"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    export_id = IntProperty(
+        name="Export ID",
+        description="Export ID",
+        default=0,
+        min=0,
+        max=255
+    )
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self)
+
+    def execute(self, context):
+        active = fjw.active()
+        root = fjw.get_root(active)
+        root["md_export_id"] = self.export_id
+        return {'FINISHED'}
+########################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+############################################################################################################################
+uiitem("MD用オブジェクト運用設定")
+############################################################################################################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#衣装インデックスの設定
+########################################
+#bpy.ops.fujiwara_toolbox.md_set_garment_index() #衣装インデックスの設定
+class FUJIWARATOOLBOX_MD_SET_GARMENT_INDEX(bpy.types.Operator):
+    """選択オブジェクトで実際に使用する衣装パスの番号を設定する。ルートオブジェクトが設定を保持する。"""
+    bl_idname = "fujiwara_toolbox.md_set_garment_index"
+    bl_label = "衣装インデックスの設定"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    garment_index = IntProperty(
+        name="Garment Path Index",
+        description="Garment Path Index",
+        default=0,
+        min=0,
+        max=255
+    )
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self)
+
+    def execute(self, context):
+        active = fjw.active()
+        root = fjw.get_root(active)
+        root["md_garment_index"] = self.garment_index
+        return {'FINISHED'}
+########################################
+
+########################################
+#エクスポート深度設定
+########################################
+#bpy.ops.fujiwara_toolbox.md_set_export_depth() #エクスポート深度設定
+class FUJIWARATOOLBOX_MD_SET_EXPORT_DEPTH(bpy.types.Operator):
+    """エクスポートIDの何番目までをエクスポートするか設定する。ルートオブジェクトが設定を保持する。"""
+    bl_idname = "fujiwara_toolbox.md_set_export_depth"
+    bl_label = "エクスポート深度設定"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    export_depth = IntProperty(
+        name="Export Depth",
+        description="Export Depth",
+        default=0,
+        min=0,
+        max=255
+    )
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self)
+
+    def execute(self, context):
+        active = fjw.active()
+        root = fjw.get_root(active)
+        root["md_export_depth"] = self.export_depth
+        return {'FINISHED'}
+########################################
+
+########################################
+#エクスポートID追加
+########################################
+#bpy.ops.fujiwara_toolbox.md_set_export_list() #エクスポート個別設定
+class FUJIWARATOOLBOX_MD_SET_EXPORT_LIST(bpy.types.Operator):
+    """エクスポートIDの何番をエクスポートするか設定する。ルートオブジェクトが設定を保持する。"""
+    bl_idname = "fujiwara_toolbox.md_set_export_list"
+    bl_label = "エクスポートID追加"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    export_depth = IntProperty(
+        name="Export Depth",
+        description="Export Depth",
+        default=0,
+        min=0,
+        max=255
+    )
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self)
+
+    def execute(self, context):
+        active = fjw.active()
+        root = fjw.get_root(active)
+
+        if "md_export_depth" in root:
+            depth = root["md_export_depth"]
+        else:
+            depth = []
+        if type(depth) != list:
+            depth = [depth]
+        if self.export_depth not in depth:
+            depth.append(self.export_depth)
+        
+        root["md_export_depth"] = depth
+        return {'FINISHED'}
+########################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+############################################################################################################################
+uiitem("設定消去")
+############################################################################################################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+########################################
+#選択物の設定を全て消去
+########################################
+#bpy.ops.fujiwara_toolbox.md_delete_all_settings() #選択物の設定を全て消去
+class FUJIWARATOOLBOX_MD_DELETE_ALL_SETTINGS(bpy.types.Operator):
+    """選択オブジェクトの設定を全て消去する。"""
+    bl_idname = "fujiwara_toolbox.md_delete_all_settings"
+    bl_label = "選択物の設定を全て消去"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def delkey(self, obj, name):
+        if name in obj:
+            del obj[name]
+
+    def execute(self, context):
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            self.delkey(obj, "md_garment_path_list")
+            self.delkey(obj, "md_export_id")
+            self.delkey(obj, "md_garment_index")
+            self.delkey(obj, "md_export_depth")
+
+        return {'FINISHED'}
+########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
 
 ################################################################################
 #UIカテゴリ

@@ -226,6 +226,7 @@ class MDMacro():
 
         md.activate()
         md.click("sim_off")
+        MD.wait(1)
         md.click("anim_off")
         MD.wait(time)
         md.click("sim_on")
@@ -252,6 +253,7 @@ class MDMacro():
         md.click("obj_selected_only")
         MD.wait(0.5)
         self.paste_str(filepath)
+        MD.wait(0.5)
         uwsc.click_item("はい")
         MD.wait(0.5)
         md.click("single_object")
