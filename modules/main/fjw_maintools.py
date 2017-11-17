@@ -15568,7 +15568,7 @@ class MarvelousDesingerUtils():
             fjw.framejump(10)
 
     @classmethod
-    def import_mdresult(cls,resultpath):
+    def import_mdresult(cls,resultpath, attouch_fjwset=False):
         current = fjw.active()
 
         loc = Vector((0,0,0))
@@ -15622,13 +15622,13 @@ class MarvelousDesingerUtils():
                 #読み先にレイヤーをそろえる
                 obj.layers = current.layers
         
-        
-        bpy.ops.fujiwara_toolbox.command_318722()#裏ポリエッジ付加
-        bpy.ops.fujiwara_toolbox.set_thickness_driver_with_empty_auto() #指定Emptyで厚み制御
+        if attouch_fjwset:
+            bpy.ops.fujiwara_toolbox.command_318722()#裏ポリエッジ付加
+            bpy.ops.fujiwara_toolbox.set_thickness_driver_with_empty_auto() #指定Emptyで厚み制御
 
 
     @classmethod
-    def mdresult_auto_import_main(cls, self, context):
+    def mdresult_auto_import_main(cls, self, context, attouch_fjwset=False):
         #存在確認
         blendname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
         dir = os.path.dirname(bpy.data.filepath) + os.sep + "MDData" + os.sep + blendname + os.sep
@@ -15702,14 +15702,15 @@ class MarvelousDesingerUtils():
 
                     #インポート
                     mdresultpath = dir + file + os.sep + "result.abc"
-                    MarvelousDesingerUtils.import_mdresult(mdresultpath)
+                    MarvelousDesingerUtils.import_mdresult(mdresultpath, attouch_fjwset)
                     print("MDImport Import MDResult:"+mdresultpath)
 
         fjw.mode("OBJECT")
         for obj in bpy.context.visible_objects:
             if "result" in obj.name:
                 obj.select = True
-        bpy.ops.fujiwara_toolbox.comic_shader_nospec()
+        if attouch_fjwset:
+            bpy.ops.fujiwara_toolbox.comic_shader_nospec()
 
     @classmethod
     def __get_prop(cls, obj, name):
@@ -15866,9 +15867,33 @@ class FUJIWARATOOLBOX_mdresult_autoimport_only(bpy.types.Operator):
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     def execute(self, context):
-        MarvelousDesingerUtils.mdresult_auto_import_main(self,context)
+        MarvelousDesingerUtils.mdresult_auto_import_main(self,context,False)
         return {'FINISHED'}
 ########################################
+
+########################################
+#オートインポートしてアタッチ
+########################################
+#bpy.ops.fujiwara_toolbox.mdresult_autoimport_and_attouch() #オートインポートしてアタッチ
+class FUJIWARATOOLBOX_MDRESULT_AUTOIMPORT_AND_ATTOUCH(bpy.types.Operator):
+    """漫画処理をアタッチする"""
+    bl_idname = "fujiwara_toolbox.mdresult_autoimport_and_attouch"
+    bl_label = "オートインポートしてアタッチ"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        MarvelousDesingerUtils.mdresult_auto_import_main(self,context,True)
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
 
 ########################################
 #オートインポートしてGLレンダ
@@ -15884,7 +15909,7 @@ class FUJIWARATOOLBOX_mdresult_autoimport_and_glrender(bpy.types.Operator):
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     def execute(self, context):
-        MarvelousDesingerUtils.mdresult_auto_import_main(self,context)
+        MarvelousDesingerUtils.mdresult_auto_import_main(self,context,True)
         bpy.ops.fujiwara_toolbox.command_979047()
         return {'FINISHED'}
 ########################################
