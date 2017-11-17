@@ -103,6 +103,7 @@ class MD():
 
         if m is not None:
             region.click(m)
+            print(filename)
             return True
 
         return False
@@ -162,6 +163,24 @@ class MDMacro():
 
         md.click("ok")
         md.click("close")
+
+    @classmethod
+    def open_avatar_abc(self, filepath):
+        md = MD()
+        if not md.is_initialized:
+            print("###MD is not initialized.")
+            return()
+
+        if not md.click("file"):
+            return
+        md.click("import")
+        md.click("alembic")
+
+        # uwsc.click_item(filename)
+        MD.wait(0.5)
+        self.paste_str(filepath)
+        md.click("m")
+        md.click("ok")
 
     @classmethod
     def add_garment(self, filepath):
