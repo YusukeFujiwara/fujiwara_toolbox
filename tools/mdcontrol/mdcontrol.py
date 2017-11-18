@@ -9,7 +9,7 @@ selfdir = os.path.dirname(selfpath)
 import mdlackey
 mdmacro = mdlackey.MDMacro
 
-
+import simulation_config
 
 def sim(avatar_path, animation_path, garment_path, result_path):
     mdmacro.new_file()
@@ -17,15 +17,12 @@ def sim(avatar_path, animation_path, garment_path, result_path):
         mdmacro.open_avatar(avatar_path)
         mdmacro.wait(0.5)
         mdmacro.add_mdd(animation_path)
-        mdmacro.wait(0.5)
 
     if ".abc" in avatar_path:
         mdmacro.open_avatar_abc(avatar_path)
-        mdmacro.wait(2)
 
     mdmacro.add_garment(garment_path)
-    mdmacro.wait(2)
-    mdmacro.simulate(4)
+    mdmacro.simulate(simulation_config.simulate_time)
     mdmacro.select_all()
     # mdmacro.export_obj(result_path)
     mdmacro.export_abc(result_path)

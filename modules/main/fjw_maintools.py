@@ -15572,8 +15572,9 @@ class MarvelousDesingerUtils():
         current = fjw.active()
 
         loc = Vector((0,0,0))
-        qrot = Quaternion()
+        qrot = Quaternion((0,0,0,0))
 
+        bonemode = False
         #もしボーンが選択されていたらそのボーンにトランスフォームをあわせる
         if current.mode == "POSE":
             armu = fjw.ArmatureUtils(current)
@@ -15584,6 +15585,7 @@ class MarvelousDesingerUtils():
 
             #boneはYupなので入れ替え
             qrot = Quaternion((qrot.w, qrot.x, qrot.z * -1, qrot.y))
+            bonemonde = True
 
         fjw.mode("OBJECT")
 
@@ -15595,6 +15597,7 @@ class MarvelousDesingerUtils():
             selection = fjw.get_selected_list()
             for obj in selection:
                 obj.name = "result"
+
 
         #インポート後処理
         #回転を適用
@@ -15608,16 +15611,16 @@ class MarvelousDesingerUtils():
                 bpy.ops.mesh.remove_doubles()
                 bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
                 
-                #服はエッジ出ない方がいい 裏ポリで十分
-                for slot in obj.material_slots:
-                    mat = slot.material
-                    mat.use_transparency = True
-                    mat.transparency_method = 'RAYTRACE'
-
+                # #服はエッジ出ない方がいい 裏ポリで十分
+                # for slot in obj.material_slots:
+                #     mat = slot.material
+                #     mat.use_transparency = True
+                #     mat.transparency_method = 'RAYTRACE'
 
                 obj.location = loc
-                obj.rotation_quaternion = obj.rotation_quaternion * qrot
-                obj.rotation_euler = obj.rotation_quaternion.to_euler()
+                if bonemode:
+                    obj.rotation_quaternion = obj.rotation_quaternion * qrot
+                    obj.rotation_euler = obj.rotation_quaternion.to_euler()
         
                 #読み先にレイヤーをそろえる
                 obj.layers = current.layers
@@ -15700,10 +15703,10 @@ class MarvelousDesingerUtils():
                     self.report({"INFO"},dir + file)
                     print("MDImport Selecting GeoBone:" + dir + file)
 
-                    #インポート
-                    mdresultpath = dir + file + os.sep + "result.abc"
-                    MarvelousDesingerUtils.import_mdresult(mdresultpath, attouch_fjwset)
-                    print("MDImport Import MDResult:"+mdresultpath)
+            #インポート
+            mdresultpath = dir + file + os.sep + "result.abc"
+            MarvelousDesingerUtils.import_mdresult(mdresultpath, attouch_fjwset)
+            print("MDImport Import MDResult:"+mdresultpath)
 
         fjw.mode("OBJECT")
         for obj in bpy.context.visible_objects:
