@@ -15319,6 +15319,11 @@ class MDObject():
                 if "Body" in obj.name:
                     result.append(obj)
 
+        #なければ、選択オブジェクトをそのまま採用する。
+        if len(result) == 0:
+            result.extend(objects)
+        
+
         return result
 
     # def export_obj(self, dirpath, animation=True):
