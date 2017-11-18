@@ -113,15 +113,35 @@ class MD():
         #         break
         # 負の座標のスクリーンで問題が起こる。
 
+        #正常コード
         region = App.focusedWindow().getScreen()
         m = region.exists(img)
+
+        #正常コード
+
+        #テスト
+        # Screen.showMonitors()
+        # print("*****----------------------")
+        # screens_n = Screen.getNumberScreens()
+        # print(screens_n)
+        # for i in range(screens_n):
+        #     print(Screen(i).getBounds())
+        # print("----------------------*****")
+
+        # ##################
+        # screens_n = Screen.getNumberScreens()
+        # for i in range(screens_n):
+        #     m = Screen(i).exists(img)
+        #     if m is not None:
+        #         break
+        # ##################
+
 
         if m is not None:
             if click:
                 region.click(m)
             print(filename)
             return True
-
         return False
 
 class MDMacro():
