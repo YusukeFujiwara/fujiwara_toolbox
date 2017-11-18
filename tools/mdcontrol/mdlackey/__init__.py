@@ -113,11 +113,7 @@ class MD():
         #         break
         # 負の座標のスクリーンで問題が起こる。
 
-        #正常コード
-        region = App.focusedWindow().getScreen()
-        m = region.exists(img)
 
-        #正常コード
 
         #テスト
         # Screen.showMonitors()
@@ -136,6 +132,8 @@ class MD():
         #         break
         # ##################
 
+        region = App.focusedWindow().getScreen()
+        m = region.exists(img)
 
         if m is not None:
             if click:
@@ -144,14 +142,42 @@ class MD():
             return True
         return False
 
+    # def click_untill_success(self, filename):
+    #     for i in range(100):
+    #         c = self.click(filename)
+    #         if c is not None:
+    #             return True
+    #         self.wait(0.1)
+    #     return False
+
+    def click_untill_imgfound(self, filename, searchfor):
+        for i in range(100):
+            f = self.find(searchfor)
+            if f is not None:
+                return True
+
+            self.click(filename)
+            self.wait(0.5)
+        return False
+        
+
+
 class MDMacro():
+    md = None
+
+    @classmethod
+    def md_setup(cls):
+        if cls.md == None:
+            cls.md = MD()
+        return cls.md
+
     @classmethod
     def wait(self, time):
         MD.wait(time)
 
     @classmethod
     def macro_test(self):
-        md = MD()
+        md = MDMacro.md_setup()
         if not md.is_initialized:
             return()
         if not md.click("file"):
@@ -165,7 +191,7 @@ class MDMacro():
 
     @classmethod
     def new_file(self):
-        md = MD()
+        md = MDMacro.md_setup()
         if not md.is_initialized:
             print("###MD is not initialized.")
             return()
@@ -183,7 +209,7 @@ class MDMacro():
 
     @classmethod
     def open_avatar(self,filepath):
-        md = MD()
+        md = MDMacro.md_setup()
         if not md.is_initialized:
             print("###MD is not initialized.")
             return()
@@ -203,7 +229,7 @@ class MDMacro():
 
     @classmethod
     def open_avatar_abc(self, filepath):
-        md = MD()
+        md = MDMacro.md_setup()
         if not md.is_initialized:
             print("###MD is not initialized.")
             return()
@@ -223,7 +249,7 @@ class MDMacro():
 
     @classmethod
     def add_garment(self, filepath):
-        md = MD()
+        md = MDMacro.md_setup()
         if not md.is_initialized:
             print("###MD is not initialized.")
             return
@@ -245,7 +271,7 @@ class MDMacro():
 
     @classmethod
     def add_mdd(self, filepath):
-        md = MD()
+        md = MDMacro.md_setup()
         if not md.is_initialized:
             print("###MD is not initialized.")
             return()
@@ -264,32 +290,48 @@ class MDMacro():
 
     @classmethod
     def simulate(self, time):
-        md = MD()
+        md = MDMacro.md_setup()
         if not md.is_initialized:
             print("###MD is not initialized.")
             return
 
-        #成功するまでトライ
+        md.activate()
+
         for i in range(30):
             md.activate()
-            # md.click("sim_off")
             md.click("3dgarment")
             md.click("simulation_off")
-
             f = md.find("sim_on")
 
             if f:
                 break
             md.wait(0.5)
 
-        MD.wait(1)
-        md.click("anim_off")
+        for i in range(30):
+            md.activate()
+            md.click("avatar")
+            md.click("play_motion_off")
+            f = md.find("anim_on")
+
+            if f:
+                break
+            md.wait(0.5)
+
         MD.wait(time)
-        md.click("sim_on")
+
+        for i in range(30):
+            md.activate()
+            md.click("3dgarment")
+            md.click("simulation_on")
+            f = md.find("sim_off")
+
+            if f:
+                break
+            md.wait(0.5)
 
     @classmethod
     def select_all(self):
-        md = MD()
+        md = MDMacro.md_setup()
         if not md.is_initialized:
             return
 
@@ -298,7 +340,7 @@ class MDMacro():
 
     @classmethod
     def export_obj(self, filepath, use_thickness):
-        md = MD()
+        md = MDMacro.md_setup()
         if not md.is_initialized:
             print("###MD is not initialized.")
             return
@@ -321,7 +363,7 @@ class MDMacro():
 
     @classmethod
     def export_abc(self, filepath):
-        md = MD()
+        md = MDMacro.md_setup()
         if not md.is_initialized:
             print("###MD is not initialized.")
             return
