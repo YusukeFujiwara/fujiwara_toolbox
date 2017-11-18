@@ -17,14 +17,13 @@ def sim(avatar_path, animation_path, garment_path, result_path):
         mdmacro.open_avatar(avatar_path)
         mdmacro.wait(0.5)
         mdmacro.add_mdd(animation_path)
-        mdmacro.wait(0.5)
+        # mdmacro.wait(0.5)
 
     if ".abc" in avatar_path:
         mdmacro.open_avatar_abc(avatar_path)
-        mdmacro.wait(2)
+        # mdmacro.wait(2)
 
     mdmacro.add_garment(garment_path)
-    mdmacro.wait(4)
     mdmacro.simulate(4)
     mdmacro.select_all()
     # mdmacro.export_obj(result_path)

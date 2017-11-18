@@ -192,10 +192,16 @@ class MDMacro():
             print("###MD is not initialized.")
             return
 
-        md.activate()
-        if not md.click("file"):
-            return
-        md.click("add")
+        #成功するまでトライ
+        for i in range(30):
+            md.activate()
+            md.click("file")
+            c = md.click("add")
+
+            if c:
+                break
+            md.wait(0.5)
+
         md.click("garment")
 
         MD.wait(0.5)
@@ -227,8 +233,15 @@ class MDMacro():
             print("###MD is not initialized.")
             return
 
-        md.activate()
-        md.click("sim_off")
+        #成功するまでトライ
+        for i in range(30):
+            md.activate()
+            c = md.click("sim_off")
+
+            if c:
+                break
+            md.wait(0.5)
+
         MD.wait(1)
         md.click("anim_off")
         MD.wait(time)
