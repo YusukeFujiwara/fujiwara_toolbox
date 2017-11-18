@@ -24,7 +24,7 @@ def sim(avatar_path, animation_path, garment_path, result_path):
         mdmacro.wait(2)
 
     mdmacro.add_garment(garment_path)
-    mdmacro.wait(2)
+    mdmacro.wait(4)
     mdmacro.simulate(4)
     mdmacro.select_all()
     # mdmacro.export_obj(result_path)
