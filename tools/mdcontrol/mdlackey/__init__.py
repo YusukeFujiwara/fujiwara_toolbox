@@ -104,7 +104,7 @@ class MD():
         
         active_screen_id = App.focusedWindow().getScreen().getID()
         #全スクリーンを検索する。
-        screens_n = Screen.getNumberScreens()
+        screens_n = Screen.getNumberScreens() - 1
         scrn_list = [active_screen_id]
         for i in range(screens_n):
             if i not in scrn_list:
@@ -112,12 +112,9 @@ class MD():
         
         for i in scrn_list:
             region = Screen(i)
-            try:
-                m = region.exists(img)
-                if m is not None:
-                    break
-            except:
-                pass
+            m = region.exists(img)
+            if m is not None:
+                break
             
 
         if m is not None:
