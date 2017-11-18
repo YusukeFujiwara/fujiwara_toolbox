@@ -76,5 +76,12 @@
 ## ポイント
 * 「MD用オブジェクトセットアップ」も「MD用オブジェクト運用設定」も、リンクオブジェクトに限らず、一つのオブジェクトに同時に設定することができる。  
 ささっと済ませたいプロップなどは、わざわざリンク化せずにその場でシミュレーションを開始できる。
-* シミュレーション時間は、fujiwara_toolbox\tools\mdcontrol\simulation_config.pyで調整できる。
-* MarvelousDesigner7はobjエクスポートで不具合がでることがあるので、非推奨。6.5推奨。
+
+## simulation_config
+* fujiwara_toolbox\tools\mdcontrol\simulation_config.pyでシミュレーションのオプションが設定できる。
+* simulate_time  
+    シミュレーション時間。単位は秒。
+* use_thickness  
+    エクスポート時に厚みをつけるかどうか。True/False
+    MarvelousDesigner7は厚みをつけると不具合がでることがあるのでFalseにしたほうがよい。
+    6.5ならTrueでも問題ない。

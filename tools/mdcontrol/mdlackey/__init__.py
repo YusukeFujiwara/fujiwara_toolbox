@@ -81,25 +81,10 @@ class MD():
         #なかったのでデフォルトに戻す
         self.scale = "100%"
 
-    def find(self, filename, search_screen = True):
-        if check_abort():
-            print("aboted.")
-            return False
+    def find(self, filename):
+        return self.click(filename, False)
 
-        img = self.imgpath(filename)
-
-        if search_screen:
-            region = App.focusedWindow().getScreen()
-        else:
-            region = App.focusedWindow()
-
-        m = region.exists(img)
-
-        if m is not None:
-            return True
-        return False
-
-    def click(self, filename):
+    def click(self, filename, click=True):
         if check_abort():
             print("aboted.")
             return False
@@ -127,12 +112,17 @@ class MD():
         
         for i in scrn_list:
             region = Screen(i)
-            m = region.exists(img)
-            if m is not None:
-                break
+            try:
+                m = region.exists(img)
+                if m is not None:
+                    break
+            except:
+                pass
+            
 
         if m is not None:
-            region.click(m)
+            if click:
+                region.click(m)
             print(filename)
             return True
 
