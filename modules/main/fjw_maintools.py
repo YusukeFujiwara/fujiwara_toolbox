@@ -3365,21 +3365,206 @@ class FUJIWARATOOLBOX_comic_shader_nospec(bpy.types.Operator):
 
 
 
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
 
 
+############################################################################################################################
+uiitem("Cycles")
+############################################################################################################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#Cyclesマテリアル化
+########################################
+#bpy.ops.fujiwara_toolbox.cycles_to_cycles_material() #Cyclesマテリアル化
+class FUJIWARATOOLBOX_CYCLES_TO_CYCLES_MATERIAL(bpy.types.Operator):
+    """通常マテリアルをCyclesマテリアルに変換する。テクスチャはbaseColorの同一ディレクトリから検索する。"""
+    bl_idname = "fujiwara_toolbox.cycles_to_cycles_material"
+    bl_label = "Cyclesマテリアル化"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def imagetex_node(self, ntu, path):
+        node = ntu.add("ShaderNodeTexImage", "Texture Image")
+        node.image = bpy.data.images.load(filepath=path)
+        return node
+
+    def add_tex(self, ntu, connect_from, path, connect_to):
+        n_tex = self.imagetex_node(ntu,path)
+        ntu.link(connect_from, n_tex.inputs["Vector"])
+        ntu.link(n_tex.outputs["Color"], connect_to)
+        return n_tex
+
+    def find_from_list(self, strlist, target):
+        for obj in strlist:
+            if target in obj:
+                return obj
+        return None
+
+    def execute(self, context):
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            if not hasattr(obj.data, "materials"):
+                continue
+            for mat in obj.data.materials:
+                ntu = fjw.NodetreeUtils(mat)
+                ntu.activate()
+                ntu.cleartree()
+
+                n_out = ntu.add("ShaderNodeOutputMaterial", "Output Material")
+                n_texcoord = ntu.add("ShaderNodeTexCoord", "Texture Coordinates")
+                n_map = ntu.add("ShaderNodeMapping", "Mapping")
+                n_map.vector_type = "POINT"
+                ntu.link(n_texcoord.outputs["UV"], n_map.inputs["Vector"])
+
+                n_prncpl = ntu.add("ShaderNodeBsdfPrincipled", "Principled BSDF")
+                ntu.link(n_prncpl.outputs["BSDF"], n_out.inputs["Surface"])
+                n_prncpl.inputs["Base Color"].default_value = (mat.diffuse_color.r, mat.diffuse_color.g, mat.diffuse_color.b, 1)
+
+                n_norm = ntu.add("ShaderNodeNormalMap", "Normal Map")
+                ntu.link(n_norm.outputs["Normal"], n_prncpl.inputs["Normal"])
+
+                texpath = ""
+                #テクスチャ関係
+                for tslot in mat.texture_slots:
+                    if tslot is not None and tslot.texture is not None and tslot.texture.image is not None:
+                        img = tslot.texture.image
+                        if "_basecolor" in img.filepath:
+                            texpath = bpy.path.abspath(img.filepath)
+                
+                self.report({"INFO"}, texpath)
+                
+                if texpath != "":
+                    texname = os.path.splitext(os.path.basename(texpath))[0]
+                    texid = texname.replace("_basecolor", "")
+                    texdir = os.path.dirname(texpath)
+                    files = os.listdir(texdir)
+
+                    texlist = []
+                    for file in files:
+                        if texid in file:
+                            texlist.append(file)
+                    
+                    #basecolor
+                    identifier = "_basecolor" 
+                    texfilename = self.find_from_list(texlist, texid + identifier)
+                    if texfilename is not None:
+                        path = os.path.normpath(texdir + os.sep + texfilename)
+                        n_tex = self.add_tex(ntu, n_map.outputs["Vector"], path, n_prncpl.inputs["Base Color"])
+                        n_tex.color_space = "COLOR"
+                    #metallic
+                    identifier = "_metallic" 
+                    texfilename = self.find_from_list(texlist, texid + identifier)
+                    if texfilename is not None:
+                        path = os.path.normpath(texdir + os.sep + texfilename)
+                        n_tex = self.add_tex(ntu, n_map.outputs["Vector"], path, n_prncpl.inputs["Metallic"])
+                        n_tex.color_space = "NONE"
+                    #normal
+                    identifier = "_normal" 
+                    texfilename = self.find_from_list(texlist, texid + identifier)
+                    if texfilename is not None:
+                        path = os.path.normpath(texdir + os.sep + texfilename)
+                        n_tex = self.add_tex(ntu, n_map.outputs["Vector"], path, n_norm.inputs["Color"])
+                        n_tex.color_space = "NONE"
+                    #roughness
+                    identifier = "_roughness" 
+                    texfilename = self.find_from_list(texlist, texid + identifier)
+                    if texfilename is not None:
+                        path = os.path.normpath(texdir + os.sep + texfilename)
+                        n_tex = self.add_tex(ntu, n_map.outputs["Vector"], path, n_prncpl.inputs["Roughness"])
+                        n_tex.color_space = "NONE"
+                    #height
+                    identifier = "_height" 
+                    texfilename = self.find_from_list(texlist, texid + identifier)
+                    if texfilename is not None:
+                        path = os.path.normpath(texdir + os.sep + texfilename)
+                        n_tex = self.add_tex(ntu, n_map.outputs["Vector"], path, n_out.inputs["Displacement"])
+                        n_tex.color_space = "NONE"
+
+                    n_prncpl.location = (ntu.posx, ntu.posy)
+                    ntu.posx += 200
+                    n_out.location = (ntu.posx, ntu.posy)
+                
+
+        return {'FINISHED'}
+########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
 
 
+############################################################################################################################
+uiitem("ワールド")
+############################################################################################################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#HDRI設定
+########################################
+#bpy.ops.fujiwara_toolbox.cycles_set_hdri() #HDRI設定
+class FUJIWARATOOLBOX_CYCLES_SET_HDRI(bpy.types.Operator):
+    """ファイルを読み込んでHDRIを設定する。"""
+    bl_idname = "fujiwara_toolbox.cycles_set_hdri"
+    bl_label = "HDRI設定"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    filename = bpy.props.StringProperty(subtype="FILE_NAME")
+    filepath = bpy.props.StringProperty(subtype="FILE_PATH")
+    directory = bpy.props.StringProperty(subtype="DIR_PATH")
+    files = bpy.props.CollectionProperty(type=bpy.types.PropertyGroup)
+
+    def invoke(self, context, event):
+        self.directory = os.path.dirname(bpy.data.filepath)
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+    def execute(self, context):
+        if self.filename == "":
+            return {"CANCELLED"}
+        path = os.path.normpath(self.directory + os.sep + self.filename)
+
+        world = bpy.context.scene.world
+        ntu = fjw.NodetreeUtils(world)
+        ntu.activate()
+        ntu.cleartree()
+        n_out = ntu.add("ShaderNodeOutputWorld", "Output World")
+        n_bg = ntu.add("ShaderNodeBackground", "Background")
+        n_env = ntu.add("ShaderNodeTexEnvironment", "Texture Enviroment")
+        ntu.link(n_env.outputs["Color"], n_bg.inputs["Color"])
+        ntu.link(n_bg.outputs["Background"], n_out.inputs["Surface"])
+        n_bg.inputs["Strength"].default_value = 0.5
+
+        img = bpy.data.images.load(filepath=path)
+        n_env.image = img
+
+        bpy.context.scene.render.layers.active.use_sky = True
+        world.cycles.sample_as_light = True
+        world.cycles.sample_map_resolution = img.size[0]
+        bpy.context.scene.cycles.film_transparent = False
 
 
-
-
-
-
-
-
-
-
-
+        return {'FINISHED'}
+########################################
 
 #---------------------------------------------
 uiitem().vertical()
@@ -15341,7 +15526,7 @@ class MDObject():
         self.__export_setup(dirpath)
         path = os.path.normpath(self.export_dir + os.sep + self.mdname + ".abc")
         print("export abc:%s"%path)
-        bpy.ops.wm.alembic_export(filepath=path, start=1, end=11, selected=True, visible_layers_only=True, flatten=True, apply_subdiv=True, compression_type='OGAWA', as_background_job=False)
+        bpy.ops.wm.alembic_export(filepath=path, start=1, end=20, selected=True, visible_layers_only=True, flatten=True, apply_subdiv=True, compression_type='OGAWA', as_background_job=False)
 
     def export_to_mddata(self):
         self.export_abc(self.export_dir)
