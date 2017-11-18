@@ -89,10 +89,6 @@ class MD():
             print("aboted.")
             return False
 
-        """
-            ウィンドウベースで指定画像をクリックする。
-            search_screen=Trueでスクリーンベースの検索。
-        """
         img = self.imgpath(filename)
         # pat = Pattern(self.imgpath(filename))
         # img = pat.similar(0.5)
@@ -102,20 +98,23 @@ class MD():
         # else:
         #     region = App.focusedWindow()
         
-        active_screen_id = App.focusedWindow().getScreen().getID()
-        #全スクリーンを検索する。
-        screens_n = Screen.getNumberScreens() - 1
-        scrn_list = [active_screen_id]
-        for i in range(screens_n):
-            if i not in scrn_list:
-                scrn_list.append(i)
-        
-        for i in scrn_list:
-            region = Screen(i)
-            m = region.exists(img)
-            if m is not None:
-                break
-            
+        # active_screen_id = App.focusedWindow().getScreen().getID()
+        # #全スクリーンを検索する。
+        # screens_n = Screen.getNumberScreens() - 1
+        # scrn_list = [active_screen_id]
+        # for i in range(screens_n):
+        #     if i not in scrn_list:
+        #         scrn_list.append(i)
+
+        # for i in scrn_list:
+        #     region = Screen(i)
+        #     m = region.exists(img)
+        #     if m is not None:
+        #         break
+        # 負の座標のスクリーンで問題が起こる。
+
+        region = App.focusedWindow().getScreen()
+        m = region.exists(img)
 
         if m is not None:
             if click:
