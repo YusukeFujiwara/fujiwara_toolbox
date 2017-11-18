@@ -1290,7 +1290,7 @@ class NodetreeUtils():
         node.label = label
 
         node.location = self.posx,self.posy
-        self.posx += 100
+        self.posx += 200
 
         return node
 
