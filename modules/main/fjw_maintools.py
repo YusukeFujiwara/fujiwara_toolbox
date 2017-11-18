@@ -15361,7 +15361,7 @@ class MDObject():
         avatar_path = os.path.normpath(self.export_dir + os.sep + self.mdname + ".abc")
         animation_path = "none"
         garment_path = os.path.normpath(self.get_garment_path())
-        result_path = os.path.normpath(self.export_dir + os.sep + "result.abc")
+        result_path = os.path.normpath(self.export_dir + os.sep + "result.obj")
 
         cmdstr = 'python "%s" "%s" "%s" "%s" "%s"'%(toolpath, avatar_path, animation_path, garment_path, result_path)
         print(cmdstr)
@@ -15581,7 +15581,7 @@ class MarvelousDesingerUtils():
 
         bonemode = False
         #もしボーンが選択されていたらそのボーンにトランスフォームをあわせる
-        if current.mode == "POSE":
+        if current is not None and current.mode == "POSE":
             armu = fjw.ArmatureUtils(current)
             pbone = armu.poseactive()
             armu.get_pbone_world_co(pbone.head)
@@ -15628,7 +15628,8 @@ class MarvelousDesingerUtils():
                     obj.rotation_euler = obj.rotation_quaternion.to_euler()
         
                 #読み先にレイヤーをそろえる
-                obj.layers = current.layers
+                if current is not None:
+                    obj.layers = current.layers
         
         if attouch_fjwset:
             bpy.ops.fujiwara_toolbox.command_318722()#裏ポリエッジ付加
@@ -15637,6 +15638,9 @@ class MarvelousDesingerUtils():
 
     @classmethod
     def mdresult_auto_import_main(cls, self, context, attouch_fjwset=False):
+        import_ext = ".obj"
+
+
         #存在確認
         blendname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
         dir = os.path.dirname(bpy.data.filepath) + os.sep + "MDData" + os.sep + blendname + os.sep
@@ -15709,7 +15713,7 @@ class MarvelousDesingerUtils():
                     print("MDImport Selecting GeoBone:" + dir + file)
 
             #インポート
-            mdresultpath = dir + file + os.sep + "result.abc"
+            mdresultpath = dir + file + os.sep + "result" + import_ext
             MarvelousDesingerUtils.import_mdresult(mdresultpath, attouch_fjwset)
             print("MDImport Import MDResult:"+mdresultpath)
 

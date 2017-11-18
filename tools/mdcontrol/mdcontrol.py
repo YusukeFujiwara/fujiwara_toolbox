@@ -24,8 +24,10 @@ def sim(avatar_path, animation_path, garment_path, result_path):
     mdmacro.add_garment(garment_path)
     mdmacro.simulate(simulation_config.simulate_time)
     mdmacro.select_all()
-    # mdmacro.export_obj(result_path)
-    mdmacro.export_abc(result_path)
+    if ".obj" in result_path:
+        mdmacro.export_obj(result_path)
+    if ".abc" in result_path:
+        mdmacro.export_abc(result_path)
     os.remove(avatar_path)
     os.remove(animation_path)
     os.remove(garment_path)
