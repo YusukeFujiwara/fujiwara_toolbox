@@ -99,7 +99,7 @@ class MD():
             return True
         return False
 
-    def click(self, filename, search_screen = True):
+    def click(self, filename):
         if check_abort():
             print("aboted.")
             return False
@@ -112,12 +112,24 @@ class MD():
         # pat = Pattern(self.imgpath(filename))
         # img = pat.similar(0.5)
 
-        if search_screen:
-            region = App.focusedWindow().getScreen()
-        else:
-            region = App.focusedWindow()
-
-        m = region.exists(img)
+        # if search_screen:
+        #     region = App.focusedWindow().getScreen()
+        # else:
+        #     region = App.focusedWindow()
+        
+        active_screen_id = App.focusedWindow().getScreen().getID()
+        #全スクリーンを検索する。
+        screens_n = Screen.getNumberScreens()
+        scrn_list = [active_screen_id]
+        for i in range(screens_n):
+            if i not in scrn_list:
+                scrn_list.append(i)
+        
+        for i in scrn_list:
+            region = Screen(i)
+            m = region.exists(img)
+            if m is not None:
+                break
 
         if m is not None:
             region.click(m)
@@ -254,7 +266,9 @@ class MDMacro():
         #成功するまでトライ
         for i in range(30):
             md.activate()
-            md.click("sim_off")
+            # md.click("sim_off")
+            md.click("3dgarment")
+            md.click("simulation_off")
 
             f = md.find("sim_on")
 
