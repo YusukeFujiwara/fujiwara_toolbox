@@ -1,10 +1,2 @@
-import sys
-import os
-import shutil
-import subprocess
-import mylib
-
-args = sys.argv
-
-selfpath = args[0]
-selfdir = os.path.dirname(selfpath)
+#シミュレーション時間。単位は秒。
+simulate_time = 4

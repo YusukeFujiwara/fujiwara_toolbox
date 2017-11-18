@@ -81,6 +81,24 @@ class MD():
         #なかったのでデフォルトに戻す
         self.scale = "100%"
 
+    def find(self, filename, search_screen = True):
+        if check_abort():
+            print("aboted.")
+            return False
+
+        img = self.imgpath(filename)
+
+        if search_screen:
+            region = App.focusedWindow().getScreen()
+        else:
+            region = App.focusedWindow()
+
+        m = region.exists(img)
+
+        if m is not None:
+            return True
+        return False
+
     def click(self, filename, search_screen = True):
         if check_abort():
             print("aboted.")
@@ -236,9 +254,11 @@ class MDMacro():
         #成功するまでトライ
         for i in range(30):
             md.activate()
-            c = md.click("sim_off")
+            md.click("sim_off")
 
-            if c:
+            f = md.find("sim_on")
+
+            if f:
                 break
             md.wait(0.5)
 
