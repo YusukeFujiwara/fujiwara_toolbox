@@ -25,9 +25,9 @@ def sim(avatar_path, animation_path, garment_path, result_path):
     mdmacro.simulate(simulation_config.simulate_time)
     mdmacro.select_all()
     if ".obj" in result_path:
-        mdmacro.export_obj(result_path)
+        mdmacro.export_obj(result_path, simulation_config.use_thickness)
     if ".abc" in result_path:
-        mdmacro.export_abc(result_path)
+        mdmacro.export_abc(result_path, simulation_config.use_thickness)
     os.remove(avatar_path)
     os.remove(animation_path)
     os.remove(garment_path)

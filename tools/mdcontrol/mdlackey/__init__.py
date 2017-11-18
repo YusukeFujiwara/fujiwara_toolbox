@@ -291,7 +291,7 @@ class MDMacro():
         type("a",Key.CTRL)
 
     @classmethod
-    def export_obj(self, filepath):
+    def export_obj(self, filepath, use_thickness):
         md = MD()
         if not md.is_initialized:
             print("###MD is not initialized.")
@@ -308,7 +308,8 @@ class MDMacro():
         MD.wait(0.5)
         md.click("single_object")
         # md.click("combine_objects")
-        md.click("thick")
+        if use_thickness:
+            md.click("thick")
         md.click("m")
         md.click("ok")
 
@@ -328,6 +329,7 @@ class MDMacro():
         uwsc.click_item("はい")
         MD.wait(1)
         md.click("single_object")
-        md.click("thick")
+        if use_thickness:
+            md.click("thick")
         md.click("m")
         md.click("ok")
