@@ -355,6 +355,8 @@ class MDMacro():
         uwsc.click_item("はい")
         MD.wait(0.5)
         md.click("single_object")
+        md.click("select_all_graphics")
+        md.click("select_all_patterns")
         # md.click("combine_objects")
         if use_thickness:
             md.click("thick")

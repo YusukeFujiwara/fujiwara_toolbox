@@ -15341,7 +15341,7 @@ class MDObject():
         self.__export_setup(dirpath)
         path = os.path.normpath(self.export_dir + os.sep + self.mdname + ".abc")
         print("export abc:%s"%path)
-        bpy.ops.wm.alembic_export(filepath=path, start=1, end=10, selected=True, visible_layers_only=True, flatten=True, apply_subdiv=True, compression_type='OGAWA', as_background_job=False)
+        bpy.ops.wm.alembic_export(filepath=path, start=1, end=11, selected=True, visible_layers_only=True, flatten=True, apply_subdiv=True, compression_type='OGAWA', as_background_job=False)
 
     def export_to_mddata(self):
         self.export_abc(self.export_dir)
