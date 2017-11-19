@@ -3611,14 +3611,34 @@ uiitem("シーン設定")
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
+# ########################################
+# #filmic
+# ########################################
+# #bpy.ops.fujiwara_toolbox.set_filmic() #filmic
+# class FUJIWARATOOLBOX_SET_FILMIC(bpy.types.Operator):
+#     """filmicをシーンに設定する。"""
+#     bl_idname = "fujiwara_toolbox.set_filmic"
+#     bl_label = "filmic"
+#     bl_options = {'REGISTER', 'UNDO'}
+
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+#     def execute(self, context):
+#         bpy.context.scene.view_settings.view_transform = 'Filmic'
+#         bpy.context.scene.view_settings.look = 'Filmic - Base Contrast'
+#         return {'FINISHED'}
+# ########################################
+
+
 ########################################
-#filmic
+#ざっくりCyclesセットアップ
 ########################################
-#bpy.ops.fujiwara_toolbox.set_filmic() #filmic
-class FUJIWARATOOLBOX_SET_FILMIC(bpy.types.Operator):
-    """filmicをシーンに設定する。"""
-    bl_idname = "fujiwara_toolbox.set_filmic"
-    bl_label = "filmic"
+#bpy.ops.fujiwara_toolbox.easy_cycles_setup() #ざっくりCyclesセットアップ
+class FUJIWARATOOLBOX_EASY_CYCLES_SETUP(bpy.types.Operator):
+    """ざっくりとCycles用の設定をセットアップする。"""
+    bl_idname = "fujiwara_toolbox.easy_cycles_setup"
+    bl_label = "ざっくりCyclesセットアップ"
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
@@ -3626,8 +3646,25 @@ class FUJIWARATOOLBOX_SET_FILMIC(bpy.types.Operator):
 
     def execute(self, context):
         bpy.context.scene.view_settings.view_transform = 'Filmic'
+        bpy.context.scene.view_settings.look = 'Filmic - Base Contrast'
+        bpy.context.scene.cycles.use_square_samples = True
+        bpy.context.scene.cycles.samples = 10
+        bpy.context.scene.cycles.preview_samples = 10
+        bpy.context.scene.cycles.transparent_max_bounces = 8
+        bpy.context.scene.cycles.transparent_min_bounces = 8
+        bpy.context.scene.cycles.use_transparent_shadows = True
+        bpy.context.scene.cycles.max_bounces = 8
+        bpy.context.scene.cycles.min_bounces = 8
+        bpy.context.scene.cycles.diffuse_bounces = 0
+        bpy.context.scene.cycles.glossy_bounces = 1
+        bpy.context.scene.cycles.transmission_bounces = 2
+        bpy.context.scene.cycles.volume_bounces = 0
+
         return {'FINISHED'}
 ########################################
+
+
+
 
 
 

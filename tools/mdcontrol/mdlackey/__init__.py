@@ -6,6 +6,46 @@ import sys
 sys.path.append(os.pardir)
 import uwscwrapper as uwsc
 
+sys.path.append(os.pardir)
+import simulation_config
+
+debug = False
+# debug = True
+
+###############################################
+#  for patch
+from PIL import Image, ImageTk
+from numbers import Number
+try:
+    import Tkinter as tk
+    import tkMessageBox as tkmb
+except ImportError:
+    import tkinter as tk
+    import tkinter.messagebox as tkmb
+import multiprocessing
+import subprocess
+import pyperclip
+import tempfile
+import platform
+import numpy
+import time
+import uuid
+import cv2
+import sys
+import os
+import re
+
+# Python 3 compatibility
+try:
+    basestring
+except NameError:
+    basestring = str
+try:
+    FOREVER = float("inf")
+except:
+    import math
+    FOREVER = math.inf
+###############################################
 
 def check_abort():
     loc = Mouse().getPos()
@@ -13,6 +53,64 @@ def check_abort():
         print("abort.")
         sys.exit()
 
+
+class RegionPatch(Region, object):
+    def exists_patch(self, pattern, seconds=None):
+        """ Searches for an image pattern in the given region
+
+        Returns Match if pattern exists, None otherwise (does not throw exception)
+        Sikuli supports OCR search with a text parameter. This does not (yet).
+        """
+        find_time = time.time()
+        r = self
+        if seconds is None:
+            seconds = self.autoWaitTimeout
+        if isinstance(pattern, int):
+            # Actually just a "wait" statement
+            time.sleep(pattern)
+            return
+        if not pattern:
+            time.sleep(seconds)
+        if not isinstance(pattern, Pattern):
+            if not isinstance(pattern, basestring):
+                raise TypeError("find expected a string [image path] or Pattern object")
+            pattern = Pattern(pattern)
+        needle = cv2.imread(pattern.path)
+        if needle is None:
+            raise ValueError("Unable to load image '{}'".format(pattern.path))
+        needle_height, needle_width, needle_channels = needle.shape
+        match = None
+        timeout = time.time() + seconds
+
+        # Consult TemplateMatcher to find needle
+        while not match:
+            matcher = lackey.TemplateMatchers.PyramidTemplateMatcher(r.getBitmap())
+            match = matcher.findBestMatch(needle, pattern.similarity)
+            time.sleep(1/self._defaultScanRate if self._defaultScanRate is not None else 1/Settings.WaitScanRate)
+            if time.time() > timeout:
+                break
+
+        if match is None:
+            Debug.info("Couldn't find '{}' with enough similarity.".format(pattern.path))
+            return None
+
+        # Translate local position into global screen position
+        position, confidence = match
+        position = (position[0] + self.x, position[1] + self.y)
+        self._lastMatch = Match(
+            confidence,
+            pattern.offset,
+            (position, (needle_width, needle_height)))
+        #self._lastMatch.debug_preview()
+        Debug.info("Found match for pattern '{}' at ({},{}) with confidence ({}). Target at ({},{})".format(
+            pattern.path,
+            self._lastMatch.getX(),
+            self._lastMatch.getY(),
+            self._lastMatch.getScore(),
+            self._lastMatch.getTarget().x,
+            self._lastMatch.getTarget().y))
+        self._lastMatchTime = (time.time() - find_time) * 1000 # Capture find time in milliseconds
+        return self._lastMatch
 
 class MD():
     """
@@ -37,8 +135,13 @@ class MD():
         self.scale = "100%"
 
         Settings.MoveMouseDelay = 0.01
+        Settings.MinSimilarity = 0.95
 
         self.set_scale("file")
+
+        self.activate()
+        self.screen = App.focusedWindow().getScreen()
+        self.screen_id = self.screen.getID()
 
     @classmethod
     def wait(self, time):
@@ -81,66 +184,80 @@ class MD():
         #なかったのでデフォルトに戻す
         self.scale = "100%"
 
-    def find(self, filename):
-        return self.click(filename, False)
+    def find(self, filename, multiscreen=False,):
+        return self.click(filename, click=False, multiscreen=multiscreen)
 
-    def click(self, filename, click=True):
+    @classmethod
+    def create_correct_region(cls, region):
+        x0 = region.getTopLeft().getX()
+        y0 = region.getTopLeft().getY()
+        x1 = region.getBottomRight().getX()
+        y1 = region.getBottomRight().getY()
+        w = x1 - x0
+        h = y1 - y0
+
+        return RegionPatch(x0,y0,w,h)
+
+    @classmethod
+    def highlight(cls, region, color="yellow"):
+        global debug
+        if debug:
+            region.highlight(True, 1, color)
+
+    @classmethod
+    def extend_region(cls, region, value):
+        x0 = region.getTopLeft().getX() - value
+        y0 = region.getTopLeft().getY() - value
+        x1 = region.getBottomRight().getX() + value
+        y1 = region.getBottomRight().getY() + value
+        w = x1 - x0
+        h = y1 - y0
+        return Region(x0,y0,w,h)
+
+
+    def click(self, filename, click=True, region=None, multiscreen=False):
         if check_abort():
             print("aboted.")
             return False
 
+        # win = App.focusedWindow()
+        # self.highlight(win, "green")
+
+        sec = simulation_config.max_search_time
         img = self.imgpath(filename)
-        # pat = Pattern(self.imgpath(filename))
-        # img = pat.similar(0.5)
+        m = None
 
-        # if search_screen:
-        #     region = App.focusedWindow().getScreen()
-        # else:
-        #     region = App.focusedWindow()
-        
-        # active_screen_id = App.focusedWindow().getScreen().getID()
-        # #全スクリーンを検索する。
-        # screens_n = Screen.getNumberScreens() - 1
-        # scrn_list = [active_screen_id]
-        # for i in range(screens_n):
-        #     if i not in scrn_list:
-        #         scrn_list.append(i)
+        if region is None and multiscreen:
+            n_of_screens = Screen.getNumberScreens()
 
-        # for i in scrn_list:
-        #     region = Screen(i)
-        #     m = region.exists(img)
-        #     if m is not None:
-        #         break
-        # 負の座標のスクリーンで問題が起こる。
+            #アクティブスクリーンから検索するリスト
+            scrs = [self.screen_id]
+            for i in range(n_of_screens):
+                if i not in scrs:
+                    scrs.append(i)
 
+            for i in scrs:
+                region = self.create_correct_region(Screen(i))
+                self.highlight(region)
+                m = region.exists_patch(img, sec)
+                if m:
+                    break
+        elif region is None and not multiscreen:
+            region = self.screen
+            region = self.create_correct_region(region)
+            m = region.exists_patch(img, sec)
+        else:
+            region = self.create_correct_region(region)
+            self.highlight(region)
+            m = region.exists_patch(img, sec)
 
-
-        #テスト
-        # Screen.showMonitors()
-        # print("*****----------------------")
-        # screens_n = Screen.getNumberScreens()
-        # print(screens_n)
-        # for i in range(screens_n):
-        #     print(Screen(i).getBounds())
-        # print("----------------------*****")
-
-        # ##################
-        # screens_n = Screen.getNumberScreens()
-        # for i in range(screens_n):
-        #     m = Screen(i).exists(img)
-        #     if m is not None:
-        #         break
-        # ##################
-
-        region = App.focusedWindow().getScreen()
-        m = region.exists(img)
-
-        if m is not None:
+        if m:
+            self.highlight(m, "red")
             if click:
                 region.click(m)
             print(filename)
-            return True
-        return False
+            return m
+        return None
 
     # def click_untill_success(self, filename):
     #     for i in range(100):
@@ -223,8 +340,8 @@ class MDMacro():
         MD.wait(0.5)
         self.paste_str(filepath)
 
-        md.click("ok")
-        md.click("close")
+        md.click("ok", multiscreen=True)
+        md.click("close", multiscreen=True)
         md.activate()
 
     @classmethod
@@ -242,9 +359,9 @@ class MDMacro():
         # uwsc.click_item(filename)
         MD.wait(0.5)
         self.paste_str(filepath)
-        md.click("m")
-        md.click("ok")
-        md.click("close")
+        md.click("m", multiscreen=True)
+        md.click("ok", multiscreen=True)
+        md.click("close", multiscreen=True)
         md.activate()
 
     @classmethod
@@ -285,8 +402,8 @@ class MDMacro():
 
         MD.wait(0.5)
         self.paste_str(filepath)
-        md.click("m")
-        md.click("ok")
+        md.click("m", multiscreen=True)
+        md.click("ok", multiscreen=True)
 
     @classmethod
     def simulate(self, time):
@@ -354,9 +471,40 @@ class MDMacro():
         MD.wait(0.5)
         uwsc.click_item("はい")
         MD.wait(0.5)
-        md.click("single_object")
-        md.click("select_all_graphics")
-        md.click("select_all_patterns")
+        md.click("single_object", multiscreen=True)
+
+        # m = md.find("select_all_graphics_on")
+        # if not m:
+        #     md.click("select_all_graphics")
+
+        # m = md.find("select_all_graphics_and_trims_on")
+        # if not m:
+        #     md.click("select_all_graphics_and_trims")
+
+        # m = md.find("select_all_patterns_on")
+        # if not m:
+        #     md.click("select_all_patterns")
+        
+        m = md.find("select_all_graphics")
+        if m:
+            m = MD.extend_region(m, 10)
+            md.click("checkbox_off",region=m)
+
+        m = md.find("select_all_graphics_and_trims") 
+        if m:
+            m = MD.extend_region(m, 10)
+            md.click("checkbox_off",region=m)
+
+        m = md.find("select_all_patterns") 
+        if m:
+            m = MD.extend_region(m, 10)
+            md.click("checkbox_off",region=m)
+
+        m = md.find("combine_uvs") 
+        if m:
+            m = MD.extend_region(m, 10)
+            md.click("checkbox_on",region=m)
+
         # md.click("combine_objects")
         if use_thickness:
             md.click("thick")
