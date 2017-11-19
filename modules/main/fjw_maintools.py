@@ -3548,11 +3548,19 @@ class FUJIWARATOOLBOX_CYCLES_SET_HDRI(bpy.types.Operator):
         ntu.activate()
         ntu.cleartree()
         n_out = ntu.add("ShaderNodeOutputWorld", "Output World")
+
         n_bg = ntu.add("ShaderNodeBackground", "Background")
         n_env = ntu.add("ShaderNodeTexEnvironment", "Texture Enviroment")
         ntu.link(n_env.outputs["Color"], n_bg.inputs["Color"])
         ntu.link(n_bg.outputs["Background"], n_out.inputs["Surface"])
         n_bg.inputs["Strength"].default_value = 0.5
+
+        n_texcoord = ntu.add("ShaderNodeTexCoord", "Texture Coordinates")
+        n_map = ntu.add("ShaderNodeMapping", "Mapping")
+        n_map.vector_type = "POINT"
+        ntu.link(n_texcoord.outputs["Generated"], n_map.inputs["Vector"])
+        ntu.link(n_map.outputs["Vector"], n_env.inputs["Vector"])
+
 
         img = bpy.data.images.load(filepath=path)
         n_env.image = img
@@ -3597,6 +3605,34 @@ class CATEGORYBUTTON_959029(bpy.types.Operator):#Render
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
+############################################################################################################################
+uiitem("シーン設定")
+############################################################################################################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+########################################
+#filmic
+########################################
+#bpy.ops.fujiwara_toolbox.set_filmic() #filmic
+class FUJIWARATOOLBOX_SET_FILMIC(bpy.types.Operator):
+    """filmicをシーンに設定する。"""
+    bl_idname = "fujiwara_toolbox.set_filmic"
+    bl_label = "filmic"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        bpy.context.scene.view_settings.view_transform = 'Filmic'
+        return {'FINISHED'}
+########################################
+
+
+
+
+
 
 
 #---------------------------------------------
@@ -16086,12 +16122,6 @@ class FUJIWARATOOLBOX_MDRESULT_AUTOIMPORT_AND_ATTOUCH(bpy.types.Operator):
         return {'FINISHED'}
 ########################################
 
-
-
-
-
-
-
 ########################################
 #オートインポートしてGLレンダ
 ########################################
@@ -16110,6 +16140,18 @@ class FUJIWARATOOLBOX_mdresult_autoimport_and_glrender(bpy.types.Operator):
         bpy.ops.fujiwara_toolbox.command_979047()
         return {'FINISHED'}
 ########################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+############################################################################################################################
+uiitem("オート")
+############################################################################################################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
 
 #---------------------------------------------
 uiitem().vertical()
