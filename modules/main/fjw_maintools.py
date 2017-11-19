@@ -15832,6 +15832,9 @@ class MarvelousDesingerUtils():
 
     @classmethod
     def import_mdresult(cls,resultpath, attouch_fjwset=False):
+        if not os.path.exists(resultpath):
+            return
+
         current = fjw.active()
 
         loc = Vector((0,0,0))
