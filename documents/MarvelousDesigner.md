@@ -86,4 +86,6 @@
     エクスポート時に厚みをつけるかどうか。True/False
     MarvelousDesigner7は厚みをつけると不具合がでることがあるのでFalseにしたほうがよい。
     6.5ならTrueでも問題ない。
+*　max_search_time  
+    画像検索の最大待ち時間（秒）。Noneで最大まで待つ。
 
