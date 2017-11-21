@@ -4,4 +4,4 @@ simulate_time = 4
 use_thickness = False
 
 #メニューのマッチングの最大待ち時間（秒）。Noneで最大まで待つ。
-max_search_time = 0.5
+max_search_time = 2
