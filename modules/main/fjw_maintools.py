@@ -12711,11 +12711,15 @@ class ChildInfo:
     def print_info(self):
         print("%s : %s, %s"%(self.obj.name, self.parent_type, self.parent_bone))
 
+
 class BoneInfo:
     def __init__(self, bone):
         self.name = bone.name
         self.use_deform = bone.use_deform
         self.hide = bone.hide
+
+# import submodules.rigify_tools
+import fujiwara_toolbox.modules.main.submodules.rigify_tools as rigify_tools
 
 ########################################
 #Genrigして再ペアレント
