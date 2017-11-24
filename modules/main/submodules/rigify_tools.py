@@ -56,9 +56,19 @@ class RiggedObject():
     def __init__(self, obj, rig):
         self.obj = obj
         self.rig = rig
+        self.rigname = rig.name
         self.parent_type = obj.parent_type
         self.parent_bone = obj.parent_bone
         self.print_info()
+        modu = fjw.Modutils(obj)
+        arm = modu.find_bytype("ARMATURE")
+        self.has_armature_mod = bool(arm)
+
+    def get_rig(self):
+        for obj in bpy.context.visible_objects:
+            if obj.name == self.rigname:
+                return obj
+        return None
 
     def parent_clear(self):
         """
@@ -76,8 +86,10 @@ class RiggedObject():
 
         obj = self.obj
 
+        fjw.mode("OBJECT")
         fjw.deselect()
         fjw.activate(obj)
+        fjw.mode("OBJECT")
 
         #モディファイアの適用
         if obj.type == "MESH":
@@ -93,13 +105,13 @@ class RiggedObject():
         """
         格納した情報に応じて再ペアレントする。
         """
-        rig = self.rig
+        rig = self.get_rig()
         obj = self.obj
 
         modu = fjw.Modutils(self.obj)
         mod_arm = modu.find_bytype("ARMATURE")
 
-        if mod_arm is None:
+        if  not self.has_armature_mod:
             fjw.mode("OBJECT")
             fjw.deselect()
             obj.select = True
@@ -175,15 +187,25 @@ class EditBoneData():
         # self.edit_bone = edit_bone
         self.obj = obj
         self.name = edit_bone.name
-        self.head = edit_bone.head
-        self.tail = edit_bone.tail
+        #そのままコピーすると参照が入る！！
+        self.head = (edit_bone.head.x,edit_bone.head.y,edit_bone.head.z)
+        self.tail = (edit_bone.tail.x,edit_bone.tail.y,edit_bone.tail.z)
         self.roll = edit_bone.roll
+        self.use_connect = edit_bone.use_connect
+        self.use_deform = edit_bone.use_deform
+        self.hide = edit_bone.hide
+        if edit_bone.parent:
+            self.has_parent = True
+        else:
+            self.has_parent = False
+        if len(edit_bone.children) == 0:
+            self.has_children = False
+        else:
+            self.has_children = True
 
     def get_ebone(self):
-        if fjw.active() != self.obj:
-            fjw.activate(self.obj)
-        if self.obj.mode != "EDIT":
-            fjw.mode("EDIT")
+        fjw.activate(self.obj)
+        fjw.mode("EDIT")
         edit_bones = self.obj.data.edit_bones
         if self.name in edit_bones:
             ebone = edit_bones[self.name]
@@ -203,6 +225,14 @@ class EditBoneData():
         self.hide = fromdata.hide
         self.restore_info()
 
+    def disconnect(self):
+        ebone = self.get_ebone()
+        ebone.use_connect = False
+    
+    def restore_connect(self):
+        ebone = self.get_ebone()
+        ebone.use_connect = self.use_connect
+
     def copy_shape(self, edit_bone_data, head=True, tail=True, roll=True):
         ebone = self.get_ebone()
         if ebone:
@@ -212,15 +242,7 @@ class EditBoneData():
                 ebone.tail = edit_bone_data.tail
             if roll:
                 ebone.roll = edit_bone_data.roll
-
-
-    def child_is_connected(self):
-        ebone = self.get_ebone()
-        if ebone:
-            for child in ebone.children:
-                if child.use_connect:
-                    return True
-        return False
+        self.obj.data.edit_bones.update()
 
 
 class EditBonesData():
@@ -254,6 +276,53 @@ class EditBonesData():
             if ebone:
                 ebone.restore_info_from(from_ebone)
 
+    def __get_root_ebones(self, ebones):
+        result = []
+        for ebone in ebones:
+            if not ebone.parent:
+                result.append(ebone)
+        return result
+
+    def __get_ebone_children(self, ebone):
+        result = []
+        result.append(ebone.name)
+
+        if len(ebone.children) == 0:
+            return result
+
+        for child in ebone.children:
+            children_list = self.__get_ebone_children(child)
+            result.extend(children_list)
+        return result
+
+
+    def get_treesort(self):
+        """
+        位置操作、ルートからやらないとめちゃくちゃになる。
+        ので、ルートから子へとソートしたリストを作成する。
+        結果はボーン名のリスト。
+        """
+        fjw.activate(self.obj)
+        fjw.mode("EDIT")
+
+        """
+        階層順にやっていけば間違いない？
+        途中で複数にわかれている場合どうするの？
+        探索関数いるのでは？
+        ていうかルートボーンだけ洗い出して、あとは
+        get_childrenメソッドがあればいいのでは
+        """
+        ebones = self.obj.data.edit_bones
+        roots = self.__get_root_ebones(ebones)
+
+
+        result = []
+        for root in roots:
+            children_list = self.__get_ebone_children(root)
+            result.extend(children_list)
+        return result
+
+
 class ArmatureTool():
     def __init__(self, obj):
         self.obj = obj
@@ -263,6 +332,9 @@ class ArmatureTool():
         self.layers = []
         for state in obj.layers:
             self.layers.append(state)
+        self.data_layers = []
+        for state in obj.data.layers:
+            self.data_layers.append(state)
 
         self.edit_bones_data = EditBonesData(obj)
 
@@ -290,6 +362,12 @@ class ArmatureTool():
         # for ebone in self.edit_bones_data.edit_bones:
         #     print("self:"+ ebone.name)
 
+    def show_all_layers(self):
+        self.obj.data.layers = [True for i in range(len(self.obj.data.layers))]
+    
+    def restore_layers(self):
+        self.obj.data.layers = self.data_layers
+        
 
 class Metarig(ArmatureTool):
     """
@@ -301,24 +379,37 @@ class Metarig(ArmatureTool):
     def __init__(self, obj):
         super().__init__(obj)
 
-    def copy_shapes(self, edit_bones_data, prefix="DEF-"):
+    def copy_shapes(self, edit_bones_data):
         """
         受け取ったデータのデータ通りにメタリグの形状を設定する。
         """
+
         fjw.activate(self.obj)
         fjw.mode("EDIT")
-        for edit_bone in edit_bones_data.edit_bones:
-            fixed_name = edit_bone.name.replace(prefix, "")
-            self_bone = self.edit_bones_data.get_ebone_byname(fixed_name)
-            if not self_bone:
-                continue
-            # if self_bone.child_is_connected():
-            #     #子が接続されているので、Headだけ動かす。
-            #     self_bone.copy_shape(edit_bone,True,False,True)
-            # else:
-            #     #子が接続されていないので、すべてコピー。
-            #     self_bone.copy_shape(edit_bone)
-            self_bone.copy_shape(edit_bone)
+
+        for ebone in self.edit_bones_data.edit_bones:
+            ebone.disconnect()
+
+        #ORG-をコピー
+        prefix="ORG-"
+        for ebone in self.edit_bones_data.edit_bones:
+            fixed_name = prefix + ebone.name
+            src = edit_bones_data.get_ebone_byname(fixed_name)
+            if src:
+                ebone.copy_shape(src)
+            else:
+                print("not found:%s"%(fixed_name))
+        #親のtailを子のheadにあわせる
+        for ebone in self.edit_bones_data.edit_bones:
+            if ebone.has_parent and ebone.use_connect:
+                edit_bone = ebone.get_ebone()
+                parent = edit_bone.parent
+                parent.tail = edit_bone.head
+        
+        for ebone in self.edit_bones_data.edit_bones:
+            ebone.restore_connect()
+
+
         fjw.mode("OBJECT")
 
 class Rig(ArmatureTool):
@@ -349,9 +440,26 @@ class Rig(ArmatureTool):
         fjw.deselect()
         fjw.activate(self.obj)
         fjw.mode("POSE")
+        self.show_all_layers()
+        bpy.ops.pose.reveal()
+        for pbone in self.obj.pose.bones:
+            pbone.bone.hide = False
+            pbone.bone.select = True
+        bpy.ops.pose.select_all(action='SELECT')
         bpy.ops.pose.visual_transform_apply()
+        self.mute_constraints()
+        fjw.mode("POSE")
         bpy.ops.pose.armature_apply()
+        self.restore_layers()
         self.reset_edit_bones()
+    
+    def mute_constraints(self):
+        pbones = self.obj.pose.bones
+        for pbone in pbones:
+            for c in pbone.constraints:
+                c.mute = True
+        self.obj.data.update_tag()
+        fjw.mode("OBJECT")
 
 class RigifyTools():
     def __init__(self):
@@ -388,14 +496,20 @@ class RigifyTools():
 
     def find_metarig(self, metarig=None):
         if metarig:
+            metarig.hide = False
             return metarig
 
         for obj in bpy.context.scene.objects:
             if obj.type != "ARMATURE":
                 continue
             if "rig_id" not in obj.data and "rig" in obj.name:
+                obj.hide = False
                 return obj
         return None
+
+    def is_symmetry(self, rig):
+        rig = Rig(rig)
+        return rig.is_symmetry()
 
     def gen_rig_and_reparent(self, metarig):
         """
@@ -431,7 +545,19 @@ class RigifyTools():
         
         return True
 
-    def rig_shape_to_metarig_shape(self,rig):
+    def freeze_rig(self,rig):
+        if rig.type != "ARMATURE":
+            return False
+
+        self.set_rig(rig)
+        self.rig.rigged_objects.apply()
+        self.rig.rigged_objects.parent_clear()
+        self.rig.apply_pose()
+        self.rig.rigged_objects.reparent()
+        fjw.mode("OBJECT")
+        
+
+    def metarig_shape_to_rig_shape(self,rig):
         if rig.type != "ARMATURE":
             return False
 
@@ -445,6 +571,12 @@ class RigifyTools():
         self.metarig.testprint()
 
         self.rig.rigged_objects.parent_clear()    
-        self.rig.apply_pose()
-        self.rig.reset_edit_bones()
-        self.metarig.copy_shapes(self.rig.edit_bones_data,"ORG-")
+        self.metarig.copy_shapes(self.rig.edit_bones_data)
+        self.rig.rigged_objects.reparent()
+
+    def update_rig_proportion(self, rig):
+        self.freeze_rig(rig)
+        self.metarig_shape_to_rig_shape(rig)
+        metarig = self.find_metarig()
+        fjw.activate(metarig)
+        self.gen_rig_and_reparent(metarig)
