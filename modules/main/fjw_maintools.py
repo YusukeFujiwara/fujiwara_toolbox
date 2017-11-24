@@ -12711,11 +12711,15 @@ class ChildInfo:
     def print_info(self):
         print("%s : %s, %s"%(self.obj.name, self.parent_type, self.parent_bone))
 
+
 class BoneInfo:
     def __init__(self, bone):
         self.name = bone.name
         self.use_deform = bone.use_deform
         self.hide = bone.hide
+
+# import submodules.rigify_tools
+import fujiwara_toolbox.modules.main.submodules.rigify_tools as rigify_tools
 
 ########################################
 #Genrigして再ペアレント
@@ -12733,6 +12737,8 @@ class FUJIWARATOOLBOX_GENRIG_REPARENT(bpy.types.Operator):
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     def execute(self, context):
+        bpy.ops.view3d.layers(nr=0, extend=False)
+
         armature = fjw.active()
         if armature.type != "ARMATURE":
             return {'CANCELLED'}
@@ -12752,6 +12758,7 @@ class FUJIWARATOOLBOX_GENRIG_REPARENT(bpy.types.Operator):
         rig_show_x_ray = False
         children_info = []
         bones_info = []
+        rig_layers = None
         if rigname in bpy.data.objects:
             rig = bpy.data.objects[rigname]
             rig_groups = rig.users_group
@@ -12771,6 +12778,10 @@ class FUJIWARATOOLBOX_GENRIG_REPARENT(bpy.types.Operator):
             #リグ削除するまえに、再生生後のリグデータ名がかぶらないようにリネームする
             rig.data.name = rig.data.name + "_prev"
 
+            rig_layers = []
+            for state in rig.layers:
+                rig_layers.append(state)
+
             #再生成だと10分かかるのが新規だと10秒だったりするので一回消しとく
             fjw.delete([rig])
 
@@ -12784,6 +12795,8 @@ class FUJIWARATOOLBOX_GENRIG_REPARENT(bpy.types.Operator):
         rig = fjw.active()
         rig.data.name = rigdata_name
         rig.show_x_ray = rig_show_x_ray
+        if rig_layers:
+            rig.layers = rig_layers
 
         #グループの反映
         for gr in rig_groups:
@@ -12844,6 +12857,7 @@ class FUJIWARATOOLBOX_GENRIG_REPARENT(bpy.types.Operator):
 
         
         armature.hide = True
+        bpy.ops.view3d.layers(nr=0, extend=False)
 
 
         return {'FINISHED'}

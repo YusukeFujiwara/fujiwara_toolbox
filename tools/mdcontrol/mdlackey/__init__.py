@@ -1,4 +1,5 @@
 import os
+import datetime
 import lackey
 from lackey import *
 
@@ -227,6 +228,8 @@ class MD():
         img = self.imgpath(filename)
         m = None
 
+        start_time = datetime.datetime.now()
+
         if region is None and multiscreen:
             n_of_screens = Screen.getNumberScreens()
 
@@ -256,6 +259,12 @@ class MD():
             if click:
                 region.click(m)
             print(filename)
+
+            end_time = datetime.datetime.now()
+            dt = end_time - start_time
+            print("time: {}".format(dt))
+
+
             return m
         return None
 
