@@ -12764,59 +12764,13 @@ class FUJIWARATOOLBOX_UPDATE_RIG_PROPORTION(bpy.types.Operator):
 uiitem().vertical()
 #---------------------------------------------
 
-############################################################################################################################
-uiitem("Rigifyポージング")
-############################################################################################################################
 
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
-
-########################################
-#Rigをフリーズ
-########################################
-#bpy.ops.fujiwara_toolbox.freeze_rig() #Rigをフリーズ
-class FUJIWARATOOLBOX_FREEZE_RIG(bpy.types.Operator):
-    """現在の形状にリグを固める。"""
-    bl_idname = "fujiwara_toolbox.freeze_rig"
-    bl_label = "Rigをフリーズ"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-    def execute(self, context):
-        rt = rigify_tools.RigifyTools()
-        rt.freeze_rig(fjw.active())
-        return {'FINISHED'}
-########################################
-
-########################################
-#Rig→Metarig
-########################################
-#bpy.ops.fujiwara_toolbox.rig_shape_to_metarig_shape() #Rig→Metarig
-class FUJIWARATOOLBOX_RIG_SHAPE_TO_METARIG_SHAPE(bpy.types.Operator):
-    """リグのDef-ボーンの形状をメタリグに反映する。"""
-    bl_idname = "fujiwara_toolbox.rig_shape_to_metarig_shape"
-    bl_label = "Rig→Metarig"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-    def execute(self, context):
-        rt = rigify_tools.RigifyTools()
-        rt.metarig_shape_to_rig_shape(fjw.active())
-        return {'FINISHED'}
-########################################
-
-
-
-
-
+############################################################################################################################
+uiitem("Rigifyポージング")
+############################################################################################################################
 
 
 #---------------------------------------------
