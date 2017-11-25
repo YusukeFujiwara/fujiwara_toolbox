@@ -12711,14 +12711,12 @@ class ChildInfo:
     def print_info(self):
         print("%s : %s, %s"%(self.obj.name, self.parent_type, self.parent_bone))
 
-
 class BoneInfo:
     def __init__(self, bone):
         self.name = bone.name
         self.use_deform = bone.use_deform
         self.hide = bone.hide
 
-# import submodules.rigify_tools
 import fujiwara_toolbox.modules.main.submodules.rigify_tools as rigify_tools
 
 ########################################
@@ -12737,131 +12735,82 @@ class FUJIWARATOOLBOX_GENRIG_REPARENT(bpy.types.Operator):
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     def execute(self, context):
-        bpy.ops.view3d.layers(nr=0, extend=False)
-
-        armature = fjw.active()
-        if armature.type != "ARMATURE":
-            return {'CANCELLED'}
-        if "rig" in armature.data:
-            return {'CANCELLED'}
-
-        rigname = ""
-        win = bpy.context.window_manager
-        if hasattr(win, "rigify_target_rig"):
-            rigname = win.rigify_target_rig
-        if rigname == "":
-            rigname = "rig"
-
-        rig = None
-        rigdata_name = "rig"
-        rig_groups = ()
-        rig_show_x_ray = False
-        children_info = []
-        bones_info = []
-        rig_layers = None
-        if rigname in bpy.data.objects:
-            rig = bpy.data.objects[rigname]
-            rig_groups = rig.users_group
-            rig_show_x_ray = rig.show_x_ray
-        
-            fjw.deselect()
-            for child in rig.children:
-                children_info.append(ChildInfo(child))
-                child.select = True
-            bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
-
-            #リグの骨の状態を取得しておく
-            for bone in rig.data.bones:
-                bones_info.append(BoneInfo(bone))
-            
-            rigdata_name = rig.data.name
-            #リグ削除するまえに、再生生後のリグデータ名がかぶらないようにリネームする
-            rig.data.name = rig.data.name + "_prev"
-
-            rig_layers = []
-            for state in rig.layers:
-                rig_layers.append(state)
-
-            #再生成だと10分かかるのが新規だと10秒だったりするので一回消しとく
-            fjw.delete([rig])
-
-        fjw.mode("OBJECT")
-        fjw.activate(armature)
-        print("GENRIG START")
-
-        bpy.ops.pose.rigify_generate()
-
-        print("GENRIG FINISHED")
-        rig = fjw.active()
-        rig.data.name = rigdata_name
-        rig.show_x_ray = rig_show_x_ray
-        if rig_layers:
-            rig.layers = rig_layers
-
-        #グループの反映
-        for gr in rig_groups:
-            fjw.group(gr.name, [rig])
-
-        #ボーン設定のレストア
-        for binfo in bones_info:
-            if binfo.name in rig.data.bones:
-                bone = rig.data.bones[binfo.name]
-                bone.use_deform = binfo.use_deform
-                bone.hide = binfo.hide
-
-        for info in children_info:
-            obj = info.obj
-            modu = fjw.Modutils(obj)
-            mod_arm = modu.find_bytype("ARMATURE")
-
-            print("PARENTING")
-            info.print_info()
-
-            if mod_arm is None:
-                fjw.mode("OBJECT")
-                fjw.deselect()
-                obj.select = True
-                fjw.activate(rig)
-
-                if info.parent_type == "OBJECT":
-                    bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
-                elif info.parent_type == "BONE":
-                    if info.parent_bone in rig.data.bones:
-                        fjw.mode("POSE")
-
-                        layerstates = []
-                        for state in rig.data.layers:
-                            layerstates.append(state)
-
-                        rig.data.layers = [True for i in range(len(rig.data.layers))]
-
-                        rig.data.bones.active = rig.data.bones[info.parent_bone]
-                        bpy.ops.object.parent_set(type='BONE_RELATIVE')
-
-                        rig.data.layers = layerstates
-            else:
-                #既存のアーマチュアmodを除去する
-                mod_arms = modu.find_bytype_list("ARMATURE")
-                for mod in mod_arms:
-                    modu.remove(mod)
-
-                fjw.deselect()
-                obj.select = True
-                fjw.activate(rig)
-                if "rigify_parenting" in obj:
-                    bpy.ops.object.parent_set(type=obj["rigify_parenting"])
-                else:
-                    bpy.ops.object.parent_set(type='ARMATURE_AUTO')
-                fjw.activate(obj)
-                modu.sort()
-
-        
-        armature.hide = True
-        bpy.ops.view3d.layers(nr=0, extend=False)
-
-
+        rt = rigify_tools.RigifyTools()
+        rt.gen_rig_and_reparent(fjw.active())
         return {'FINISHED'}
 ########################################
+
+########################################
+#プロポーションアップデート
+########################################
+#bpy.ops.fujiwara_toolbox.update_rig_proportion() #プロポーションアップデート
+class FUJIWARATOOLBOX_UPDATE_RIG_PROPORTION(bpy.types.Operator):
+    """現在の形状をメタリグに反映し、再生する。関連オブジェクトは適宜再適用される。"""
+    bl_idname = "fujiwara_toolbox.update_rig_proportion"
+    bl_label = "プロポーションアップデート"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        rt = rigify_tools.RigifyTools()
+        # if not rt.is_symmetry(fjw.active()):
+        #     self.report({"WARNING", "リグが非対称です。"})
+        rt.update_rig_proportion(fjw.active())
+        return {'FINISHED'}
+########################################
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#Rigをフリーズ
+########################################
+#bpy.ops.fujiwara_toolbox.freeze_rig() #Rigをフリーズ
+class FUJIWARATOOLBOX_FREEZE_RIG(bpy.types.Operator):
+    """現在の形状にリグを固める。"""
+    bl_idname = "fujiwara_toolbox.freeze_rig"
+    bl_label = "Rigをフリーズ"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        rt = rigify_tools.RigifyTools()
+        rt.freeze_rig(fjw.active())
+        return {'FINISHED'}
+########################################
+
+########################################
+#Rig→Metarig
+########################################
+#bpy.ops.fujiwara_toolbox.rig_shape_to_metarig_shape() #Rig→Metarig
+class FUJIWARATOOLBOX_RIG_SHAPE_TO_METARIG_SHAPE(bpy.types.Operator):
+    """リグのDef-ボーンの形状をメタリグに反映する。"""
+    bl_idname = "fujiwara_toolbox.rig_shape_to_metarig_shape"
+    bl_label = "Rig→Metarig"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        rt = rigify_tools.RigifyTools()
+        rt.metarig_shape_to_rig_shape(fjw.active())
+        return {'FINISHED'}
+########################################
+
+
+
+
+
 
 
 #---------------------------------------------
