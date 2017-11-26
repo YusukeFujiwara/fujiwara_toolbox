@@ -360,6 +360,7 @@ class refresh(bpy.types.Operator):
                             path = img.filepath
                             print(path)
                             if not os.path.exists(path):
+                                bpy.data.images.remove(img)
                                 print("not exists:%s"%(path))
                                 if obj not in dellist:
                                     dellist.append(obj)
