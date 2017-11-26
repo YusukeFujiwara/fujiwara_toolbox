@@ -221,7 +221,12 @@ class Modutils():
     def apply(self, mod):
         if mod != None:
             activate(self.object)
-            bpy.ops.object.modifier_apply(modifier=mod.name)
+            try:
+                pass
+                bpy.ops.object.modifier_apply(modifier=mod.name)
+            except:
+                pass
+                
 
 
     def find(self,name):
