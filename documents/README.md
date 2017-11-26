@@ -1,8 +1,7 @@
 ﻿# Fujiwara Tool Box ドキュメント
 
 ## インストール方法
-Fujiwara Tool Boxの[トップページ](https://github.com/YusukeFujiwara/fujiwara_toolbox)にある、
-"Clone or download"から"Download Zip"を押してダウンロードしてください。
+[リリースページ](https://github.com/YusukeFujiwara/fujiwara_toolbox/releases)から最新のfujiwara_toolbox.zipをダウンロードしてください。
 ユーザー設定で"ファイルからインストール"を選択し、"Tools:Fujiwara Tool Box"にチェックを入れると使えます。  
 
 本アドオンでは日本語がふんだんに使われているので、英語環境で使用する場合は、"System"→"International Fonts"にチェックを入れ、Languageを"English"に設定してください。
