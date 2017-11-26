@@ -924,7 +924,7 @@ def load_post(context):
     bpy.app.handlers.scene_update_pre.append(scene_update_pre)
 @persistent
 def save_pre(context):
-    #カメラにキー入らんでどうしようもないからこれでいれる！！！
+    #カメラにキー入らんでどうしようもないからこれでいれる！！！→2017/11/26 Blender2.79で修正されているのを確認
     #カメラにキー入れる
     if bpy.context.scene.tool_settings.use_keyframe_insert_auto:
         if bpy.context.scene.camera != None:
