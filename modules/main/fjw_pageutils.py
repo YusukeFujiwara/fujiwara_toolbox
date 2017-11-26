@@ -70,7 +70,6 @@ class PageUtils(bpy.types.Panel):#メインパネル
             row = layout.row(align=True)
             row.operator("pageutils.deploy_pages",icon="IMGDISPLAY")
             layout.label("ページモード")
-            #layout.operator("pageutils.refresh")
             row = layout.row(align=True)
             row.operator("pageutils.tocell",icon="FILE_FOLDER")
             row.operator("pageutils.tocell_newwindwow",icon="BLENDER")
@@ -227,6 +226,13 @@ class bgopen(bpy.types.Operator):
 #ページモード
 ############################################################################################################################
 
+def is_pagemode():
+    filename = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
+    if "page" not in filename:
+        return False
+    print("page mode.")
+    return True
+
 def refresh_command(self):
     filename = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
     if "page" not in filename:
@@ -334,13 +340,41 @@ class refresh(bpy.types.Operator):
     bl_idname = "pageutils.refresh"
     bl_label = "リフレッシュ"
     def execute(self,context):
-        for n in range(10):
-            if not refresh_command(self):
-                break
-        bpy.ops.file.make_paths_relative()
+        if is_pagemode():
+            #ファイルの存在チェック
+            # for img in bpy.data.images:
+            #     path = bpy.path.abspath(img.filepath)
+            #     if not os.path.exists(path):
+            #         #ないのでオブジェクト消す
+            dellist = []
+            for obj in bpy.context.scene.objects:
+                if obj.type != "MESH":
+                    continue
+
+                print("MESH Object")
+                for mat in obj.data.materials:
+                    print(mat)
+                    for tslot in mat.texture_slots:
+                        if tslot is not None and tslot.texture is not None and tslot.texture.image is not None:
+                            img = tslot.texture.image
+                            path = img.filepath
+                            print(path)
+                            if not os.path.exists(path):
+                                print("not exists:%s"%(path))
+                                if obj not in dellist:
+                                    dellist.append(obj)
+                                    break
+
+            print("dellist:")
+            print(dellist)
+            fjw.delete(dellist)
+
+            for n in range(10):
+                if not refresh_command(self):
+                    break
+            bpy.ops.file.make_paths_relative()
         return {"FINISHED"}
     def invoke(self, context, event):
-#        return context.window_manager.invoke_props_dialog(self)
         return {'RUNNING_MODAL'}
 
 
@@ -887,7 +921,6 @@ def scene_update_pre(context):
 @persistent
 def load_post(context):
     bpy.app.handlers.scene_update_pre.append(scene_update_pre)
-    #bpy.ops.pageutils.refresh()
 @persistent
 def save_pre(context):
     #カメラにキー入らんでどうしようもないからこれでいれる！！！
