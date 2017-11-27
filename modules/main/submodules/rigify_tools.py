@@ -13,6 +13,10 @@ import copy
 import sys
 import mathutils
 from collections import OrderedDict
+import inspect
+
+# import bpy.mathutils.Vector as Vector
+from mathutils import Vector
 
 from bpy.props import (StringProperty,
                        BoolProperty,
@@ -203,6 +207,22 @@ class EditBoneData():
         else:
             self.has_children = True
 
+    def set_pose_matrix(self):
+        self.pose_matrix_head = self.__get_pose_matrix_head()
+        self.pose_matrix_tail = self.__get_pose_matrix_tail()
+    
+    def __get_pose_matrix_head(self):
+        pbone = self.obj.pose.bones[self.name]
+        x = pbone.matrix[0][3]
+        y = pbone.matrix[1][3]
+        z = pbone.matrix[2][3]
+        return Vector((x,y,z))
+
+    def __get_pose_matrix_tail(self):
+        pbone = self.obj.pose.bones[self.name]
+        head = self.__get_pose_matrix_head()
+        return head + pbone.vector
+
     def get_ebone(self):
         fjw.activate(self.obj)
         fjw.mode("EDIT")
@@ -237,9 +257,11 @@ class EditBoneData():
         ebone = self.get_ebone()
         if ebone:
             if head:
-                ebone.head = edit_bone_data.head
+                # ebone.head = edit_bone_data.head
+                ebone.head = edit_bone_data.pose_matrix_head
             if tail:
-                ebone.tail = edit_bone_data.tail
+                # ebone.tail = edit_bone_data.tail
+                ebone.tail = edit_bone_data.pose_matrix_tail
             if roll:
                 ebone.roll = edit_bone_data.roll
         self.obj.data.edit_bones.update()
@@ -260,6 +282,10 @@ class EditBonesData():
         fjw.mode("EDIT")
         for ebone in self.obj.data.edit_bones:
             self.edit_bones.append(EditBoneData(self.obj, ebone))
+        
+        fjw.mode("POSE")
+        for ebdata in self.edit_bones:
+            ebdata.set_pose_matrix()
 
     def get_ebone_byname(self, name):
         for ebone in self.edit_bones:
@@ -545,11 +571,54 @@ class RigifyTools():
         
         return True
 
+    def __rigify_fk2ik(self, rig):
+        fjw.activate(rig)
+        fjw.mode("POSE")
+        bpy.ops.pose.select_all(action='SELECT')
+
+        post_fix = ""
+        for meth in inspect.getmembers(bpy.ops.pose):
+            if "fk2ik" in meth[0]:
+                post_fix = meth[0].split("_")[-1]
+                break
+        if post_fix != "":
+            print("post_fix:%s"%post_fix)
+            bpy.ops.pose.select_all(action='SELECT')
+            evalstr = 'bpy.ops.pose.rigify_leg_fk2ik_'+ post_fix +'(thigh_fk="thigh_fk.L", shin_fk="shin_fk.L", foot_fk="foot_fk.L", mfoot_fk="MCH-foot_fk.L", thigh_ik="thigh_ik.L", shin_ik="MCH-thigh_ik.L", foot_ik="MCH-thigh_ik_target.L", mfoot_ik="MCH-thigh_ik_target.L")'
+            print(evalstr)
+            eval(evalstr)
+            print(evalstr)
+            bpy.ops.pose.select_all(action='SELECT')
+            evalstr = 'bpy.ops.pose.rigify_leg_fk2ik_'+ post_fix +'(thigh_fk="thigh_fk.R", shin_fk="shin_fk.R", foot_fk="foot_fk.R", mfoot_fk="MCH-foot_fk.R", thigh_ik="thigh_ik.R", shin_ik="MCH-thigh_ik.R", foot_ik="MCH-thigh_ik_target.R", mfoot_ik="MCH-thigh_ik_target.R")'
+            eval(evalstr)
+            print(evalstr)
+            bpy.ops.pose.select_all(action='SELECT')
+            evalstr = 'bpy.ops.pose.rigify_arm_fk2ik_'+ post_fix +'(uarm_fk="upper_arm_fk.L", farm_fk="forearm_fk.L", hand_fk="hand_fk.L", uarm_ik="upper_arm_ik.L", farm_ik="MCH-upper_arm_ik.L", hand_ik="hand_ik.L")'
+            eval(evalstr)
+            print(evalstr)
+            bpy.ops.pose.select_all(action='SELECT')
+            evalstr = 'bpy.ops.pose.rigify_arm_fk2ik_'+ post_fix +'(uarm_fk="upper_arm_fk.R", farm_fk="forearm_fk.R", hand_fk="hand_fk.R", uarm_ik="upper_arm_ik.R", farm_ik="MCH-upper_arm_ik.R", hand_ik="hand_ik.R")'
+            eval(evalstr)
+            print(evalstr)
+
+
+    def __rigify_ikfk_1(self, rig):
+        for pb in rig.pose.bones:
+            if "IK_FK" in pb:
+                pb["IK_FK"] = 1
+
+        for bn in rig.data.bones:
+            bn.select = True
+        
+        bpy.ops.transform.translate(value=(0, 0, 0), constraint_axis=(False, False, False), constraint_orientation='NORMAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=0)
+
     def freeze_rig(self,rig):
         if rig.type != "ARMATURE":
             return False
 
         self.set_rig(rig)
+        self.__rigify_fk2ik(rig)
+        self.__rigify_ikfk_1(rig)
         self.rig.rigged_objects.apply()
         self.rig.rigged_objects.parent_clear()
         self.rig.apply_pose()
@@ -562,20 +631,18 @@ class RigifyTools():
             return False
 
         self.set_rig(rig)
-        self.rig.testprint()
         self.set_metarig(self.find_metarig())
 
         if not self.metarig:
             print("Metarig not found.")
             return False
-        self.metarig.testprint()
 
         self.rig.rigged_objects.parent_clear()    
         self.metarig.copy_shapes(self.rig.edit_bones_data)
         self.rig.rigged_objects.reparent()
 
     def update_rig_proportion(self, rig):
-        self.freeze_rig(rig)
+        # self.freeze_rig(rig) #ポーズ形状から直接とってるのでもういらない
         self.metarig_shape_to_rig_shape(rig)
         metarig = self.find_metarig()
         fjw.activate(metarig)
