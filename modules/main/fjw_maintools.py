@@ -14465,7 +14465,7 @@ class CATEGORYBUTTON_290440(bpy.types.Operator):#VectorDisplacementモデル
 #セミオートインポート・セットアップ
 ########################################
 class FUJIWARATOOLBOX_475352(bpy.types.Operator):#セミオートインポート・セットアップ
-    """マップはtexturesにいれること"""
+    """マップはtexturesにいれること。設定は47番。"""
     bl_idname = "fujiwara_toolbox.command_475352"
     bl_label = "オートインポート・セットアップ"
     bl_options = {'REGISTER', 'UNDO'}
