@@ -12760,6 +12760,10 @@ class FUJIWARATOOLBOX_UPDATE_RIG_PROPORTION(bpy.types.Operator):
         rt.update_rig_proportion(fjw.active())
         return {'FINISHED'}
 ########################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
 
 #---------------------------------------------
 uiitem().vertical()
