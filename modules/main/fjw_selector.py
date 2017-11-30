@@ -134,15 +134,27 @@ class FJWSelector(bpy.types.Panel):#メインパネル
         # active = layout.row(align=True)
         # active.operator("fjw_selector.select_object_nearest_to_cursor")
 
+        if fjw.active() and fjw.active().type == "ARMATURE":
+            active = layout.row(align=True)
+            active.label("ポージング")
+            active = layout.row(align=True)
+            active.operator("fjw_selector.prepare_for_posing", icon="POSE_HLT")
+            active = layout.row(align=True)
+            active.operator("fjw_selector.reset_pose", icon="POSE_HLT")
+            active = layout.row(align=True)
+            active.operator("fjw_selector.load_pose_lib", icon="POSE_HLT")
+            active = layout.row(align=True)
+            active.label("ポーズ閲覧")
+            active = layout.row(align=True)
+            active.operator("fjw_selector.brouse_pose", icon="POSE_HLT")
+            active = layout.row(align=True)
+            active.operator("fjw_selector.brouse_pose_face",icon="BONE_DATA")
+            active = layout.row(align=True)
+            active.operator("fjw_selector.brouse_pose_hand_r",icon="BONE_DATA")
+            active.operator("fjw_selector.brouse_pose_hand_l",icon="BONE_DATA")
+
         active = layout.row(align=True)
         active.label("")
-        active = layout.row(align=True)
-        active.operator("fjw_selector.prepare_for_posing", icon="POSE_HLT")
-        active = layout.row(align=True)
-        active.operator("fjw_selector.reset_pose", icon="POSE_HLT")
-        active = layout.row(align=True)
-        active.operator("fjw_selector.load_pose_lib", icon="POSE_HLT")
-        active.operator("fjw_selector.brouse_pose")
         active = layout.row(align=True)
         active.operator("fjw_selector.set_face_lamp", icon="LAMP_POINT")
         active.operator("fjw_selector.set_hemi_lamp", icon="LAMP_HEMI")
@@ -155,89 +167,91 @@ class FJWSelector(bpy.types.Panel):#メインパネル
         active.operator("fjw_selector.select_bone_nearest_to_cursor_all",icon="GROUP_BONE")
         active.operator("fjw_selector.select_bone_nearest_to_cursor",icon="BONE_DATA")
 
-        active = layout.row(align=True)
-        active.label("人体", icon="OUTLINER_OB_ARMATURE")
-        box = layout.box()
-        boxlayout = box.column(align=True)
-        active = boxlayout.row(align=True)
-        active.operator("fjw_selector.select_bone_nearest_to_cursor_eyetarget")
-        active = boxlayout.row(align=True)
-        active.label("右")
-        active.operator("fjw_selector.select_bone_nearest_to_cursor_eyetop_r")
-        active.label("")
-        active.operator("fjw_selector.select_bone_nearest_to_cursor_eyetop_l")
-        active.label("左")
-        active = boxlayout.row(align=True)
-        active.label("")
-        active.operator("fjw_selector.select_bone_nearest_to_cursor_pupil_r")
-        active.label("")
-        active.operator("fjw_selector.select_bone_nearest_to_cursor_pupil_l")
-        active.label("")
-        active = boxlayout.row(align=True)
-        active.label("")
-        active.operator("fjw_selector.select_bone_nearest_to_cursor_eyebottom_r")
-        active.label("")
-        active.operator("fjw_selector.select_bone_nearest_to_cursor_eyebottom_l")
-        active.label("")
-        active = boxlayout.row(align=True)
-        active.label("右")
-        active.label("")
-        active.operator("fjw_selector.select_bone_nearest_to_cursor_head")
-        active.label("")
-        active.label("左")
-        active = boxlayout.row(align=True)
-        active.operator("fjw_selector.select_bone_nearest_to_cursor_shoulder_r")
-        active.label("")
-        active.operator("fjw_selector.select_bone_nearest_to_cursor_neck")
-        active.label("")
-        active.operator("fjw_selector.select_bone_nearest_to_cursor_shoulder_l")
-        active = boxlayout.row(align=True)
-        active.operator("fjw_selector.select_bone_nearest_to_cursor_elbow_r")
-        active.operator("fjw_selector.select_bone_nearest_to_cursor_chest")
-        active.operator("fjw_selector.select_bone_nearest_to_cursor_elbow_l")
-        active = boxlayout.row(align=True)
-        active.operator("fjw_selector.select_bone_nearest_to_cursor_hand_r")
-        active.label("")
-        active.operator("fjw_selector.select_bone_nearest_to_cursor_spine")
-        active.label("")
-        active.operator("fjw_selector.select_bone_nearest_to_cursor_hand_l")
-        active = boxlayout.row(align=True)
-        active.operator("fjw_selector.select_bone_nearest_to_cursor_body_master")
-        active = boxlayout.row(align=True)
-        active.label("")
-        active.operator("fjw_selector.select_bone_nearest_to_cursor_knee_r")
-        active.label("")
-        active.operator("fjw_selector.select_bone_nearest_to_cursor_knee_l")
-        active.label("")
-        active = boxlayout.row(align=True)
-        active.label("")
-        active.operator("fjw_selector.select_bone_nearest_to_cursor_foot_r")
-        active.label("")
-        active.operator("fjw_selector.select_bone_nearest_to_cursor_foot_l")
-        active.label("")
-        active = boxlayout.row(align=True)
-        active.operator("fjw_selector.select_bone_nearest_to_cursor_geometry")
+        if fjw.active() and fjw.active().type == "ARMATURE":
+            active = layout.row(align=True)
+            active.label("人体", icon="OUTLINER_OB_ARMATURE")
+            box = layout.box()
+            boxlayout = box.column(align=True)
+            active = boxlayout.row(align=True)
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_eyetarget")
+            active = boxlayout.row(align=True)
+            active.label("右")
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_eyetop_r")
+            active.label("")
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_eyetop_l")
+            active.label("左")
+            active = boxlayout.row(align=True)
+            active.label("")
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_pupil_r")
+            active.label("")
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_pupil_l")
+            active.label("")
+            active = boxlayout.row(align=True)
+            active.label("")
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_eyebottom_r")
+            active.label("")
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_eyebottom_l")
+            active.label("")
+            active = boxlayout.row(align=True)
+            active.label("右")
+            active.label("")
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_head")
+            active.label("")
+            active.label("左")
+            active = boxlayout.row(align=True)
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_shoulder_r")
+            active.label("")
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_neck")
+            active.label("")
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_shoulder_l")
+            active = boxlayout.row(align=True)
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_elbow_r")
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_chest")
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_elbow_l")
+            active = boxlayout.row(align=True)
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_hand_r")
+            active.label("")
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_spine")
+            active.label("")
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_hand_l")
+            active = boxlayout.row(align=True)
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_body_master")
+            active = boxlayout.row(align=True)
+            active.label("")
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_knee_r")
+            active.label("")
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_knee_l")
+            active.label("")
+            active = boxlayout.row(align=True)
+            active.label("")
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_foot_r")
+            active.label("")
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_foot_l")
+            active.label("")
+            active = boxlayout.row(align=True)
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_geometry")
 
-        active = layout.row(align=True)
-        active.label("マップ", icon="OUTLINER_OB_ARMATURE")
-        box = layout.box()
-        boxlayout = box.column(align=True)
-        active = boxlayout.row(align=True)
-        active.operator("fjw_selector.select_bone_nearest_to_cursor_top")
-        active = boxlayout.row(align=True)
-        active.label("")
-        active.operator("fjw_selector.select_bone_nearest_to_cursor_north")
-        active.label("")
-        active = boxlayout.row(align=True)
-        active.operator("fjw_selector.select_bone_nearest_to_cursor_west")
-        active.label("")
-        active.operator("fjw_selector.select_bone_nearest_to_cursor_east")
-        active = boxlayout.row(align=True)
-        active.label("")
-        active.operator("fjw_selector.select_bone_nearest_to_cursor_south")
-        active.label("")
-        active = boxlayout.row(align=True)
-        active.operator("fjw_selector.select_bone_nearest_to_cursor_bottom")
+        if fjw.active() and fjw.active().type == "ARMATURE":
+            active = layout.row(align=True)
+            active.label("マップ", icon="OUTLINER_OB_ARMATURE")
+            box = layout.box()
+            boxlayout = box.column(align=True)
+            active = boxlayout.row(align=True)
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_top")
+            active = boxlayout.row(align=True)
+            active.label("")
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_north")
+            active.label("")
+            active = boxlayout.row(align=True)
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_west")
+            active.label("")
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_east")
+            active = boxlayout.row(align=True)
+            active.label("")
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_south")
+            active.label("")
+            active = boxlayout.row(align=True)
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_bottom")
 
 
 
@@ -560,7 +574,7 @@ class SelectBoneNearestToCursor_All(bpy.types.Operator):
 
 
 class PrepareForPosing(bpy.types.Operator):
-    """ポージング準備"""
+    """AO無効化、簡略化オン、カメラロック解除、レンダのみ表示オフ。"""
     bl_idname = "fjw_selector.prepare_for_posing"
     bl_label = "ポージング準備"
     bl_options = {'REGISTER', 'UNDO'}
@@ -666,7 +680,7 @@ class LoadPoseLib(bpy.types.Operator):
 class BrousePose(bpy.types.Operator):
     """ポーズを閲覧する。非ポーズモードの場合、ポーズモードに入ってジオメトリ以外に適用する。ポーズモードの場合ジオメトリ以外の選択ボーンに適用する。"""
     bl_idname = "fjw_selector.brouse_pose"
-    bl_label = "ポーズ閲覧"
+    bl_label = "全身 / 選択部"
     def execute(self, context):
         armature = fjw.active()
         if armature.type != "ARMATURE":
@@ -685,6 +699,55 @@ class BrousePose(bpy.types.Operator):
 
         bpy.ops.poselib.browse_interactive("INVOKE_DEFAULT")
         return {"FINISHED"}
+
+def select_pbones_bynamelist(namelist, obj):
+    for pbone in obj.pose.bones:
+        if pbone.name in namelist:
+            pbone.bone.select = True
+
+def brouse_pose_bynamelist(self, namelist):
+    armature = fjw.active()
+    if armature.type != "ARMATURE":
+        self.report({"INFO"},"アーマチュアを選択してください。")
+        return {"CANCELLED"}
+
+    fjw.mode("POSE")
+
+    bpy.ops.pose.select_all(action='DESELECT')
+    select_pbones_bynamelist(namelist, armature)
+    bpy.ops.fjw_selector.brouse_pose()
+
+class BoursePoseFace(bpy.types.Operator):
+    """ポーズを閲覧する。非ポーズモードの場合、ポーズモードに入ってジオメトリ以外に適用する。ポーズモードの場合ジオメトリ以外の選択ボーンに適用する。"""
+    bl_idname = "fjw_selector.brouse_pose_face"
+    bl_label = "顔"
+    def execute(self, context):
+        namelist = ["master_eye.L", "brow.B.L", "brow.B.L.004", "lid.B.L", "lid.T.L", "master_eye.R", "brow.B.R", "brow.B.R.004", "lid.B.R", "lid.T.R", "ear.L", "ear.L.002", "ear.L.004", "ear.L.003", "ear.R", "ear.R.002", "ear.R.004", "ear.R.003", "jaw_master", "teeth.B", "tongue_master", "tongue", "chin", "chin.001", "chin.L", "chin.R", "jaw", "jaw.L.001", "jaw.R.001", "tongue.003", "tongue.001", "tongue.002", "teeth.T", "brow.T.L", "brow.T.L.001", "brow.T.L.003", "brow.T.L.002", "brow.B.L.002", "brow.B.L.003", "brow.B.L.001", "brow.T.R", "brow.T.R.001", "brow.T.R.003", "brow.T.R.002", "brow.B.R.002", "brow.B.R.003", "brow.B.R.001", "jaw.L", "jaw.R", "nose", "lip.B", "chin.002", "lips.L", "lip.B.L.001", "cheek.B.L.001", "lips.R", "lip.B.R.001", "cheek.B.R.001", "lip.T", "nose.005", "lip.T.R.001", "lip.T.L.001", "nose_master", "nose.002", "nose.001", "nose.003", "nose.004", "nose.L.001", "nose.R.001", "cheek.T.L.001", "cheek.T.R.001", "nose.R", "nose.L", "eyes", "eye.L", "lid.B.L.002", "lid.B.L.001", "lid.B.L.003", "lid.T.L.002", "lid.T.L.001", "lid.T.L.003", "eye.R", "lid.B.R.002", "lid.B.R.001", "lid.B.R.003", "lid.T.R.002", "lid.T.R.001", "lid.T.R.003"]
+        brouse_pose_bynamelist(self,namelist)
+        
+        return {"FINISHED"}
+
+class BoursePoseHandR(bpy.types.Operator):
+    """ポーズを閲覧する。非ポーズモードの場合、ポーズモードに入ってジオメトリ以外に適用する。ポーズモードの場合ジオメトリ以外の選択ボーンに適用する。"""
+    bl_idname = "fjw_selector.brouse_pose_hand_r"
+    bl_label = "右手"
+    def execute(self, context):
+        namelist = ["hand_ik.R", "palm.R", "f_index.01.R", "f_index.02.R", "tweak_f_index.02.R", "f_index.03.R", "tweak_f_index.03.R", "tweak_f_index.03.R.001", "tweak_f_index.01.R", "thumb.01.R", "thumb.02.R", "tweak_thumb.02.R", "thumb.03.R", "tweak_thumb.03.R", "tweak_thumb.03.R.001", "tweak_thumb.01.R", "f_middle.01.R", "f_middle.02.R", "tweak_f_middle.02.R", "f_middle.03.R", "tweak_f_middle.03.R", "tweak_f_middle.03.R.001", "tweak_f_middle.01.R", "f_ring.01.R", "f_ring.02.R", "tweak_f_ring.02.R", "f_ring.03.R", "tweak_f_ring.03.R", "tweak_f_ring.03.R.001", "tweak_f_ring.01.R", "f_pinky.01.R", "f_pinky.02.R", "tweak_f_pinky.02.R", "f_pinky.03.R", "tweak_f_pinky.03.R", "tweak_f_pinky.03.R.001", "tweak_f_pinky.01.R", ]
+        brouse_pose_bynamelist(self,namelist)
+        
+        return {"FINISHED"}
+
+class BoursePoseHandL(bpy.types.Operator):
+    """ポーズを閲覧する。非ポーズモードの場合、ポーズモードに入ってジオメトリ以外に適用する。ポーズモードの場合ジオメトリ以外の選択ボーンに適用する。"""
+    bl_idname = "fjw_selector.brouse_pose_hand_l"
+    bl_label = "右手"
+    def execute(self, context):
+        namelist = ["palm.L", "f_index.01.L", "f_index.02.L", "tweak_f_index.02.L", "f_index.03.L", "tweak_f_index.03.L", "tweak_f_index.03.L.001", "tweak_f_index.01.L", "thumb.01.L", "thumb.02.L", "tweak_thumb.02.L", "thumb.03.L", "tweak_thumb.03.L", "tweak_thumb.03.L.001", "tweak_thumb.01.L", "f_middle.01.L", "f_middle.02.L", "tweak_f_middle.02.L", "f_middle.03.L", "tweak_f_middle.03.L", "tweak_f_middle.03.L.001", "tweak_f_middle.01.L", "f_ring.01.L", "f_ring.02.L", "tweak_f_ring.02.L", "f_ring.03.L", "tweak_f_ring.03.L", "tweak_f_ring.03.L.001", "tweak_f_ring.01.L", "f_pinky.01.L", "f_pinky.02.L", "tweak_f_pinky.02.L", "f_pinky.03.L", "tweak_f_pinky.03.L", "tweak_f_pinky.03.L.001", "tweak_f_pinky.01.L", ]
+        brouse_pose_bynamelist(self,namelist)
+
+        return {"FINISHED"}
+
+
 
 class SetFaceLamp(bpy.types.Operator):
     """顔用ランプ設置"""
