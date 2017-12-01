@@ -68,6 +68,11 @@ class RiggedObject():
         arm = modu.find_bytype("ARMATURE")
         self.has_armature_mod = bool(arm)
 
+    def set_parentinfo_from(self, rigged_object):
+        self.parent_type = rigged_object.parent_type
+        self.parent_bone = rigged_object.parent_bone
+        self.has_armature_mod = rigged_object.has_armature_mod
+
     def get_rig(self):
         for obj in bpy.context.visible_objects:
             if obj.name == self.rigname:
@@ -163,11 +168,38 @@ class RiggedObjects():
         self.rig = rig
         self.rigged_objects = []
         self.setup()
+
+    def find_byname(self, name):
+        for ro in self.rigged_objects:
+            if ro.obj.name == name:
+                return ro
+        return None
     
+    def set_parentinfo_from(self, rigged_objects):
+        for ro in self.rigged_objects:
+            src = rigged_objects.find_byname(ro.obj.name)
+            ro.set_parentinfo_from(src)
+
     def setup(self):
-        obj = self.rig
-        for child in obj.children:
-            self.rigged_objects.append(RiggedObject(child,obj))
+        for child in self.rig.children:
+            self.rigged_objects.append(RiggedObject(child,self.rig))
+        
+        #非childでもアーマチュアついてるものがある
+        for obj in bpy.context.scene.objects:
+            if obj in self.rigged_objects:
+                continue
+            if obj.type != "MESH":
+                continue
+
+            modu = fjw.Modutils(obj)
+            mod_arm = modu.find_bytype("ARMATURE")
+            if not mod_arm:
+                continue
+
+            if mod_arm.object == self.rig:
+                self.rigged_objects.append(RiggedObject(obj, self.rig))
+
+
         return self.rigged_objects
 
     def reset_rig(self, rig):
@@ -537,7 +569,7 @@ class RigifyTools():
         rig = Rig(rig)
         return rig.is_symmetry()
 
-    def gen_rig_and_reparent(self, metarig):
+    def gen_rig_and_reparent(self, metarig, unparent_at_rest=True):
         """
         genrigして再ペアレントする。
         """
@@ -548,7 +580,8 @@ class RigifyTools():
         self.set_rig(self.find_rig())
 
         if self.rig:
-            self.rig.obj.data.pose_position = 'REST'
+            if unparent_at_rest:
+                self.rig.obj.data.pose_position = 'REST'
             self.rig.rigged_objects.parent_clear()
             fjw.delete([self.rig.obj])
 
@@ -638,6 +671,7 @@ class RigifyTools():
             return False
 
         self.rig.rigged_objects.parent_clear()    
+        self.rig.rigged_objects.apply()
         self.metarig.copy_shapes(self.rig.edit_bones_data)
         self.rig.rigged_objects.reparent()
 
@@ -646,4 +680,5 @@ class RigifyTools():
         self.metarig_shape_to_rig_shape(rig)
         metarig = self.find_metarig()
         fjw.activate(metarig)
-        self.gen_rig_and_reparent(metarig)
+        self.gen_rig_and_reparent(metarig, False)
+

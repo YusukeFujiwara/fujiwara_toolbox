@@ -221,12 +221,57 @@ class Modutils():
     def apply(self, mod):
         if mod != None:
             activate(self.object)
+            print("apply:%s"%mod.name)
             try:
-                pass
+                #ほんとはシェイプキー残しときたかったけど、無理。うまくいかない。全部除去したほうがいい。
+                shape_keys = self.object.data.shape_keys
+                if shape_keys and len(shape_keys.key_blocks) > 0:
+                    self.object.active_shape_key_index = 0
+                    bpy.ops.object.shape_key_remove(all=True)
+
+                # #シェイプキーが一つだけだったら削除しちゃう
+                # if len(shape_keys.key_blocks) == 1:
+                #     bpy.ops.object.shape_key_remove(all=False)
+
+                # print("try1")
                 bpy.ops.object.modifier_apply(modifier=mod.name)
+                # print("success!")
             except:
+                import traceback
+                traceback.print_exc()
                 pass
-                
+                # try:
+                #     # print("try2")
+                #     shape_keys = self.object.data.shape_keys
+                #     if shape_keys and len(shape_keys.key_blocks) > 0:
+                #         mod_name = mod.name
+                #         bpy.ops.object.modifier_apply(apply_as='SHAPE',modifier=mod.name)
+                #         #アクティブをかえないといけない
+                #         #該当シェイプキーの検索
+                #         for i in range(len(shape_keys.key_blocks)):
+                #             key = shape_keys.key_blocks[i]
+                #             if key.name == mod_name:
+                #                 self.object.active_shape_key_index = i
+                #                 bpy.ops.object.shape_key_move(type='TOP')
+                #                 self.object.active_shape_key_index = 0
+                #                 break
+                #         for i in range(len(shape_keys.key_blocks)):
+                #             key = shape_keys.key_blocks[i]
+                #             if key.name == "Basis":
+                #                 self.object.active_shape_key_index = i
+                #                 bpy.ops.object.shape_key_remove(all=False)
+                #                 break
+                #         self.object.active_shape_key_index = 0
+                #         self.object.active_shape_key.name = "Basis"
+                #         # self.object.active_shape_key_index = len(shape_keys.key_blocks) - 1
+                #         # bpy.ops.object.shape_key_move(type='TOP')
+                #         # self.object.active_shape_key_index = 0
+                #         # bpy.ops.object.shape_key_remove(all=False)
+                #         # self.object.active_shape_key.name = "Basis"
+                #         # print("success!")
+                # except:
+                #     print("Failed:%s"%mod.name)
+                #     pass
 
 
     def find(self,name):
