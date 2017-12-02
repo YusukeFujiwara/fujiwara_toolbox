@@ -579,11 +579,16 @@ class RigifyTools():
         self.set_metarig(metarig)
         self.set_rig(self.find_rig())
 
+        rig_old = None
         if self.rig:
+            rig_old = self.rig
             if unparent_at_rest:
                 self.rig.obj.data.pose_position = 'REST'
             self.rig.rigged_objects.parent_clear()
+            rigdata = self.rig.obj.data
             fjw.delete([self.rig.obj])
+            bpy.data.armatures.remove(rigdata)
+
 
         fjw.deselect()
         fjw.activate(metarig)
@@ -601,6 +606,9 @@ class RigifyTools():
 
         fjw.activate(new_rig.obj)
         fjw.mode("POSE")
+
+        if rig_old:
+            new_rig.restore_settings_from(rig_old)
         
         return True
 
