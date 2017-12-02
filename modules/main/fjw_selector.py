@@ -10,6 +10,8 @@ import shutil
 import re
 import subprocess
 
+import unicodedata
+
 from bpy.app.handlers import persistent
 
 fujiwara_toolbox = __import__(__package__)
@@ -142,9 +144,9 @@ class FJWSelector(bpy.types.Panel):#メインパネル
             active = layout.row(align=True)
             active.operator("fjw_selector.reset_pose", icon="POSE_HLT")
             active = layout.row(align=True)
-            active.operator("fjw_selector.load_pose_lib", icon="POSE_HLT")
-            active = layout.row(align=True)
             active.label("ポーズ閲覧")
+            active = layout.row(align=True)
+            active.operator("fjw_selector.load_pose_lib", icon="FILESEL")
             active = layout.row(align=True)
             active.operator("fjw_selector.brouse_pose", icon="POSE_HLT")
             active = layout.row(align=True)
@@ -158,7 +160,9 @@ class FJWSelector(bpy.types.Panel):#メインパネル
             active.operator("fjw_selector.brouse_pose_arm_l",icon="BONE_DATA")
             active = layout.row(align=True)
             active.operator("fjw_selector.brouse_pose_under_body",icon="BONE_DATA")
-
+            active = layout.row(align=True)
+            active.operator("fujiwara_toolbox.rigify_ik_all")
+            active.operator("fujiwara_toolbox.rigify_fk_all")
         active = layout.row(align=True)
         active.label("")
         active = layout.row(align=True)
@@ -621,40 +625,95 @@ class LoadPoseLib(bpy.types.Operator):
     bl_label = "load Poselib"
     bl_options = {'REGISTER', 'UNDO'}
 
-    poselibdir = ""
-    libexists = False
+    filename = bpy.props.StringProperty(subtype="FILE_NAME")
+    filepath = bpy.props.StringProperty(subtype="FILE_PATH")
+    directory = bpy.props.StringProperty(subtype="DIR_PATH")
+    files = bpy.props.CollectionProperty(type=bpy.types.PropertyGroup)
 
-    def get_blend_list_callback(self,context):
-        items=[]
-        if LoadPoseLib.poselibdir == "":
-            assetdir = fujiwara_toolbox.conf.get_pref().assetdir
-            LoadPoseLib.poselibdir = assetdir + os.sep + "poselib"
-            LoadPoseLib.libexists = os.path.exists(LoadPoseLib.poselibdir)
+    filter_glob = StringProperty(default="*.blend", options={"HIDDEN"})
 
-        if not LoadPoseLib.libexists:
-            return [("None","Pose Dir Not Found.","")]
+    # def get_blend_list_callback(self,context):
+    #     items=[]
+    #     if LoadPoseLib.poselibdir == "":
+    #         assetdir = fujiwara_toolbox.conf.get_pref().assetdir
+    #         LoadPoseLib.poselibdir = assetdir + os.sep + "poselib"
+    #         LoadPoseLib.libexists = os.path.exists(LoadPoseLib.poselibdir)
 
-        files = os.listdir(LoadPoseLib.poselibdir)
-        if len(files) == 0:
-            return [("None","Blend FIle Not Found.","")]
+    #     if not LoadPoseLib.libexists:
+    #         return [("None","Pose Dir Not Found.","")]
 
-        for filename in files:
-            name,ext = os.path.splitext(filename)
-            if ext == ".blend":
-                items.append((name,name,""))
+    #     files = os.listdir(LoadPoseLib.poselibdir)
+    #     if len(files) == 0:
+    #         return [("None","Blend FIle Not Found.","")]
+        
+    #     items.append(("テスト","テスト",""))
+    #     items.append((u"テスト",u"テスト",""))
 
-        return items
+    #     # import chardet
+    #     for filename in files:
+    #         #https://qiita.com/inoory/items/aafe79384dbfcc0802cf
+    #         #http://lab.hde.co.jp/2008/08/pythonunicodeencodeerror.html
+    #         # filename = bytes(filename, "shift_jis").decode("shift_jis").encode()
+    #         filename = str(bytes(filename, "shift_jis").decode("shift_jis"))
+    #         # パスの日本語化うまくいってない！
+    #         print(filename)
 
-    blend_list = EnumProperty(
-        name = "Blend List",               # 名称
-        description = "Blend List",        # 説明文
-        items = get_blend_list_callback)   # 項目リストを作成する関数
+    #         name,ext = os.path.splitext(filename)
+    #         if ext == ".blend":
+    #             items.append((name,name,""))
+
+    #     return items
+
+    # blend_list = EnumProperty(
+    #     name = "Blend List",               # 名称
+    #     description = "Blend List",        # 説明文
+    #     items = get_blend_list_callback)   # 項目リストを作成する関数
+
+    # def invoke(self, context, event):
+    #     return context.window_manager.invoke_props_dialog(self)
 
     def invoke(self, context, event):
-        return context.window_manager.invoke_props_dialog(self)
+        assetdir = fujiwara_toolbox.conf.get_pref().assetdir
+        poselibdir = assetdir + os.sep + "poselib"
+        if not os.path.exists(poselibdir):
+            self.report({"WARNING"}, "%sがありません！"%poselibdir)
+            return {'CANCELLED'}
 
+        self.directory = poselibdir
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+
+
+    # def execute(self, context):
+    #     blendname = self.blend_list
+    #     self.report({"INFO"},blendname)
+
+    #     poselib = None
+    #     for action in bpy.data.actions:
+    #         if blendname == action.name:
+    #             if action.library == None:
+    #                 poselib = action
+    #                 break
+        
+    #     if poselib is None:
+    #         _dataname = blendname
+    #         _filename = blendname + ".blend"
+    #         _filepath = LoadPoseLib.poselibdir + os.sep + _filename
+    #         with bpy.data.libraries.load(_filepath, link=False, relative=True) as (data_from, data_to):
+    #             if _dataname in data_from.actions:
+    #                 data_to.actions = [_dataname]
+    #         if len(data_to.actions) != 0:
+    #             poselib = data_to.actions[0]
+        
+    #     if poselib is not None:
+    #         selection = fjw.get_selected_list()
+    #         for obj in selection:
+    #             if obj.type == "ARMATURE":
+    #                 obj.pose_library = poselib
+    #     return {"FINISHED"}
     def execute(self, context):
-        blendname = self.blend_list
+        blendname = os.path.splitext(self.filename)[0]
         self.report({"INFO"},blendname)
 
         poselib = None
@@ -666,8 +725,8 @@ class LoadPoseLib(bpy.types.Operator):
         
         if poselib is None:
             _dataname = blendname
-            _filename = blendname + ".blend"
-            _filepath = LoadPoseLib.poselibdir + os.sep + _filename
+            _filename = self.filename
+            _filepath = self.filepath
             with bpy.data.libraries.load(_filepath, link=False, relative=True) as (data_from, data_to):
                 if _dataname in data_from.actions:
                     data_to.actions = [_dataname]
@@ -679,8 +738,6 @@ class LoadPoseLib(bpy.types.Operator):
             for obj in selection:
                 if obj.type == "ARMATURE":
                     obj.pose_library = poselib
-
-
         return {"FINISHED"}
 
 class BrousePose(bpy.types.Operator):
