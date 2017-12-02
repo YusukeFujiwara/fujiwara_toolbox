@@ -6803,7 +6803,7 @@ uiitem().horizontal()
 #適用（選択物）
 ########################################
 class FUJIWARATOOLBOX_557231(bpy.types.Operator):#適用（選択物）
-    """適用（選択物）"""
+    """適用（選択物）。シェイプキーは削除される。"""
     bl_idname = "fujiwara_toolbox.command_557231"
     bl_label = "mod適用（選択物）"
     bl_options = {'REGISTER', 'UNDO'}
@@ -6823,14 +6823,18 @@ class FUJIWARATOOLBOX_557231(bpy.types.Operator):#適用（選択物）
         #                bpy.ops.object.modifier_remove(modifier=mod.name)
         for obj in fjw.get_selected_list():
             fjw.activate(obj)
+            modu = fjw.Modutils(obj)
             for mod in obj.modifiers:
                 if "裏ポリエッジ" in mod.name:
                     continue
-                try:
-                    bpy.ops.object.modifier_apply(modifier=mod.name)
-                except:
-                    #ダメだったのでmod除去
-                    bpy.ops.object.modifier_remove(modifier=mod.name)        
+
+                modu.apply(mod)
+
+                # try:
+                #     bpy.ops.object.modifier_apply(modifier=mod.name)
+                # except:
+                #     #ダメだったのでmod除去
+                #     bpy.ops.object.modifier_remove(modifier=mod.name)        
         
 
 
@@ -12745,7 +12749,7 @@ class FUJIWARATOOLBOX_GENRIG_REPARENT(bpy.types.Operator):
 ########################################
 #bpy.ops.fujiwara_toolbox.update_rig_proportion() #プロポーションアップデート
 class FUJIWARATOOLBOX_UPDATE_RIG_PROPORTION(bpy.types.Operator):
-    """現在の形状をメタリグに反映し、再生する。関連オブジェクトは適宜再適用される。"""
+    """現在の形状をメタリグに反映し、再生する。関連オブジェクトは適宜再適用される。シェイプキーは削除される。"""
     bl_idname = "fujiwara_toolbox.update_rig_proportion"
     bl_label = "プロポーションアップデート"
     bl_options = {'REGISTER', 'UNDO'}
@@ -12867,6 +12871,63 @@ class CATEGORYBUTTON_744202(bpy.types.Operator):#アーマチュアユーティ�
         return {'FINISHED'}
 ########################################
 ################################################################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+############################################################################################################################
+uiitem("便利")
+############################################################################################################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#選択ボーン名一覧（ポーズモード）
+########################################
+#bpy.ops.fujiwara_toolbox.show_selected_pose_bones() #選択ボーン名一覧（ポーズモード）
+class FUJIWARATOOLBOX_SHOW_SELECTED_POSE_BONES(bpy.types.Operator):
+    """選択しているボーン名の一覧を表示する。ポーズモード。"""
+    bl_idname = "fujiwara_toolbox.show_selected_pose_bones"
+    bl_label = "選択ボーン名一覧（ポーズモード）"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        obj = fjw.active()
+        if obj.mode != "POSE":
+            self.report({"WARNING"},"ポーズモードで実行してください。")
+        
+        result = []
+        pbones = obj.pose.bones
+        for pbone in pbones:
+            if pbone.bone.select:
+                result.append(pbone.name)
+
+        result_str = "["
+        for r in result:
+            result_str += '"%s", '%r
+        result_str += "]"
+        self.report({"INFO"}, result_str)
+
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
 
 ############################################################################################################################
 uiitem("素体システム用リネーマ")
