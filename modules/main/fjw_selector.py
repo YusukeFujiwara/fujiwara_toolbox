@@ -632,46 +632,6 @@ class LoadPoseLib(bpy.types.Operator):
 
     filter_glob = StringProperty(default="*.blend", options={"HIDDEN"})
 
-    # def get_blend_list_callback(self,context):
-    #     items=[]
-    #     if LoadPoseLib.poselibdir == "":
-    #         assetdir = fujiwara_toolbox.conf.get_pref().assetdir
-    #         LoadPoseLib.poselibdir = assetdir + os.sep + "poselib"
-    #         LoadPoseLib.libexists = os.path.exists(LoadPoseLib.poselibdir)
-
-    #     if not LoadPoseLib.libexists:
-    #         return [("None","Pose Dir Not Found.","")]
-
-    #     files = os.listdir(LoadPoseLib.poselibdir)
-    #     if len(files) == 0:
-    #         return [("None","Blend FIle Not Found.","")]
-        
-    #     items.append(("テスト","テスト",""))
-    #     items.append((u"テスト",u"テスト",""))
-
-    #     # import chardet
-    #     for filename in files:
-    #         #https://qiita.com/inoory/items/aafe79384dbfcc0802cf
-    #         #http://lab.hde.co.jp/2008/08/pythonunicodeencodeerror.html
-    #         # filename = bytes(filename, "shift_jis").decode("shift_jis").encode()
-    #         filename = str(bytes(filename, "shift_jis").decode("shift_jis"))
-    #         # パスの日本語化うまくいってない！
-    #         print(filename)
-
-    #         name,ext = os.path.splitext(filename)
-    #         if ext == ".blend":
-    #             items.append((name,name,""))
-
-    #     return items
-
-    # blend_list = EnumProperty(
-    #     name = "Blend List",               # 名称
-    #     description = "Blend List",        # 説明文
-    #     items = get_blend_list_callback)   # 項目リストを作成する関数
-
-    # def invoke(self, context, event):
-    #     return context.window_manager.invoke_props_dialog(self)
-
     def invoke(self, context, event):
         assetdir = fujiwara_toolbox.conf.get_pref().assetdir
         poselibdir = assetdir + os.sep + "poselib"
@@ -683,35 +643,6 @@ class LoadPoseLib(bpy.types.Operator):
         context.window_manager.fileselect_add(self)
         return {'RUNNING_MODAL'}
 
-
-
-    # def execute(self, context):
-    #     blendname = self.blend_list
-    #     self.report({"INFO"},blendname)
-
-    #     poselib = None
-    #     for action in bpy.data.actions:
-    #         if blendname == action.name:
-    #             if action.library == None:
-    #                 poselib = action
-    #                 break
-        
-    #     if poselib is None:
-    #         _dataname = blendname
-    #         _filename = blendname + ".blend"
-    #         _filepath = LoadPoseLib.poselibdir + os.sep + _filename
-    #         with bpy.data.libraries.load(_filepath, link=False, relative=True) as (data_from, data_to):
-    #             if _dataname in data_from.actions:
-    #                 data_to.actions = [_dataname]
-    #         if len(data_to.actions) != 0:
-    #             poselib = data_to.actions[0]
-        
-    #     if poselib is not None:
-    #         selection = fjw.get_selected_list()
-    #         for obj in selection:
-    #             if obj.type == "ARMATURE":
-    #                 obj.pose_library = poselib
-    #     return {"FINISHED"}
     def execute(self, context):
         blendname = os.path.splitext(self.filename)[0]
         self.report({"INFO"},blendname)
@@ -739,6 +670,85 @@ class LoadPoseLib(bpy.types.Operator):
                 if obj.type == "ARMATURE":
                     obj.pose_library = poselib
         return {"FINISHED"}
+
+
+
+# class LoadPoseLib(bpy.types.Operator):
+#     """選択アーマチュアに、アセットライブラリのposelibフォルダ内のblendファイルからポーズライブラリを取得して設定する。既に同名ライブラリがある場合はそれを設定する。"""
+#     bl_idname = "fjw_selector.load_pose_lib"
+#     bl_label = "load Poselib"
+#     bl_options = {'REGISTER', 'UNDO'}
+
+#     poselibdir = ""
+
+#     def get_blend_list_callback(self,context):
+#         items=[]
+#         if LoadPoseLib.poselibdir == "":
+#             assetdir = fujiwara_toolbox.conf.get_pref().assetdir
+#             LoadPoseLib.poselibdir = assetdir + os.sep + "poselib"
+#             LoadPoseLib.libexists = os.path.exists(LoadPoseLib.poselibdir)
+
+#         if not LoadPoseLib.libexists:
+#             return [("None","Pose Dir Not Found.","")]
+
+#         files = os.listdir(LoadPoseLib.poselibdir)
+#         if len(files) == 0:
+#             return [("None","Blend FIle Not Found.","")]
+        
+#         items.append(("テスト","テスト",""))
+#         items.append((u"テスト",u"テスト",""))
+
+#         # import chardet
+#         for filename in files:
+#             # パスの日本語化うまくいってない！
+#             #https://qiita.com/inoory/items/aafe79384dbfcc0802cf
+#             #http://lab.hde.co.jp/2008/08/pythonunicodeencodeerror.html
+#             #http://d.hatena.ne.jp/Cassiopeia/20070602/1180805345
+#             filename = str(filename).encode("cp932").decode("utf-8", errors="replace").encode()
+#             print(filename)
+
+#             name,ext = os.path.splitext(filename)
+#             if ext == ".blend":
+#                 items.append((name,name,""))
+
+#         return items
+
+#     blend_list = EnumProperty(
+#         name = "Blend List",               # 名称
+#         description = "Blend List",        # 説明文
+#         items = get_blend_list_callback)   # 項目リストを作成する関数
+
+#     def invoke(self, context, event):
+#         return context.window_manager.invoke_props_dialog(self)
+
+#     def execute(self, context):
+#         blendname = self.blend_list
+#         self.report({"INFO"},blendname)
+
+#         poselib = None
+#         for action in bpy.data.actions:
+#             if blendname == action.name:
+#                 if action.library == None:
+#                     poselib = action
+#                     break
+        
+#         if poselib is None:
+#             _dataname = blendname
+#             _filename = blendname + ".blend"
+#             _filepath = LoadPoseLib.poselibdir + os.sep + _filename
+#             with bpy.data.libraries.load(_filepath, link=False, relative=True) as (data_from, data_to):
+#                 if _dataname in data_from.actions:
+#                     data_to.actions = [_dataname]
+#             if len(data_to.actions) != 0:
+#                 poselib = data_to.actions[0]
+        
+#         if poselib is not None:
+#             selection = fjw.get_selected_list()
+#             for obj in selection:
+#                 if obj.type == "ARMATURE":
+#                     obj.pose_library = poselib
+#         return {"FINISHED"}
+
 
 class BrousePose(bpy.types.Operator):
     """ポーズを閲覧する。非ポーズモードの場合、ポーズモードに入ってジオメトリ以外に適用する。ポーズモードの場合ジオメトリ以外の選択ボーンに適用する。"""
