@@ -758,15 +758,35 @@ class FUJIWARATOOLBOX_559881(bpy.types.Operator):#保存して開き直す
 ########################################
 
 
-# #---------------------------------------------
-# uiitem().vertical()
-# #---------------------------------------------
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+########################################
+#親フォルダを開く
+########################################
+#bpy.ops.fujiwara_toolbox.open_parent_folder() #親フォルダを開く
+class FUJIWARATOOLBOX_OPEN_PARENT_FOLDER(bpy.types.Operator):
+    """このblendファイルがあるフォルダを開く。"""
+    bl_idname = "fujiwara_toolbox.open_parent_folder"
+    bl_label = "親フォルダを開く"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="FILE_FOLDER",mode="")
+
+    def execute(self, context):
+        dir = os.path.dirname(bpy.data.filepath)
+        os.system("EXPLORER " + dir)
+        return {'FINISHED'}
+########################################
 
 
 
-# #---------------------------------------------
-# uiitem().horizontal()
-# #---------------------------------------------
+
+
 
 
 # ########################################
@@ -3560,7 +3580,7 @@ class FUJIWARATOOLBOX_CYCLES_TO_CYCLES_MATERIAL(bpy.types.Operator):
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    def execute(self):
+    def execute(self,context):
         selection = fjw.get_selected_list()
         for obj in selection:
             if not hasattr(obj.data, "materials"):
@@ -17424,6 +17444,9 @@ class FUJIWARATOOLBOX_358608(bpy.types.Operator):#テクスチャ回収
 
             mat = fjw.get_material(matname)
             new_mats.append(mat)
+
+            if len(mat.texture_slots) >= 17:
+                continue
 
             texture_slot = mat.texture_slots.add()
             texture_slot.texture = tex

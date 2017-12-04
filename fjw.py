@@ -1409,6 +1409,7 @@ def get_material(matname):
     if matname not in bpy.data.materials:
         mat = bpy.data.materials.new(name=matname)
         mat.diffuse_color = (1, 1, 1)
+        return mat
     return bpy.data.materials[matname]
 
 
