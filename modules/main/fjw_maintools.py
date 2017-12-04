@@ -17249,7 +17249,7 @@ def substance_output(obj, copy_sbstemplate=True, show_explorer=True):
 
     dir = os.path.dirname(bpy.data.filepath)
     name = sbsname(obj.name)
-    imgdir = dir + os.sep + name + "_textures" + os.sep
+    imgdir = dir + os.sep + "textures" + os.sep + name + "_textures" + os.sep
     if not os.path.exists(imgdir):
         os.makedirs(imgdir)
 
