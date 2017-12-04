@@ -18,14 +18,14 @@
 ## 機能
 ### Substance
 * Substance Output  
-    Substance作業用の便利機能。objを出力して、そのフォルダを表示する。fujiwara_toolbox/resources/EMPTY.sbsをコピーしてくる。
+    Substance作業用の便利機能。objを出力して、そのフォルダを表示する。fujiwara_toolbox/resources/EMPTY.sbsをコピーしてくる。UVがない場合、スマートUV投影で展開する。
 * テクスチャ回収  
     texturesフォルダからbasecolorやroughnessなどのテクスチャを回収して、マテリアルにまとめる。
 
 ### Substanceクイックアサイン
 * Substanceマテリアルを設定  
     ファイルブラウザから.sbsarファイルを選択すると、自動的にマップが出力やレンダがされて、結果をマテリアルに回収できる。  
-    .sbsarは、"アセットマネージャ用ファイルパス/sbs/"フォルダにおいておく。  
+    .sbsarは、"アセットマネージャ用ファイルパス/sbs/"フォルダにおいておく。UVがない場合、スマートUV投影で展開する。  
     ベイクするモデル情報は、下のボタンで設定する。設定はオブジェクトのカスタムプロパティに維持される。
     何もしなかった場合、ambient-occlusionとcurvatureがベイクされる。
 
