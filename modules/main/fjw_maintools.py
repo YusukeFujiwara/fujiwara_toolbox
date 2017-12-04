@@ -17497,6 +17497,7 @@ uiitem().vertical()
 ############################################################################################################################
 uiitem("Substanceクイックアサイン")
 ############################################################################################################################
+sbsar_tex_size = ""
 
 def substance_bake(bake_type, src_objfile):
     """
@@ -17504,6 +17505,10 @@ def substance_bake(bake_type, src_objfile):
         ambient-occlusion
         curvature
     """
+    global sbsar_tex_size
+    if sbsar_tex_size == "":
+        sbsar_tex_size = "12"
+
     dest_dir = os.path.dirname(src_objfile) + os.sep + "src"
     dest_dir = os.path.normpath(dest_dir)
     if not os.path.exists(dest_dir):
@@ -17512,7 +17517,7 @@ def substance_bake(bake_type, src_objfile):
     toolkit_dir = pref.SubstanceAutomationToolkit_dir
 
     baker = os.path.normpath(toolkit_dir + os.sep + "sbsbaker.exe")
-    cmdstr = '"%s" %s "%s" --output-path "%s" --output-size 12,12'%(baker, bake_type, src_objfile, dest_dir)
+    cmdstr = '"%s" %s "%s" --output-path "%s" --output-size %s,%s'%(baker, bake_type, src_objfile, dest_dir, sbsar_tex_size, sbsar_tex_size)
     print(cmdstr)
     p = subprocess.Popen(cmdstr)
     p.wait()
@@ -17521,6 +17526,7 @@ def substance_render(sbsar, src_dir, name):
     pref = fujiwara_toolbox.conf.get_pref()
     toolkit_dir = pref.SubstanceAutomationToolkit_dir
 
+    global sbsar_tex_size
     render = os.path.normpath(toolkit_dir + os.sep + "sbsrender.exe")
     dest_dir = os.path.dirname(src_dir)
     entries = '--set-entry ambient-occlusion@"%s"'%(os.path.normpath(src_dir+os.sep+name+"_ambient-occlusion.png"))
@@ -17529,10 +17535,13 @@ def substance_render(sbsar, src_dir, name):
     entries += ' --set-entry position@"%s"'%(os.path.normpath(src_dir+os.sep+name+"_position.png"))
     entries += ' --set-entry uv-map@"%s"'%(os.path.normpath(src_dir+os.sep+name+"_uv-map.png"))
     entries += ' --set-entry world-space-direction@"%s"'%(os.path.normpath(src_dir+os.sep+name+"_world-space-direction.png"))
+    if sbsar_tex_size != "":
+        entries += ' --set-value $outputsize@%s,%s'%(sbsar_tex_size,sbsar_tex_size)
     cmdstr = '"%s" render --output-name="%s_{inputGraphUrl}_{outputNodeName}" %s --output-path "%s" "%s"'%(render, name, entries, dest_dir, sbsar)
     print(cmdstr)
     p = subprocess.Popen(cmdstr)
     p.wait()
+    sbsar_tex_size = ""
 
 #---------------------------------------------
 uiitem().vertical()
@@ -17672,6 +17681,114 @@ class FUJIWARATOOLBOX_SET_SBSAR_TO_ACTIVE(bpy.types.Operator):
         bpy.ops.fujiwara_toolbox.substance_collect_textures()
         return {'FINISHED'}
 ########################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#256
+########################################
+#bpy.ops.fujiwara_toolbox.set_sbsar_256() #256
+class FUJIWARATOOLBOX_SET_SBSAR_256(bpy.types.Operator):
+    """Substanceマテリアルを指定ピクセルで設定。"""
+    bl_idname = "fujiwara_toolbox.set_sbsar_256"
+    bl_label = "256"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        global sbsar_tex_size
+        sbsar_tex_size = "8"
+        bpy.ops.fujiwara_toolbox.set_sbsar_to_active("INVOKE_DEFAULT")
+        return {'FINISHED'}
+########################################
+
+########################################
+#512
+########################################
+#bpy.ops.fujiwara_toolbox.set_sbsar_512() #512
+class FUJIWARATOOLBOX_SET_SBSAR_512(bpy.types.Operator):
+    """Substanceマテリアルを指定ピクセルで設定。"""
+    bl_idname = "fujiwara_toolbox.set_sbsar_512"
+    bl_label = "512"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        global sbsar_tex_size
+        sbsar_tex_size = "9"
+        bpy.ops.fujiwara_toolbox.set_sbsar_to_active("INVOKE_DEFAULT")
+        return {'FINISHED'}
+########################################
+
+########################################
+#1024
+########################################
+#bpy.ops.fujiwara_toolbox.set_sbsar_1024() #1024
+class FUJIWARATOOLBOX_SET_SBSAR_1024(bpy.types.Operator):
+    """Substanceマテリアルを指定ピクセルで設定。"""
+    bl_idname = "fujiwara_toolbox.set_sbsar_1024"
+    bl_label = "1024"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        global sbsar_tex_size
+        sbsar_tex_size = "10"
+        bpy.ops.fujiwara_toolbox.set_sbsar_to_active("INVOKE_DEFAULT")
+        return {'FINISHED'}
+########################################
+
+########################################
+#2048
+########################################
+#bpy.ops.fujiwara_toolbox.set_sbsar_2048() #2048
+class FUJIWARATOOLBOX_SET_SBSAR_2048(bpy.types.Operator):
+    """Substanceマテリアルを指定ピクセルで設定。"""
+    bl_idname = "fujiwara_toolbox.set_sbsar_2048"
+    bl_label = "2048"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        global sbsar_tex_size
+        sbsar_tex_size = "11"
+        bpy.ops.fujiwara_toolbox.set_sbsar_to_active("INVOKE_DEFAULT")
+        return {'FINISHED'}
+########################################
+
+#bakeはいくらでもいけるけどrenderは2Kまでしか出ない
+# ########################################
+# #4096
+# ########################################
+# #bpy.ops.fujiwara_toolbox.set_sbsar_4096() #4096
+# class FUJIWARATOOLBOX_SET_SBSAR_4096(bpy.types.Operator):
+#     """Substanceマテリアルを指定ピクセルで設定。"""
+#     bl_idname = "fujiwara_toolbox.set_sbsar_4096"
+#     bl_label = "4096"
+#     bl_options = {'REGISTER', 'UNDO'}
+
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+#     def execute(self, context):
+#         global sbsar_tex_size
+#         sbsar_tex_size = "12"
+#         bpy.ops.fujiwara_toolbox.set_sbsar_to_active("INVOKE_DEFAULT")
+#         return {'FINISHED'}
+# ########################################
+
 
 #---------------------------------------------
 uiitem().vertical()
