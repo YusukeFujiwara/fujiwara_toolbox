@@ -136,6 +136,10 @@ class FujiwaraToolBoxPreferences(AddonPreferences):
             name="FJW Script Loader",
             default=False,
             )
+    SubstanceAutomationToolkit_dir = StringProperty(
+            name="Substance Automation Toolkitのディレクトリ",
+            subtype='FILE_PATH',
+            )
 
     def draw(self, context):
         layout = self.layout
@@ -162,6 +166,7 @@ class FujiwaraToolBoxPreferences(AddonPreferences):
         layout.label(text="特殊設定")
         layout.prop(self, "assetdir")
         layout.prop(self, "MarvelousDesigner_dir")
+        layout.prop(self, "SubstanceAutomationToolkit_dir")
         layout.prop(self, "script_loader")
         layout.prop(self, "fjwselector")
 
