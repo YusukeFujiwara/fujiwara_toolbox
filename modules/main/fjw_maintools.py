@@ -16738,17 +16738,17 @@ uiitem().vertical()
 ################################################################################
 #UIカテゴリ
 ########################################
-#Substance/テクスチャ
+#テクスチャ
 ########################################
 class CATEGORYBUTTON_81935(bpy.types.Operator):#Substance/テクスチャ
-    """Substance/テクスチャ"""
+    """テクスチャ"""
     bl_idname = "fujiwara_toolbox.categorybutton_81935"
-    bl_label = "Substance/テクスチャ"
+    bl_label = "テクスチャ"
     bl_options = {'REGISTER', 'UNDO'}
 
-    uiitem = uiitem("Substance/テクスチャ",True)
+    uiitem = uiitem("テクスチャ",True)
     uiitem.button(bl_idname,bl_label,icon="",mode="")
-    uiitem.direction = "vertical"
+    uiitem.direction = "horizontal"
 
     def execute(self, context):
         uicategory_execute(self)
@@ -17213,16 +17213,29 @@ class FUJIWARATOOLBOX_bake_fullrender_4096(bpy.types.Operator):
 
 
 
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
 
+################################################################################
+#UIカテゴリ
+########################################
+#Substance
+########################################
+class CATEGORYBUTTON_376537(bpy.types.Operator):
+    """Substance"""
+    bl_idname = "fujiwara_toolbox.categorybutton_376537"
+    bl_label = "Substance"
+    bl_options = {'REGISTER', 'UNDO'}
 
+    uiitem = uiitem("Substance",True)
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+    uiitem.direction = ""
 
-
-
-
-
-
-
-
+    def execute(self, context):
+        uicategory_execute(self)
+        return {'FINISHED'}
+################################################################################
 
 #---------------------------------------------
 uiitem().vertical()
@@ -17492,6 +17505,7 @@ def substance_bake(bake_type, src_objfile):
         curvature
     """
     dest_dir = os.path.dirname(src_objfile) + os.sep + "src"
+    dest_dir = os.path.normpath(dest_dir)
     if not os.path.exists(dest_dir):
         os.mkdir(dest_dir)
     pref = fujiwara_toolbox.conf.get_pref()
@@ -17622,7 +17636,7 @@ class FUJIWARATOOLBOX_SET_SBSAR_TO_ACTIVE(bpy.types.Operator):
             self.report({"WARNING"}, "アドオン設定でSubstance Automation Toolkitのディレクトリを設定してください。")
             return {"CANCELLED"}
 
-        sbsar = self.filepath
+        sbsar = self.directory + os.sep + self.filename
         imgdir, name = substance_output(obj, False, False)
         self.report({"INFO"}, sbsar)
         self.report({"INFO"}, imgdir)
