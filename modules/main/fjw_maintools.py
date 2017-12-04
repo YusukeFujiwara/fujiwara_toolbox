@@ -2308,7 +2308,283 @@ class CATEGORYBUTTON_421353(bpy.types.Operator):#原点ツール
 
 
 
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
 
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+############################################################################################################################
+uiitem("原点移動")
+############################################################################################################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+########################################
+#3Dカーソルに
+########################################
+#bpy.ops.fujiwara_toolbox.move_origin_cursor() #3Dカーソルに
+class FUJIWARATOOLBOX_MOVE_ORIGIN_CURSOR(bpy.types.Operator):
+    """原点を3Dカーソルに移動する。"""
+    bl_idname = "fujiwara_toolbox.move_origin_cursor"
+    bl_label = "3Dカーソルに"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="CURSOR",mode="")
+
+    def execute(self, context):
+        bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
+        return {'FINISHED'}
+########################################
+
+########################################
+#重心に
+########################################
+#bpy.ops.fujiwara_toolbox.move_origin_center_of_mass() #重心に
+class FUJIWARATOOLBOX_MOVE_ORIGIN_CENTER_OF_MASS(bpy.types.Operator):
+    """原点を重心に移動する。"""
+    bl_idname = "fujiwara_toolbox.move_origin_center_of_mass"
+    bl_label = "重心に"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="OBJECT_DATAMODE",mode="")
+
+    def execute(self, context):
+        bpy.ops.object.origin_set(type='ORIGIN_CENTER_OF_MASS')
+        return {'FINISHED'}
+########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#原点を下に（選択物）
+########################################
+class FUJIWARATOOLBOX_947695(bpy.types.Operator):#原点を下に（選択物）
+    """原点を下に（選択物）"""
+    bl_idname = "fujiwara_toolbox.command_947695"
+    bl_label = "原点を下に（選択物）"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="TRIA_DOWN_BAR",mode="")
+
+    def execute(self, context):
+        objlist = []
+        for obj in bpy.context.selected_objects:
+            objlist.append(obj)
+        
+        for obj in bpy.context.selected_objects:
+            obj.select = False
+        
+        for obj in objlist:
+            bpy.context.scene.objects.active = obj
+            obj.select = True
+        
+            bpy.ops.view3d.snap_cursor_to_selected()
+            bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+            bottom = 1000
+            for v in obj.data.vertices:
+                if v.co.z < bottom:
+                    bottom = v.co.z
+            bpy.context.space_data.cursor_location[2] = bottom
+            bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
+            obj.select = False
+        
+        for obj in objlist:
+            obj.select = True
+        
+        return {'FINISHED'}
+########################################
+
+
+########################################
+#重心下に
+########################################
+class FUJIWARATOOLBOX_183554(bpy.types.Operator):#重心下に
+    """重心下に"""
+    bl_idname = "fujiwara_toolbox.command_183554"
+    bl_label = "重心下に"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="TRIA_DOWN_BAR",mode="")
+
+
+    def execute(self, context):
+        fjw.reject_notmesh()
+        objlist = fjw.get_selected_list()
+        fjw.deselect()
+        
+        for obj in objlist:
+            bpy.context.scene.objects.active = obj
+            obj.select = True
+        
+            bpy.ops.object.origin_set(type='ORIGIN_CENTER_OF_MASS')
+            bpy.ops.view3d.snap_cursor_to_selected()
+            bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+            bottom = 1000
+            for v in obj.data.vertices:
+                if v.co.z < bottom:
+                    bottom = v.co.z
+            bpy.context.space_data.cursor_location[2] = bottom
+            bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
+            obj.select = False
+        
+        for obj in objlist:
+            obj.select = True
+        
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+
+
+########################################
+#原点X=0
+########################################
+class FUJIWARATOOLBOX_463922(bpy.types.Operator):#原点X=0
+    """原点X=0"""
+    bl_idname = "fujiwara_toolbox.command_463922"
+    bl_label = "原点X=0"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="MOD_WIREFRAME",mode="")
+
+
+    def execute(self, context):
+        targets = fjw.get_selected_list()
+        for obj in targets:
+            fjw.deselect()
+            fjw.activate(obj)
+            bpy.ops.view3d.snap_cursor_to_selected()
+            bpy.context.space_data.cursor_location[0] = 0
+            bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
+        fjw.select(targets)
+        
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#カーソルZを0に
+########################################
+class FUJIWARATOOLBOX_98727(bpy.types.Operator):#カーソルZを0に
+    """カーソルZを0に"""
+    bl_idname = "fujiwara_toolbox.command_98727"
+    bl_label = "Zを0に"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="CURSOR",mode="")
+
+    def execute(self, context):
+        bpy.context.space_data.cursor_location[2] = 0
+        
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+########################################
+#オブジェクトのZを0に
+########################################
+class FUJIWARATOOLBOX_109728(bpy.types.Operator):#オブジェクトのZを0に
+    """オブジェクトのZを0に"""
+    bl_idname = "fujiwara_toolbox.command_109728"
+    bl_label = "Zを0に"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="OBJECT_DATAMODE",mode="")
+    
+    def execute(self, context):
+        for obj in bpy.context.selected_objects:
+            obj.location[2] = 0
+        
+        return {'FINISHED'}
+########################################
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+
+########################################
+#選択頂点を原点に
+########################################
+class FUJIWARATOOLBOX_753369(bpy.types.Operator):#選択頂点を原点に
+    """選択頂点を原点に"""
+    bl_idname = "fujiwara_toolbox.command_753369"
+    bl_label = "選択頂点を原点に"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="EDITMODE_HLT",mode="")
+
+    def execute(self, context):
+        obj = bpy.context.scene.objects.active
+        if obj.mode != "EDIT":
+            self.report({"INFO"},"編集モードで押して下さい")
+            return {'CANCELLED'}
+        
+        bpy.ops.view3d.snap_cursor_to_selected()
+        bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+        bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
+
+        return {'FINISHED'}
+########################################
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+############################################################################################################################
+uiitem("ピボット")
+############################################################################################################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
 
 #---------------------------------------------
 uiitem().horizontal()
@@ -2437,221 +2713,6 @@ class FUJIWARATOOLBOX_808575(bpy.types.Operator):#ピボットに原点を移動
         
         return {'FINISHED'}
 ########################################
-
-
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-
-
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
-
-
-########################################
-#原点を下に（選択物）
-########################################
-class FUJIWARATOOLBOX_947695(bpy.types.Operator):#原点を下に（選択物）
-    """原点を下に（選択物）"""
-    bl_idname = "fujiwara_toolbox.command_947695"
-    bl_label = "原点を下に（選択物）"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="TRIA_DOWN_BAR",mode="")
-
-    def execute(self, context):
-        objlist = []
-        for obj in bpy.context.selected_objects:
-            objlist.append(obj)
-        
-        for obj in bpy.context.selected_objects:
-            obj.select = False
-        
-        for obj in objlist:
-            bpy.context.scene.objects.active = obj
-            obj.select = True
-        
-            bpy.ops.view3d.snap_cursor_to_selected()
-            bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-            bottom = 1000
-            for v in obj.data.vertices:
-                if v.co.z < bottom:
-                    bottom = v.co.z
-            bpy.context.space_data.cursor_location[2] = bottom
-            bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
-            obj.select = False
-        
-        for obj in objlist:
-            obj.select = True
-        
-        return {'FINISHED'}
-########################################
-########################################
-#重心下に
-########################################
-class FUJIWARATOOLBOX_183554(bpy.types.Operator):#重心下に
-    """重心下に"""
-    bl_idname = "fujiwara_toolbox.command_183554"
-    bl_label = "重心下に"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        fjw.reject_notmesh()
-        objlist = fjw.get_selected_list()
-        fjw.deselect()
-        
-        for obj in objlist:
-            bpy.context.scene.objects.active = obj
-            obj.select = True
-        
-            bpy.ops.object.origin_set(type='ORIGIN_CENTER_OF_MASS')
-            bpy.ops.view3d.snap_cursor_to_selected()
-            bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-            bottom = 1000
-            for v in obj.data.vertices:
-                if v.co.z < bottom:
-                    bottom = v.co.z
-            bpy.context.space_data.cursor_location[2] = bottom
-            bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
-            obj.select = False
-        
-        for obj in objlist:
-            obj.select = True
-        
-        return {'FINISHED'}
-########################################
-
-
-
-
-
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-
-
-
-########################################
-#原点X=0
-########################################
-class FUJIWARATOOLBOX_463922(bpy.types.Operator):#原点X=0
-    """原点X=0"""
-    bl_idname = "fujiwara_toolbox.command_463922"
-    bl_label = "原点X=0"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        targets = fjw.get_selected_list()
-        for obj in targets:
-            fjw.deselect()
-            fjw.activate(obj)
-            bpy.ops.view3d.snap_cursor_to_selected()
-            bpy.context.space_data.cursor_location[0] = 0
-            bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
-        fjw.select(targets)
-        
-        return {'FINISHED'}
-########################################
-
-
-
-
-
-
-
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
-
-########################################
-#カーソルZを0に
-########################################
-class FUJIWARATOOLBOX_98727(bpy.types.Operator):#カーソルZを0に
-    """カーソルZを0に"""
-    bl_idname = "fujiwara_toolbox.command_98727"
-    bl_label = "Zを0に"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="CURSOR",mode="")
-
-    def execute(self, context):
-        bpy.context.space_data.cursor_location[2] = 0
-        
-        return {'FINISHED'}
-########################################
-
-
-
-
-
-########################################
-#オブジェクトのZを0に
-########################################
-class FUJIWARATOOLBOX_109728(bpy.types.Operator):#オブジェクトのZを0に
-    """オブジェクトのZを0に"""
-    bl_idname = "fujiwara_toolbox.command_109728"
-    bl_label = "Zを0に"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="OBJECT_DATAMODE",mode="")
-    
-    def execute(self, context):
-        for obj in bpy.context.selected_objects:
-            obj.location[2] = 0
-        
-        return {'FINISHED'}
-########################################
-
-
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-
-
-########################################
-#選択頂点を原点に
-########################################
-class FUJIWARATOOLBOX_753369(bpy.types.Operator):#選択頂点を原点に
-    """選択頂点を原点に"""
-    bl_idname = "fujiwara_toolbox.command_753369"
-    bl_label = "選択頂点を原点に"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="EDITMODE_HLT",mode="")
-
-    def execute(self, context):
-        obj = bpy.context.scene.objects.active
-        if obj.mode != "EDIT":
-            self.report({"INFO"},"編集モードで押して下さい")
-            return {'CANCELLED'}
-        
-        bpy.ops.view3d.snap_cursor_to_selected()
-        bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-        bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
-
-        return {'FINISHED'}
-########################################
-
-
-
-
-
-
-
-
 
 
 
@@ -3381,18 +3442,10 @@ uiitem().vertical()
 uiitem().horizontal()
 #---------------------------------------------
 
-########################################
-#Cyclesマテリアル化
-########################################
-#bpy.ops.fujiwara_toolbox.cycles_to_cycles_material() #Cyclesマテリアル化
-class FUJIWARATOOLBOX_CYCLES_TO_CYCLES_MATERIAL(bpy.types.Operator):
-    """通常マテリアルをCyclesマテリアルに変換する。テクスチャはbaseColorの同一ディレクトリから検索する。"""
-    bl_idname = "fujiwara_toolbox.cycles_to_cycles_material"
-    bl_label = "Cyclesマテリアル化"
-    bl_options = {'REGISTER', 'UNDO'}
 
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+class CyclesTexturedMaterial():
+    def __init__(self, materials):
+        self.materials = materials
 
     def imagetex_node(self, ntu, path):
         node = ntu.add("ShaderNodeTexImage", "Texture Image")
@@ -3411,90 +3464,104 @@ class FUJIWARATOOLBOX_CYCLES_TO_CYCLES_MATERIAL(bpy.types.Operator):
                 return obj
         return None
 
-    def execute(self, context):
+    def execute(self):
+        for mat in self.materials:
+            ntu = fjw.NodetreeUtils(mat)
+            ntu.activate()
+            ntu.cleartree()
+
+            n_out = ntu.add("ShaderNodeOutputMaterial", "Output Material")
+            n_texcoord = ntu.add("ShaderNodeTexCoord", "Texture Coordinates")
+            n_map = ntu.add("ShaderNodeMapping", "Mapping")
+            n_map.vector_type = "POINT"
+            ntu.link(n_texcoord.outputs["UV"], n_map.inputs["Vector"])
+
+            n_prncpl = ntu.add("ShaderNodeBsdfPrincipled", "Principled BSDF")
+            ntu.link(n_prncpl.outputs["BSDF"], n_out.inputs["Surface"])
+            n_prncpl.inputs["Base Color"].default_value = (mat.diffuse_color.r, mat.diffuse_color.g, mat.diffuse_color.b, 1)
+
+            n_norm = ntu.add("ShaderNodeNormalMap", "Normal Map")
+            ntu.link(n_norm.outputs["Normal"], n_prncpl.inputs["Normal"])
+
+            texpath = ""
+            #テクスチャ関係
+            for tslot in mat.texture_slots:
+                if tslot is not None and tslot.texture is not None and tslot.texture.image is not None:
+                    img = tslot.texture.image
+                    if "_basecolor" in img.filepath:
+                        texpath = bpy.path.abspath(img.filepath)
+            
+            if texpath != "":
+                texname = os.path.splitext(os.path.basename(texpath))[0]
+                texid = texname.replace("_basecolor", "")
+                texdir = os.path.dirname(texpath)
+                files = os.listdir(texdir)
+
+                texlist = []
+                for file in files:
+                    if texid in file:
+                        texlist.append(file)
+                
+                #basecolor
+                identifier = "_basecolor" 
+                texfilename = self.find_from_list(texlist, texid + identifier)
+                if texfilename is not None:
+                    path = os.path.normpath(texdir + os.sep + texfilename)
+                    n_tex = self.add_tex(ntu, n_map.outputs["Vector"], path, n_prncpl.inputs["Base Color"])
+                    n_tex.color_space = "COLOR"
+                #metallic
+                identifier = "_metallic" 
+                texfilename = self.find_from_list(texlist, texid + identifier)
+                if texfilename is not None:
+                    path = os.path.normpath(texdir + os.sep + texfilename)
+                    n_tex = self.add_tex(ntu, n_map.outputs["Vector"], path, n_prncpl.inputs["Metallic"])
+                    n_tex.color_space = "NONE"
+                #normal
+                identifier = "_normal" 
+                texfilename = self.find_from_list(texlist, texid + identifier)
+                if texfilename is not None:
+                    path = os.path.normpath(texdir + os.sep + texfilename)
+                    n_tex = self.add_tex(ntu, n_map.outputs["Vector"], path, n_norm.inputs["Color"])
+                    n_tex.color_space = "NONE"
+                #roughness
+                identifier = "_roughness" 
+                texfilename = self.find_from_list(texlist, texid + identifier)
+                if texfilename is not None:
+                    path = os.path.normpath(texdir + os.sep + texfilename)
+                    n_tex = self.add_tex(ntu, n_map.outputs["Vector"], path, n_prncpl.inputs["Roughness"])
+                    n_tex.color_space = "NONE"
+                #height
+                identifier = "_height" 
+                texfilename = self.find_from_list(texlist, texid + identifier)
+                if texfilename is not None:
+                    path = os.path.normpath(texdir + os.sep + texfilename)
+                    n_tex = self.add_tex(ntu, n_map.outputs["Vector"], path, n_out.inputs["Displacement"])
+                    n_tex.color_space = "NONE"
+
+                n_prncpl.location = (ntu.posx, ntu.posy)
+                ntu.posx += 200
+                n_out.location = (ntu.posx, ntu.posy)
+
+########################################
+#Cyclesマテリアル化
+########################################
+#bpy.ops.fujiwara_toolbox.cycles_to_cycles_material() #Cyclesマテリアル化
+class FUJIWARATOOLBOX_CYCLES_TO_CYCLES_MATERIAL(bpy.types.Operator):
+    """通常マテリアルをCyclesマテリアルに変換する。テクスチャはbaseColorの同一ディレクトリから検索する。"""
+    bl_idname = "fujiwara_toolbox.cycles_to_cycles_material"
+    bl_label = "Cyclesマテリアル化"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self):
         selection = fjw.get_selected_list()
         for obj in selection:
             if not hasattr(obj.data, "materials"):
                 continue
-            for mat in obj.data.materials:
-                ntu = fjw.NodetreeUtils(mat)
-                ntu.activate()
-                ntu.cleartree()
-
-                n_out = ntu.add("ShaderNodeOutputMaterial", "Output Material")
-                n_texcoord = ntu.add("ShaderNodeTexCoord", "Texture Coordinates")
-                n_map = ntu.add("ShaderNodeMapping", "Mapping")
-                n_map.vector_type = "POINT"
-                ntu.link(n_texcoord.outputs["UV"], n_map.inputs["Vector"])
-
-                n_prncpl = ntu.add("ShaderNodeBsdfPrincipled", "Principled BSDF")
-                ntu.link(n_prncpl.outputs["BSDF"], n_out.inputs["Surface"])
-                n_prncpl.inputs["Base Color"].default_value = (mat.diffuse_color.r, mat.diffuse_color.g, mat.diffuse_color.b, 1)
-
-                n_norm = ntu.add("ShaderNodeNormalMap", "Normal Map")
-                ntu.link(n_norm.outputs["Normal"], n_prncpl.inputs["Normal"])
-
-                texpath = ""
-                #テクスチャ関係
-                for tslot in mat.texture_slots:
-                    if tslot is not None and tslot.texture is not None and tslot.texture.image is not None:
-                        img = tslot.texture.image
-                        if "_basecolor" in img.filepath:
-                            texpath = bpy.path.abspath(img.filepath)
-                
-                self.report({"INFO"}, texpath)
-                
-                if texpath != "":
-                    texname = os.path.splitext(os.path.basename(texpath))[0]
-                    texid = texname.replace("_basecolor", "")
-                    texdir = os.path.dirname(texpath)
-                    files = os.listdir(texdir)
-
-                    texlist = []
-                    for file in files:
-                        if texid in file:
-                            texlist.append(file)
-                    
-                    #basecolor
-                    identifier = "_basecolor" 
-                    texfilename = self.find_from_list(texlist, texid + identifier)
-                    if texfilename is not None:
-                        path = os.path.normpath(texdir + os.sep + texfilename)
-                        n_tex = self.add_tex(ntu, n_map.outputs["Vector"], path, n_prncpl.inputs["Base Color"])
-                        n_tex.color_space = "COLOR"
-                    #metallic
-                    identifier = "_metallic" 
-                    texfilename = self.find_from_list(texlist, texid + identifier)
-                    if texfilename is not None:
-                        path = os.path.normpath(texdir + os.sep + texfilename)
-                        n_tex = self.add_tex(ntu, n_map.outputs["Vector"], path, n_prncpl.inputs["Metallic"])
-                        n_tex.color_space = "NONE"
-                    #normal
-                    identifier = "_normal" 
-                    texfilename = self.find_from_list(texlist, texid + identifier)
-                    if texfilename is not None:
-                        path = os.path.normpath(texdir + os.sep + texfilename)
-                        n_tex = self.add_tex(ntu, n_map.outputs["Vector"], path, n_norm.inputs["Color"])
-                        n_tex.color_space = "NONE"
-                    #roughness
-                    identifier = "_roughness" 
-                    texfilename = self.find_from_list(texlist, texid + identifier)
-                    if texfilename is not None:
-                        path = os.path.normpath(texdir + os.sep + texfilename)
-                        n_tex = self.add_tex(ntu, n_map.outputs["Vector"], path, n_prncpl.inputs["Roughness"])
-                        n_tex.color_space = "NONE"
-                    #height
-                    identifier = "_height" 
-                    texfilename = self.find_from_list(texlist, texid + identifier)
-                    if texfilename is not None:
-                        path = os.path.normpath(texdir + os.sep + texfilename)
-                        n_tex = self.add_tex(ntu, n_map.outputs["Vector"], path, n_out.inputs["Displacement"])
-                        n_tex.color_space = "NONE"
-
-                    n_prncpl.location = (ntu.posx, ntu.posy)
-                    ntu.posx += 200
-                    n_out.location = (ntu.posx, ntu.posy)
-                
+            ctm = CyclesTexturedMaterial(obj.data.materials)
+            ctm.execute()
 
         return {'FINISHED'}
 ########################################
@@ -3514,6 +3581,35 @@ uiitem().vertical()
 #---------------------------------------------
 uiitem().horizontal()
 #---------------------------------------------
+
+def set_hdri(path):
+    world = bpy.context.scene.world
+    ntu = fjw.NodetreeUtils(world)
+    ntu.activate()
+    ntu.cleartree()
+    n_out = ntu.add("ShaderNodeOutputWorld", "Output World")
+
+    n_bg = ntu.add("ShaderNodeBackground", "Background")
+    n_env = ntu.add("ShaderNodeTexEnvironment", "Texture Enviroment")
+    ntu.link(n_env.outputs["Color"], n_bg.inputs["Color"])
+    ntu.link(n_bg.outputs["Background"], n_out.inputs["Surface"])
+    n_bg.inputs["Strength"].default_value = 0.5
+
+    n_texcoord = ntu.add("ShaderNodeTexCoord", "Texture Coordinates")
+    n_map = ntu.add("ShaderNodeMapping", "Mapping")
+    n_map.vector_type = "POINT"
+    ntu.link(n_texcoord.outputs["Generated"], n_map.inputs["Vector"])
+    ntu.link(n_map.outputs["Vector"], n_env.inputs["Vector"])
+
+
+    img = bpy.data.images.load(filepath=path)
+    n_env.image = img
+
+    bpy.context.scene.render.layers.active.use_sky = True
+    world.cycles.sample_as_light = True
+    world.cycles.sample_map_resolution = img.size[0]
+    bpy.context.scene.cycles.film_transparent = False
+
 
 ########################################
 #HDRI設定
@@ -3543,37 +3639,56 @@ class FUJIWARATOOLBOX_CYCLES_SET_HDRI(bpy.types.Operator):
             return {"CANCELLED"}
         path = os.path.normpath(self.directory + os.sep + self.filename)
 
-        world = bpy.context.scene.world
-        ntu = fjw.NodetreeUtils(world)
-        ntu.activate()
-        ntu.cleartree()
-        n_out = ntu.add("ShaderNodeOutputWorld", "Output World")
-
-        n_bg = ntu.add("ShaderNodeBackground", "Background")
-        n_env = ntu.add("ShaderNodeTexEnvironment", "Texture Enviroment")
-        ntu.link(n_env.outputs["Color"], n_bg.inputs["Color"])
-        ntu.link(n_bg.outputs["Background"], n_out.inputs["Surface"])
-        n_bg.inputs["Strength"].default_value = 0.5
-
-        n_texcoord = ntu.add("ShaderNodeTexCoord", "Texture Coordinates")
-        n_map = ntu.add("ShaderNodeMapping", "Mapping")
-        n_map.vector_type = "POINT"
-        ntu.link(n_texcoord.outputs["Generated"], n_map.inputs["Vector"])
-        ntu.link(n_map.outputs["Vector"], n_env.inputs["Vector"])
-
-
-        img = bpy.data.images.load(filepath=path)
-        n_env.image = img
-
-        bpy.context.scene.render.layers.active.use_sky = True
-        world.cycles.sample_as_light = True
-        world.cycles.sample_map_resolution = img.size[0]
-        bpy.context.scene.cycles.film_transparent = False
-
+        set_hdri(path)
 
         return {'FINISHED'}
 ########################################
 
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+########################################
+#アセットフォルダから設定
+########################################
+#bpy.ops.fujiwara_toolbox.cycles_set_hdri_from_assetdir() #アセットフォルダから設定
+class FUJIWARATOOLBOX_CYCLES_SET_HDRI_FROM_ASSETDIR(bpy.types.Operator):
+    """アセットディレクトリ/hdriからファイルを読み込んでHDRIマテリアルを設定する。"""
+    bl_idname = "fujiwara_toolbox.cycles_set_hdri_from_assetdir"
+    bl_label = "アセットフォルダから設定"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    filename = bpy.props.StringProperty(subtype="FILE_NAME")
+    filepath = bpy.props.StringProperty(subtype="FILE_PATH")
+    directory = bpy.props.StringProperty(subtype="DIR_PATH")
+    files = bpy.props.CollectionProperty(type=bpy.types.PropertyGroup)
+
+    def invoke(self, context, event):
+        self.directory = assetdir + os.sep + "hdri"
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+    def execute(self, context):
+        if self.filename == "":
+            return {"CANCELLED"}
+        path = os.path.normpath(self.directory + os.sep + self.filename)
+        #自texturesに移動
+        if bpy.data.filepath != "":
+            selfdir = os.path.dirname(bpy.data.filepath)
+            newtexdir = selfdir + os.sep + "textures"
+            newtexpath = newtexdir + os.sep + self.filename
+            if not os.path.exists(newtexdir):
+                os.mkdir(newtexdir)
+            shutil.copy(path, newtexpath)
+            path = newtexpath
+            
+        set_hdri(path)
+
+        return {'FINISHED'}
+########################################
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
@@ -17256,6 +17371,7 @@ class FUJIWARATOOLBOX_358608(bpy.types.Operator):#テクスチャ回収
         tmp.extend(images)
         images = tmp
 
+        new_mats = []
         for image in images:
             texname, ext = os.path.splitext(image.name)
 
@@ -17271,7 +17387,7 @@ class FUJIWARATOOLBOX_358608(bpy.types.Operator):#テクスチャ回収
             #identifier=最後の_hogeを除去したものが名前
             matname = re.sub("_[a-zA-Z]+$", "", texname)
             mat = fjw.get_material(matname)
-            
+            new_mats.append(mat)
 
             texture_slot = mat.texture_slots.add()
             texture_slot.texture = tex
@@ -17317,6 +17433,9 @@ class FUJIWARATOOLBOX_358608(bpy.types.Operator):#テクスチャ回収
                 texture_slot.diffuse_color_factor = 1
                 texture_slot.use_map_alpha = True
                 texture_slot.alpha_factor = -1
+
+        ctm = CyclesTexturedMaterial(new_mats)
+        ctm.execute()
 
 
         bpy.ops.file.make_paths_relative()
