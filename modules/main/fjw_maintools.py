@@ -17667,6 +17667,8 @@ class FUJIWARATOOLBOX_SET_SBSAR_TO_ACTIVE(bpy.types.Operator):
         #レンダー
         substance_render(sbsar, imgdir+os.sep+"src", name)
 
+        obj.data.materials.clear()
+
         bpy.ops.fujiwara_toolbox.substance_collect_textures()
         return {'FINISHED'}
 ########################################
