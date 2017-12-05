@@ -59,13 +59,16 @@ class SubstanceTools():
     toolkit_dir = ""
 
     self_dir = ""
+    blend_name = ""
     sbs_generated_dir = ""
 
-
-    def __init__(self, obj, sbsar_path):
+    def base_init(self):
         self.self_dir = os.path.dirname(bpy.data.filepath)
         self.blend_name = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
         self.sbs_generated_dir = os.path.normpath(self.self_dir + os.sep + "textures" + os.sep + self.blend_name + "_sbs_generated")
+
+    def __init__(self, obj, sbsar_path):
+        self.base_init()
 
         self.obj = obj
         self.obj_name = obj.name.replace(".","_")
@@ -151,6 +154,7 @@ class SubstanceTools():
     def __clear_materials(self):
         self.obj.data.materials.clear()
 
+
     #テクスチャ回収
     def material_setup(self):
         self.__clear_materials()
@@ -235,7 +239,9 @@ class SubstanceTools():
 
     #リンクのないマテリアルのディレクトリを削除
     #マテリアルが存在しないディレクトリを削除、のほうがいい
+    @classmethod
     def clean_materials(self):
+        self.base_init(self)
         if not os.path.exists(self.sbs_generated_dir):
             return
         files = os.listdir(self.sbs_generated_dir)
@@ -259,3 +265,40 @@ class SubstanceTools():
         #     if os.path.exists(matpath):
         #         shutil.rmtree(matpath)
         #     bpy.data.materials.remove(mat)
+
+    @classmethod
+    def remove_not_used_materials(self, obj):
+        current = fjw.active()
+        fjw.activate(obj)
+        fjw.mode("OBJECT")
+        used_indexes = []
+        for face in obj.data.polygons:
+            i = face.material_index
+            if i not in used_indexes:
+                used_indexes.append(i)
+        print("used_indexes:"+str(used_indexes))
+
+        used_materials = []
+        for i in used_indexes:
+            mat = obj.material_slots[i].material
+            if mat not in used_materials:
+                used_materials.append(mat)
+        print(used_materials)
+        
+        delmats = []
+        for m in range(len(used_materials)):
+            for i in range(len(obj.material_slots)):
+                mslot = obj.material_slots[i]
+                print("mslot:"+str(mslot.material))
+                print("in:"+str(mslot.material in used_materials))
+                if mslot.material and mslot.material not in used_materials:
+                    print("remove:"+str(i)+" "+str(mslot.material))
+                    obj.active_material_index = i
+                    bpy.ops.object.material_slot_remove()
+                    delmats.append(mslot.material)
+                    break
+        for mat in delmats:
+            if mat.users == 0:
+                bpy.data.materials.remove(mat)
+
+        fjw.activate(current)

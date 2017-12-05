@@ -17645,6 +17645,7 @@ class FUJIWARATOOLBOX_SET_SBSAR_TO_ACTIVE(bpy.types.Operator):
 
     def execute(self, context):
         obj = fjw.active()
+
         fjw.deselect()
         fjw.activate(obj)
         if obj.mode == "EDIT":
@@ -18119,7 +18120,31 @@ class FUJIWARATOOLBOX_SBSUTIL_LIGHTMAP_PACK(bpy.types.Operator):
         bpy.ops.uv.lightmap_pack()
         return {'FINISHED'}
 ########################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+########################################
+#クリーンアップ
+########################################
+#bpy.ops.fujiwara_toolbox.sbsutils_cleanup() #クリーンアップ
+class FUJIWARATOOLBOX_SBSUTILS_CLEANUP(bpy.types.Operator):
+    """選択オブジェクトとマテリアルフォルダをクリーンアップする"""
+    bl_idname = "fujiwara_toolbox.sbsutils_cleanup"
+    bl_label = "クリーンアップ"
+    bl_options = {'REGISTER', 'UNDO'}
 
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        for obj in fjw.get_selected_list():
+            SubstanceTools.remove_not_used_materials(obj)
+        SubstanceTools.clean_materials()
+        return {'FINISHED'}
+########################################
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
