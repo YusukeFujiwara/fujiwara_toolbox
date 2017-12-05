@@ -68,7 +68,7 @@ class SubstanceTools():
         self.sbs_generated_dir = os.path.normpath(self.self_dir + os.sep + "textures" + os.sep + self.blend_name + "_sbs_generated")
 
         self.obj = obj
-        self.obj_name = obj.name
+        self.obj_name = obj.name.replace(".","_")
 
         self.sbsar_path = sbsar_path
         self.sbsarname = os.path.splitext(os.path.basename(self.sbsar_path))[0]

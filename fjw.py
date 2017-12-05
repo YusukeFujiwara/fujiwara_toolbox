@@ -1558,6 +1558,16 @@ class CyclesTexturedMaterial():
             ntu.link(n_prncpl.outputs["BSDF"], n_out.inputs["Surface"])
             n_prncpl.inputs["Base Color"].default_value = (mat.diffuse_color.r, mat.diffuse_color.g, mat.diffuse_color.b, 1)
 
+            n_mix = ntu.add("ShaderNodeMixRGB", "Mix")
+            n_mix.blend_type = "MULTIPLY"
+            n_mix.inputs[0].default_value = 1.0
+            ntu.link(n_mix.outputs[0], n_prncpl.inputs["Base Color"])
+
+            n_rgb = ntu.add("ShaderNodeRGB", "RGB")
+            n_rgb.outputs[0].default_value = (1,1,1,1)
+            ntu.link(n_rgb.outputs[0], n_mix.inputs[2])
+
+
             n_norm = ntu.add("ShaderNodeNormalMap", "Normal Map")
             ntu.link(n_norm.outputs["Normal"], n_prncpl.inputs["Normal"])
 
@@ -1585,7 +1595,7 @@ class CyclesTexturedMaterial():
                 texfilename = self.find_from_list(texlist, texid + identifier)
                 if texfilename is not None:
                     path = os.path.normpath(texdir + os.sep + texfilename)
-                    n_tex = self.add_tex(ntu, n_map.outputs["Vector"], path, n_prncpl.inputs["Base Color"])
+                    n_tex = self.add_tex(ntu, n_map.outputs["Vector"], path, n_mix.inputs[1])
                     n_tex.color_space = "COLOR"
                 #metallic
                 identifier = "_metallic" 
