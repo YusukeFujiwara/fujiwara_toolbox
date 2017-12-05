@@ -3463,108 +3463,6 @@ uiitem().horizontal()
 #---------------------------------------------
 
 
-class CyclesTexturedMaterial():
-    def __init__(self, materials):
-        self.materials = materials
-
-    def imagetex_node(self, ntu, path):
-        node = ntu.add("ShaderNodeTexImage", "Texture Image")
-        node.image = bpy.data.images.load(filepath=path)
-        return node
-
-    def add_tex(self, ntu, connect_from, path, connect_to):
-        n_tex = self.imagetex_node(ntu,path)
-        ntu.link(connect_from, n_tex.inputs["Vector"])
-        ntu.link(n_tex.outputs["Color"], connect_to)
-        return n_tex
-
-    def find_from_list(self, strlist, target):
-        for obj in strlist:
-            if target in obj:
-                return obj
-        return None
-
-    def execute(self):
-        for mat in self.materials:
-            ntu = fjw.NodetreeUtils(mat)
-            ntu.activate()
-            ntu.cleartree()
-
-            n_out = ntu.add("ShaderNodeOutputMaterial", "Output Material")
-            n_texcoord = ntu.add("ShaderNodeTexCoord", "Texture Coordinates")
-            n_map = ntu.add("ShaderNodeMapping", "Mapping")
-            n_map.vector_type = "POINT"
-            ntu.link(n_texcoord.outputs["UV"], n_map.inputs["Vector"])
-
-            n_prncpl = ntu.add("ShaderNodeBsdfPrincipled", "Principled BSDF")
-            ntu.link(n_prncpl.outputs["BSDF"], n_out.inputs["Surface"])
-            n_prncpl.inputs["Base Color"].default_value = (mat.diffuse_color.r, mat.diffuse_color.g, mat.diffuse_color.b, 1)
-
-            n_norm = ntu.add("ShaderNodeNormalMap", "Normal Map")
-            ntu.link(n_norm.outputs["Normal"], n_prncpl.inputs["Normal"])
-
-            texpath = ""
-            #テクスチャ関係
-            for tslot in mat.texture_slots:
-                if tslot is not None and tslot.texture is not None and tslot.texture.image is not None:
-                    img = tslot.texture.image
-                    if "_basecolor" in img.filepath:
-                        texpath = bpy.path.abspath(img.filepath)
-            
-            if texpath != "":
-                texname = os.path.splitext(os.path.basename(texpath))[0]
-                texid = texname.replace("_basecolor", "")
-                texdir = os.path.dirname(texpath)
-                files = os.listdir(texdir)
-
-                texlist = []
-                for file in files:
-                    if texid in file:
-                        texlist.append(file)
-                
-                #basecolor
-                identifier = "_basecolor" 
-                texfilename = self.find_from_list(texlist, texid + identifier)
-                if texfilename is not None:
-                    path = os.path.normpath(texdir + os.sep + texfilename)
-                    n_tex = self.add_tex(ntu, n_map.outputs["Vector"], path, n_prncpl.inputs["Base Color"])
-                    n_tex.color_space = "COLOR"
-                #metallic
-                identifier = "_metallic" 
-                texfilename = self.find_from_list(texlist, texid + identifier)
-                if texfilename is not None:
-                    path = os.path.normpath(texdir + os.sep + texfilename)
-                    n_tex = self.add_tex(ntu, n_map.outputs["Vector"], path, n_prncpl.inputs["Metallic"])
-                    n_tex.color_space = "NONE"
-                #normal
-                identifier = "_normal" 
-                texfilename = self.find_from_list(texlist, texid + identifier)
-                if texfilename is not None:
-                    path = os.path.normpath(texdir + os.sep + texfilename)
-                    n_tex = self.add_tex(ntu, n_map.outputs["Vector"], path, n_norm.inputs["Color"])
-                    n_tex.color_space = "NONE"
-                #roughness
-                identifier = "_roughness" 
-                texfilename = self.find_from_list(texlist, texid + identifier)
-                if texfilename is not None:
-                    path = os.path.normpath(texdir + os.sep + texfilename)
-                    n_tex = self.add_tex(ntu, n_map.outputs["Vector"], path, n_prncpl.inputs["Roughness"])
-                    n_tex.color_space = "NONE"
-                #height
-                identifier = "_height" 
-                texfilename = self.find_from_list(texlist, texid + identifier)
-                if texfilename is not None:
-                    path = os.path.normpath(texdir + os.sep + texfilename)
-                    n_tex = self.add_tex(ntu, n_map.outputs["Vector"], path, n_out.inputs["Displacement"])
-                    n_tex.color_space = "NONE"
-
-                n_prncpl.location = (ntu.posx, ntu.posy)
-                ntu.posx += 200
-                n_out.location = (ntu.posx, ntu.posy)
-            
-            #レンダラがcyclesじゃなかったらノードをオフにしておく
-            if bpy.context.scene.render.engine != 'CYCLES':
-                mat.use_nodes = False
 
 
 ########################################
@@ -3585,7 +3483,7 @@ class FUJIWARATOOLBOX_CYCLES_TO_CYCLES_MATERIAL(bpy.types.Operator):
         for obj in selection:
             if not hasattr(obj.data, "materials"):
                 continue
-            ctm = CyclesTexturedMaterial(obj.data.materials)
+            ctm = fjw.CyclesTexturedMaterial(obj.data.materials)
             ctm.execute()
 
         return {'FINISHED'}
@@ -17493,7 +17391,7 @@ class FUJIWARATOOLBOX_358608(bpy.types.Operator):#テクスチャ回収
                 texture_slot.use_map_alpha = True
                 texture_slot.alpha_factor = -1
 
-        ctm = CyclesTexturedMaterial(new_mats)
+        ctm = fjw.CyclesTexturedMaterial(new_mats)
         ctm.execute()
 
 
@@ -17574,66 +17472,41 @@ uiitem().vertical()
 uiitem().horizontal()
 #---------------------------------------------
 
-# ########################################
-# #エクスポート
-# ########################################
-# #bpy.ops.fujiwara_toolbox.substance_export() #エクスポート
-# class FUJIWARATOOLBOX_SUBSTANCE_EXPORT(bpy.types.Operator):
-#     """Substance用のobjを出力する。"""
-#     bl_idname = "fujiwara_toolbox.substance_export"
-#     bl_label = "エクスポート"
-#     bl_options = {'REGISTER', 'UNDO'}
+from fujiwara_toolbox.modules.main.submodules.substance_tools import SubstanceTools
 
-#     uiitem = uiitem()
-#     uiitem.button(bl_idname,bl_label,icon="",mode="")
+def set_sbsar_to_active(filepath):
+    obj = fjw.active()
+    st = SubstanceTools(obj, filepath)
+    st.clean_materials()
 
-#     def execute(self, context):
-#         obj = fjw.active()
-#         substance_output(obj,False,False)
-#         return {'FINISHED'}
-# ########################################
-
-# #---------------------------------------------
-# uiitem().vertical()
-# #---------------------------------------------
-
-# #---------------------------------------------
-# uiitem().horizontal()
-# #---------------------------------------------
-
-
-
-# ########################################
-# #アンビエントオクルージョン
-# ########################################
-# #bpy.ops.fujiwara_toolbox.substance_bake_ambient_occlusion() #アンビエントオクルージョン
-# class FUJIWARATOOLBOX_SUBSTANCE_BAKE_AMBIENT_OCCLUSION(bpy.types.Operator):
-#     """アンビエントオクルージョンをベイクする。"""
-#     bl_idname = "fujiwara_toolbox.substance_bake_ambient_occlusion"
-#     bl_label = "アンビエントオクルージョン"
-#     bl_options = {'REGISTER', 'UNDO'}
-
-#     uiitem = uiitem()
-#     uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-#     def execute(self, context):
-#         return {'FINISHED'}
-# ########################################
-
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
+    st.export()
+    maptype = "ambient-occlusion"
+    if get_substance_settings(obj, maptype):
+        st.bake(maptype)
+    maptype = "curvature"
+    if get_substance_settings(obj, maptype):
+        st.bake(maptype)
+    maptype = "normal-world-space"
+    if get_substance_settings(obj, maptype):
+        st.bake(maptype)
+    maptype = "position"
+    if get_substance_settings(obj, maptype):
+        st.bake(maptype)
+    maptype = "uv-map"
+    if get_substance_settings(obj, maptype):
+        st.bake(maptype)
+    maptype = "world-space-direction"
+    if get_substance_settings(obj, maptype):
+        st.bake(maptype)
+    st.render()
+    st.material_setup()
 
 ########################################
 #Substanceマテリアルを設定
 ########################################
 #bpy.ops.fujiwara_toolbox.set_sbsar_to_active() #Substanceマテリアルを設定
 class FUJIWARATOOLBOX_SET_SBSAR_TO_ACTIVE(bpy.types.Operator):
-    """アクティブオブジェクトに、ファイルブラウザで指定した.sbsarを設定する。アセットディレクトリ/sbs/にsbsarをおいておく。"""
+    """アクティブオブジェクトに、ファイルブラウザで指定した.sbsarを設定する。アセットディレクトリ/sbs/にsbsarをおいておく。編集モード自は選択面に割り当てる。UVマップがない場合、選択部のみ展開される。"""
     bl_idname = "fujiwara_toolbox.set_sbsar_to_active"
     bl_label = "Substanceマテリアルを設定"
     bl_options = {'REGISTER', 'UNDO'}
@@ -17649,6 +17522,13 @@ class FUJIWARATOOLBOX_SET_SBSAR_TO_ACTIVE(bpy.types.Operator):
     files = bpy.props.CollectionProperty(type=bpy.types.PropertyGroup)
 
     def invoke(self, context, event):
+        pref = fujiwara_toolbox.conf.get_pref()
+        toolkit_dir = pref.SubstanceAutomationToolkit_dir
+
+        if not os.path.exists(toolkit_dir):
+            self.report({"WARNING"}, "アドオン設定でSubstance Automation Toolkitのディレクトリを設定してください。")
+            return {"CANCELLED"}
+
         sbsdir = assetdir + os.sep + "sbs"
         if not os.path.exists(sbsdir):
             self.report({"WARNING"}, "%sを作成してsbsarを設置してください。"%sbsdir)
@@ -17660,48 +17540,74 @@ class FUJIWARATOOLBOX_SET_SBSAR_TO_ACTIVE(bpy.types.Operator):
 
     def execute(self, context):
         obj = fjw.active()
+        fjw.deselect()
+        fjw.activate(obj)
+        if obj.mode == "EDIT":
+            #選択面のUV展開をチェック
+            fjw.mode("OBJECT")
 
-        pref = fujiwara_toolbox.conf.get_pref()
-        toolkit_dir = pref.SubstanceAutomationToolkit_dir
+            base_obj = obj
+            #0番だとベースマテリアルになってしまうのでマテリアルを追加
+            if len(base_obj.data.materials) == 0:
+                base_obj.data.materials.append(fjw.get_material(base_obj.name))
 
-        if not os.path.exists(toolkit_dir):
-            self.report({"WARNING"}, "アドオン設定でSubstance Automation Toolkitのディレクトリを設定してください。")
-            return {"CANCELLED"}
+            has_uv = False
+            for face in obj.data.polygons:
+                if not face.select:
+                    continue
+                for v_index, loop_index in zip(face.vertices, face.loop_indices):
+                    for uvl in obj.data.uv_layers:
+                        uv_co = uvl.data[loop_index].uv
+                        if uv_co.x != 0 or uv_co.y != 0:
+                            #UVに所属している
+                            has_uv = True
+                            break
+                    if has_uv:
+                        break
+                if has_uv:
+                    break
 
-        sbsar = self.directory + os.sep + self.filename
-        imgdir, name = substance_output(obj, False, False)
-        self.report({"INFO"}, sbsar)
-        self.report({"INFO"}, imgdir)
-        self.report({"INFO"}, name)
+            fjw.mode("EDIT")
+            if not has_uv:
+                bpy.ops.uv.smart_project()
+            
+            #複製する前にマテリアル割当
+            bpy.ops.object.material_slot_add()
+            bpy.ops.object.material_slot_assign()
 
-        #マップのベイク
-        objpath = imgdir + os.sep + name + ".obj"
+            bpy.ops.mesh.duplicate_move(MESH_OT_duplicate={"mode":1}, TRANSFORM_OT_translate={"value":(0, 0, 0), "constraint_axis":(False, False, False), "constraint_orientation":'GLOBAL', "mirror":False, "proportional":'DISABLED', "proportional_edit_falloff":'SMOOTH', "proportional_size":1, "snap":False, "snap_target":'CLOSEST', "snap_point":(0, 0, 0), "snap_align":False, "snap_normal":(0, 0, 0), "gpencil_strokes":False, "texture_space":False, "remove_on_cancel":False, "release_confirm":False, "use_accurate":False})
+            bpy.ops.mesh.separate(type='SELECTED')
 
-        maptype = "ambient-occlusion"
-        if get_substance_settings(obj, maptype):
-            substance_bake(maptype, objpath)
-        maptype = "curvature"
-        if get_substance_settings(obj, maptype):
-            substance_bake(maptype, objpath)
-        maptype = "normal-world-space"
-        if get_substance_settings(obj, maptype):
-            substance_bake(maptype, objpath)
-        maptype = "position"
-        if get_substance_settings(obj, maptype):
-            substance_bake(maptype, objpath)
-        maptype = "uv-map"
-        if get_substance_settings(obj, maptype):
-            substance_bake(maptype, objpath)
-        maptype = "world-space-direction"
-        if get_substance_settings(obj, maptype):
-            substance_bake(maptype, objpath)
+            fjw.mode("OBJECT")
 
-        #レンダー
-        substance_render(sbsar, imgdir+os.sep+"src", name)
+            dup_obj = None
 
-        obj.data.materials.clear()
+            for obj in fjw.get_selected_list():
+                if obj != base_obj:
+                    dup_obj = obj
 
-        bpy.ops.fujiwara_toolbox.substance_collect_textures()
+            fjw.deselect()
+            fjw.activate(dup_obj)
+
+            set_sbsar_to_active(self.filepath)
+
+            mat = dup_obj.data.materials[0]
+
+            fjw.deselect()
+            fjw.activate(base_obj)
+            fjw.mode("EDIT")
+
+            slot_last = len(base_obj.material_slots) - 1
+            base_obj.material_slots[slot_last].material = mat
+            fjw.mode("OBJECT")
+
+            fjw.delete([dup_obj])
+
+            fjw.activate(base_obj)
+
+            pass
+        else:
+            set_sbsar_to_active(self.filepath)
         return {'FINISHED'}
 ########################################
 #---------------------------------------------
@@ -17725,8 +17631,7 @@ class FUJIWARATOOLBOX_SET_SBSAR_256(bpy.types.Operator):
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     def execute(self, context):
-        global sbsar_tex_size
-        sbsar_tex_size = "8"
+        SubstanceTools.tex_size = "8"
         bpy.ops.fujiwara_toolbox.set_sbsar_to_active("INVOKE_DEFAULT")
         return {'FINISHED'}
 ########################################
@@ -17745,8 +17650,7 @@ class FUJIWARATOOLBOX_SET_SBSAR_512(bpy.types.Operator):
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     def execute(self, context):
-        global sbsar_tex_size
-        sbsar_tex_size = "9"
+        SubstanceTools.tex_size = "9"
         bpy.ops.fujiwara_toolbox.set_sbsar_to_active("INVOKE_DEFAULT")
         return {'FINISHED'}
 ########################################
@@ -17765,8 +17669,7 @@ class FUJIWARATOOLBOX_SET_SBSAR_1024(bpy.types.Operator):
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     def execute(self, context):
-        global sbsar_tex_size
-        sbsar_tex_size = "10"
+        SubstanceTools.tex_size = "10"
         bpy.ops.fujiwara_toolbox.set_sbsar_to_active("INVOKE_DEFAULT")
         return {'FINISHED'}
 ########################################
@@ -17785,32 +17688,12 @@ class FUJIWARATOOLBOX_SET_SBSAR_2048(bpy.types.Operator):
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     def execute(self, context):
-        global sbsar_tex_size
-        sbsar_tex_size = "11"
+        SubstanceTools.tex_size = "11"
         bpy.ops.fujiwara_toolbox.set_sbsar_to_active("INVOKE_DEFAULT")
         return {'FINISHED'}
 ########################################
 
 #bakeはいくらでもいけるけどrenderは2Kまでしか出ない
-# ########################################
-# #4096
-# ########################################
-# #bpy.ops.fujiwara_toolbox.set_sbsar_4096() #4096
-# class FUJIWARATOOLBOX_SET_SBSAR_4096(bpy.types.Operator):
-#     """Substanceマテリアルを指定ピクセルで設定。"""
-#     bl_idname = "fujiwara_toolbox.set_sbsar_4096"
-#     bl_label = "4096"
-#     bl_options = {'REGISTER', 'UNDO'}
-
-#     uiitem = uiitem()
-#     uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-#     def execute(self, context):
-#         global sbsar_tex_size
-#         sbsar_tex_size = "12"
-#         bpy.ops.fujiwara_toolbox.set_sbsar_to_active("INVOKE_DEFAULT")
-#         return {'FINISHED'}
-# ########################################
 
 
 #---------------------------------------------
