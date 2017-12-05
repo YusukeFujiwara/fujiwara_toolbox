@@ -17523,13 +17523,15 @@ class FUJIWARATOOLBOX_SET_SBSAR_TO_ACTIVE(bpy.types.Operator):
 
     def invoke(self, context, event):
         obj = fjw.active()
-        count = 0
-        for mat in obj.data.materials:
-            if "_sbsgen" in mat.name:
-                count+=1
-        if count > 1:
-            self.report({"WARNING"},"メッシュで割り当てた情報があります！やり直す場合はマテリアルを全て削除してください。")
-            return {"CANCELLED"}
+
+        if obj.mode != "EDIT":
+            count = 0
+            for mat in obj.data.materials:
+                if "_sbsgen" in mat.name:
+                    count+=1
+            if count > 1:
+                self.report({"WARNING"},"メッシュで割り当てた情報があります！やり直す場合はマテリアルを全て削除してください。")
+                return {"CANCELLED"}
 
 
         pref = fujiwara_toolbox.conf.get_pref()
