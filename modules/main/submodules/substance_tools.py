@@ -268,6 +268,8 @@ class SubstanceTools():
 
     @classmethod
     def remove_not_used_materials(self, obj):
+        if obj.type != "MESH":
+            return
         current = fjw.active()
         fjw.activate(obj)
         fjw.mode("OBJECT")
@@ -280,6 +282,8 @@ class SubstanceTools():
 
         used_materials = []
         for i in used_indexes:
+            if i >= len(obj.material_slots):
+                continue
             mat = obj.material_slots[i].material
             if mat not in used_materials:
                 used_materials.append(mat)
