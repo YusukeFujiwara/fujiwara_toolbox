@@ -148,14 +148,21 @@ class SubstanceTools():
             return True
         return False
 
+    def __clear_materials(self):
+        self.obj.data.materials.clear()
+
     #テクスチャ回収
     def material_setup(self):
-        self.obj.data.materials.clear()
+        self.__clear_materials()
         files = os.listdir(self.matdir)
         mat = fjw.get_material(self.matname)
 
+        print("material_setup")
+        print(self.matname)
+
         sortedfile = []
         for file in files:
+            print(file)
             if ".png" not in file:
                 continue
             if self.__texid_match(file, "color"):
@@ -221,7 +228,7 @@ class SubstanceTools():
                 texture_slot.alpha_factor = -1
         
         self.obj.data.materials.append(mat)
-        ctm = fjw.CyclesTexturedMaterial(self.obj.data.materials)
+        ctm = fjw.CyclesTexturedMaterial([mat])
         ctm.execute()
                    
             

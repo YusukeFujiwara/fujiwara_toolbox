@@ -17135,6 +17135,99 @@ class FUJIWARATOOLBOX_bake_fullrender_4096(bpy.types.Operator):
 uiitem().vertical()
 #---------------------------------------------
 
+
+############################################################################################################################
+uiitem("調整")
+############################################################################################################################
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+def settexdepth(value,objects):
+    for obj in objects:
+        for mat in obj.data.materials:
+            for texture_slot in mat.texture_slots:
+                if texture_slot is None:
+                    continue
+                if re.search("_Height", texture_slot.texture.name,re.IGNORECASE) is not None:
+                    texture_slot.normal_factor = value
+
+
+########################################
+#デプス0.01
+########################################
+class FUJIWARATOOLBOX_819234(bpy.types.Operator):#デプス0.01
+    """デプス0.01"""
+    bl_idname = "fujiwara_toolbox.command_819234"
+    bl_label = "デプス0.01"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+
+    def execute(self, context):
+        fjw.reject_notmesh()
+        settexdepth(0.01,fjw.get_selected_list())
+        
+        return {'FINISHED'}
+########################################
+
+########################################
+#デプス1
+########################################
+class FUJIWARATOOLBOX_73453(bpy.types.Operator):#デプス1
+    """デプス1"""
+    bl_idname = "fujiwara_toolbox.command_73453"
+    bl_label = "1"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+
+    def execute(self, context):
+        fjw.reject_notmesh()
+        settexdepth(1,fjw.get_selected_list())
+        return {'FINISHED'}
+########################################
+
+########################################
+#デプス5
+########################################
+class FUJIWARATOOLBOX_997104(bpy.types.Operator):#デプス5
+    """デプス5"""
+    bl_idname = "fujiwara_toolbox.command_997104"
+    bl_label = "5"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+
+    def execute(self, context):
+        fjw.reject_notmesh()
+        settexdepth(5,fjw.get_selected_list())
+        
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+
+
+
 ################################################################################
 #UIカテゴリ
 ########################################
@@ -17978,101 +18071,58 @@ class FUJIWARATOOLBOX_SUBSTANCE_SETTING_DIRECTION_OFF(bpy.types.Operator):
             substance_settings(obj, "world-space-direction", False)
         return {'FINISHED'}
 ########################################
-
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
-
 ############################################################################################################################
-uiitem("調整")
+uiitem("便利")
 ############################################################################################################################
-
-
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
 #---------------------------------------------
 uiitem().horizontal()
 #---------------------------------------------
-def settexdepth(value,objects):
-    for obj in objects:
-        for mat in obj.data.materials:
-            for texture_slot in mat.texture_slots:
-                if texture_slot is None:
-                    continue
-                if re.search("_Height", texture_slot.texture.name,re.IGNORECASE) is not None:
-                    texture_slot.normal_factor = value
-
 
 ########################################
-#デプス0.01
+#スマートUV投影
 ########################################
-class FUJIWARATOOLBOX_819234(bpy.types.Operator):#デプス0.01
-    """デプス0.01"""
-    bl_idname = "fujiwara_toolbox.command_819234"
-    bl_label = "デプス0.01"
+#bpy.ops.fujiwara_toolbox.sbsutil_smart_uv_projection() #スマートUV投影
+class FUJIWARATOOLBOX_SBSUTIL_SMART_UV_PROJECTION(bpy.types.Operator):
+    """スマートUV投影を実行。"""
+    bl_idname = "fujiwara_toolbox.sbsutil_smart_uv_projection"
+    bl_label = "スマートUV投影"
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-
     def execute(self, context):
-        fjw.reject_notmesh()
-        settexdepth(0.01,fjw.get_selected_list())
-        
+        bpy.ops.uv.smart_project()
         return {'FINISHED'}
 ########################################
 
 ########################################
-#デプス1
+#ライトマップパック
 ########################################
-class FUJIWARATOOLBOX_73453(bpy.types.Operator):#デプス1
-    """デプス1"""
-    bl_idname = "fujiwara_toolbox.command_73453"
-    bl_label = "1"
+#bpy.ops.fujiwara_toolbox.sbsutil_lightmap_pack() #ライトマップパック
+class FUJIWARATOOLBOX_SBSUTIL_LIGHTMAP_PACK(bpy.types.Operator):
+    """ライトマップパックを実行。"""
+    bl_idname = "fujiwara_toolbox.sbsutil_lightmap_pack"
+    bl_label = "ライトマップパック"
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-
     def execute(self, context):
-        fjw.reject_notmesh()
-        settexdepth(1,fjw.get_selected_list())
+        bpy.ops.uv.lightmap_pack()
         return {'FINISHED'}
 ########################################
-
-########################################
-#デプス5
-########################################
-class FUJIWARATOOLBOX_997104(bpy.types.Operator):#デプス5
-    """デプス5"""
-    bl_idname = "fujiwara_toolbox.command_997104"
-    bl_label = "5"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        fjw.reject_notmesh()
-        settexdepth(5,fjw.get_selected_list())
-        
-        return {'FINISHED'}
-########################################
-
-
-
-
-
 
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
-
-
 
 
 

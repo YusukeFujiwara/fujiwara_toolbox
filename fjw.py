@@ -1400,10 +1400,12 @@ class VertexGroupUtils():
         vg.add([index],weight,"REPLACE")
 
 def load_img(filepath):
-    filename = os.path.basename(filepath)
-    if filename not in bpy.data.images:
-        bpy.data.images.load(filepath)
-    return bpy.data.images[filename]
+    #別ディレクトリの同一ファイル名が処理できない！！
+    # filename = os.path.basename(filepath)
+    # if filename not in bpy.data.images:
+    #     bpy.data.images.load(filepath)
+    # return bpy.data.images[filename]
+    return bpy.data.images.load(filepath)
 
 def get_material(matname):
     if matname in bpy.data.materials:
@@ -1544,6 +1546,7 @@ class CyclesTexturedMaterial():
 
     def execute(self):
         for mat in self.materials:
+            print("### CyclesTexturedMaterial")
             ntu = NodetreeUtils(mat)
             ntu.activate()
             ntu.cleartree()
@@ -1583,8 +1586,11 @@ class CyclesTexturedMaterial():
                 texname = os.path.splitext(os.path.basename(texpath))[0]
                 texid = texname.replace("_basecolor", "")
                 texdir = os.path.dirname(texpath)
-                files = os.listdir(texdir)
+                print(texpath)
+                print(texdir)
 
+                files = os.listdir(texdir)
+                print(str(files))
                 texlist = []
                 for file in files:
                     if texid in file:
