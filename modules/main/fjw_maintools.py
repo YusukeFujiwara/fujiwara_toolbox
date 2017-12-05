@@ -17522,6 +17522,16 @@ class FUJIWARATOOLBOX_SET_SBSAR_TO_ACTIVE(bpy.types.Operator):
     files = bpy.props.CollectionProperty(type=bpy.types.PropertyGroup)
 
     def invoke(self, context, event):
+        obj = fjw.active()
+        count = 0
+        for mat in obj.data.materials:
+            if "_sbsgen" in mat.name:
+                count+=1
+        if count > 1:
+            self.report({"WARNING"},"メッシュで割り当てた情報があります！やり直す場合はマテリアルを全て削除してください。")
+            return {"CANCELLED"}
+
+
         pref = fujiwara_toolbox.conf.get_pref()
         toolkit_dir = pref.SubstanceAutomationToolkit_dir
 
