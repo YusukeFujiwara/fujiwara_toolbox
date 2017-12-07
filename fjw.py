@@ -1564,13 +1564,14 @@ class CyclesTexturedMaterial():
             n_prncpl.inputs["Base Color"].default_value = (mat.diffuse_color.r, mat.diffuse_color.g, mat.diffuse_color.b, 1)
 
             n_mix = ntu.add("ShaderNodeMixRGB", "Mix")
-            n_mix.blend_type = "MULTIPLY"
+            n_mix.blend_type = "OVERLAY"
             n_mix.inputs[0].default_value = 1.0
+            n_mix.inputs[2].default_value = (0.5,0.5,0.5,1)
             ntu.link(n_mix.outputs[0], n_prncpl.inputs["Base Color"])
 
-            n_rgb = ntu.add("ShaderNodeRGB", "RGB")
-            n_rgb.outputs[0].default_value = (1,1,1,1)
-            ntu.link(n_rgb.outputs[0], n_mix.inputs[2])
+            # n_rgb = ntu.add("ShaderNodeRGB", "RGB")
+            # n_rgb.outputs[0].default_value = (0.5,0.5,0.5,1)
+            # ntu.link(n_rgb.outputs[0], n_mix.inputs[2])
 
 
             n_norm = ntu.add("ShaderNodeNormalMap", "Normal Map")

@@ -191,6 +191,7 @@ class SubstanceTools():
         self.__clear_materials()
         files = os.listdir(self.matdir)
         mat = fjw.get_material(self.matname)
+        mat["sbsid"] = self.matname
 
         print("material_setup")
         print(self.matname)
@@ -278,7 +279,22 @@ class SubstanceTools():
         files = os.listdir(self.sbs_generated_dir)
 
         for file in files:
-            if file not in bpy.data.materials:
+            if file in bpy.data.materials:
+                continue
+
+            found = False
+            for mat in bpy.data.materials:
+                if mat.library:
+                    continue
+                    
+                if "sbsid" not in mat:
+                    continue
+
+                if file == mat["sbsid"]:
+                    found = True
+                    break
+
+            if not found:
                 shutil.rmtree(self.sbs_generated_dir + os.sep + file)
 
         # dellist = []
