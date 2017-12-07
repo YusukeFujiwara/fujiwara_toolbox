@@ -126,12 +126,16 @@ class SubstanceTools():
         # p.wait()
         stdout_data, stderr_data = p.communicate()
         text = stdout_data.decode().replace("\r", "\n")
+        fjw.Textlogger.log(text)
         lines = text.split("\n")
         for l in lines:
             if "pkg:" not in l:
                 continue
             l = l.replace("GRAPH-URL pkg://", "")
-            print(l)
+            if "/" in l:
+                continue
+            # l = l.replace("GRAPH-URL", "")
+            fjw.Textlogger.log(l)
             self.graph_list.append(l)
         print("*"*50)
 
