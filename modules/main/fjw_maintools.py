@@ -17135,6 +17135,99 @@ class FUJIWARATOOLBOX_bake_fullrender_4096(bpy.types.Operator):
 uiitem().vertical()
 #---------------------------------------------
 
+
+############################################################################################################################
+uiitem("調整")
+############################################################################################################################
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+def settexdepth(value,objects):
+    for obj in objects:
+        for mat in obj.data.materials:
+            for texture_slot in mat.texture_slots:
+                if texture_slot is None:
+                    continue
+                if re.search("_Height", texture_slot.texture.name,re.IGNORECASE) is not None:
+                    texture_slot.normal_factor = value
+
+
+########################################
+#デプス0.01
+########################################
+class FUJIWARATOOLBOX_819234(bpy.types.Operator):#デプス0.01
+    """デプス0.01"""
+    bl_idname = "fujiwara_toolbox.command_819234"
+    bl_label = "デプス0.01"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+
+    def execute(self, context):
+        fjw.reject_notmesh()
+        settexdepth(0.01,fjw.get_selected_list())
+        
+        return {'FINISHED'}
+########################################
+
+########################################
+#デプス1
+########################################
+class FUJIWARATOOLBOX_73453(bpy.types.Operator):#デプス1
+    """デプス1"""
+    bl_idname = "fujiwara_toolbox.command_73453"
+    bl_label = "1"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+
+    def execute(self, context):
+        fjw.reject_notmesh()
+        settexdepth(1,fjw.get_selected_list())
+        return {'FINISHED'}
+########################################
+
+########################################
+#デプス5
+########################################
+class FUJIWARATOOLBOX_997104(bpy.types.Operator):#デプス5
+    """デプス5"""
+    bl_idname = "fujiwara_toolbox.command_997104"
+    bl_label = "5"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+
+    def execute(self, context):
+        fjw.reject_notmesh()
+        settexdepth(5,fjw.get_selected_list())
+        
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+
+
+
 ################################################################################
 #UIカテゴリ
 ########################################
@@ -17474,9 +17567,10 @@ uiitem().horizontal()
 
 from fujiwara_toolbox.modules.main.submodules.substance_tools import SubstanceTools
 
-def set_sbsar_to_active(filepath):
+
+def set_sbsar_to_active():
     obj = fjw.active()
-    st = SubstanceTools(obj, filepath)
+    st = SubstanceTools(obj)
     st.clean_materials()
 
     st.export()
@@ -17502,13 +17596,13 @@ def set_sbsar_to_active(filepath):
     st.material_setup()
 
 ########################################
-#Substanceマテリアルを設定
+#Load .sbsar
 ########################################
-#bpy.ops.fujiwara_toolbox.set_sbsar_to_active() #Substanceマテリアルを設定
-class FUJIWARATOOLBOX_SET_SBSAR_TO_ACTIVE(bpy.types.Operator):
-    """アクティブオブジェクトに、ファイルブラウザで指定した.sbsarを設定する。アセットディレクトリ/sbs/にsbsarをおいておく。編集モード自は選択面に割り当てる。UVマップがない場合、選択部のみ展開される。"""
-    bl_idname = "fujiwara_toolbox.set_sbsar_to_active"
-    bl_label = "Substanceマテリアルを設定"
+#bpy.ops.fujiwara_toolbox.load_sbsar() #Load .sbsar
+class FUJIWARATOOLBOX_LOAD_SBSAR(bpy.types.Operator):
+    """Substanceアーカイブをロードする。"""
+    bl_idname = "fujiwara_toolbox.load_sbsar"
+    bl_label = "Load .sbsar"
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
@@ -17522,23 +17616,6 @@ class FUJIWARATOOLBOX_SET_SBSAR_TO_ACTIVE(bpy.types.Operator):
     files = bpy.props.CollectionProperty(type=bpy.types.PropertyGroup)
 
     def invoke(self, context, event):
-        obj = fjw.active()
-        count = 0
-        for mat in obj.data.materials:
-            if "_sbsgen" in mat.name:
-                count+=1
-        if count > 1:
-            self.report({"WARNING"},"メッシュで割り当てた情報があります！やり直す場合はマテリアルを全て削除してください。")
-            return {"CANCELLED"}
-
-
-        pref = fujiwara_toolbox.conf.get_pref()
-        toolkit_dir = pref.SubstanceAutomationToolkit_dir
-
-        if not os.path.exists(toolkit_dir):
-            self.report({"WARNING"}, "アドオン設定でSubstance Automation Toolkitのディレクトリを設定してください。")
-            return {"CANCELLED"}
-
         sbsdir = assetdir + os.sep + "sbs"
         if not os.path.exists(sbsdir):
             self.report({"WARNING"}, "%sを作成してsbsarを設置してください。"%sbsdir)
@@ -17549,7 +17626,69 @@ class FUJIWARATOOLBOX_SET_SBSAR_TO_ACTIVE(bpy.types.Operator):
         return {'RUNNING_MODAL'}
 
     def execute(self, context):
+        SubstanceTools.sbsar_path = self.filepath
+        SubstanceTools.info()
+        return {'FINISHED'}
+########################################
+
+########################################
+#Substanceマテリアルを設定
+########################################
+#bpy.ops.fujiwara_toolbox.set_sbsar_to_active() #Substanceマテリアルを設定
+class FUJIWARATOOLBOX_SET_SBSAR_TO_ACTIVE(bpy.types.Operator):
+    """アクティブオブジェクトに、指定したグラフのマテリアルを設定する。アセットディレクトリ/sbs/にsbsarをおいておく。編集モード自は選択面に割り当てる。UVマップがない場合、選択部のみ展開される。"""
+    bl_idname = "fujiwara_toolbox.set_sbsar_to_active"
+    bl_label = "Substanceマテリアルを設定"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def get_graph_list_callback(scene, context):
+        items = []
+        for g in SubstanceTools.graph_list:
+            items.append((g,g,""))
+        return items    
+
+    graph_list = EnumProperty(
+        name = "Graph List",               # 名称
+        description = "Graph List",        # 説明文
+        items = get_graph_list_callback)   # 項目リストを作成する関数
+
+    def invoke(self, context, event):
         obj = fjw.active()
+
+        if obj.mode != "EDIT":
+            count = 0
+            for mat in obj.data.materials:
+                if "_sbsgen" in mat.name:
+                    count+=1
+            if count > 1:
+                self.report({"WARNING"},"メッシュで割り当てた情報があります！やり直す場合はマテリアルを全て削除してください。")
+                return {"CANCELLED"}
+
+        pref = fujiwara_toolbox.conf.get_pref()
+        toolkit_dir = pref.SubstanceAutomationToolkit_dir
+
+        if not os.path.exists(toolkit_dir):
+            self.report({"WARNING"}, "アドオン設定でSubstance Automation Toolkitのディレクトリを設定してください。")
+            return {"CANCELLED"}
+
+        if SubstanceTools.sbsar_path == "":
+            self.report({"WARNING"}, ".sbsarがロードされていません。")
+            return {"CANCELLED"}
+            
+
+        return context.window_manager.invoke_props_dialog(self)
+
+    def execute(self, context):
+        if self.graph_list == "":
+            self.report({"WARNING"}, "グラフが未指定です。")
+            return {"CANCELLED"}
+        SubstanceTools.graph_url = self.graph_list
+
+        obj = fjw.active()
+
         fjw.deselect()
         fjw.activate(obj)
         if obj.mode == "EDIT":
@@ -17599,7 +17738,7 @@ class FUJIWARATOOLBOX_SET_SBSAR_TO_ACTIVE(bpy.types.Operator):
             fjw.deselect()
             fjw.activate(dup_obj)
 
-            set_sbsar_to_active(self.filepath)
+            set_sbsar_to_active()
 
             mat = dup_obj.data.materials[0]
 
@@ -17617,9 +17756,10 @@ class FUJIWARATOOLBOX_SET_SBSAR_TO_ACTIVE(bpy.types.Operator):
 
             pass
         else:
-            set_sbsar_to_active(self.filepath)
+            set_sbsar_to_active()
         return {'FINISHED'}
 ########################################
+
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
@@ -17735,6 +17875,10 @@ def get_substance_settings(obj, maptype):
             return True
         if maptype == "curvature":
             return True
+        if maptype == "position":
+            return True
+        if maptype == "normal-world-space":
+            return True
         return False
 
     val = obj[propname]
@@ -17785,7 +17929,7 @@ class FUJIWARATOOLBOX_SUBSTANCE_SETTING_CURVATURE_ON(bpy.types.Operator):
 ########################################
 #bpy.ops.fujiwara_toolbox.substance_setting_normal_on() #normal
 class FUJIWARATOOLBOX_SUBSTANCE_SETTING_NORMAL_ON(bpy.types.Operator):
-    """このオブジェクトのnormalをsbsarに渡す設定。デフォルトはオフ。"""
+    """このオブジェクトのnormalをsbsarに渡す設定。デフォルトはオン。"""
     bl_idname = "fujiwara_toolbox.substance_setting_normal_on"
     bl_label = "normal"
     bl_options = {'REGISTER', 'UNDO'}
@@ -17804,7 +17948,7 @@ class FUJIWARATOOLBOX_SUBSTANCE_SETTING_NORMAL_ON(bpy.types.Operator):
 ########################################
 #bpy.ops.fujiwara_toolbox.substance_setting_position_on() #position
 class FUJIWARATOOLBOX_SUBSTANCE_SETTING_POSITION_ON(bpy.types.Operator):
-    """このオブジェクトのpositionをsbsarに渡す設定。デフォルトはオフ。"""
+    """このオブジェクトのpositionをsbsarに渡す設定。デフォルトはオン。"""
     bl_idname = "fujiwara_toolbox.substance_setting_position_on"
     bl_label = "position"
     bl_options = {'REGISTER', 'UNDO'}
@@ -17976,101 +18120,82 @@ class FUJIWARATOOLBOX_SUBSTANCE_SETTING_DIRECTION_OFF(bpy.types.Operator):
             substance_settings(obj, "world-space-direction", False)
         return {'FINISHED'}
 ########################################
-
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
-
 ############################################################################################################################
-uiitem("調整")
+uiitem("便利")
 ############################################################################################################################
-
-
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
 #---------------------------------------------
 uiitem().horizontal()
 #---------------------------------------------
-def settexdepth(value,objects):
-    for obj in objects:
-        for mat in obj.data.materials:
-            for texture_slot in mat.texture_slots:
-                if texture_slot is None:
-                    continue
-                if re.search("_Height", texture_slot.texture.name,re.IGNORECASE) is not None:
-                    texture_slot.normal_factor = value
-
 
 ########################################
-#デプス0.01
+#スマートUV投影
 ########################################
-class FUJIWARATOOLBOX_819234(bpy.types.Operator):#デプス0.01
-    """デプス0.01"""
-    bl_idname = "fujiwara_toolbox.command_819234"
-    bl_label = "デプス0.01"
+#bpy.ops.fujiwara_toolbox.sbsutil_smart_uv_projection() #スマートUV投影
+class FUJIWARATOOLBOX_SBSUTIL_SMART_UV_PROJECTION(bpy.types.Operator):
+    """スマートUV投影を実行。"""
+    bl_idname = "fujiwara_toolbox.sbsutil_smart_uv_projection"
+    bl_label = "スマートUV投影"
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-
     def execute(self, context):
-        fjw.reject_notmesh()
-        settexdepth(0.01,fjw.get_selected_list())
-        
+        bpy.ops.uv.smart_project()
         return {'FINISHED'}
 ########################################
 
 ########################################
-#デプス1
+#ライトマップパック
 ########################################
-class FUJIWARATOOLBOX_73453(bpy.types.Operator):#デプス1
-    """デプス1"""
-    bl_idname = "fujiwara_toolbox.command_73453"
-    bl_label = "1"
+#bpy.ops.fujiwara_toolbox.sbsutil_lightmap_pack() #ライトマップパック
+class FUJIWARATOOLBOX_SBSUTIL_LIGHTMAP_PACK(bpy.types.Operator):
+    """ライトマップパックを実行。"""
+    bl_idname = "fujiwara_toolbox.sbsutil_lightmap_pack"
+    bl_label = "ライトマップパック"
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-
     def execute(self, context):
-        fjw.reject_notmesh()
-        settexdepth(1,fjw.get_selected_list())
+        bpy.ops.uv.lightmap_pack()
         return {'FINISHED'}
 ########################################
-
-########################################
-#デプス5
-########################################
-class FUJIWARATOOLBOX_997104(bpy.types.Operator):#デプス5
-    """デプス5"""
-    bl_idname = "fujiwara_toolbox.command_997104"
-    bl_label = "5"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        fjw.reject_notmesh()
-        settexdepth(5,fjw.get_selected_list())
-        
-        return {'FINISHED'}
-########################################
-
-
-
-
-
-
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+########################################
+#クリーンアップ
+########################################
+#bpy.ops.fujiwara_toolbox.sbsutils_cleanup() #クリーンアップ
+class FUJIWARATOOLBOX_SBSUTILS_CLEANUP(bpy.types.Operator):
+    """選択オブジェクトとマテリアルフォルダをクリーンアップする"""
+    bl_idname = "fujiwara_toolbox.sbsutils_cleanup"
+    bl_label = "クリーンアップ"
+    bl_options = {'REGISTER', 'UNDO'}
 
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
 
+    def execute(self, context):
+        for obj in fjw.get_selected_list():
+            SubstanceTools.remove_not_used_materials(obj)
+        SubstanceTools.clean_materials()
+        return {'FINISHED'}
+########################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
 
 
 

@@ -59,18 +59,28 @@ class SubstanceTools():
     toolkit_dir = ""
 
     self_dir = ""
+    blend_name = ""
     sbs_generated_dir = ""
 
+    sbsar_path = ""
+    graph_list = []
+    graph_url = ""
 
-    def __init__(self, obj, sbsar_path):
+    def base_init(self):
+        if self.toolkit_dir == "":
+            pref = fujiwara_toolbox.conf.get_pref()
+            self.toolkit_dir = pref.SubstanceAutomationToolkit_dir
+
         self.self_dir = os.path.dirname(bpy.data.filepath)
         self.blend_name = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
         self.sbs_generated_dir = os.path.normpath(self.self_dir + os.sep + "textures" + os.sep + self.blend_name + "_sbs_generated")
 
+    def __init__(self, obj):
+        self.base_init()
+
         self.obj = obj
         self.obj_name = obj.name.replace(".","_")
 
-        self.sbsar_path = sbsar_path
         self.sbsarname = os.path.splitext(os.path.basename(self.sbsar_path))[0]
 
         self.random_id = '{0:04d}'.format(int(random.random()*10000))
@@ -81,9 +91,7 @@ class SubstanceTools():
         self.src_dir = self.matdir + os.sep + "src"
         self.src_obj_path = os.path.normpath(self.src_dir + os.sep + self.obj_name + ".obj")
 
-        if self.toolkit_dir == "":
-            pref = fujiwara_toolbox.conf.get_pref()
-            self.toolkit_dir = pref.SubstanceAutomationToolkit_dir
+        
 
     def export(self):
         fjw.deselect()
@@ -106,6 +114,27 @@ class SubstanceTools():
         p = subprocess.Popen(cmdstr)
         p.wait()
 
+    @classmethod
+    def info(self):
+        print("*"*50)
+        self.base_init(self)
+        self.graph_list = []
+        render = os.path.normpath(self.toolkit_dir + os.sep + "sbsrender.exe")
+        cmdstr = '"%s" info "%s"'%(render, self.sbsar_path)
+        print(cmdstr)
+        p = subprocess.Popen(cmdstr, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # p.wait()
+        stdout_data, stderr_data = p.communicate()
+        text = stdout_data.decode().replace("\r", "\n")
+        lines = text.split("\n")
+        for l in lines:
+            if "pkg:" not in l:
+                continue
+            l = l.replace("GRAPH-URL pkg://", "")
+            print(l)
+            self.graph_list.append(l)
+        print("*"*50)
+
     def render(self):
         render = os.path.normpath(self.toolkit_dir + os.sep + "sbsrender.exe")
         entries = '--set-entry ambient-occlusion@"%s"'%(os.path.normpath(self.src_dir+os.sep+self.obj_name+"_ambient-occlusion.png"))
@@ -116,12 +145,13 @@ class SubstanceTools():
         entries += ' --set-entry world-space-direction@"%s"'%(os.path.normpath(self.src_dir+os.sep+self.obj_name+"_world-space-direction.png"))
         if self.tex_size != "":
             entries += ' --set-value $outputsize@%s,%s'%(self.tex_size,self.tex_size)
+        if self.graph_url != "":
+            entries += ' --input-graph "%s"'%self.graph_url
         cmdstr = '"%s" render --output-name="%s_{inputGraphUrl}_{outputNodeName}" %s --output-path "%s" "%s"'%(render, self.obj_name, entries, self.matdir, self.sbsar_path)
         print(cmdstr)
         p = subprocess.Popen(cmdstr)
         p.wait()
         self.tex_size = self.defalut_tex_size
-
 
     tex_identifiers = {}
     tex_identifiers_all = ""
@@ -148,14 +178,22 @@ class SubstanceTools():
             return True
         return False
 
+    def __clear_materials(self):
+        self.obj.data.materials.clear()
+
+
     #テクスチャ回収
     def material_setup(self):
-        self.obj.data.materials.clear()
+        self.__clear_materials()
         files = os.listdir(self.matdir)
         mat = fjw.get_material(self.matname)
 
+        print("material_setup")
+        print(self.matname)
+
         sortedfile = []
         for file in files:
+            print(file)
             if ".png" not in file:
                 continue
             if self.__texid_match(file, "color"):
@@ -221,14 +259,16 @@ class SubstanceTools():
                 texture_slot.alpha_factor = -1
         
         self.obj.data.materials.append(mat)
-        ctm = fjw.CyclesTexturedMaterial(self.obj.data.materials)
+        ctm = fjw.CyclesTexturedMaterial([mat])
         ctm.execute()
                    
             
 
     #リンクのないマテリアルのディレクトリを削除
     #マテリアルが存在しないディレクトリを削除、のほうがいい
+    @classmethod
     def clean_materials(self):
+        self.base_init(self)
         if not os.path.exists(self.sbs_generated_dir):
             return
         files = os.listdir(self.sbs_generated_dir)
@@ -252,3 +292,44 @@ class SubstanceTools():
         #     if os.path.exists(matpath):
         #         shutil.rmtree(matpath)
         #     bpy.data.materials.remove(mat)
+
+    @classmethod
+    def remove_not_used_materials(self, obj):
+        if obj.type != "MESH":
+            return
+        current = fjw.active()
+        fjw.activate(obj)
+        fjw.mode("OBJECT")
+        used_indexes = []
+        for face in obj.data.polygons:
+            i = face.material_index
+            if i not in used_indexes:
+                used_indexes.append(i)
+        print("used_indexes:"+str(used_indexes))
+
+        used_materials = []
+        for i in used_indexes:
+            if i >= len(obj.material_slots):
+                continue
+            mat = obj.material_slots[i].material
+            if mat not in used_materials:
+                used_materials.append(mat)
+        print(used_materials)
+        
+        delmats = []
+        for m in range(len(used_materials)):
+            for i in range(len(obj.material_slots)):
+                mslot = obj.material_slots[i]
+                print("mslot:"+str(mslot.material))
+                print("in:"+str(mslot.material in used_materials))
+                if mslot.material and mslot.material not in used_materials:
+                    print("remove:"+str(i)+" "+str(mslot.material))
+                    obj.active_material_index = i
+                    bpy.ops.object.material_slot_remove()
+                    delmats.append(mslot.material)
+                    break
+        for mat in delmats:
+            if mat.users == 0:
+                bpy.data.materials.remove(mat)
+
+        fjw.activate(current)
