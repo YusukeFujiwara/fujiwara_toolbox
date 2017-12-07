@@ -17606,7 +17606,7 @@ class FUJIWARATOOLBOX_LOAD_SBSAR(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+    uiitem.button(bl_idname,bl_label,icon="FILESEL",mode="")
 
     filter_glob = StringProperty(default="*.sbsar", options={"HIDDEN"})
 
@@ -17642,7 +17642,7 @@ class FUJIWARATOOLBOX_SET_SBSAR_TO_ACTIVE(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+    uiitem.button(bl_idname,bl_label,icon="MATERIAL_DATA",mode="")
 
     def get_graph_list_callback(scene, context):
         items = []
@@ -17778,7 +17778,7 @@ class FUJIWARATOOLBOX_SET_SBSAR_256(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+    uiitem.button(bl_idname,bl_label,icon="MATERIAL_DATA",mode="")
 
     def execute(self, context):
         SubstanceTools.tex_size = "8"
@@ -17797,7 +17797,7 @@ class FUJIWARATOOLBOX_SET_SBSAR_512(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+    uiitem.button(bl_idname,bl_label,icon="MATERIAL_DATA",mode="")
 
     def execute(self, context):
         SubstanceTools.tex_size = "9"
@@ -17816,7 +17816,7 @@ class FUJIWARATOOLBOX_SET_SBSAR_1024(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+    uiitem.button(bl_idname,bl_label,icon="MATERIAL_DATA",mode="")
 
     def execute(self, context):
         SubstanceTools.tex_size = "10"
@@ -17835,7 +17835,7 @@ class FUJIWARATOOLBOX_SET_SBSAR_2048(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+    uiitem.button(bl_idname,bl_label,icon="MATERIAL_DATA",mode="")
 
     def execute(self, context):
         SubstanceTools.tex_size = "11"
