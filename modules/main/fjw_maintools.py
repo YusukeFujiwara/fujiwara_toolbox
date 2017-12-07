@@ -17600,7 +17600,7 @@ def set_sbsar_to_active():
 ########################################
 #bpy.ops.fujiwara_toolbox.load_sbsar() #Load .sbsar
 class FUJIWARATOOLBOX_LOAD_SBSAR(bpy.types.Operator):
-    """Substanceアーカイブをロードする。"""
+    """アセットライブラリフォルダからSubstanceアーカイブをロードする。"""
     bl_idname = "fujiwara_toolbox.load_sbsar"
     bl_label = "Load .sbsar"
     bl_options = {'REGISTER', 'UNDO'}
@@ -17630,6 +17630,50 @@ class FUJIWARATOOLBOX_LOAD_SBSAR(bpy.types.Operator):
         SubstanceTools.info()
         return {'FINISHED'}
 ########################################
+
+########################################
+#親フォルダから
+########################################
+#bpy.ops.fujiwara_toolbox.loas_sbsar_from_current() #親フォルダから
+class FUJIWARATOOLBOX_LOAS_SBSAR_FROM_CURRENT(bpy.types.Operator):
+    """親フォルダからSubstanceアーカイブをロードする。"""
+    bl_idname = "fujiwara_toolbox.loas_sbsar_from_current"
+    bl_label = "親フォルダから"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="FILESEL",mode="")
+
+    filter_glob = StringProperty(default="*.sbsar", options={"HIDDEN"})
+
+    filename = bpy.props.StringProperty(subtype="FILE_NAME")
+    filepath = bpy.props.StringProperty(subtype="FILE_PATH")
+    directory = bpy.props.StringProperty(subtype="DIR_PATH")
+    files = bpy.props.CollectionProperty(type=bpy.types.PropertyGroup)
+
+    def invoke(self, context, event):
+        sbsdir = os.path.dirname(bpy.data.filepath)
+        if not os.path.exists(sbsdir):
+            self.report({"WARNING"}, "%sを作成してsbsarを設置してください。"%sbsdir)
+            return {"CANCELLED"}
+
+        self.directory = sbsdir
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+    def execute(self, context):
+        SubstanceTools.sbsar_path = self.filepath
+        SubstanceTools.info()
+        return {'FINISHED'}
+########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
 
 ########################################
 #Substanceマテリアルを設定
