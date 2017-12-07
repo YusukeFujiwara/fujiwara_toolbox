@@ -62,18 +62,25 @@ class SubstanceTools():
     blend_name = ""
     sbs_generated_dir = ""
 
+    sbsar_path = ""
+    graph_list = []
+    graph_url = ""
+
     def base_init(self):
+        if self.toolkit_dir == "":
+            pref = fujiwara_toolbox.conf.get_pref()
+            self.toolkit_dir = pref.SubstanceAutomationToolkit_dir
+
         self.self_dir = os.path.dirname(bpy.data.filepath)
         self.blend_name = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
         self.sbs_generated_dir = os.path.normpath(self.self_dir + os.sep + "textures" + os.sep + self.blend_name + "_sbs_generated")
 
-    def __init__(self, obj, sbsar_path):
+    def __init__(self, obj):
         self.base_init()
 
         self.obj = obj
         self.obj_name = obj.name.replace(".","_")
 
-        self.sbsar_path = sbsar_path
         self.sbsarname = os.path.splitext(os.path.basename(self.sbsar_path))[0]
 
         self.random_id = '{0:04d}'.format(int(random.random()*10000))
@@ -84,9 +91,7 @@ class SubstanceTools():
         self.src_dir = self.matdir + os.sep + "src"
         self.src_obj_path = os.path.normpath(self.src_dir + os.sep + self.obj_name + ".obj")
 
-        if self.toolkit_dir == "":
-            pref = fujiwara_toolbox.conf.get_pref()
-            self.toolkit_dir = pref.SubstanceAutomationToolkit_dir
+        
 
     def export(self):
         fjw.deselect()
@@ -109,6 +114,27 @@ class SubstanceTools():
         p = subprocess.Popen(cmdstr)
         p.wait()
 
+    @classmethod
+    def info(self):
+        print("*"*50)
+        self.base_init(self)
+        self.graph_list = []
+        render = os.path.normpath(self.toolkit_dir + os.sep + "sbsrender.exe")
+        cmdstr = '"%s" info "%s"'%(render, self.sbsar_path)
+        print(cmdstr)
+        p = subprocess.Popen(cmdstr, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # p.wait()
+        stdout_data, stderr_data = p.communicate()
+        text = stdout_data.decode().replace("\r", "\n")
+        lines = text.split("\n")
+        for l in lines:
+            if "pkg:" not in l:
+                continue
+            l = l.replace("GRAPH-URL pkg://", "")
+            print(l)
+            self.graph_list.append(l)
+        print("*"*50)
+
     def render(self):
         render = os.path.normpath(self.toolkit_dir + os.sep + "sbsrender.exe")
         entries = '--set-entry ambient-occlusion@"%s"'%(os.path.normpath(self.src_dir+os.sep+self.obj_name+"_ambient-occlusion.png"))
@@ -119,12 +145,13 @@ class SubstanceTools():
         entries += ' --set-entry world-space-direction@"%s"'%(os.path.normpath(self.src_dir+os.sep+self.obj_name+"_world-space-direction.png"))
         if self.tex_size != "":
             entries += ' --set-value $outputsize@%s,%s'%(self.tex_size,self.tex_size)
+        if self.graph_url != "":
+            entries += ' --input-graph "%s"'%self.graph_url
         cmdstr = '"%s" render --output-name="%s_{inputGraphUrl}_{outputNodeName}" %s --output-path "%s" "%s"'%(render, self.obj_name, entries, self.matdir, self.sbsar_path)
         print(cmdstr)
         p = subprocess.Popen(cmdstr)
         p.wait()
         self.tex_size = self.defalut_tex_size
-
 
     tex_identifiers = {}
     tex_identifiers_all = ""

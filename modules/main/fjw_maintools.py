@@ -17567,9 +17567,10 @@ uiitem().horizontal()
 
 from fujiwara_toolbox.modules.main.submodules.substance_tools import SubstanceTools
 
-def set_sbsar_to_active(filepath):
+
+def set_sbsar_to_active():
     obj = fjw.active()
-    st = SubstanceTools(obj, filepath)
+    st = SubstanceTools(obj)
     st.clean_materials()
 
     st.export()
@@ -17595,13 +17596,13 @@ def set_sbsar_to_active(filepath):
     st.material_setup()
 
 ########################################
-#Substanceマテリアルを設定
+#Load .sbsar
 ########################################
-#bpy.ops.fujiwara_toolbox.set_sbsar_to_active() #Substanceマテリアルを設定
-class FUJIWARATOOLBOX_SET_SBSAR_TO_ACTIVE(bpy.types.Operator):
-    """アクティブオブジェクトに、ファイルブラウザで指定した.sbsarを設定する。アセットディレクトリ/sbs/にsbsarをおいておく。編集モード自は選択面に割り当てる。UVマップがない場合、選択部のみ展開される。"""
-    bl_idname = "fujiwara_toolbox.set_sbsar_to_active"
-    bl_label = "Substanceマテリアルを設定"
+#bpy.ops.fujiwara_toolbox.load_sbsar() #Load .sbsar
+class FUJIWARATOOLBOX_LOAD_SBSAR(bpy.types.Operator):
+    """Substanceアーカイブをロードする。"""
+    bl_idname = "fujiwara_toolbox.load_sbsar"
+    bl_label = "Load .sbsar"
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
@@ -17615,6 +17616,46 @@ class FUJIWARATOOLBOX_SET_SBSAR_TO_ACTIVE(bpy.types.Operator):
     files = bpy.props.CollectionProperty(type=bpy.types.PropertyGroup)
 
     def invoke(self, context, event):
+        sbsdir = assetdir + os.sep + "sbs"
+        if not os.path.exists(sbsdir):
+            self.report({"WARNING"}, "%sを作成してsbsarを設置してください。"%sbsdir)
+            return {"CANCELLED"}
+
+        self.directory = sbsdir
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+    def execute(self, context):
+        SubstanceTools.sbsar_path = self.filepath
+        SubstanceTools.info()
+        return {'FINISHED'}
+########################################
+
+########################################
+#Substanceマテリアルを設定
+########################################
+#bpy.ops.fujiwara_toolbox.set_sbsar_to_active() #Substanceマテリアルを設定
+class FUJIWARATOOLBOX_SET_SBSAR_TO_ACTIVE(bpy.types.Operator):
+    """アクティブオブジェクトに、指定したグラフのマテリアルを設定する。アセットディレクトリ/sbs/にsbsarをおいておく。編集モード自は選択面に割り当てる。UVマップがない場合、選択部のみ展開される。"""
+    bl_idname = "fujiwara_toolbox.set_sbsar_to_active"
+    bl_label = "Substanceマテリアルを設定"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def get_graph_list_callback(scene, context):
+        items = []
+        for g in SubstanceTools.graph_list:
+            items.append((g,g,""))
+        return items    
+
+    graph_list = EnumProperty(
+        name = "Graph List",               # 名称
+        description = "Graph List",        # 説明文
+        items = get_graph_list_callback)   # 項目リストを作成する関数
+
+    def invoke(self, context, event):
         obj = fjw.active()
 
         if obj.mode != "EDIT":
@@ -17626,7 +17667,6 @@ class FUJIWARATOOLBOX_SET_SBSAR_TO_ACTIVE(bpy.types.Operator):
                 self.report({"WARNING"},"メッシュで割り当てた情報があります！やり直す場合はマテリアルを全て削除してください。")
                 return {"CANCELLED"}
 
-
         pref = fujiwara_toolbox.conf.get_pref()
         toolkit_dir = pref.SubstanceAutomationToolkit_dir
 
@@ -17634,16 +17674,19 @@ class FUJIWARATOOLBOX_SET_SBSAR_TO_ACTIVE(bpy.types.Operator):
             self.report({"WARNING"}, "アドオン設定でSubstance Automation Toolkitのディレクトリを設定してください。")
             return {"CANCELLED"}
 
-        sbsdir = assetdir + os.sep + "sbs"
-        if not os.path.exists(sbsdir):
-            self.report({"WARNING"}, "%sを作成してsbsarを設置してください。"%sbsdir)
+        if SubstanceTools.sbsar_path == "":
+            self.report({"WARNING"}, ".sbsarがロードされていません。")
             return {"CANCELLED"}
+            
 
-        self.directory = sbsdir
-        context.window_manager.fileselect_add(self)
-        return {'RUNNING_MODAL'}
+        return context.window_manager.invoke_props_dialog(self)
 
     def execute(self, context):
+        if self.graph_list == "":
+            self.report({"WARNING"}, "グラフが未指定です。")
+            return {"CANCELLED"}
+        SubstanceTools.graph_url = self.graph_list
+
         obj = fjw.active()
 
         fjw.deselect()
@@ -17695,7 +17738,7 @@ class FUJIWARATOOLBOX_SET_SBSAR_TO_ACTIVE(bpy.types.Operator):
             fjw.deselect()
             fjw.activate(dup_obj)
 
-            set_sbsar_to_active(self.filepath)
+            set_sbsar_to_active()
 
             mat = dup_obj.data.materials[0]
 
@@ -17713,9 +17756,10 @@ class FUJIWARATOOLBOX_SET_SBSAR_TO_ACTIVE(bpy.types.Operator):
 
             pass
         else:
-            set_sbsar_to_active(self.filepath)
+            set_sbsar_to_active()
         return {'FINISHED'}
 ########################################
+
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
@@ -17831,6 +17875,10 @@ def get_substance_settings(obj, maptype):
             return True
         if maptype == "curvature":
             return True
+        if maptype == "position":
+            return True
+        if maptype == "normal-world-space":
+            return True
         return False
 
     val = obj[propname]
@@ -17881,7 +17929,7 @@ class FUJIWARATOOLBOX_SUBSTANCE_SETTING_CURVATURE_ON(bpy.types.Operator):
 ########################################
 #bpy.ops.fujiwara_toolbox.substance_setting_normal_on() #normal
 class FUJIWARATOOLBOX_SUBSTANCE_SETTING_NORMAL_ON(bpy.types.Operator):
-    """このオブジェクトのnormalをsbsarに渡す設定。デフォルトはオフ。"""
+    """このオブジェクトのnormalをsbsarに渡す設定。デフォルトはオン。"""
     bl_idname = "fujiwara_toolbox.substance_setting_normal_on"
     bl_label = "normal"
     bl_options = {'REGISTER', 'UNDO'}
@@ -17900,7 +17948,7 @@ class FUJIWARATOOLBOX_SUBSTANCE_SETTING_NORMAL_ON(bpy.types.Operator):
 ########################################
 #bpy.ops.fujiwara_toolbox.substance_setting_position_on() #position
 class FUJIWARATOOLBOX_SUBSTANCE_SETTING_POSITION_ON(bpy.types.Operator):
-    """このオブジェクトのpositionをsbsarに渡す設定。デフォルトはオフ。"""
+    """このオブジェクトのpositionをsbsarに渡す設定。デフォルトはオン。"""
     bl_idname = "fujiwara_toolbox.substance_setting_position_on"
     bl_label = "position"
     bl_options = {'REGISTER', 'UNDO'}

@@ -40,6 +40,8 @@ def qq(str):
     return '"' + str + '"'
 
 
+
+
 def get_resourcesdir():
     scrdir = os.path.dirname(__file__)
     resourcesdir = scrdir + os.sep + "resources" + os.sep
@@ -1675,6 +1677,14 @@ def get_override(areatype):
     override = bpy.context.copy()
     override['area'] = get_area(areatype)
     return override
+
+class Textlogger():
+    text_data = None
+    @classmethod
+    def log(cls, text):
+        if not cls.text_data:
+            cls.text_data = bpy.data.texts.new("fjw_log")
+        cls.text_data.write(text+"\n")
 
 def dummy():
     return
