@@ -17680,7 +17680,7 @@ uiitem().horizontal()
 ########################################
 #bpy.ops.fujiwara_toolbox.set_sbsar_to_active() #Substanceマテリアルを設定
 class FUJIWARATOOLBOX_SET_SBSAR_TO_ACTIVE(bpy.types.Operator):
-    """アクティブオブジェクトに、指定したグラフのマテリアルを設定する。アセットディレクトリ/sbs/にsbsarをおいておく。編集モード自は選択面に割り当てる。UVマップがない場合、選択部のみ展開される。"""
+    """アクティブオブジェクトに、指定したグラフのマテリアルを設定する。アセットディレクトリ/sbs/にsbsarをおいておく。編集モード時は選択面に割り当てる。UVマップがない場合、選択部のみ展開される。"""
     bl_idname = "fujiwara_toolbox.set_sbsar_to_active"
     bl_label = "Substanceマテリアルを設定"
     bl_options = {'REGISTER', 'UNDO'}
