@@ -351,6 +351,18 @@ class refresh(bpy.types.Operator):
                 if obj.type != "MESH":
                     continue
 
+                #blendファイルの無いものを削除
+                #ないならimgも削除すべき
+                self_dir = os.path.dirname(bpy.data.filepath)
+                imgdir = self_dir + os.sep + "pageutils" + os.sep + "img" + os.sep
+                blend_filepath = self_dir + os.sep + obj.name + ".blend"
+                if not os.path.exists(blend_filepath):
+                    dellist.append(obj)
+                    img_path = imgdir + obj.name + ".png"
+                    if os.path.exists(img_path):
+                        os.remove(img_path)
+
+                #imgのないものは削除
                 print("MESH Object")
                 for mat in obj.data.materials:
                     print(mat)
