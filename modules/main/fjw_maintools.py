@@ -3687,7 +3687,7 @@ class FUJIWARATOOLBOX_EASY_CYCLES_SETUP(bpy.types.Operator):
         bpy.context.scene.view_settings.look = 'Filmic - Base Contrast'
         bpy.context.scene.cycles.use_square_samples = True
         bpy.context.scene.cycles.samples = 10
-        bpy.context.scene.cycles.preview_samples = 10
+        bpy.context.scene.cycles.preview_samples = 2
         bpy.context.scene.cycles.transparent_max_bounces = 8
         bpy.context.scene.cycles.transparent_min_bounces = 8
         bpy.context.scene.cycles.use_transparent_shadows = True
