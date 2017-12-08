@@ -257,9 +257,13 @@ def refresh_command(self):
 
     yoffset = 0
     for file in files:
+        fname, ext = os.path.splitext(file)
+        if ext != ".png":
+            continue
+        
         yoffset += 0.3
         #拡張子除去
-        fname = file.replace(".png","")
+        # fname = file.replace(".png","")
 
         #存在確認 あったらスキップ
         if fname in bpy.data.objects:
