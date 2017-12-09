@@ -3683,6 +3683,7 @@ class FUJIWARATOOLBOX_EASY_CYCLES_SETUP(bpy.types.Operator):
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     def execute(self, context):
+        bpy.context.scene.render.engine = 'CYCLES'
         bpy.context.scene.view_settings.view_transform = 'Filmic'
         bpy.context.scene.view_settings.look = 'Filmic - Base Contrast'
         bpy.context.scene.cycles.use_square_samples = True

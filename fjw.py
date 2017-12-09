@@ -1044,8 +1044,16 @@ def make_proxy_all():
     linkobj = active()
     result = []
     result.append(linkobj)
+
+    mapmode = False
+    if "MapController" in linkobj.dupli_group.objects:
+        mapmode = True
+
     for obj in linkobj.dupli_group.objects:
         if obj.type == "ARMATURE" or obj.type == "EMPTY":
+            if mapmode:
+                if obj.type == "EMPTY":
+                    continue
             proxyname = get_linkedfilename(linkobj) + "/" + obj.name + "_proxy"
             if proxyname not in bpy.data.objects:
                 bpy.ops.object.proxy_make(object=obj.name)
