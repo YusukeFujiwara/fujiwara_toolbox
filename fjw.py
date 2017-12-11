@@ -209,6 +209,19 @@ def is_in_visible_layer(obj):
                 return True
     return False
 
+def layers_current_state():
+    result = []
+    for state in bpy.context.scene.layers:
+        result.append(state)
+    return result
+
+def layers_showall():
+    layers = [True for state in range(len(bpy.context.scene.layers))]
+    bpy.context.scene.layers = layers
+
+def layers_show_list(layers):
+    bpy.context.scene.layers = layers
+
 class Modutils():
     def __init__(self, obj):
         self.object = obj
