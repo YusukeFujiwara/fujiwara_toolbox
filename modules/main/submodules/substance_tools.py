@@ -214,6 +214,7 @@ class SubstanceTools():
             if ".png" not in file:
                 continue
             img = fjw.load_img(self.matdir + os.sep + file)
+            bpy.ops.file.make_paths_relative()
 
             tex = bpy.data.textures.new(file, "IMAGE")
             tex.image = img

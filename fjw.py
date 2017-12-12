@@ -209,6 +209,19 @@ def is_in_visible_layer(obj):
                 return True
     return False
 
+def layers_current_state():
+    result = []
+    for state in bpy.context.scene.layers:
+        result.append(state)
+    return result
+
+def layers_showall():
+    layers = [True for state in range(len(bpy.context.scene.layers))]
+    bpy.context.scene.layers = layers
+
+def layers_show_list(layers):
+    bpy.context.scene.layers = layers
+
 class Modutils():
     def __init__(self, obj):
         self.object = obj
@@ -1044,8 +1057,16 @@ def make_proxy_all():
     linkobj = active()
     result = []
     result.append(linkobj)
+
+    mapmode = False
+    if "MapController" in linkobj.dupli_group.objects:
+        mapmode = True
+
     for obj in linkobj.dupli_group.objects:
         if obj.type == "ARMATURE" or obj.type == "EMPTY":
+            if mapmode:
+                if obj.type == "EMPTY":
+                    continue
             proxyname = get_linkedfilename(linkobj) + "/" + obj.name + "_proxy"
             if proxyname not in bpy.data.objects:
                 bpy.ops.object.proxy_make(object=obj.name)

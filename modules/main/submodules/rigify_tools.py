@@ -46,15 +46,15 @@ from mathutils import *
 # assetdir = fujiwara_toolbox.conf.assetdir
 assetdir = ""
 
-class ChildInfo():
-    def __init__(self, obj):
-        self.obj = obj
-        self.parent_type = obj.parent_type
-        self.parent_bone = obj.parent_bone
-        self.print_info()
+# class ChildInfo():
+#     def __init__(self, obj):
+#         self.obj = obj
+#         self.parent_type = obj.parent_type
+#         self.parent_bone = obj.parent_bone
+#         self.print_info()
 
-    def print_info(self):
-        print("%s : %s, %s"%(self.obj.name, self.parent_type, self.parent_bone))
+#     def print_info(self):
+#         print("%s : %s, %s"%(self.obj.name, self.parent_type, self.parent_bone))
 
 class RiggedObject():
     def __init__(self, obj, rig):
@@ -63,6 +63,8 @@ class RiggedObject():
         self.rigname = rig.name
         self.parent_type = obj.parent_type
         self.parent_bone = obj.parent_bone
+        self.hide = obj.hide
+        obj.hide = False
         self.print_info()
         modu = fjw.Modutils(obj)
         arm = modu.find_bytype("ARMATURE")
@@ -159,6 +161,7 @@ class RiggedObject():
             fjw.activate(obj)
             modu.sort()
         pass
+        self.obj.hide = self.hide
 
     def print_info(self):
         print("%s : %s, %s"%(self.obj.name, self.parent_type, self.parent_bone))
@@ -576,6 +579,9 @@ class RigifyTools():
         if metarig.type != "ARMATURE":
             return False
 
+        layers_current = fjw.layers_current_state()
+        fjw.layers_showall()
+
         self.set_metarig(metarig)
         self.set_rig(self.find_rig())
 
@@ -598,10 +604,11 @@ class RigifyTools():
         if self.rig:
             new_rig.edit_bones_data.restore_info_from(self.rig.edit_bones_data)
             self.rig.rigged_objects.reset_rig(new_rig.obj)
-        bpy.ops.view3d.layers(nr=0, extend=False)
+        # bpy.ops.view3d.layers(nr=0, extend=False)
         if self.rig:
             self.rig.rigged_objects.reparent()
-        bpy.ops.view3d.layers(nr=0, extend=False)
+        # bpy.ops.view3d.layers(nr=0, extend=False)
+        fjw.layers_show_list(layers_current)
         metarig.hide = True
 
         fjw.activate(new_rig.obj)
@@ -671,6 +678,9 @@ class RigifyTools():
         if rig.type != "ARMATURE":
             return False
 
+        layers_current = fjw.layers_current_state()
+        fjw.layers_showall()
+
         self.set_rig(rig)
         self.set_metarig(self.find_metarig())
 
@@ -682,6 +692,8 @@ class RigifyTools():
         self.rig.rigged_objects.apply()
         self.metarig.copy_shapes(self.rig.edit_bones_data)
         self.rig.rigged_objects.reparent()
+        fjw.layers_show_list(layers_current)
+
 
     def update_rig_proportion(self, rig):
         # self.freeze_rig(rig) #ポーズ形状から直接とってるのでもういらない
