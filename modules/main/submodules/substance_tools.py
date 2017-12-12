@@ -109,7 +109,9 @@ class SubstanceTools():
         if not os.path.exists(self.src_dir):
             os.makedirs(self.src_dir)
         baker = os.path.normpath(self.toolkit_dir + os.sep + "sbsbaker.exe")
-        cmdstr = '"%s" %s "%s" --output-path "%s" --output-size %s,%s'%(baker, bake_type, self.src_obj_path, self.src_dir, self.tex_size, self.tex_size)
+        cmdstr = '"%s" %s "%s" --output-path "%s"'%(baker, bake_type, self.src_obj_path, self.src_dir)
+        if self.tex_size != "":
+            cmdstr += ' --output-size %s,%s'%(self.tex_size, self.tex_size)
         print(cmdstr)
         p = subprocess.Popen(cmdstr)
         p.wait()
