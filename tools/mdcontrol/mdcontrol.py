@@ -32,6 +32,11 @@ def sim(avatar_path, animation_path, garment_path, result_path):
     os.remove(animation_path)
     os.remove(garment_path)
 
+# md = mdmacro.set_up()
+# if md.ver == "7":
+#     pass
+# else:
+#     sim(args[1],args[2],args[3],args[4])
 sim(args[1],args[2],args[3],args[4])
 
 print("end")

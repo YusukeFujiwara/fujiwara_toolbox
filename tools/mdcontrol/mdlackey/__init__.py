@@ -316,6 +316,11 @@ class MDMacro():
         # md.click("")
 
     @classmethod
+    def set_up(self):
+        md = MDMacro.md_setup()
+        return md
+
+    @classmethod
     def new_file(self):
         md = MDMacro.md_setup()
         if not md.is_initialized:

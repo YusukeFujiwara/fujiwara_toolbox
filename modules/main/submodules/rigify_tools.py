@@ -678,6 +678,9 @@ class RigifyTools():
         if rig.type != "ARMATURE":
             return False
 
+        layers_current = fjw.layers_current_state()
+        fjw.layers_showall()
+
         self.set_rig(rig)
         self.set_metarig(self.find_metarig())
 
@@ -689,6 +692,8 @@ class RigifyTools():
         self.rig.rigged_objects.apply()
         self.metarig.copy_shapes(self.rig.edit_bones_data)
         self.rig.rigged_objects.reparent()
+        fjw.layers_show_list(layers_current)
+
 
     def update_rig_proportion(self, rig):
         # self.freeze_rig(rig) #ポーズ形状から直接とってるのでもういらない
