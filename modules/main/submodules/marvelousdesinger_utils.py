@@ -156,7 +156,7 @@ class MDObject():
 
     def export_to_mddata(self):
         self.export_abc(self.export_dir)
-        self.export_mddatafile()
+        self.export_mdscript()
 
     def open_export_dir(self):
         os.system("EXPLORER " + self.export_dir)
@@ -169,16 +169,26 @@ class MDObject():
         result_path = os.path.normpath(self.export_dir + os.sep + "result.obj")
         return toolpath, avatar_path, animation_path, garment_path, result_path
 
-    def export_mddatafile(self):
+    def export_mdscript(self):
         toolpath, avatar_path, animation_path, garment_path, result_path = self.get_sim_path()
 
         data = ""
-        data += 'avatar_path="%s"\n'%avatar_path
-        data += 'garment_path="%s"\n'%garment_path
-        data += 'result_path="%s"\n'%result_path
+        # data += 'avatar_path="%s"\n'%avatar_path
+        # data += 'garment_path="%s"\n'%garment_path
+        # data += 'result_path="%s"\n'%result_path
         data += 'mddatafiles.append((avatar_path, garment_path, result_path))\n'
+        data += 'mdsa.clear_console()\n'
+        data += 'mdsa.initialize() \n'
+        data += 'mdsa.set_open_option(unit="m", fps=5)\n'
+        data += 'mdsa.set_save_option(unit="m", fps=5, unified =False)\n'
+        data += 'mdsa.set_garment_file_path("%s")\n'%garment_path
+        data += 'mdsa.set_animation_file_path("%s")\n'%avatar_path #abcなので。
+        data += 'mdsa.set_simulation_options(obj_type=0, simulation_quality=0, simulation_delay_time=0)n'
+        data += 'mdsa.set_save_file_path("%s")\n'%result_path
+        data += 'mdsa.process(auto_save_zprj_file=False)\n'
+        data += '\n'
         
-        datafilepath = os.path.normpath(self.export_dir + os.sep + self.mdname + "_mddata.py")
+        datafilepath = os.path.normpath(self.export_dir + os.sep + self.mdname + "_mdscript.py")
         
         f = open(datafilepath, "w")
         f.write(data)

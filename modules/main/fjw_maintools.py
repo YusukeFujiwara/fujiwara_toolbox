@@ -17089,6 +17089,8 @@ class FUJIWARATOOLBOX_SET_SBSAR_TO_ACTIVE(bpy.types.Operator):
         if obj.mode != "EDIT":
             count = 0
             for mat in obj.data.materials:
+                if not mat:
+                    continue
                 if "_sbsgen" in mat.name:
                     count+=1
             if count > 1:

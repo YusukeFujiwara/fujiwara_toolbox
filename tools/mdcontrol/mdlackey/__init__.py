@@ -355,6 +355,12 @@ class MDMacro():
         self.paste_str(filepath)
 
         md.click("ok", multiscreen=True)
+        for i in range(30):
+            md.activate()
+            f = md.find("close")
+            if f:
+                break
+            md.wait(0.5)
         md.click("close", multiscreen=True)
         md.activate()
 
@@ -375,6 +381,12 @@ class MDMacro():
         self.paste_str(filepath)
         md.click("m", multiscreen=True)
         md.click("ok", multiscreen=True)
+        for i in range(30):
+            md.activate()
+            f = md.find("close")
+            if f:
+                break
+            md.wait(0.5)
         md.click("close", multiscreen=True)
         md.activate()
 
