@@ -172,7 +172,10 @@ class SubstanceTools():
             cls.tex_identifiers["ao"] = "_AO|_ambient_occlusion|_ambient-occlusion"
             cls.tex_identifiers["metallic"] = "_metallic"
             cls.tex_identifiers["roughness"] = "_roughness"
-            cls.tex_identifiers["shadow"] = "_Shadow"
+            cls.tex_identifiers["diffuse"] = "_diffuse"
+            cls.tex_identifiers["glossiness"] = "_glossiness"
+            cls.tex_identifiers["normal"] = "_normal"
+            cls.tex_identifiers["specular"] = "_specular"
             cls.tex_identifiers_all = ""
             for tex_identifier in cls.tex_identifiers:
                 cls.tex_identifiers_all += cls.tex_identifiers[tex_identifier] + "|"
@@ -180,7 +183,7 @@ class SubstanceTools():
     @classmethod
     def __texid_match(cls, text, targetid):
         cls.__setup_texidentifiers()
-        if re.search(cls.tex_identifiers["color"], text,re.IGNORECASE) is not None:
+        if re.search(cls.tex_identifiers[targetid], text,re.IGNORECASE) is not None:
             return True
         return False
 
@@ -194,6 +197,7 @@ class SubstanceTools():
         files = os.listdir(self.matdir)
         mat = fjw.get_material(self.matname)
         mat["sbsid"] = self.matname
+        mat.diffuse_color = (0.214035, 0.214035, 0.214035)
 
         print("material_setup")
         print(self.matname)
@@ -225,13 +229,15 @@ class SubstanceTools():
             texture_slot.texture = tex
 
             #タイプ別セットアップ
+            #PBR
             if self.__texid_match(file, "color"):
                 texture_slot.use_map_color_diffuse = True
                 texture_slot.diffuse_color_factor = 1
-                texture_slot.use_map_alpha = True
-                texture_slot.blend_type = 'MULTIPLY'
-                mat.use_transparency = True
-                mat.alpha = 1
+                texture_slot.use_rgb_to_intensity = False
+                texture_slot.blend_type = 'SCREEN'
+                # texture_slot.use_map_alpha = True
+                # mat.use_transparency = True
+                # mat.alpha = 1
             if self.__texid_match(file, "alpha"):
                 texture_slot.use_map_color_diffuse = False
                 texture_slot.use_map_alpha = True
@@ -240,32 +246,45 @@ class SubstanceTools():
                 texture_slot.blend_type = 'MIX'
                 mat.use_transparency = True
                 mat.alpha = 0
+            if self.__texid_match(file, "normal"):
+                texture_slot.use_map_color_diffuse = False
+                texture_slot.use_map_normal = True
+                texture_slot.normal_factor = 0.1
             if self.__texid_match(file, "height"):
                 texture_slot.use_map_color_diffuse = False
                 texture_slot.use_map_normal = True
-                texture_slot.normal_factor = 0.01
+                texture_slot.normal_factor = 0.1
             if self.__texid_match(file, "ao"):
                 texture_slot.use_map_color_diffuse = True
                 texture_slot.diffuse_color_factor = 1
                 texture_slot.blend_type = 'MULTIPLY'
-            if self.__texid_match(file, "metallic"):
+            # if self.__texid_match(file, "metallic"):
+            #     texture_slot.use_map_color_diffuse = False
+            #     texture_slot.use_map_hardness = True
+            #     texture_slot.hardness_factor = 1
+            # if self.__texid_match(file, "roughness"):
+            #     texture_slot.use_map_color_diffuse = False
+            #     texture_slot.use_map_specular = True
+            #     texture_slot.specular_factor = 1
+            # if self.__texid_match(file, "shadow"):
+            #     tex.image.use_alpha = False
+            #     mat.use_transparency = True
+            #     mat.alpha = 0
+            #     texture_slot.blend_type = 'MIX'
+            #     texture_slot.use_map_color_diffuse = True
+            #     texture_slot.diffuse_color_factor = 1
+            #     texture_slot.use_map_alpha = True
+            #     texture_slot.alpha_factor = -1
+            #LEGACY
+            if self.__texid_match(file, "glossiness"):
                 texture_slot.use_map_color_diffuse = False
-                texture_slot.use_map_hardness = True
-                texture_slot.hardness_factor = 1
-            if self.__texid_match(file, "roughness"):
+                texture_slot.use_map_color_spec = True
+
+            if self.__texid_match(file, "specular"):
                 texture_slot.use_map_color_diffuse = False
                 texture_slot.use_map_specular = True
-                texture_slot.specular_factor = 1
-            if self.__texid_match(file, "shadow"):
-                tex.image.use_alpha = False
-                mat.use_transparency = True
-                mat.alpha = 0
-                texture_slot.blend_type = 'MIX'
-                texture_slot.use_map_color_diffuse = True
-                texture_slot.diffuse_color_factor = 1
-                texture_slot.use_map_alpha = True
-                texture_slot.alpha_factor = -1
-        
+
+
         self.obj.data.materials.append(mat)
         ctm = fjw.CyclesTexturedMaterial([mat])
         ctm.execute()

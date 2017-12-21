@@ -3506,32 +3506,55 @@ uiitem().horizontal()
 #---------------------------------------------
 
 def set_hdri(path):
-    world = bpy.context.scene.world
-    ntu = fjw.NodetreeUtils(world)
-    ntu.activate()
-    ntu.cleartree()
-    n_out = ntu.add("ShaderNodeOutputWorld", "Output World")
-
-    n_bg = ntu.add("ShaderNodeBackground", "Background")
-    n_env = ntu.add("ShaderNodeTexEnvironment", "Texture Enviroment")
-    ntu.link(n_env.outputs["Color"], n_bg.inputs["Color"])
-    ntu.link(n_bg.outputs["Background"], n_out.inputs["Surface"])
-    n_bg.inputs["Strength"].default_value = 0.5
-
-    n_texcoord = ntu.add("ShaderNodeTexCoord", "Texture Coordinates")
-    n_map = ntu.add("ShaderNodeMapping", "Mapping")
-    n_map.vector_type = "POINT"
-    ntu.link(n_texcoord.outputs["Generated"], n_map.inputs["Vector"])
-    ntu.link(n_map.outputs["Vector"], n_env.inputs["Vector"])
-
-
     img = bpy.data.images.load(filepath=path)
-    n_env.image = img
+    if bpy.context.scene.render.engine == 'CYCLES':
+        world = bpy.context.scene.world
+        ntu = fjw.NodetreeUtils(world)
+        ntu.activate()
+        ntu.cleartree()
+        n_out = ntu.add("ShaderNodeOutputWorld", "Output World")
 
-    bpy.context.scene.render.layers.active.use_sky = True
-    world.cycles.sample_as_light = True
-    world.cycles.sample_map_resolution = img.size[0]
-    bpy.context.scene.cycles.film_transparent = False
+        n_bg = ntu.add("ShaderNodeBackground", "Background")
+        n_env = ntu.add("ShaderNodeTexEnvironment", "Texture Enviroment")
+        ntu.link(n_env.outputs["Color"], n_bg.inputs["Color"])
+        ntu.link(n_bg.outputs["Background"], n_out.inputs["Surface"])
+        n_bg.inputs["Strength"].default_value = 0.5
+
+        n_texcoord = ntu.add("ShaderNodeTexCoord", "Texture Coordinates")
+        n_map = ntu.add("ShaderNodeMapping", "Mapping")
+        n_map.vector_type = "POINT"
+        ntu.link(n_texcoord.outputs["Generated"], n_map.inputs["Vector"])
+        ntu.link(n_map.outputs["Vector"], n_env.inputs["Vector"])
+
+        n_env.image = img
+
+        bpy.context.scene.render.layers.active.use_sky = True
+        world.cycles.sample_as_light = True
+        world.cycles.sample_map_resolution = img.size[0]
+        bpy.context.scene.cycles.film_transparent = False
+
+    if bpy.context.scene.render.engine == 'BLENDER_RENDER':
+        tex = bpy.data.textures.new(os.path.basename(path), "IMAGE")
+        tex.image = img
+        bpy.context.scene.world.active_texture = tex
+        tslot = bpy.context.scene.world.texture_slots[0]
+        tslot.texture_coords = 'EQUIRECT'
+        tslot.use_map_blend = False
+        tslot.use_map_horizon = True
+
+        bpy.context.scene.world.use_sky_real = True
+        #重たくなるので保留
+        # bpy.context.scene.world.light_settings.use_environment_light = True
+        bpy.context.scene.world.light_settings.environment_color = 'SKY_TEXTURE'
+        bpy.context.scene.world.light_settings.gather_method = 'APPROXIMATE'
+
+        bpy.context.space_data.show_world = True
+        bpy.context.space_data.fx_settings.use_ssao = False
+
+        bpy.context.scene.render.alpha_mode = 'SKY'
+        bpy.context.scene.render.layers["RenderLayer"].use_sky = True
+
+
 
 
 ########################################
@@ -3539,7 +3562,7 @@ def set_hdri(path):
 ########################################
 #bpy.ops.fujiwara_toolbox.cycles_set_hdri() #HDRI設定
 class FUJIWARATOOLBOX_CYCLES_SET_HDRI(bpy.types.Operator):
-    """ファイルを読み込んでHDRIを設定する。"""
+    """ファイルを読み込んでHDRIを設定する。Internalでは環境照明オンにしてないので手動でオンにすること。"""
     bl_idname = "fujiwara_toolbox.cycles_set_hdri"
     bl_label = "HDRI設定"
     bl_options = {'REGISTER', 'UNDO'}
@@ -3667,6 +3690,9 @@ uiitem().vertical()
 #         bpy.context.scene.view_settings.look = 'Filmic - Base Contrast'
 #         return {'FINISHED'}
 # ########################################
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
 
 
 ########################################
@@ -3701,6 +3727,34 @@ class FUJIWARATOOLBOX_EASY_CYCLES_SETUP(bpy.types.Operator):
 
         return {'FINISHED'}
 ########################################
+
+########################################
+#ざっくりInternalセットアップ
+########################################
+#bpy.ops.fujiwara_toolbox.command_778778() #ざっくりInternalセットアップ
+class FUJIWARATOOLBOX_COMMAND_778778(bpy.types.Operator):
+    """ざっくりInternalセットアップ"""
+    bl_idname = "fujiwara_toolbox.command_778778"
+    bl_label = "ざっくりInternalセットアップ"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        bpy.context.scene.render.engine = 'BLENDER_RENDER'
+        bpy.context.scene.render.use_textures = True
+        bpy.context.scene.render.use_shadows = True
+        bpy.context.scene.render.use_raytrace = True
+        #ビューポートに反映されない…
+        # bpy.context.scene.view_settings.view_transform = 'Filmic'
+
+        return {'FINISHED'}
+########################################
+
+
+
+
 
 
 
@@ -3802,10 +3856,10 @@ def render_opengl(filename,show_viewport=False):
 ########################################
 #GLレンダ
 ########################################
-class FUJIWARATOOLBOX_979047(bpy.types.Operator):#GLレンダ
-    """GLレンダ"""
-    bl_idname = "fujiwara_toolbox.command_979047"
-    bl_label = "OpenGLレンダ。透過レンダと透過オブジェクト非表示レンダを生成。ドロップシャドウ無効。"
+class FUJIWARATOOLBOX_GLRENDER(bpy.types.Operator):#GLレンダ
+    """OpenGLレンダ。透過レンダと透過オブジェクト非表示レンダを生成。ドロップシャドウ無効。"""
+    bl_idname = "fujiwara_toolbox.glrender"
+    bl_label = "GLレンダ"
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
@@ -3848,22 +3902,105 @@ class FUJIWARATOOLBOX_979047(bpy.types.Operator):#GLレンダ
                     if mat.use_transparency:
                         obj.hide = True
                         break
-        selfname = fjw.blendname() + "_layerAll_OpenGL_B_NonTranpsarent"
-        render_opengl(selfname)
+        selfname = fjw.blendname()
+        render_opengl(selfname + "_layerAll_OpenGL_B_NonTranpsarent")
         viewstate.restore_viewstate()
         del viewstate
 
-        selfname = fjw.blendname() + "_layerAll_OpenGL_A_Main"
         # render_opengl(selfname,True)
-        render_opengl(selfname)
+        render_opengl(selfname + "_layerAll_OpenGL_A_Main")
 
         endtime = time.time()
-
         self.report({"INFO"},"レンダ完了　{0:.2f}秒".format(endtime - starttime))
 
 
         return {'FINISHED'}
 ########################################
+
+########################################
+#コンポ素材レンダ
+########################################
+#bpy.ops.fujiwara_toolbox.glrender_compomat() #コンポ素材レンダ
+class FUJIWARATOOLBOX_GLRENDER_COMPOMAT(bpy.types.Operator):
+    """コンポジット素材のレンダ。カラー・影のGLレンダ、辺レンダ。"""
+    bl_idname = "fujiwara_toolbox.glrender_compomat"
+    bl_label = "コンポ素材レンダ"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        fjw.mode("OBJECT")
+        starttime = time.time()
+
+        #一番はじめにバックグラウンドの線画レンダ投げとく
+        exec_externalutils("renderedge.py")
+
+        #再計算回避
+        if bpy.context.scene.render.use_simplify:
+            bpy.context.scene.render.use_simplify = False
+
+        #Subsurfをあわせる
+        for obj in bpy.data.objects:
+            modu = fjw.Modutils(obj)
+            sbslist = modu.find_bytype_list("SUBSURF")
+            for sbs in sbslist:
+                if sbs.levels < sbs.render_levels:
+                    sbs.levels = sbs.render_levels
+
+        #ビューロック解除
+        bpy.context.space_data.lock_camera = False
+
+        #下書き非表示
+        bpy.context.space_data.show_background_images = False
+
+        #グリペンレイヤ
+        if bpy.context.scene.grease_pencil is not None:
+            gplayers = bpy.context.scene.grease_pencil.layers
+            if "下書き" in gplayers:
+                bpy.context.scene.grease_pencil.layers["下書き"].hide = True
+            #gpcurrent = bpy.context.scene.grease_pencil.layers.active
+            ##線幅
+            for gplayer in gplayers:
+                if not gplayer.hide:
+                    gpline_change(gplayer, 20)
+
+        selfname = fjw.blendname()
+
+        materials = bpy.data.materials
+        material_states = fjw.MaterialStates(materials)
+        #カラーパス
+        for mat in materials:
+            mat.use_shadeless = True
+        render_opengl(selfname + "_layerAll_OpenGL_Color")
+
+        #シャドウパス
+        material_states.restore()
+        for mat in materials:
+            mat.diffuse_color = (1, 1, 1)
+            # for i in range(len(mat.use_textures)):
+            #     mat.use_textures[i] = False
+            for i in range(len(mat.texture_slots)):
+                tslot = mat.texture_slots[i]
+                if not tslot:
+                    continue
+                if tslot.use_map_color_diffuse:
+                    mat.use_textures[i] = False
+                
+        render_opengl(selfname + "_layerAll_OpenGL_Shadow")
+
+        material_states.restore()
+
+        endtime = time.time()
+        self.report({"INFO"},"レンダ完了　{0:.2f}秒".format(endtime - starttime))
+        return {'FINISHED'}
+########################################
+
+
+
+
+
 
 
 
@@ -15579,7 +15716,7 @@ class FUJIWARATOOLBOX_mdresult_autoimport_and_glrender(bpy.types.Operator):
 
     def execute(self, context):
         MarvelousDesingerUtils.mdresult_auto_import_main(self,context,True)
-        bpy.ops.fujiwara_toolbox.command_979047()
+        bpy.ops.fujiwara_toolbox.glrender()
         return {'FINISHED'}
 ########################################
 #---------------------------------------------
@@ -20271,7 +20408,8 @@ def menu_func_VIEW3D_HT_header(self, context):
 
     if pref.glrenderutils_buttons:
         active = layout.row(align = True)
-        active.operator("fujiwara_toolbox.command_979047", text="GL",icon="RENDER_STILL")
+        # active.operator("fujiwara_toolbox.glrender", text="GL",icon="RENDER_STILL")
+        active.operator("fujiwara_toolbox.glrender_compomat", text="Render",icon="RENDER_STILL")
         # active.operator("fujiwara_toolbox.command_171760", text="MASK")
         # active.operator("fujiwara_toolbox.command_242623", text="",icon="GREASEPENCIL")
 
