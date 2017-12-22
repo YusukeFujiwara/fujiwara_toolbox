@@ -3543,8 +3543,8 @@ def set_hdri(path):
         tslot.use_map_horizon = True
 
         bpy.context.scene.world.use_sky_real = True
-        #重たくなるので保留
-        # bpy.context.scene.world.light_settings.use_environment_light = True
+        #重たくなるので保留→GLレンダだったら関係なかった！
+        bpy.context.scene.world.light_settings.use_environment_light = True
         bpy.context.scene.world.light_settings.environment_color = 'SKY_TEXTURE'
         bpy.context.scene.world.light_settings.gather_method = 'APPROXIMATE'
 
@@ -3922,7 +3922,7 @@ class FUJIWARATOOLBOX_GLRENDER(bpy.types.Operator):#GLレンダ
 ########################################
 #bpy.ops.fujiwara_toolbox.glrender_compomat() #コンポ素材レンダ
 class FUJIWARATOOLBOX_GLRENDER_COMPOMAT(bpy.types.Operator):
-    """コンポジット素材のレンダ。カラー・影のGLレンダ、辺レンダ。"""
+    """保存してコンポジット素材のレンダ。カラー・影のGLレンダ、辺レンダ。"""
     bl_idname = "fujiwara_toolbox.glrender_compomat"
     bl_label = "コンポ素材レンダ"
     bl_options = {'REGISTER', 'UNDO'}
@@ -3934,6 +3934,20 @@ class FUJIWARATOOLBOX_GLRENDER_COMPOMAT(bpy.types.Operator):
         fjw.mode("OBJECT")
         starttime = time.time()
 
+        #現状取得
+        viewstate = fjw.ViewState()
+        show_world = bpy.context.space_data.show_world
+        alpha_mode = bpy.context.scene.render.alpha_mode
+        file_format = bpy.context.scene.render.image_settings.file_format
+
+        bpy.context.scene.render.image_settings.file_format = 'PNG'
+
+        #背景色
+        bpy.context.space_data.show_world = False
+        bpy.context.scene.render.alpha_mode = 'TRANSPARENT'
+
+        #セーブ
+        bpy.ops.wm.save_mainfile()
         #一番はじめにバックグラウンドの線画レンダ投げとく
         exec_externalutils("renderedge.py")
 
@@ -3979,18 +3993,31 @@ class FUJIWARATOOLBOX_GLRENDER_COMPOMAT(bpy.types.Operator):
         material_states.restore()
         for mat in materials:
             mat.diffuse_color = (1, 1, 1)
-            # for i in range(len(mat.use_textures)):
-            #     mat.use_textures[i] = False
             for i in range(len(mat.texture_slots)):
                 tslot = mat.texture_slots[i]
                 if not tslot:
                     continue
                 if tslot.use_map_color_diffuse:
                     mat.use_textures[i] = False
-                
         render_opengl(selfname + "_layerAll_OpenGL_Shadow")
 
+        #背景があった場合、背景だけをレンダリングする
+        if show_world:
+            bpy.context.space_data.show_world = True
+            bpy.context.scene.render.alpha_mode = 'SKY'
+
+            for obj in bpy.data.objects:
+                obj.hide = True
+            render_opengl(selfname + "_layerAll_OpenGL_Bgimg")
+
+        #原状復帰
+        bpy.context.space_data.show_world = show_world
+        bpy.context.scene.render.alpha_mode = alpha_mode
+        bpy.context.scene.render.image_settings.file_format = file_format
         material_states.restore()
+        viewstate.restore_viewstate()
+        del viewstate
+
 
         endtime = time.time()
         self.report({"INFO"},"レンダ完了　{0:.2f}秒".format(endtime - starttime))
@@ -6161,10 +6188,11 @@ class FUJIWARATOOLBOX_96315(bpy.types.Operator):#SUN設置
         obj.rotation_euler[2] = 0.487015
         obj.data.shadow_method = 'RAY_SHADOW'
 
-        obj.data.ge_shadow_buffer_type = 'VARIANCE'
-        obj.data.shadow_buffer_size = 4096
-        obj.data.shadow_buffer_bias = 0.1
-        obj.data.shadow_buffer_bleed_bias = 0.55
+        #カラーだとヤバそうだったのでなし。
+        # obj.data.ge_shadow_buffer_type = 'VARIANCE'
+        # obj.data.shadow_buffer_size = 4096
+        # obj.data.shadow_buffer_bias = 0.1
+        # obj.data.shadow_buffer_bleed_bias = 0.55
         
         
         return {'FINISHED'}
@@ -17291,7 +17319,8 @@ class FUJIWARATOOLBOX_SET_SBSAR_TO_ACTIVE(bpy.types.Operator):
             bpy.ops.object.material_slot_add()
             bpy.ops.object.material_slot_assign()
 
-            bpy.ops.mesh.duplicate_move(MESH_OT_duplicate={"mode":1}, TRANSFORM_OT_translate={"value":(0, 0, 0), "constraint_axis":(False, False, False), "constraint_orientation":'GLOBAL', "mirror":False, "proportional":'DISABLED', "proportional_edit_falloff":'SMOOTH', "proportional_size":1, "snap":False, "snap_target":'CLOSEST', "snap_point":(0, 0, 0), "snap_align":False, "snap_normal":(0, 0, 0), "gpencil_strokes":False, "texture_space":False, "remove_on_cancel":False, "release_confirm":False, "use_accurate":False})
+            # bpy.ops.mesh.duplicate_move(MESH_OT_duplicate={"mode":1}, TRANSFORM_OT_translate={"value":(0, 0, 0), "constraint_axis":(False, False, False), "constraint_orientation":'GLOBAL', "mirror":False, "proportional":'DISABLED', "proportional_edit_falloff":'SMOOTH', "proportional_size":1, "snap":False, "snap_target":'CLOSEST', "snap_point":(0, 0, 0), "snap_align":False, "snap_normal":(0, 0, 0), "gpencil_strokes":False, "texture_space":False, "remove_on_cancel":False, "release_confirm":False, "use_accurate":False})
+            bpy.ops.mesh.duplicate()
             bpy.ops.mesh.separate(type='SELECTED')
 
             fjw.mode("OBJECT")
