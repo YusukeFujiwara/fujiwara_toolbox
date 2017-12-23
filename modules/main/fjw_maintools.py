@@ -8015,6 +8015,158 @@ class FUJIWARATOOLBOX_SURFACEDEFORM_UNBIND(bpy.types.Operator):
 
 
 
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+############################################################################################################################
+uiitem("ラティス")
+############################################################################################################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#ラティスを設定
+########################################
+#bpy.ops.fujiwara_toolbox.set_lattice() #ラティスを設定
+class FUJIWARATOOLBOX_SET_LATTICE(bpy.types.Operator):
+    """選択おブジェクにアクティブオブジェクトへのラティスモディファイアを設定する"""
+    bl_idname = "fujiwara_toolbox.set_lattice"
+    bl_label = "ラティスを設定"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        active = fjw.active()
+        if active.type != "LATTICE":
+            report({"WARNING"}, "ラティスを最後に選択してください")
+            return {"CANCELLED"}
+
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            if obj == active:
+                continue
+            if obj.type != "MESH":
+                continue
+
+            modu = fjw.Modutils(obj)
+            mlat = modu.add("Lattice", "LATTICE")
+            mlat.object = active
+
+
+        return {'FINISHED'}
+########################################
+
+########################################
+#アーマチュア生成
+########################################
+#bpy.ops.fujiwara_toolbox.lattice_generate_armature() #アーマチュア生成
+class FUJIWARATOOLBOX_LATTICE_GENERATE_ARMATURE(bpy.types.Operator):
+    """ラティスの選択頂点をボーンにしたアーマチュアを生成する。"""
+    bl_idname = "fujiwara_toolbox.lattice_generate_armature"
+    bl_label = "アーマチュア生成"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        lattice = fjw.active()
+        if lattice.type != "LATTICE":
+            report({"WARNING"}, "ラティスを選択してください。")
+            return {"CANCELLED"}
+
+        parent = lattice.parent
+        parent_type = lattice.parent_type
+        parent_bone = lattice.parent_bone
+
+
+        fjw.mode("OBJECT")
+        fjw.deselect()
+        fjw.activate(lattice)
+        bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
+
+
+        fjw.mode("EDIT")
+        lattice_points = []
+        for index, p in enumerate(lattice.data.points):
+            if p.select:
+                print("p:%s"%str(p.co_deform))
+                pos = Vector((p.co_deform.x * lattice.scale.x, p.co_deform.y * lattice.scale.y, p.co_deform.z * lattice.scale.z))
+                lattice_points.append((index, Vector((pos.x, pos.y, pos.z))))
+
+        fjw.mode("OBJECT")
+        for data in lattice_points:
+            index = data[0]
+            p = data[1]
+            vg = lattice.vertex_groups.new(name="bonefromlattice.%03d"%index)
+            vg.add([index], 1, "ADD")
+
+        # pos = (lattice.matrix_world[0][3], lattice.matrix_world[1][3], lattice.matrix_world[2][3])
+        pos = lattice.location
+        bpy.ops.object.armature_add(view_align=False, enter_editmode=False, location=pos, layers=lattice.layers)
+        armature = fjw.active()
+        armature.name = "Lattice Controller"
+        armature.rotation_euler = lattice.rotation_euler
+        armature.rotation_quaternion = lattice.rotation_quaternion
+        armature.rotation_quaternion = lattice.rotation_quaternion
+        armature.rotation_mode = lattice.rotation_mode
+        fjw.mode("EDIT")
+        bpy.ops.armature.select_all(action='SELECT')
+        bpy.ops.armature.delete()
+
+        edit_bones = armature.data.edit_bones
+        for data in lattice_points:
+            index = data[0]
+            p = data[1]
+
+            b = edit_bones.new("bonefromlattice.%03d"%index)
+            b.head = p
+            pc = Vector((p.x, p.y, p.z))
+            # b.tail = p + pc
+            b.tail = p + Vector((0, 0, 0.05))
+        fjw.mode("OBJECT")
+
+        fjw.deselect()
+        lattice.select = True
+        fjw.activate(armature)
+        bpy.ops.object.parent_set(type='ARMATURE_NAME')
+
+        if parent:
+            fjw.deselect()
+            armature.select = True
+            fjw.activate(parent)
+
+            if parent_type == "OBJECT":
+                bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
+
+            if parent_type == "BONE":
+                fjw.mode("POSE")
+
+                layerstates = []
+                for state in parent.data.layers:
+                    layerstates.append(state)
+
+                parent.data.layers = [True for i in range(len(parent.data.layers))]
+
+                parent.data.bones.active = parent.data.bones[parent_bone]
+                bpy.ops.object.parent_set(type='BONE_RELATIVE')
+
+                parent.data.layers = layerstates
+
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
 
 
 
