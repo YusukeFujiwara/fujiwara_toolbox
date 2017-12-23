@@ -3834,6 +3834,13 @@ def gpline_change(gplayer, value):
 
 
 def render_opengl(filename,show_viewport=False):
+    #設定取得
+    show_only_render = bpy.context.space_data.show_only_render
+    viewport_shade = bpy.context.space_data.viewport_shade
+    use_ssao = bpy.context.space_data.fx_settings.use_ssao
+    view_perspective = bpy.context.space_data.region_3d.view_perspective
+    filepath = bpy.context.scene.render.filepath
+
     bpy.context.space_data.show_only_render = True
     bpy.context.space_data.viewport_shade = 'MATERIAL'
     bpy.context.space_data.fx_settings.use_ssao = False
@@ -3851,6 +3858,13 @@ def render_opengl(filename,show_viewport=False):
         bpy.ops.render.opengl("INVOKE_DEFAULT",view_context=True,write_still=True)
     else:
         bpy.ops.render.opengl(view_context=True,write_still=True)
+
+    #設定リストア
+    bpy.context.space_data.show_only_render = show_only_render
+    bpy.context.space_data.viewport_shade = viewport_shade
+    bpy.context.space_data.fx_settings.use_ssao = use_ssao
+    bpy.context.space_data.region_3d.view_perspective = view_perspective
+    bpy.context.scene.render.filepath = filepath
 
 
 ########################################
@@ -3939,7 +3953,12 @@ class FUJIWARATOOLBOX_GLRENDER_COMPOMAT(bpy.types.Operator):
         show_world = bpy.context.space_data.show_world
         alpha_mode = bpy.context.scene.render.alpha_mode
         file_format = bpy.context.scene.render.image_settings.file_format
+        lock_camera = bpy.context.space_data.lock_camera
+        show_background_images = bpy.context.space_data.show_background_images
+        use_simplify = bpy.context.scene.render.use_simplify
 
+
+        ###############################
         bpy.context.scene.render.image_settings.file_format = 'PNG'
 
         #背景色
@@ -4017,6 +4036,10 @@ class FUJIWARATOOLBOX_GLRENDER_COMPOMAT(bpy.types.Operator):
         material_states.restore()
         viewstate.restore_viewstate()
         del viewstate
+        bpy.context.space_data.lock_camera = lock_camera
+        bpy.context.space_data.show_background_images = show_background_images
+        if bpy.context.scene.render.use_simplify != use_simplify:
+            bpy.context.scene.render.use_simplify = use_simplify
 
 
         endtime = time.time()
