@@ -7509,14 +7509,12 @@ uiitem().vertical()
 ############################################################################################################################
 uiitem("ペアレントmod")
 ############################################################################################################################
-
-
-
-
-
-
-
-
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
 
 ########################################
 #ペアレントラップ
@@ -8034,6 +8032,12 @@ uiitem().vertical()
 ############################################################################################################################
 uiitem("その他")
 ############################################################################################################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
 
 
 ########################################
@@ -8151,12 +8155,6 @@ class FUJIWARATOOLBOX_531573(bpy.types.Operator):#カーブにアタッチ
         return {'FINISHED'}
 ########################################
 
-
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-
-
 ########################################
 #オープンエッジの線画化
 ########################################
@@ -8223,35 +8221,29 @@ class FUJIWARATOOLBOX_141722(bpy.types.Operator):#オープンエッジの線画
         return {'FINISHED'}
 ########################################
 
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
 
-########################################
-#MOD整列
-########################################
-class FUJIWARATOOLBOX_288910(bpy.types.Operator):#MOD整列
-    """MOD整列"""
-    bl_idname = "fujiwara_toolbox.command_288910"
-    bl_label = "MOD整列"
-    bl_options = {'REGISTER', 'UNDO'}
+# ########################################
+# #MOD整列
+# ########################################
+# class FUJIWARATOOLBOX_288910(bpy.types.Operator):#MOD整列
+#     """MOD整列"""
+#     bl_idname = "fujiwara_toolbox.command_288910"
+#     bl_label = "MOD整列"
+#     bl_options = {'REGISTER', 'UNDO'}
 
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
 
-    def execute(self, context):
-        for obj in fjw.get_selected_list():
-            if obj.type != "MESH":
-                continue
+#     def execute(self, context):
+#         for obj in fjw.get_selected_list():
+#             if obj.type != "MESH":
+#                 continue
     
-            modu = fjw.Modutils(obj)
-            modu.sort()
-
-
-
-        return {'FINISHED'}
-########################################
+#             modu = fjw.Modutils(obj)
+#             modu.sort()
+#         return {'FINISHED'}
+# ########################################
 
 
 ########################################
@@ -8488,974 +8480,6 @@ class FUJIWARATOOLBOX_6352(bpy.types.Operator):#bool再計算
         
         return {'FINISHED'}
 ########################################
-
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-
-############################################################################################################################
-uiitem("便利")
-############################################################################################################################
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
-
-########################################
-#裏ポリ+ベベルエッジ
-########################################
-class FUJIWARATOOLBOX_972011(bpy.types.Operator):#裏ポリ+ベベルエッジ
-    """裏ポリ+ベベルエッジ"""
-    bl_idname = "fujiwara_toolbox.command_972011"
-    bl_label = "裏ポリ+ベベルエッジ"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        bpy.ops.fujiwara_toolbox.command_318722()
-        bpy.ops.fujiwara_toolbox.command_60327()
-        
-        return {'FINISHED'}
-########################################
-
-########################################
-#オノマトペ白フチ
-########################################
-class FUJIWARATOOLBOX_357209(bpy.types.Operator):#オノマトペ白フチ
-    """オノマトペ白フチ"""
-    bl_idname = "fujiwara_toolbox.command_357209"
-    bl_label = "オノマトペ白フチ"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        bpy.ops.fujiwara_toolbox.command_737497()
-        bpy.ops.fujiwara_toolbox.command_788766()
-        selection = fjw.get_selected_list()
-        for obj in selection:
-            mat = obj.material_slots[0].material
-            mat.diffuse_color = (0,0,0)
-            mat.use_shadeless = True
-
-        return {'FINISHED'}
-########################################
-
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-
-########################################
-#エッジ適用
-########################################
-class FUJIWARATOOLBOX_793633(bpy.types.Operator):#エッジ適用
-    """エッジ適用"""
-    bl_idname = "fujiwara_toolbox.command_793633"
-    bl_label = "エッジ適用"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        
-        fjw.reject_notmesh()
-        selection = fjw.get_selected_list()
-        for obj in selection:
-            modu = fjw.Modutils(obj)
-            
-            mod = modu.find("ベベルエッジ")
-            modu.apply(mod)
-
-            mod = modu.find("裏ポリエッジ")
-            modu.apply(mod)
-
-
-        return {'FINISHED'}
-########################################
-
-
-
-
-
-
-
-
-
-
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-
-
-
-
-
-
-def urapolimat_index(obj):
-    mat = fjw.append_material("裏ポリエッジ")
-    #デフォルトマテリアルの設置
-    if len(obj.data.materials) == 0:
-        dmat = bpy.data.materials.new("default")
-        obj.data.materials.append(dmat)
-
-    if mat.name not in obj.data.materials:
-        obj.data.materials.append(mat)
-    matindex = obj.data.materials.find(mat.name)
-    return matindex
-
-def urapoliwhitemat_index(obj):
-    mat = fjw.append_material("裏ポリエッジ白")
-    #デフォルトマテリアルの設置
-    if len(obj.data.materials) == 0:
-        dmat = bpy.data.materials.new("default")
-        obj.data.materials.append(dmat)
-
-    if mat.name not in obj.data.materials:
-        obj.data.materials.append(mat)
-    matindex = obj.data.materials.find(mat.name)
-    return matindex
-
-############################################################################################################################
-uiitem("裏ポリエッジ")
-############################################################################################################################
-edgewidth = 0.001
-
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
-
-########################################
-#裏ポリエッジ付加
-########################################
-class FUJIWARATOOLBOX_318722(bpy.types.Operator):#裏ポリエッジ付加
-    """裏ポリエッジ付加"""
-    bl_idname = "fujiwara_toolbox.command_318722"
-    bl_label = "裏ポリエッジ付加"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        fjw.reject_notmesh()
-        selection = fjw.get_selected_list()
-
-
-        for obj in selection:
-            if "裏ポリエッジ" not in obj.modifiers:
-                modu = fjw.Modutils(obj)
-                matindex = urapolimat_index(obj)
-
-                mod = modu.find("裏ポリエッジ")
-                if mod is None:
-                    mod = modu.add("裏ポリエッジ", "SOLIDIFY")
-                mod.thickness = edgewidth
-                mod.offset = 1
-                mod.vertex_group = "裏ポリウェイト"
-                mod.thickness_vertex_group = 0.1
-                mod.use_flip_normals = True
-                mod.use_quality_normals = True
-                mod.material_offset = matindex
-                mod.material_offset_rim = matindex
-                modu.sort()
-            pass
-        
-        return {'FINISHED'}
-########################################
-
-########################################
-#裏ポリ白
-########################################
-class FUJIWARATOOLBOX_737497(bpy.types.Operator):#裏ポリ白
-    """裏ポリ白"""
-    bl_idname = "fujiwara_toolbox.command_737497"
-    bl_label = "裏ポリ白"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        fjw.reject_notmesh()
-        selection = fjw.get_selected_list()
-
-
-        for obj in selection:
-            if "裏ポリエッジ" not in obj.modifiers:
-                modu = fjw.Modutils(obj)
-                matindex = urapoliwhitemat_index(obj)
-
-                mod = modu.find("裏ポリエッジ")
-                if mod is None:
-                    mod = modu.add("裏ポリエッジ", "SOLIDIFY")
-                mod.thickness = edgewidth
-                mod.offset = 1
-                mod.vertex_group = "裏ポリウェイト"
-                mod.thickness_vertex_group = 0.1
-                mod.use_flip_normals = True
-                mod.use_quality_normals = True
-                mod.material_offset = matindex
-                mod.material_offset_rim = matindex
-                modu.sort()
-            pass
-        
-        return {'FINISHED'}
-########################################
-
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
-
-########################################
-#指定Emptyで厚み制御
-########################################
-#bpy.ops.fujiwara_toolbox.set_thickness_driver_with_empty() #指定Emptyで厚み制御
-class FUJIWARATOOLBOX_SetThicknessDriverwithEmpty(bpy.types.Operator):
-    """アクティブなEmptyのZ Scaleを使用して厚さを制御できるようにする。ドライバ制御。"""
-    bl_idname = "fujiwara_toolbox.set_thickness_driver_with_empty"
-    bl_label = "指定Emptyで厚み制御"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-    def execute(self, context):
-        if fjw.active().type != "EMPTY":
-            self.report({"INFO"},"EMPTYを選択してください")
-            return {'CANCELLED'}
-
-        target_obj = fjw.active()
-
-        selection = fjw.get_selected_list()
-        for obj in selection:
-            if obj.type != "MESH":
-                continue
-
-            modu = fjw.Modutils(obj)
-            mod = modu.find("裏ポリエッジ")
-
-            if mod is None:
-                continue
-
-            fcurve = mod.driver_add("thickness")
-            driver = fcurve.driver
-
-            variables = driver.variables
-            varname = "empty_scale_z"
-            if varname in variables:
-                var = variables[varname]
-            else:
-                var = variables.new()
-                var.name = varname
-            var.type = "TRANSFORMS"
-            target = var.targets[0]
-            target.id = target_obj.id_data
-            target.transform_type = 'SCALE_Z'
-            target.transform_space = 'WORLD_SPACE'
-
-            driver.expression = "empty_scale_z * 0.01"
-            
-
-        return {'FINISHED'}
-########################################
-
-
-
-def get_edge_control():
-    empty = None
-    for obj in bpy.context.visible_objects:
-        if obj.type == "EMPTY":
-            if "エッジ制御" in obj.name:
-                empty = obj
-                break
-    if empty is None:
-        empty = bpy.data.objects.new("エッジ制御",None)
-        bpy.context.scene.objects.link(empty)
-    loc = bpy.context.space_data.cursor_location
-    ls = bpy.context.scene.layers
-    empty.location = loc
-    empty.layers = ls
-    empty.show_x_ray = True
-    empty.show_name = True
-    empty.empty_draw_type = 'SINGLE_ARROW'
-    empty.scale=(0.1,0.1,0.1)
-    return empty
-
-
-
-
-########################################
-#Emptyで厚み制御（自動）
-########################################
-#bpy.ops.fjw.set_thickness_driver_with_empty_auto() #Emptyで厚み制御（自動）
-class FUJIWARATOOLBOX_set_thickness_driver_with_empty_auto(bpy.types.Operator):
-    """自動でEmptyを生成してそれで厚み制御する。"""
-    bl_idname = "fujiwara_toolbox.set_thickness_driver_with_empty_auto"
-    bl_label = "Emptyで厚み制御（自動）"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-    def execute(self, context):
-        empty = get_edge_control()
-        fjw.activate(empty)
-        fjw.select(bpy.data.objects)
-        bpy.ops.fujiwara_toolbox.set_thickness_driver_with_empty()
-        fjw.deselect()
-        fjw.activate(empty)
-
-        return {'FINISHED'}
-########################################
-
-
-
-
-
-
-
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
-
-########################################
-#頂点AOからウェイト作成
-########################################
-#bpy.ops.fjw.gen_weight_from_vertex_ao() #頂点AOからウェイト作成
-class FUJIWARATOOLBOX_gen_weight_from_vertex_ao(bpy.types.Operator):
-    """頂点カラーのアンビエントオクルージョンから厚みのウェイト用頂点グループを生成する。"""
-    bl_idname = "fujiwara_toolbox.gen_weight_from_vertex_ao"
-    bl_label = "頂点AOからウェイト作成"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-    def execute(self, context):
-        fjw.reject_notmesh()
-        selection = fjw.get_selected_list()
-
-        colname = "裏ポリ用ウェイト"
-        vertex_group_name = colname
-        for obj in selection:
-            fjw.deselect()
-            fjw.activate(obj)
-
-            modu = fjw.Modutils(obj)
-            mod = modu.find("裏ポリエッジ")
-            if mod is None:
-                continue
-
-            if colname not in obj.data.vertex_colors:
-                vcol = obj.data.vertex_colors.new(colname)
-            else:
-                vcol = obj.data.vertex_colors[colname]
-            obj.data.vertex_colors.active = vcol
-            #頂点AO
-            bpy.ops.paint.vertex_color_dirt()
-
-            vgu = fjw.VertexGroupUtils(obj,vertex_group_name)
-            vertex_group = vgu.get_group(vertex_group_name)
-            vertices = vgu.get_vertices()
-            for v in vertices:
-                weight_value = vcol.data[v.index].color.r
-                vgu.set_weight(v.index, vertex_group_name, weight_value)
-
-            #生成につかった頂点カラーは混乱の元なので消しとく
-            obj.data.vertex_colors.remove(vcol)
-
-            mod.vertex_group = vertex_group.name
-            mod.thickness_vertex_group = 0.0001
-            mod.invert_vertex_group = True
-
-        return {'FINISHED'}
-########################################
-
-########################################
-#反転
-########################################
-#bpy.ops.fjw.urapoly_weight_reverse() #反転
-class FUJIWARATOOLBOX_urapoly_weight_reverse(bpy.types.Operator):
-    """裏ポリエッジのウェイトを反転する。"""
-    bl_idname = "fujiwara_toolbox.urapoly_weight_reverse"
-    bl_label = "反転"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-    def execute(self, context):
-        fjw.reject_notmesh()
-        selection = fjw.get_selected_list()
-        for obj in selection:
-            modu = fjw.Modutils(obj)
-            mod = modu.find("裏ポリエッジ")
-            if mod is None:
-                continue
-            
-            if mod.invert_vertex_group:
-                mod.invert_vertex_group = False
-            else:
-                mod.invert_vertex_group = True
-
-        return {'FINISHED'}
-########################################
-
-
-########################################
-#除去
-########################################
-#bpy.ops.fjw.urapoly_weight_remove() #除去
-class FUJIWARATOOLBOX_urapoly_weight_remove(bpy.types.Operator):
-    """裏ポリエッジのウェイトを除去する。"""
-    bl_idname = "fujiwara_toolbox.urapoly_weight_remove"
-    bl_label = "ウェイト除去"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-    def execute(self, context):
-        fjw.reject_notmesh()
-        selection = fjw.get_selected_list()
-        for obj in selection:
-            modu = fjw.Modutils(obj)
-            mod = modu.find("裏ポリエッジ")
-            if mod is None:
-                continue
-            mod.vertex_group = ""
-        return {'FINISHED'}
-########################################
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
-
-#########################################
-##1/2
-#########################################
-#class FUJIWARATOOLBOX_791523(bpy.types.Operator):#1/2
-#    """1/2"""
-#    bl_idname = "fujiwara_toolbox.command_791523"
-#    bl_label = "1/2"
-#    bl_options = {'REGISTER', 'UNDO'}
-
-#    uiitem = uiitem()
-#    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-####    def execute(self, context):
-#        reject_notmesh()
-#        selection = get_selected_list()
-
-#        for obj in selection:
-#            if "裏ポリエッジ" in obj.modifiers:
-#                mod = obj.modifiers["裏ポリエッジ"]
-#                mod.thickness *= 0.5
-
-#        return {'FINISHED'}
-#########################################
-
-
-########################################
-#1mm
-########################################
-class FUJIWARATOOLBOX_892991(bpy.types.Operator):#1mm
-    """1mm"""
-    bl_idname = "fujiwara_toolbox.command_892991"
-    bl_label = "1mm"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        fjw.reject_notmesh()
-        selection = fjw.get_selected_list()
-
-        for obj in selection:
-            modu = fjw.Modutils(obj)
-            mod = modu.find("裏ポリエッジ")
-            if mod is not None:
-                mod.thickness = 0.001
-        
-        return {'FINISHED'}
-########################################
-########################################
-#2mm
-########################################
-class FUJIWARATOOLBOX_793908(bpy.types.Operator):#2mm
-    """2mm"""
-    bl_idname = "fujiwara_toolbox.command_793908"
-    bl_label = "2mm"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        fjw.reject_notmesh()
-        selection = fjw.get_selected_list()
-
-        for obj in selection:
-            modu = fjw.Modutils(obj)
-            mod = modu.find("裏ポリエッジ")
-            if mod is not None:
-                mod.thickness = 0.002
-            mod = modu.find("ベベルエッジ")
-            if mod is not None:
-                mod.width = 0.002
-
-        
-        return {'FINISHED'}
-########################################
-
-
-
-
-
-
-########################################
-#5mm
-########################################
-class FUJIWARATOOLBOX_401033(bpy.types.Operator):#5mm
-    """5mm"""
-    bl_idname = "fujiwara_toolbox.command_401033"
-    bl_label = "5mm"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        fjw.reject_notmesh()
-        selection = fjw.get_selected_list()
-
-        for obj in selection:
-            modu = fjw.Modutils(obj)
-            mod = modu.find("裏ポリエッジ")
-            if mod is not None:
-                mod.thickness = 0.005
-            mod = modu.find("ベベルエッジ")
-            if mod is not None:
-                mod.width = 0.005
-        
-        return {'FINISHED'}
-########################################
-
-
-
-########################################
-#1cm
-########################################
-class FUJIWARATOOLBOX_788766(bpy.types.Operator):#1cm
-    """1cm"""
-    bl_idname = "fujiwara_toolbox.command_788766"
-    bl_label = "1cm"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        fjw.reject_notmesh()
-        selection = fjw.get_selected_list()
-
-        for obj in selection:
-            modu = fjw.Modutils(obj)
-            mod = modu.find("裏ポリエッジ")
-            if mod is not None:
-                mod.thickness = 0.01
-            mod = modu.find("ベベルエッジ")
-            if mod is not None:
-                mod.width = 0.01
-        
-        return {'FINISHED'}
-########################################
-
-
-
-
-
-
-
-#########################################
-##*2
-#########################################
-#class FUJIWARATOOLBOX_886958(bpy.types.Operator):#*2
-#    """*2"""
-#    bl_idname = "fujiwara_toolbox.command_886958"
-#    bl_label = "*2"
-#    bl_options = {'REGISTER', 'UNDO'}
-
-#    uiitem = uiitem()
-#    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-####    def execute(self, context):
-#        reject_notmesh()
-#        selection = get_selected_list()
-
-#        for obj in selection:
-#            if "裏ポリエッジ" in obj.modifiers:
-#                mod = obj.modifiers["裏ポリエッジ"]
-#                mod.thickness *= 2
-        
-#        return {'FINISHED'}
-#########################################
-
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
-
-
-########################################
-#表示
-########################################
-class FUJIWARATOOLBOX_513603(bpy.types.Operator):#表示
-    """表示"""
-    bl_idname = "fujiwara_toolbox.command_513603"
-    bl_label = "表示"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        fjw.reject_notmesh()
-        selection = fjw.get_selected_list()
-
-        for obj in selection:
-            fjw.activate(obj)
-            if "裏ポリエッジ" in obj.modifiers:
-                mod = obj.modifiers["裏ポリエッジ"]
-                mod.show_viewport = True
-
-        
-        return {'FINISHED'}
-########################################
-
-
-
-
-
-
-########################################
-#非表示
-########################################
-class FUJIWARATOOLBOX_14967(bpy.types.Operator):#非表示
-    """非表示"""
-    bl_idname = "fujiwara_toolbox.command_14967"
-    bl_label = "非表示"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        fjw.reject_notmesh()
-        selection = fjw.get_selected_list()
-
-        for obj in selection:
-            fjw.activate(obj)
-            if "裏ポリエッジ" in obj.modifiers:
-                mod = obj.modifiers["裏ポリエッジ"]
-                mod.show_viewport = False
-        
-        return {'FINISHED'}
-########################################
-
-
-
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-
-
-
-
-########################################
-#除去
-########################################
-class FUJIWARATOOLBOX_290695(bpy.types.Operator):#除去
-    """除去"""
-    bl_idname = "fujiwara_toolbox.command_290695"
-    bl_label = "除去"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        fjw.reject_notmesh()
-        selection = fjw.get_selected_list()
-
-
-        for obj in selection:
-            fjw.activate(obj)
-            if "裏ポリエッジ" in obj.modifiers:
-                bpy.ops.object.modifier_remove(modifier="裏ポリエッジ")
-
-
-        
-        return {'FINISHED'}
-########################################
-
-
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-
-############################################################################################################################
-uiitem("ベベル")
-############################################################################################################################
-
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
-
-########################################
-#ベベルエッジ
-########################################
-class FUJIWARATOOLBOX_60327(bpy.types.Operator):#ベベルエッジ
-    """ベベルエッジ"""
-    bl_idname = "fujiwara_toolbox.command_60327"
-    bl_label = "ベベルエッジ"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        fjw.reject_notmesh()
-        selection = fjw.get_selected_list()
-        for obj in selection:
-            modu = fjw.Modutils(obj)
-            mbevel = modu.find("ベベルエッジ")
-            if mbevel is None:
-                mbevel = modu.add("ベベルエッジ", "BEVEL")
-            mbevel.width = 0.002
-            mbevel.use_clamp_overlap = False
-            mbevel.use_clamp_overlap = True
-            mbevel.material = urapolimat_index(obj)
-            mbevel.limit_method = 'ANGLE'
-            modu.sort()
-        
-        return {'FINISHED'}
-########################################
-
-
-########################################
-#除去
-########################################
-class FUJIWARATOOLBOX_312642(bpy.types.Operator):#除去
-    """除去"""
-    bl_idname = "fujiwara_toolbox.command_312642"
-    bl_label = "除去"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        selection = fjw.get_selected_list()
-        for obj in selection:
-            modu = fjw.Modutils(obj)
-            modu.remove_byname("ベベルエッジ")
-        
-        return {'FINISHED'}
-########################################
-
-
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-
-
-########################################
-#Emptyで幅制御
-########################################
-#bpy.ops.fjw.set_width_driver_with_empty() #Emptyで幅制御
-class FUJIWARATOOLBOX_set_width_driver_with_empty(bpy.types.Operator):
-    """アクティブなEmptyのZ Scaleを使用して厚さを制御できるようにする。ドライバ制御。"""
-    bl_idname = "fujiwara_toolbox.set_width_driver_with_empty"
-    bl_label = "Emptyで幅制御"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-    def execute(self, context):
-        if fjw.active().type != "EMPTY":
-            self.report({"INFO"},"EMPTYを選択してください")
-            return {'CANCELLED'}
-
-        target_obj = fjw.active()
-
-        selection = fjw.get_selected_list()
-        for obj in selection:
-            if obj.type != "MESH":
-                continue
-
-            modu = fjw.Modutils(obj)
-            mod = modu.find("ベベルエッジ")
-
-            if mod is None:
-                continue
-
-            fcurve = mod.driver_add("width")
-            driver = fcurve.driver
-
-            variables = driver.variables
-            varname = "empty_scale_z"
-            if varname in variables:
-                var = variables[varname]
-            else:
-                var = variables.new()
-                var.name = varname
-            var.type = "TRANSFORMS"
-            target = var.targets[0]
-            target.id = target_obj.id_data
-            target.transform_type = 'SCALE_Z'
-            target.transform_space = 'WORLD_SPACE'
-
-            driver.expression = "empty_scale_z * 0.01"
-        return {'FINISHED'}
-########################################
-
-
-
-
-
-
-
-
-
-
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-
-############################################################################################################################
-uiitem("辺分離")
-############################################################################################################################
-
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
-########################################
-#分離エッジ
-########################################
-class FUJIWARATOOLBOX_115887(bpy.types.Operator):#辺分離ソリッド
-    """分離エッジ"""
-    bl_idname = "fujiwara_toolbox.command_115887"
-    bl_label = "分離エッジ"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        fjw.reject_notmesh()
-        selection = fjw.get_selected_list()
-        for obj in selection:
-            modu = fjw.Modutils(obj)
-            if modu.find("分離エッジ_EDGE_SPLIT") == None:
-                msplit = modu.add("分離エッジ_EDGE_SPLIT","EDGE_SPLIT")
-            if modu.find("分離エッジ_SOLIDIFY") == None:
-                msolid = modu.add("分離エッジ_SOLIDIFY", "SOLIDIFY")
-                msolid.thickness = 0.005
-                msolid.offset = 1
-                msolid.material_offset_rim = urapolimat_index(obj)
-            modu.sort()
-
-        return {'FINISHED'}
-########################################
-
-########################################
-#除去
-########################################
-class FUJIWARATOOLBOX_693073(bpy.types.Operator):#除去
-    """除去"""
-    bl_idname = "fujiwara_toolbox.command_693073"
-    bl_label = "除去"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-
-    def execute(self, context):
-        selection = fjw.get_selected_list()
-        for obj in selection:
-            modu = fjw.Modutils(obj)
-            modu.remove_byname("分離エッジ_EDGE_SPLIT")
-            modu.remove_byname("分離エッジ_SOLIDIFY")
-        return {'FINISHED'}
-########################################
-
-
-
-
-
-
-
-
-
 
 #---------------------------------------------
 uiitem().vertical()
@@ -18366,7 +17390,7 @@ class CATEGORYBUTTON_335613(bpy.types.Operator):#オブジェクト生成
 
     uiitem = uiitem("オブジェクト生成",True)
     uiitem.button(bl_idname,bl_label,icon="",mode="")
-    uiitem.direction = "vertical"
+    uiitem.direction = "horizontal"
 
     def execute(self, context):
         uicategory_execute(self)
@@ -18422,6 +17446,121 @@ class FUJIWARATOOLBOX_104686(bpy.types.Operator):#ランダム石生成
         
         return {'FINISHED'}
 ########################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+################################################################################
+#UIカテゴリ
+########################################
+#裏ポリエッジ
+########################################
+class CATEGORYBUTTON_524640(bpy.types.Operator):
+    """裏ポリエッジ"""
+    bl_idname = "fujiwara_toolbox.categorybutton_524640"
+    bl_label = "裏ポリエッジ"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem("裏ポリエッジ",True)
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+    uiitem.direction = ""
+
+    def execute(self, context):
+        uicategory_execute(self)
+        return {'FINISHED'}
+################################################################################
+
+
+
+
+############################################################################################################################
+uiitem("便利")
+############################################################################################################################
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#裏ポリ+ベベルエッジ
+########################################
+class FUJIWARATOOLBOX_972011(bpy.types.Operator):#裏ポリ+ベベルエッジ
+    """裏ポリ+ベベルエッジ"""
+    bl_idname = "fujiwara_toolbox.command_972011"
+    bl_label = "裏ポリ+ベベルエッジ"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+
+    def execute(self, context):
+        bpy.ops.fujiwara_toolbox.command_318722()
+        bpy.ops.fujiwara_toolbox.command_60327()
+        
+        return {'FINISHED'}
+########################################
+
+########################################
+#オノマトペ白フチ
+########################################
+class FUJIWARATOOLBOX_357209(bpy.types.Operator):#オノマトペ白フチ
+    """オノマトペ白フチ"""
+    bl_idname = "fujiwara_toolbox.command_357209"
+    bl_label = "オノマトペ白フチ"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+
+    def execute(self, context):
+        bpy.ops.fujiwara_toolbox.command_737497()
+        bpy.ops.fujiwara_toolbox.command_788766()
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            mat = obj.material_slots[0].material
+            mat.diffuse_color = (0,0,0)
+            mat.use_shadeless = True
+
+        return {'FINISHED'}
+########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+########################################
+#エッジ適用
+########################################
+class FUJIWARATOOLBOX_793633(bpy.types.Operator):#エッジ適用
+    """エッジ適用"""
+    bl_idname = "fujiwara_toolbox.command_793633"
+    bl_label = "エッジ適用"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+
+    def execute(self, context):
+        
+        fjw.reject_notmesh()
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            modu = fjw.Modutils(obj)
+            
+            mod = modu.find("ベベルエッジ")
+            modu.apply(mod)
+
+            mod = modu.find("裏ポリエッジ")
+            modu.apply(mod)
+
+
+        return {'FINISHED'}
+########################################
+
+
+
 
 
 
@@ -18432,7 +17571,879 @@ class FUJIWARATOOLBOX_104686(bpy.types.Operator):#ランダム石生成
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
- 
+
+
+
+
+
+
+def urapolimat_index(obj):
+    mat = fjw.append_material("裏ポリエッジ")
+    #デフォルトマテリアルの設置
+    if len(obj.data.materials) == 0:
+        dmat = bpy.data.materials.new("default")
+        obj.data.materials.append(dmat)
+
+    if mat.name not in obj.data.materials:
+        obj.data.materials.append(mat)
+    matindex = obj.data.materials.find(mat.name)
+    return matindex
+
+def urapoliwhitemat_index(obj):
+    mat = fjw.append_material("裏ポリエッジ白")
+    #デフォルトマテリアルの設置
+    if len(obj.data.materials) == 0:
+        dmat = bpy.data.materials.new("default")
+        obj.data.materials.append(dmat)
+
+    if mat.name not in obj.data.materials:
+        obj.data.materials.append(mat)
+    matindex = obj.data.materials.find(mat.name)
+    return matindex
+
+############################################################################################################################
+uiitem("裏ポリエッジ")
+############################################################################################################################
+edgewidth = 0.001
+
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#裏ポリエッジ付加
+########################################
+class FUJIWARATOOLBOX_318722(bpy.types.Operator):#裏ポリエッジ付加
+    """裏ポリエッジ付加"""
+    bl_idname = "fujiwara_toolbox.command_318722"
+    bl_label = "裏ポリエッジ付加"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+
+    def execute(self, context):
+        fjw.reject_notmesh()
+        selection = fjw.get_selected_list()
+
+
+        for obj in selection:
+            if "裏ポリエッジ" not in obj.modifiers:
+                modu = fjw.Modutils(obj)
+                matindex = urapolimat_index(obj)
+
+                mod = modu.find("裏ポリエッジ")
+                if mod is None:
+                    mod = modu.add("裏ポリエッジ", "SOLIDIFY")
+                mod.thickness = edgewidth
+                mod.offset = 1
+                mod.vertex_group = "裏ポリウェイト"
+                mod.thickness_vertex_group = 0.1
+                mod.use_flip_normals = True
+                mod.use_quality_normals = True
+                mod.material_offset = matindex
+                mod.material_offset_rim = matindex
+                modu.sort()
+            pass
+        
+        return {'FINISHED'}
+########################################
+
+########################################
+#裏ポリ白
+########################################
+class FUJIWARATOOLBOX_737497(bpy.types.Operator):#裏ポリ白
+    """裏ポリ白"""
+    bl_idname = "fujiwara_toolbox.command_737497"
+    bl_label = "裏ポリ白"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+
+    def execute(self, context):
+        fjw.reject_notmesh()
+        selection = fjw.get_selected_list()
+
+
+        for obj in selection:
+            if "裏ポリエッジ" not in obj.modifiers:
+                modu = fjw.Modutils(obj)
+                matindex = urapoliwhitemat_index(obj)
+
+                mod = modu.find("裏ポリエッジ")
+                if mod is None:
+                    mod = modu.add("裏ポリエッジ", "SOLIDIFY")
+                mod.thickness = edgewidth
+                mod.offset = 1
+                mod.vertex_group = "裏ポリウェイト"
+                mod.thickness_vertex_group = 0.1
+                mod.use_flip_normals = True
+                mod.use_quality_normals = True
+                mod.material_offset = matindex
+                mod.material_offset_rim = matindex
+                modu.sort()
+            pass
+        
+        return {'FINISHED'}
+########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#指定Emptyで厚み制御
+########################################
+#bpy.ops.fujiwara_toolbox.set_thickness_driver_with_empty() #指定Emptyで厚み制御
+class FUJIWARATOOLBOX_SetThicknessDriverwithEmpty(bpy.types.Operator):
+    """アクティブなEmptyのZ Scaleを使用して厚さを制御できるようにする。ドライバ制御。"""
+    bl_idname = "fujiwara_toolbox.set_thickness_driver_with_empty"
+    bl_label = "指定Emptyで厚み制御"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        if fjw.active().type != "EMPTY":
+            self.report({"INFO"},"EMPTYを選択してください")
+            return {'CANCELLED'}
+
+        target_obj = fjw.active()
+
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            if obj.type != "MESH":
+                continue
+
+            modu = fjw.Modutils(obj)
+            mod = modu.find("裏ポリエッジ")
+
+            if mod is None:
+                continue
+
+            fcurve = mod.driver_add("thickness")
+            driver = fcurve.driver
+
+            variables = driver.variables
+            varname = "empty_scale_z"
+            if varname in variables:
+                var = variables[varname]
+            else:
+                var = variables.new()
+                var.name = varname
+            var.type = "TRANSFORMS"
+            target = var.targets[0]
+            target.id = target_obj.id_data
+            target.transform_type = 'SCALE_Z'
+            target.transform_space = 'WORLD_SPACE'
+
+            driver.expression = "empty_scale_z * 0.01"
+            
+
+        return {'FINISHED'}
+########################################
+
+
+
+def get_edge_control():
+    empty = None
+    for obj in bpy.context.visible_objects:
+        if obj.type == "EMPTY":
+            if "エッジ制御" in obj.name:
+                empty = obj
+                break
+    if empty is None:
+        empty = bpy.data.objects.new("エッジ制御",None)
+        bpy.context.scene.objects.link(empty)
+    loc = bpy.context.space_data.cursor_location
+    ls = bpy.context.scene.layers
+    empty.location = loc
+    empty.layers = ls
+    empty.show_x_ray = True
+    empty.show_name = True
+    empty.empty_draw_type = 'SINGLE_ARROW'
+    empty.scale=(0.1,0.1,0.1)
+    return empty
+
+
+
+
+########################################
+#Emptyで厚み制御（自動）
+########################################
+#bpy.ops.fjw.set_thickness_driver_with_empty_auto() #Emptyで厚み制御（自動）
+class FUJIWARATOOLBOX_set_thickness_driver_with_empty_auto(bpy.types.Operator):
+    """自動でEmptyを生成してそれで厚み制御する。"""
+    bl_idname = "fujiwara_toolbox.set_thickness_driver_with_empty_auto"
+    bl_label = "Emptyで厚み制御（自動）"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        empty = get_edge_control()
+        fjw.activate(empty)
+        fjw.select(bpy.data.objects)
+        bpy.ops.fujiwara_toolbox.set_thickness_driver_with_empty()
+        fjw.deselect()
+        fjw.activate(empty)
+
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#頂点AOからウェイト作成
+########################################
+#bpy.ops.fjw.gen_weight_from_vertex_ao() #頂点AOからウェイト作成
+class FUJIWARATOOLBOX_gen_weight_from_vertex_ao(bpy.types.Operator):
+    """頂点カラーのアンビエントオクルージョンから厚みのウェイト用頂点グループを生成する。"""
+    bl_idname = "fujiwara_toolbox.gen_weight_from_vertex_ao"
+    bl_label = "頂点AOからウェイト作成"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        fjw.reject_notmesh()
+        selection = fjw.get_selected_list()
+
+        colname = "裏ポリ用ウェイト"
+        vertex_group_name = colname
+        for obj in selection:
+            fjw.deselect()
+            fjw.activate(obj)
+
+            modu = fjw.Modutils(obj)
+            mod = modu.find("裏ポリエッジ")
+            if mod is None:
+                continue
+
+            if colname not in obj.data.vertex_colors:
+                vcol = obj.data.vertex_colors.new(colname)
+            else:
+                vcol = obj.data.vertex_colors[colname]
+            obj.data.vertex_colors.active = vcol
+            #頂点AO
+            bpy.ops.paint.vertex_color_dirt()
+
+            vgu = fjw.VertexGroupUtils(obj,vertex_group_name)
+            vertex_group = vgu.get_group(vertex_group_name)
+            vertices = vgu.get_vertices()
+            for v in vertices:
+                weight_value = vcol.data[v.index].color.r
+                vgu.set_weight(v.index, vertex_group_name, weight_value)
+
+            #生成につかった頂点カラーは混乱の元なので消しとく
+            obj.data.vertex_colors.remove(vcol)
+
+            mod.vertex_group = vertex_group.name
+            mod.thickness_vertex_group = 0.0001
+            mod.invert_vertex_group = True
+
+        return {'FINISHED'}
+########################################
+
+########################################
+#反転
+########################################
+#bpy.ops.fjw.urapoly_weight_reverse() #反転
+class FUJIWARATOOLBOX_urapoly_weight_reverse(bpy.types.Operator):
+    """裏ポリエッジのウェイトを反転する。"""
+    bl_idname = "fujiwara_toolbox.urapoly_weight_reverse"
+    bl_label = "反転"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        fjw.reject_notmesh()
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            modu = fjw.Modutils(obj)
+            mod = modu.find("裏ポリエッジ")
+            if mod is None:
+                continue
+            
+            if mod.invert_vertex_group:
+                mod.invert_vertex_group = False
+            else:
+                mod.invert_vertex_group = True
+
+        return {'FINISHED'}
+########################################
+
+
+########################################
+#除去
+########################################
+#bpy.ops.fjw.urapoly_weight_remove() #除去
+class FUJIWARATOOLBOX_urapoly_weight_remove(bpy.types.Operator):
+    """裏ポリエッジのウェイトを除去する。"""
+    bl_idname = "fujiwara_toolbox.urapoly_weight_remove"
+    bl_label = "ウェイト除去"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        fjw.reject_notmesh()
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            modu = fjw.Modutils(obj)
+            mod = modu.find("裏ポリエッジ")
+            if mod is None:
+                continue
+            mod.vertex_group = ""
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+#########################################
+##1/2
+#########################################
+#class FUJIWARATOOLBOX_791523(bpy.types.Operator):#1/2
+#    """1/2"""
+#    bl_idname = "fujiwara_toolbox.command_791523"
+#    bl_label = "1/2"
+#    bl_options = {'REGISTER', 'UNDO'}
+
+#    uiitem = uiitem()
+#    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+
+####    def execute(self, context):
+#        reject_notmesh()
+#        selection = get_selected_list()
+
+#        for obj in selection:
+#            if "裏ポリエッジ" in obj.modifiers:
+#                mod = obj.modifiers["裏ポリエッジ"]
+#                mod.thickness *= 0.5
+
+#        return {'FINISHED'}
+#########################################
+
+
+########################################
+#1mm
+########################################
+class FUJIWARATOOLBOX_892991(bpy.types.Operator):#1mm
+    """1mm"""
+    bl_idname = "fujiwara_toolbox.command_892991"
+    bl_label = "1mm"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+
+    def execute(self, context):
+        fjw.reject_notmesh()
+        selection = fjw.get_selected_list()
+
+        for obj in selection:
+            modu = fjw.Modutils(obj)
+            mod = modu.find("裏ポリエッジ")
+            if mod is not None:
+                mod.thickness = 0.001
+        
+        return {'FINISHED'}
+########################################
+########################################
+#2mm
+########################################
+class FUJIWARATOOLBOX_793908(bpy.types.Operator):#2mm
+    """2mm"""
+    bl_idname = "fujiwara_toolbox.command_793908"
+    bl_label = "2mm"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+
+    def execute(self, context):
+        fjw.reject_notmesh()
+        selection = fjw.get_selected_list()
+
+        for obj in selection:
+            modu = fjw.Modutils(obj)
+            mod = modu.find("裏ポリエッジ")
+            if mod is not None:
+                mod.thickness = 0.002
+            mod = modu.find("ベベルエッジ")
+            if mod is not None:
+                mod.width = 0.002
+
+        
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+########################################
+#5mm
+########################################
+class FUJIWARATOOLBOX_401033(bpy.types.Operator):#5mm
+    """5mm"""
+    bl_idname = "fujiwara_toolbox.command_401033"
+    bl_label = "5mm"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+
+    def execute(self, context):
+        fjw.reject_notmesh()
+        selection = fjw.get_selected_list()
+
+        for obj in selection:
+            modu = fjw.Modutils(obj)
+            mod = modu.find("裏ポリエッジ")
+            if mod is not None:
+                mod.thickness = 0.005
+            mod = modu.find("ベベルエッジ")
+            if mod is not None:
+                mod.width = 0.005
+        
+        return {'FINISHED'}
+########################################
+
+
+
+########################################
+#1cm
+########################################
+class FUJIWARATOOLBOX_788766(bpy.types.Operator):#1cm
+    """1cm"""
+    bl_idname = "fujiwara_toolbox.command_788766"
+    bl_label = "1cm"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+
+    def execute(self, context):
+        fjw.reject_notmesh()
+        selection = fjw.get_selected_list()
+
+        for obj in selection:
+            modu = fjw.Modutils(obj)
+            mod = modu.find("裏ポリエッジ")
+            if mod is not None:
+                mod.thickness = 0.01
+            mod = modu.find("ベベルエッジ")
+            if mod is not None:
+                mod.width = 0.01
+        
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+
+#########################################
+##*2
+#########################################
+#class FUJIWARATOOLBOX_886958(bpy.types.Operator):#*2
+#    """*2"""
+#    bl_idname = "fujiwara_toolbox.command_886958"
+#    bl_label = "*2"
+#    bl_options = {'REGISTER', 'UNDO'}
+
+#    uiitem = uiitem()
+#    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+
+####    def execute(self, context):
+#        reject_notmesh()
+#        selection = get_selected_list()
+
+#        for obj in selection:
+#            if "裏ポリエッジ" in obj.modifiers:
+#                mod = obj.modifiers["裏ポリエッジ"]
+#                mod.thickness *= 2
+        
+#        return {'FINISHED'}
+#########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+
+########################################
+#表示
+########################################
+class FUJIWARATOOLBOX_513603(bpy.types.Operator):#表示
+    """表示"""
+    bl_idname = "fujiwara_toolbox.command_513603"
+    bl_label = "表示"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+
+    def execute(self, context):
+        fjw.reject_notmesh()
+        selection = fjw.get_selected_list()
+
+        for obj in selection:
+            fjw.activate(obj)
+            if "裏ポリエッジ" in obj.modifiers:
+                mod = obj.modifiers["裏ポリエッジ"]
+                mod.show_viewport = True
+
+        
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+########################################
+#非表示
+########################################
+class FUJIWARATOOLBOX_14967(bpy.types.Operator):#非表示
+    """非表示"""
+    bl_idname = "fujiwara_toolbox.command_14967"
+    bl_label = "非表示"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+
+    def execute(self, context):
+        fjw.reject_notmesh()
+        selection = fjw.get_selected_list()
+
+        for obj in selection:
+            fjw.activate(obj)
+            if "裏ポリエッジ" in obj.modifiers:
+                mod = obj.modifiers["裏ポリエッジ"]
+                mod.show_viewport = False
+        
+        return {'FINISHED'}
+########################################
+
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+
+
+
+########################################
+#除去
+########################################
+class FUJIWARATOOLBOX_290695(bpy.types.Operator):#除去
+    """除去"""
+    bl_idname = "fujiwara_toolbox.command_290695"
+    bl_label = "除去"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+
+    def execute(self, context):
+        fjw.reject_notmesh()
+        selection = fjw.get_selected_list()
+
+
+        for obj in selection:
+            fjw.activate(obj)
+            if "裏ポリエッジ" in obj.modifiers:
+                bpy.ops.object.modifier_remove(modifier="裏ポリエッジ")
+
+
+        
+        return {'FINISHED'}
+########################################
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+############################################################################################################################
+uiitem("ベベル")
+############################################################################################################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#ベベルエッジ
+########################################
+class FUJIWARATOOLBOX_60327(bpy.types.Operator):#ベベルエッジ
+    """ベベルエッジ"""
+    bl_idname = "fujiwara_toolbox.command_60327"
+    bl_label = "ベベルエッジ"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+
+    def execute(self, context):
+        fjw.reject_notmesh()
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            modu = fjw.Modutils(obj)
+            mbevel = modu.find("ベベルエッジ")
+            if mbevel is None:
+                mbevel = modu.add("ベベルエッジ", "BEVEL")
+            mbevel.width = 0.002
+            mbevel.use_clamp_overlap = False
+            mbevel.use_clamp_overlap = True
+            mbevel.material = urapolimat_index(obj)
+            mbevel.limit_method = 'ANGLE'
+            modu.sort()
+        
+        return {'FINISHED'}
+########################################
+
+
+########################################
+#除去
+########################################
+class FUJIWARATOOLBOX_312642(bpy.types.Operator):#除去
+    """除去"""
+    bl_idname = "fujiwara_toolbox.command_312642"
+    bl_label = "除去"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+
+    def execute(self, context):
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            modu = fjw.Modutils(obj)
+            modu.remove_byname("ベベルエッジ")
+        
+        return {'FINISHED'}
+########################################
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+
+########################################
+#Emptyで幅制御
+########################################
+#bpy.ops.fjw.set_width_driver_with_empty() #Emptyで幅制御
+class FUJIWARATOOLBOX_set_width_driver_with_empty(bpy.types.Operator):
+    """アクティブなEmptyのZ Scaleを使用して厚さを制御できるようにする。ドライバ制御。"""
+    bl_idname = "fujiwara_toolbox.set_width_driver_with_empty"
+    bl_label = "Emptyで幅制御"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        if fjw.active().type != "EMPTY":
+            self.report({"INFO"},"EMPTYを選択してください")
+            return {'CANCELLED'}
+
+        target_obj = fjw.active()
+
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            if obj.type != "MESH":
+                continue
+
+            modu = fjw.Modutils(obj)
+            mod = modu.find("ベベルエッジ")
+
+            if mod is None:
+                continue
+
+            fcurve = mod.driver_add("width")
+            driver = fcurve.driver
+
+            variables = driver.variables
+            varname = "empty_scale_z"
+            if varname in variables:
+                var = variables[varname]
+            else:
+                var = variables.new()
+                var.name = varname
+            var.type = "TRANSFORMS"
+            target = var.targets[0]
+            target.id = target_obj.id_data
+            target.transform_type = 'SCALE_Z'
+            target.transform_space = 'WORLD_SPACE'
+
+            driver.expression = "empty_scale_z * 0.01"
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+
+
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+############################################################################################################################
+uiitem("辺分離")
+############################################################################################################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+########################################
+#分離エッジ
+########################################
+class FUJIWARATOOLBOX_115887(bpy.types.Operator):#辺分離ソリッド
+    """分離エッジ"""
+    bl_idname = "fujiwara_toolbox.command_115887"
+    bl_label = "分離エッジ"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+
+    def execute(self, context):
+        fjw.reject_notmesh()
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            modu = fjw.Modutils(obj)
+            if modu.find("分離エッジ_EDGE_SPLIT") == None:
+                msplit = modu.add("分離エッジ_EDGE_SPLIT","EDGE_SPLIT")
+            if modu.find("分離エッジ_SOLIDIFY") == None:
+                msolid = modu.add("分離エッジ_SOLIDIFY", "SOLIDIFY")
+                msolid.thickness = 0.005
+                msolid.offset = 1
+                msolid.material_offset_rim = urapolimat_index(obj)
+            modu.sort()
+
+        return {'FINISHED'}
+########################################
+
+########################################
+#除去
+########################################
+class FUJIWARATOOLBOX_693073(bpy.types.Operator):#除去
+    """除去"""
+    bl_idname = "fujiwara_toolbox.command_693073"
+    bl_label = "除去"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+
+    def execute(self, context):
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            modu = fjw.Modutils(obj)
+            modu.remove_byname("分離エッジ_EDGE_SPLIT")
+            modu.remove_byname("分離エッジ_SOLIDIFY")
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+
+
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+
+
+
 # ################################################################################
 # #UIカテゴリ
 # ########################################
@@ -18500,7 +18511,7 @@ class CATEGORYBUTTON_207003(bpy.types.Operator):#その他
 
     uiitem = uiitem("その他",True)
     uiitem.button(bl_idname,bl_label,icon="",mode="")
-    uiitem.direction = ""
+    uiitem.direction = "vertical"
 
     def execute(self, context):
         uicategory_execute(self)
