@@ -16374,7 +16374,9 @@ class FUJIWARATOOLBOX_LOAD_SBSAR(bpy.types.Operator):
         return {'RUNNING_MODAL'}
 
     def execute(self, context):
+        print("set path")
         SubstanceTools.sbsar_path = self.filepath
+        print("info()")
         SubstanceTools.info()
         return {'FINISHED'}
 ########################################
