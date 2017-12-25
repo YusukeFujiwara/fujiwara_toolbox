@@ -6219,6 +6219,15 @@ class FUJIWARATOOLBOX_96315(bpy.types.Operator):#SUN設置
         # obj.data.shadow_buffer_size = 4096
         # obj.data.shadow_buffer_bias = 0.1
         # obj.data.shadow_buffer_bleed_bias = 0.55
+
+        obj.data.ge_shadow_buffer_type = 'VARIANCE'
+        obj.data.shadow_buffer_size = 10240
+        obj.data.shadow_buffer_bias = 0.001
+        obj.data.shadow_buffer_bleed_bias = 0
+
+
+        # obj.data.ge_shadow_buffer_type = "SIMPLE"
+        # obj.data.shadow_buffer_size = 10240
         
         
         return {'FINISHED'}
