@@ -152,7 +152,7 @@ class MDObject():
         self.__export_setup(dirpath)
         path = os.path.normpath(self.export_dir + os.sep + self.mdname + ".abc")
         print("export abc:%s"%path)
-        bpy.ops.wm.alembic_export(filepath=path, start=1, end=20, selected=True, visible_layers_only=True, flatten=True, apply_subdiv=True, compression_type='OGAWA', as_background_job=False)
+        bpy.ops.wm.alembic_export(filepath=path, start=1, end=(MarvelousDesingerUtils.last_frame + 1), selected=True, visible_layers_only=True, flatten=True, apply_subdiv=True, compression_type='OGAWA', as_background_job=False)
 
     def export_to_mddata(self):
         self.export_abc(self.export_dir)
@@ -334,6 +334,8 @@ class MDObjectManager():
     #     self.export_mdavatar(bpy.context.scene.objects, run_simulate)
 
 class MarvelousDesingerUtils():
+    last_frame = 20
+
     def __init__(self):
         self.mddata_dir = self.get_mddatadir()
 
@@ -390,7 +392,7 @@ class MarvelousDesingerUtils():
         fjw.mode("POSE")
 
         #アーマチュアのキーをオートで入れる
-        if bpy.context.scene.frame_current == 10:
+        if bpy.context.scene.frame_current == cls.last_frame:
             rootname = fjw.get_root(fjw.active()).name
 
             fjw.active().location = Vector((0,0,0))
@@ -412,7 +414,7 @@ class MarvelousDesingerUtils():
 
             #選択にズーム
             bpy.ops.view3d.view_selected(use_all_regions=False)
-            fjw.framejump(10)
+            fjw.framejump(cls.last_frame)
 
     @classmethod
     def import_mdresult(cls,resultpath, attouch_fjwset=False):
@@ -582,7 +584,7 @@ class MarvelousDesingerUtils():
     @classmethod
     def setup_mdwork_main(cls, self,context):
         if "_MDWork" not in bpy.data.filepath:
-            fjw.framejump(10)
+            fjw.framejump(cls.last_frame)
             dir = os.path.dirname(bpy.data.filepath)
             name = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
             blend_md = dir + os.sep + name + "_MDWork.blend"

@@ -20389,24 +20389,24 @@ class framejump_1(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class framejump_5(bpy.types.Operator):
+class framejump_mdhalf(bpy.types.Operator):
     """フレーム移動　5"""
-    bl_idname = "fujiwara_toolbox.framejump_5"
+    bl_idname = "fujiwara_toolbox.framejump_mdhalf"
     bl_label = "5"
     
     def execute(self, context):
         bpy.ops.screen.frame_jump(end=False)
-        bpy.ops.screen.frame_offset(delta=4)
+        bpy.ops.screen.frame_offset(delta=MarvelousDesingerUtils.last_frame/2)
         return {"FINISHED"}
 
-class framejump_10(bpy.types.Operator):
+class framejump_mdlast(bpy.types.Operator):
     """フレーム移動　10"""
-    bl_idname = "fujiwara_toolbox.framejump_10"
+    bl_idname = "fujiwara_toolbox.framejump_mdlast"
     bl_label = "10"
     
     def execute(self, context):
         bpy.ops.screen.frame_jump(end=False)
-        bpy.ops.screen.frame_offset(delta=9)
+        bpy.ops.screen.frame_offset(delta=int(MarvelousDesingerUtils.last_frame - 1))
         return {"FINISHED"}
 
 class framejump_15(bpy.types.Operator):
@@ -20628,8 +20628,8 @@ def menu_func_VIEW3D_HT_header(self, context):
         active = layout.row(align = True)
         active.prop(bpy.context.tool_settings, "use_keyframe_insert_auto", icon="REC", text="")
         active.operator("fujiwara_toolbox.framejump_1",icon="REW", text="")
-        active.operator("fujiwara_toolbox.framejump_5",icon="SPACE3", text="")
-        active.operator("fujiwara_toolbox.framejump_10",icon="FF", text="")
+        active.operator("fujiwara_toolbox.framejump_mdhalf",icon="SPACE3", text="")
+        active.operator("fujiwara_toolbox.framejump_mdlast",icon="FF", text="")
         #active.operator("fujiwara_toolbox.framejump_15",icon="TRIA_RIGHT_BAR", text="")
         active.operator("fujiwara_toolbox.set_key", icon="KEYINGSET", text="")
         active.operator("fujiwara_toolbox.del_key", icon="KEY_DEHLT", text="")
