@@ -1481,8 +1481,11 @@ class GetFreezedBlend():
         for img in bpy.data.images:
             w = img.size[0]
             h = img.size[1]
-            img.scale(w/2,h/2)
-            img.pack(as_png=True)
+            try:
+                img.scale(w/2,h/2)
+                img.pack(as_png=True)
+            except:
+                pass
 
         # scale_name = "%d%%"%(tex_scale*100)
     
