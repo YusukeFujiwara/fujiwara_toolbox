@@ -4043,6 +4043,9 @@ def glcompomat_rendermain(identifier, baselayers=None, edge=True, color=True, ma
         show_background_images = bpy.context.space_data.show_background_images
         use_simplify = bpy.context.scene.render.use_simplify
         filepath = bpy.context.scene.render.filepath
+        use_sky_paper = bpy.context.scene.world.use_sky_paper
+        horizon_color = bpy.context.scene.world.horizon_color
+
 
         ###############################
         bpy.context.scene.render.image_settings.file_format = 'PNG'
@@ -4110,7 +4113,12 @@ def glcompomat_rendermain(identifier, baselayers=None, edge=True, color=True, ma
                 #マスク処理
                 mask_except_true_layers(bpy.context.scene.layers)
                 bpy.context.scene.layers = baselayers
+            bpy.context.scene.world.use_sky_paper = True
+            bpy.context.scene.world.horizon_color = (1, 1, 1)
+            bpy.context.scene.render.alpha_mode = 'SKY'
             render_opengl(selfname + "_%s_OpenGL_Mask"%identifier)
+            bpy.context.space_data.show_world = False
+            bpy.context.scene.render.alpha_mode = 'TRANSPARENT'
 
         #シャドウパス
         # layersstate = fjw.layers_current_state()
@@ -4145,6 +4153,8 @@ def glcompomat_rendermain(identifier, baselayers=None, edge=True, color=True, ma
         bpy.context.space_data.show_world = show_world
         bpy.context.scene.render.alpha_mode = alpha_mode
         bpy.context.scene.render.image_settings.file_format = file_format
+        bpy.context.scene.world.use_sky_paper = use_sky_paper
+        bpy.context.scene.world.horizon_color = horizon_color
         material_states.restore()
         viewstate.restore_viewstate()
         del viewstate

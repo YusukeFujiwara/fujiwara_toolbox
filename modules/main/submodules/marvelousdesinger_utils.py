@@ -450,6 +450,12 @@ class MarvelousDesingerUtils():
             for obj in selection:
                 obj.name = "result"
 
+        #透過を無効にしておく
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            for mat in obj.data.materials:
+                mat.use_transparency = False
+
 
         #インポート後処理
         #回転を適用
@@ -495,7 +501,7 @@ class MarvelousDesingerUtils():
 
         if not os.path.exists(dir):
             self.report({"INFO"},"キャンセルされました。")
-            bpy.ops.wm.quit_blender()
+            # bpy.ops.wm.quit_blender()
             return {'CANCELLED'}
 
         #既存のリザルトを処分
@@ -515,11 +521,17 @@ class MarvelousDesingerUtils():
         for file in files:
             self.report({"INFO"},file)
             print("MDResult found:"+file)
-            targetname = file
+            # targetname = file
+            dirname = os.path.basename(os.path.dirname(file))
+            targetname = dirname
+
 
             # rootobjでの設置だとルートがないとおかしなことになる
             # dupli_groupの名前でみて、同一名のもののアーマチュアを探して、
             # vislble_objects内のそのデータと同一のプロクシないしアーマチュア、のジオメトリを指定すればいいのでは
+
+            if targetname not in bpy.data.groups:
+                print("!targetname not in bpy.data.groups!")
 
             #fileと同名のdupli_groupを検索
             if targetname in bpy.data.groups:
@@ -542,7 +554,12 @@ class MarvelousDesingerUtils():
                                 #同一のアーマチュアデータを発見したのでこいつを使用する
                                 target_armature = scene_amature
                                 break
+
+                if not target_armature:
+                    print("!target_armature not found!")
+
                 if target_armature is not None:
+                    print("target_armature:%s"%target_armature)
                     arm = target_armature
                     print("MDImport Step 0")
                     fjw.mode("OBJECT")
