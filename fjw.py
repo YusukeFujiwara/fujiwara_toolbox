@@ -1471,6 +1471,8 @@ class MaterialStates():
             self.specular_hardness = mat.specular_hardness
             self.use_shadeless = mat.use_shadeless
             self.use_transparency = mat.use_transparency
+            self.transparency_method = mat.transparency_method
+            self.alpha = mat.alpha
 
             self.use_textures = []
             for state in mat.use_textures:
@@ -1488,6 +1490,8 @@ class MaterialStates():
             mat.specular_hardness = self.specular_hardness
             mat.use_shadeless = self.use_shadeless
             mat.use_transparency = self.use_transparency
+            mat.transparency_method = self.transparency_method
+            mat.alpha = self.alpha
             for index, state in enumerate(self.use_textures):
                 mat.use_textures[index] = state
 

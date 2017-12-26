@@ -3934,123 +3934,6 @@ class FUJIWARATOOLBOX_GLRENDER(bpy.types.Operator):#GLレンダ
         return {'FINISHED'}
 ########################################
 
-########################################
-#コンポ素材レンダ
-########################################
-#bpy.ops.fujiwara_toolbox.glrender_compomat() #コンポ素材レンダ
-class FUJIWARATOOLBOX_GLRENDER_COMPOMAT(bpy.types.Operator):
-    """保存してコンポジット素材のレンダ。カラー・影のGLレンダ、辺レンダ。"""
-    bl_idname = "fujiwara_toolbox.glrender_compomat"
-    bl_label = "コンポ素材レンダ"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-    def execute(self, context):
-        fjw.mode("OBJECT")
-        starttime = time.time()
-
-        #現状取得
-        viewstate = fjw.ViewState()
-        show_world = bpy.context.space_data.show_world
-        alpha_mode = bpy.context.scene.render.alpha_mode
-        file_format = bpy.context.scene.render.image_settings.file_format
-        lock_camera = bpy.context.space_data.lock_camera
-        show_background_images = bpy.context.space_data.show_background_images
-        use_simplify = bpy.context.scene.render.use_simplify
-
-
-        ###############################
-        bpy.context.scene.render.image_settings.file_format = 'PNG'
-
-        #背景色
-        bpy.context.space_data.show_world = False
-        bpy.context.scene.render.alpha_mode = 'TRANSPARENT'
-
-        #セーブ
-        bpy.ops.wm.save_mainfile()
-        #一番はじめにバックグラウンドの線画レンダ投げとく
-        exec_externalutils("renderedge.py")
-
-        #再計算回避
-        if bpy.context.scene.render.use_simplify:
-            bpy.context.scene.render.use_simplify = False
-
-        #Subsurfをあわせる
-        for obj in bpy.data.objects:
-            modu = fjw.Modutils(obj)
-            sbslist = modu.find_bytype_list("SUBSURF")
-            for sbs in sbslist:
-                if sbs.levels < sbs.render_levels:
-                    sbs.levels = sbs.render_levels
-
-        #ビューロック解除
-        bpy.context.space_data.lock_camera = False
-
-        #下書き非表示
-        bpy.context.space_data.show_background_images = False
-
-        #グリペンレイヤ
-        if bpy.context.scene.grease_pencil is not None:
-            gplayers = bpy.context.scene.grease_pencil.layers
-            if "下書き" in gplayers:
-                bpy.context.scene.grease_pencil.layers["下書き"].hide = True
-            #gpcurrent = bpy.context.scene.grease_pencil.layers.active
-            ##線幅
-            for gplayer in gplayers:
-                if not gplayer.hide:
-                    gpline_change(gplayer, 20)
-
-        selfname = fjw.blendname()
-
-        materials = bpy.data.materials
-        material_states = fjw.MaterialStates(materials)
-        #カラーパス
-        for mat in materials:
-            mat.use_shadeless = True
-        render_opengl(selfname + "_layerAll_OpenGL_Color")
-
-        #シャドウパス
-        material_states.restore()
-        for mat in materials:
-            mat.diffuse_color = (1, 1, 1)
-            for i in range(len(mat.texture_slots)):
-                tslot = mat.texture_slots[i]
-                if not tslot:
-                    continue
-                if tslot.use_map_color_diffuse:
-                    mat.use_textures[i] = False
-        render_opengl(selfname + "_layerAll_OpenGL_Shadow")
-
-        #背景があった場合、背景だけをレンダリングする
-        if show_world:
-            bpy.context.space_data.show_world = True
-            bpy.context.scene.render.alpha_mode = 'SKY'
-
-            for obj in bpy.data.objects:
-                obj.hide = True
-            render_opengl(selfname + "_layerAll_OpenGL_Bgimg")
-
-        #原状復帰
-        bpy.context.space_data.show_world = show_world
-        bpy.context.scene.render.alpha_mode = alpha_mode
-        bpy.context.scene.render.image_settings.file_format = file_format
-        material_states.restore()
-        viewstate.restore_viewstate()
-        del viewstate
-        bpy.context.space_data.lock_camera = lock_camera
-        bpy.context.space_data.show_background_images = show_background_images
-        if bpy.context.scene.render.use_simplify != use_simplify:
-            bpy.context.scene.render.use_simplify = use_simplify
-
-
-        endtime = time.time()
-        self.report({"INFO"},"レンダ完了　{0:.2f}秒".format(endtime - starttime))
-        return {'FINISHED'}
-########################################
-
-
 
 
 
@@ -4135,6 +4018,342 @@ class FUJIWARATOOLBOX_347064(bpy.types.Operator):#線幅を戻す
         
         return {'FINISHED'}
 ########################################
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+############################################################################################################################
+uiitem("OpenGL　コンポジット素材レンダ")
+############################################################################################################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+def glcompomat_rendermain(identifier, baselayers=None, edge=True, color=True, mask=True, shadow=True):
+        #現状取得
+        viewstate = fjw.ViewState()
+        show_world = bpy.context.space_data.show_world
+        alpha_mode = bpy.context.scene.render.alpha_mode
+        file_format = bpy.context.scene.render.image_settings.file_format
+        lock_camera = bpy.context.space_data.lock_camera
+        show_background_images = bpy.context.space_data.show_background_images
+        use_simplify = bpy.context.scene.render.use_simplify
+        filepath = bpy.context.scene.render.filepath
+
+        ###############################
+        bpy.context.scene.render.image_settings.file_format = 'PNG'
+
+        #背景色
+        bpy.context.space_data.show_world = False
+        bpy.context.scene.render.alpha_mode = 'TRANSPARENT'
+
+        #線画パス設定
+        selfname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
+        blenddir = os.path.dirname(bpy.data.filepath)
+        renderdir = blenddir + os.sep + "render" + os.sep 
+        renderedgepath = renderdir + selfname + "_%s_edge.png"%identifier
+        bpy.context.scene.render.filepath = renderedgepath
+
+        #セーブ
+        bpy.ops.wm.save_mainfile()
+        #一番はじめにバックグラウンドの線画レンダ投げとく
+        if edge:
+            exec_externalutils("renderedge.py")
+
+        #再計算回避
+        if bpy.context.scene.render.use_simplify:
+            bpy.context.scene.render.use_simplify = False
+
+        #Subsurfをあわせる
+        for obj in bpy.data.objects:
+            modu = fjw.Modutils(obj)
+            sbslist = modu.find_bytype_list("SUBSURF")
+            for sbs in sbslist:
+                if sbs.levels < sbs.render_levels:
+                    sbs.levels = sbs.render_levels
+
+        #ビューロック解除
+        bpy.context.space_data.lock_camera = False
+
+        #下書き非表示
+        bpy.context.space_data.show_background_images = False
+
+        #グリペンレイヤ
+        if bpy.context.scene.grease_pencil is not None:
+            gplayers = bpy.context.scene.grease_pencil.layers
+            if "下書き" in gplayers:
+                bpy.context.scene.grease_pencil.layers["下書き"].hide = True
+            #gpcurrent = bpy.context.scene.grease_pencil.layers.active
+            ##線幅
+            for gplayer in gplayers:
+                if not gplayer.hide:
+                    gpline_change(gplayer, 20)
+
+        selfname = fjw.blendname()
+
+        materials = bpy.data.materials
+        material_states = fjw.MaterialStates(materials)
+
+        #カラーパス
+        if color:
+            for mat in materials:
+                mat.use_shadeless = True
+            render_opengl(selfname + "_%s_OpenGL_Color"%identifier)
+
+        #マスク
+        if mask:
+            if baselayers:
+                #マスク処理
+                mask_except_true_layers(bpy.context.scene.layers)
+                bpy.context.scene.layers = baselayers
+            render_opengl(selfname + "_%s_OpenGL_Mask"%identifier)
+
+        #シャドウパス
+        # layersstate = fjw.layers_current_state()
+        # bpy.context.scene.layers = [True for i in range(20)]
+        material_states.restore()
+        if shadow:
+            for mat in materials:
+                mat.diffuse_color = (1, 1, 1)
+                for i in range(len(mat.texture_slots)):
+                    tslot = mat.texture_slots[i]
+                    if not tslot:
+                        continue
+                    if tslot.use_map_color_diffuse:
+                        mat.use_textures[i] = False
+            if baselayers:
+                bpy.context.scene.layers = baselayers
+            render_opengl(selfname + "_%s_OpenGL_Shadow"%identifier)
+            # bpy.context.scene.layers = layersstate
+
+
+        #背景があった場合、背景だけをレンダリングする
+        if show_world:
+            bpy.context.space_data.show_world = True
+            bpy.context.scene.render.alpha_mode = 'SKY'
+
+            for obj in bpy.data.objects:
+                obj.hide = True
+            render_opengl(selfname + "_%s_OpenGL_Bgimg"%identifier)
+
+        #原状復帰
+        bpy.context.scene.render.filepath = filepath
+        bpy.context.space_data.show_world = show_world
+        bpy.context.scene.render.alpha_mode = alpha_mode
+        bpy.context.scene.render.image_settings.file_format = file_format
+        material_states.restore()
+        viewstate.restore_viewstate()
+        del viewstate
+        bpy.context.space_data.lock_camera = lock_camera
+        bpy.context.space_data.show_background_images = show_background_images
+        if bpy.context.scene.render.use_simplify != use_simplify:
+            bpy.context.scene.render.use_simplify = use_simplify
+
+def get_objects_materials(objects):
+    materials = []
+    for obj in objects:
+        if obj.type == "EMPTY":
+            if obj.dupli_group:
+                materials.extend(get_objects_materials(obj.dupli_group.objects))
+            continue
+        try:
+            materials.extend(obj.data.materials)
+        except:
+            pass
+    return materials
+
+def get_layer_materials(layerindex):
+    """指定レイヤーのオブジェクトのマテリアルを取得する"""
+    materials = []
+    for obj in bpy.context.scene.objects:
+        if obj.layers[layerindex]:
+            try:
+                materials.extend(obj.data.materials)
+            except:
+                pass
+            if obj.type == "EMPTY":
+                if obj.dupli_group:
+                    materials.extend(get_objects_materials(obj.dupli_group.objects))
+    return materials
+
+def mask_except_true_layers(layers):
+    """Trueレイヤー以外のマテリアルをマスクする。"""
+    for index, layerstate in enumerate(layers):
+        if not layerstate:
+            materials = get_layer_materials(index)
+            for mat in materials:
+                if not mat:
+                    continue
+                # mat.use_transparency = True
+                # mat.alpha = 0.01
+                # mat.specular_intensity = 0
+                mat.diffuse_color = (1, 1, 1)
+                mat.use_shadeless = True
+                for i in range(len(mat.use_textures)):
+                    mat.use_textures[i] = False
+        else:
+            materials = get_layer_materials(index)
+            for mat in materials:
+                if not mat:
+                    continue
+                mat.use_nodes = False
+                # mat.diffuse_color = (255/255, 172/255, 172/255)
+                mat.diffuse_color = (0,0,0)
+                mat.use_shadeless = True
+                for i in range(len(mat.use_textures)):
+                    mat.use_textures[i] = False
+            
+                
+
+
+
+########################################
+#コンポ素材レンダ
+########################################
+#bpy.ops.fujiwara_toolbox.glrender_compomat() #コンポ素材レンダ
+class FUJIWARATOOLBOX_GLRENDER_COMPOMAT(bpy.types.Operator):
+    """保存してコンポジット素材のレンダ。カラー・影のGLレンダ、辺レンダ。"""
+    bl_idname = "fujiwara_toolbox.glrender_compomat"
+    bl_label = "コンポ素材レンダ"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        fjw.mode("OBJECT")
+        starttime = time.time()
+
+        glcompomat_rendermain("layerAll", baselayers=None, edge=True, color=True, mask=False, shadow=True)
+        bpy.ops.fujiwara_toolbox.glrender_compomat_chr() #キャラレイヤ
+
+        endtime = time.time()
+        self.report({"INFO"},"レンダ完了　{0:.2f}秒".format(endtime - starttime))
+        bpy.ops.wm.save_mainfile()
+
+        return {'FINISHED'}
+########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+########################################
+#キャラ
+########################################
+#bpy.ops.fujiwara_toolbox.glrender_compomat_chr() #キャラレイヤ
+class FUJIWARATOOLBOX_GLRENDER_COMPOMAT_CHR(bpy.types.Operator):
+    """キャラレイヤーをレンダする。レイヤー0-4。"""
+    bl_idname = "fujiwara_toolbox.glrender_compomat_chr"
+    bl_label = "キャラマスク"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        fjw.mode("OBJECT")
+        starttime = time.time()
+
+        current_layers = fjw.layers_current_state()
+
+        layers = [True for i in range(20)]
+        for i in range(5,20):
+            layers[i] = False
+        
+        bpy.context.scene.layers = layers
+        glcompomat_rendermain("layerAll", baselayers=current_layers, edge=False, color=False, mask=True, shadow=False)
+        bpy.context.scene.layers = current_layers
+
+        endtime = time.time()
+        self.report({"INFO"},"レンダ完了　{0:.2f}秒".format(endtime - starttime))
+        bpy.ops.wm.save_mainfile()
+        return {'FINISHED'}
+########################################
+
+########################################
+#前景
+########################################
+#bpy.ops.fujiwara_toolbox.glrender_compomat_front() #前景
+class FUJIWARATOOLBOX_GLRENDER_COMPOMAT_FRONT(bpy.types.Operator):
+    """前景レイヤーをレンダする。レイヤー5-9。"""
+    bl_idname = "fujiwara_toolbox.glrender_compomat_front"
+    bl_label = "前景マスク"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        fjw.mode("OBJECT")
+        starttime = time.time()
+
+        current_layers = fjw.layers_current_state()
+
+        layers = [True for i in range(20)]
+        for i in range(0,5):
+            layers[i] = False
+        for i in range(10,20):
+            layers[i] = False
+        
+        bpy.context.scene.layers = layers
+        glcompomat_rendermain("layerAFront",current_layers, edge=False, color=False, mask=True, shadow=False)
+        bpy.context.scene.layers = current_layers
+
+        endtime = time.time()
+        self.report({"INFO"},"レンダ完了　{0:.2f}秒".format(endtime - starttime))
+        bpy.ops.wm.save_mainfile()
+        return {'FINISHED'}
+########################################
+
+########################################
+#背景
+########################################
+#bpy.ops.fujiwara_toolbox.glrender_compomat_back() #背景
+class FUJIWARATOOLBOX_GLRENDER_COMPOMAT_BACK(bpy.types.Operator):
+    """背景レイヤーをレンダする。レイヤー15-19。"""
+    bl_idname = "fujiwara_toolbox.glrender_compomat_back"
+    bl_label = "背景マスク"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        fjw.mode("OBJECT")
+        starttime = time.time()
+
+        current_layers = fjw.layers_current_state()
+
+        layers = [True for i in range(20)]
+        for i in range(0,15):
+            layers[i] = False
+        
+        bpy.context.scene.layers = layers
+        glcompomat_rendermain("layerCBack",current_layers, edge=False, color=False, mask=True, shadow=False)
+        bpy.context.scene.layers = current_layers
+
+        endtime = time.time()
+        self.report({"INFO"},"レンダ完了　{0:.2f}秒".format(endtime - starttime))
+        bpy.ops.wm.save_mainfile()
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -813,7 +813,7 @@ class BoursePoseHandR(bpy.types.Operator):
 class BoursePoseHandL(bpy.types.Operator):
     """ポーズを閲覧する。非ポーズモードの場合、ポーズモードに入ってジオメトリ以外に適用する。ポーズモードの場合ジオメトリ以外の選択ボーンに適用する。"""
     bl_idname = "fjw_selector.brouse_pose_hand_l"
-    bl_label = "右手"
+    bl_label = "左手"
     def execute(self, context):
         namelist = ["palm.L", "f_index.01.L", "f_index.02.L", "tweak_f_index.02.L", "f_index.03.L", "tweak_f_index.03.L", "tweak_f_index.03.L.001", "tweak_f_index.01.L", "thumb.01.L", "thumb.02.L", "tweak_thumb.02.L", "thumb.03.L", "tweak_thumb.03.L", "tweak_thumb.03.L.001", "tweak_thumb.01.L", "f_middle.01.L", "f_middle.02.L", "tweak_f_middle.02.L", "f_middle.03.L", "tweak_f_middle.03.L", "tweak_f_middle.03.L.001", "tweak_f_middle.01.L", "f_ring.01.L", "f_ring.02.L", "tweak_f_ring.02.L", "f_ring.03.L", "tweak_f_ring.03.L", "tweak_f_ring.03.L.001", "tweak_f_ring.01.L", "f_pinky.01.L", "f_pinky.02.L", "tweak_f_pinky.02.L", "f_pinky.03.L", "tweak_f_pinky.03.L", "tweak_f_pinky.03.L.001", "tweak_f_pinky.01.L", ]
         brouse_pose_bynamelist(self,namelist)
