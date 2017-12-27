@@ -29,5 +29,8 @@ bpy.context.scene.render.use_textures = True
 bpy.context.scene.render.use_antialiasing = False
 bpy.context.scene.render.use_freestyle = False
 
+bpy.context.scene.render.threads_mode = 'FIXED'
+bpy.context.scene.render.threads = 1
+
 bpy.data.scenes["Scene"].render.filepath = renderpath
 bpy.ops.render.render(write_still=True)
