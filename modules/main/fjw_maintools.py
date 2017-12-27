@@ -362,7 +362,6 @@ class MyaddonView3DPanel(bpy.types.Panel):#メインパネル
         cols = b.column(align=True)
         active = cols
 
-
         #超よく使う
         active = cols.column(align=True)
         active.label(text="クイック")
@@ -431,9 +430,6 @@ class MyaddonView3DPanel(bpy.types.Panel):#メインパネル
         #             else:
         #                 active.operator(item.idname)
 
-
-
-
         active = cols.row(align=True)
         active.label(text="メイン")
         for uicat in uicategories:
@@ -482,20 +478,15 @@ class MyaddonView3DPanel(bpy.types.Panel):#メインパネル
                 #    else:
                 #        active.operator(item.idname)
 
-
-
 #UIカテゴリの実行部を外部化。いろいろ処理できるように。
 def uicategory_execute(self):
     global dialog_uicat
     dialog_uicat = self.bl_label
     bpy.ops.object.dialog("INVOKE_DEFAULT")
 
-
-
 #ペンディング用リスト。カテゴリを登録していく
 #pendings = ["簡略化"]
 pendings = []
-
 
 ########################################
 #ペンディング
@@ -3382,9 +3373,6 @@ def set_comicshader_auto(specular=1,shadow_color=(0,0,0,1)):
             # bpy.data.node_groups["Shader Nodetree"].nodes["Group"].inputs[2].default_value = 0
             ng_comic.inputs["Specular"].default_value = specular
             ng_comic.inputs["ShadowColor"].default_value = shadow_color
-            
-
-
 
             #マテリアルノード
             n_mat = ntu.add("ShaderNodeMaterial","Material")

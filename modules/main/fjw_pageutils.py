@@ -164,7 +164,9 @@ def render(renderpath, komarender=False):
         bpy.ops.view3d.viewnumpad(type='CAMERA')
         bpy.ops.render.opengl(write_still=True,view_context=False)
 
-        if komarender:
+        #設定を見て、プレビューレンダなしならしない
+        pref = fujiwara_toolbox.conf.get_pref()
+        if komarender and pref.pageutils_cpurender:
             #プレビューレンダをバックグラウンドに投げとく
             #↓コレじゃダメ abspathが特にマズい
             blenderpath = sys.argv[0]
@@ -705,7 +707,6 @@ class opennextpage(bpy.types.Operator):
                 if n < len(dirs) - 1:
                     targetdir = dirs[n + 1]
                 break
-                    
 
         target = parentdir + os.sep + targetdir + os.sep + "page.blend"
         if not os.path.exists(target):

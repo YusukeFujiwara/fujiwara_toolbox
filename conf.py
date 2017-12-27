@@ -95,6 +95,10 @@ class FujiwaraToolBoxPreferences(AddonPreferences):
             name="ページユーティリティ",
             default=True,
             )
+    pageutils_cpurender = BoolProperty(
+            name="ページユーティリティでCPUプレビューを生成する",
+            default=True,
+            )
     subsurfmodelingtools = BoolProperty(
             name="Subsurf Modeling Tools",
             default=False,
@@ -156,6 +160,7 @@ class FujiwaraToolBoxPreferences(AddonPreferences):
         layout.prop(self, "maintools")
         layout.prop(self, "roomtools")
         layout.prop(self, "pageutils")
+        layout.prop(self, "pageutils_cpurender")
         layout.prop(self, "subsurfmodelingtools")
         layout.prop(self, "cameratools")
         layout.prop(self, "greasepenciltools")
