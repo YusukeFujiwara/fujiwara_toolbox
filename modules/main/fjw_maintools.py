@@ -3434,13 +3434,9 @@ class FUJIWARATOOLBOX_comic_shader_nospec(bpy.types.Operator):
         return {'FINISHED'}
 ########################################
 
-
-
-
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
-
 
 ############################################################################################################################
 uiitem("Cycles")
@@ -3452,9 +3448,6 @@ uiitem().vertical()
 #---------------------------------------------
 uiitem().horizontal()
 #---------------------------------------------
-
-
-
 
 ########################################
 #Cyclesマテリアル化
@@ -4095,8 +4088,27 @@ def glcompomat_rendermain(identifier, baselayers=None, edge=True, color=True, ma
                 mat.use_shadeless = True
             render_opengl(selfname + "_%s_OpenGL_Color"%identifier)
 
+            #透過用下地
+            transp_flag = False
+            for obj in bpy.context.scene.objects:
+                for i in range(20):
+                    if bpy.context.scene.layers[i] and obj.layers:
+                        try:
+                            for mat in obj.data.materials:
+                                if mat.use_transparency:
+                                    transp_flag = True
+                                    obj.hide = True
+                                    break
+                        except:
+                            pass
+            if transp_flag:
+                render_opengl(selfname + "_%s_OpenGL_Transpback"%identifier)
+                viewstate.restore_viewstate()
+
         #マスク
         if mask:
+            for mat in bpy.data.materials:
+                mat.use_transparency = False
             if baselayers:
                 #マスク処理
                 mask_except_true_layers(bpy.context.scene.layers)
@@ -9371,22 +9383,33 @@ class FUJIWARATOOLBOX_635930(bpy.types.Operator):#複製分離
     uiitem.button(bl_idname,bl_label,icon="",mode="edit")
 
     def execute(self, context):
-        baselist = []
-        for obj in bpy.data.objects:
-            baselist.append(obj)
+        # baselist = []
+        # for obj in bpy.data.objects:
+        #     baselist.append(obj)
         
+        # bpy.ops.mesh.duplicate(mode=1)
+        # bpy.ops.mesh.separate(type='SELECTED')
+        
+        # bpy.ops.object.editmode_toggle()
+        
+        # for obj in bpy.data.objects:
+        #     if obj not in baselist:
+        #         #新しいオブジェクト
+        #         bpy.context.scene.objects.active = obj
+        #         bpy.ops.object.editmode_toggle()
+        #         break
+        active = fjw.active()
         bpy.ops.mesh.duplicate(mode=1)
         bpy.ops.mesh.separate(type='SELECTED')
+        fjw.mode("OBJECT")
         
-        bpy.ops.object.editmode_toggle()
-        
-        for obj in bpy.data.objects:
-            if obj not in baselist:
-                #新しいオブジェクト
-                bpy.context.scene.objects.active = obj
-                bpy.ops.object.editmode_toggle()
+        for obj in fjw.get_selected_list():
+            if obj != active:
+                fjw.activate(obj)
+                fjw.mode("EDIT")
                 break
-        
+
+
         return {'FINISHED'}
 ########################################
 
