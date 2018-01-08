@@ -334,7 +334,7 @@ class MDObjectManager():
     #     self.export_mdavatar(bpy.context.scene.objects, run_simulate)
 
 class MarvelousDesingerUtils():
-    last_frame = 20
+    last_frame = 60
 
     def __init__(self):
         self.mddata_dir = self.get_mddatadir()
