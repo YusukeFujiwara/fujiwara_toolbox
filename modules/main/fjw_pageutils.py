@@ -404,7 +404,7 @@ class refresh(bpy.types.Operator):
             print(dellist)
             fjw.delete(dellist)
 
-            for n in range(10):
+            for n in range(50):
                 if not refresh_command(self):
                     break
             bpy.ops.file.make_paths_relative()

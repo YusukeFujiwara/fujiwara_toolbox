@@ -15242,7 +15242,6 @@ class FUJIWARATOOLBOX_902822(bpy.types.Operator):#MD作業ファイル準備
         bpy.context.space_data.show_only_render = False
         bpy.ops.fujiwara_toolbox.command_700665()#subdiv2
         bpy.context.scene.layers = [True for i in range(20)]
-        fjw.mode("OBJECT")
         for obj in fjw.get_selected_list():
             fjw.get_root(obj).select = True
         selection = fjw.get_selected_list()
