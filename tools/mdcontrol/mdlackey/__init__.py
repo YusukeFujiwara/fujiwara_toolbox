@@ -383,7 +383,7 @@ class MDMacro():
         md.click("ok", multiscreen=True)
         for i in range(30):
             md.activate()
-            f = md.find("close")
+            f = md.find("close",multiscreen=True)
             if f:
                 break
             md.wait(0.5)
