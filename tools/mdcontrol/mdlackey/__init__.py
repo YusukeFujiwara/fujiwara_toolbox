@@ -185,7 +185,7 @@ class MD():
         #なかったのでデフォルトに戻す
         self.scale = "100%"
 
-    def find(self, filename, multiscreen=False,):
+    def find(self, filename, multiscreen=True,):
         return self.click(filename, click=False, multiscreen=multiscreen)
 
     @classmethod
@@ -216,7 +216,7 @@ class MD():
         return Region(x0,y0,w,h)
 
 
-    def click(self, filename, click=True, region=None, multiscreen=False):
+    def click(self, filename, click=True, region=None, multiscreen=True):
         if check_abort():
             print("aboted.")
             return False
