@@ -6433,8 +6433,9 @@ class FUJIWARATOOLBOX_96315(bpy.types.Operator):#SUN設置
     def execute(self, context):
         fjw.mode("OBJECT")
         loc = (-1, -1, 2)
-        bpy.ops.object.lamp_add(type='SUN', radius=1, view_align=False, location=loc, layers=(True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False))
+        bpy.ops.object.lamp_add(type='SUN', radius=1, view_align=False, location=loc, layers=bpy.context.scene.layers)
         obj = bpy.context.scene.objects.active
+        obj.layers = [False for i in range(20)]
         obj.rotation_euler[0] = 0.691299
         obj.rotation_euler[1] = 0
         obj.rotation_euler[2] = 0.487015
@@ -15240,9 +15241,14 @@ class FUJIWARATOOLBOX_902822(bpy.types.Operator):#MD作業ファイル準備
     def execute(self, context):
         bpy.context.space_data.show_only_render = False
         bpy.ops.fujiwara_toolbox.command_700665()#subdiv2
-        # なんかうまくうごかん
+        bpy.context.scene.layers = [True for i in range(20)]
+        fjw.mode("OBJECT")
         for obj in fjw.get_selected_list():
             fjw.get_root(obj).select = True
+        selection = fjw.get_selected_list()
+        fjw.deselect()
+        fjw.select(selection)
+
         #選択オブジェクトを親子選択→反転削除
         bpy.ops.fujiwara_toolbox.command_24259()#親子選択
         #プロクシも選択
