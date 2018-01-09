@@ -226,6 +226,19 @@ class bgopen(bpy.types.Operator):
         os.system("EXPLORER " + dir + os.sep + "background.png")
         return {"FINISHED"}
 
+
+def zeropad(i):
+    return str(i).zfill(3)
+
+def files_key(file):
+    file = re.sub("\d+", zeropad, file)
+    return file
+
+def sort_files(files):
+    """filesを番号順にソートする。"""
+    new_files = sorted(files, key=files_key)
+    return new_files
+
 ############################################################################################################################
 #ページモード
 ############################################################################################################################
@@ -245,6 +258,7 @@ def refresh_command(self):
     dir = os.path.dirname(bpy.data.filepath)
     imgdir = dir + os.sep + "pageutils" + os.sep + "img" + os.sep
     files = os.listdir(imgdir)
+    files = sort_files(files)
 
     #カメラの縦を1とした時の横方向の比率
     wr = bpy.context.scene.render.resolution_x / bpy.context.scene.render.resolution_y
@@ -410,6 +424,7 @@ class deploy_pages(bpy.types.Operator):
         #self.report({"INFO"},parent_dir + ":" + self_dir )
 
         files = os.listdir(parent_dir)
+        files = sort_files(files)
 
         folder_done = []
         img_done = []
@@ -726,6 +741,7 @@ class opennextpage(bpy.types.Operator):
 
 def get_paths(dir):
     files = os.listdir(dir)
+    files = sort_files(files)
     result = []
     #ファイルのみ結果に追加し、そうでなければ再帰探索
     for file in files:
@@ -785,6 +801,7 @@ def get_cells():
 
 def get_selfindex_and_cellfilepaths():
     files = get_cells()
+    files = sort_files(files)
     selfpath = bpy.data.filepath
     print("get_selfindex_and_cellfilepaths")
     for index, file in enumerate(files):
