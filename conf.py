@@ -132,16 +132,30 @@ class FujiwaraToolBoxPreferences(AddonPreferences):
             name="アセットマネージャ用ファイルパス",
             subtype='FILE_PATH',
             )
-    MarvelousDesigner_dir = StringProperty(
-            name="MarvelousDesigner作業用ディレクトリ",
-            subtype='FILE_PATH',
-            )
+#     MarvelousDesigner_dir = StringProperty(
+#             name="MarvelousDesigner作業用ディレクトリ",
+#             subtype='FILE_PATH',
+#             )
     script_loader = BoolProperty(
             name="FJW Script Loader",
             default=False,
             )
     SubstanceAutomationToolkit_dir = StringProperty(
             name="Substance Automation Toolkitのディレクトリ",
+            subtype='FILE_PATH',
+            )
+
+    #MarvelousDesigner
+    use_md7script = BoolProperty(
+            name="Marvelous Designer 7のスクリプト機能を使用してシミュレーションする",
+            default=False,
+            )
+    MarvelousDesigner_path = StringProperty(
+            name="Marvelous Designer 7のexeファイル",
+            subtype='FILE_PATH',
+            )
+    Python27lib_dir = StringProperty(
+            name="Python 2.7のlibディレクトリ",
             subtype='FILE_PATH',
             )
 
@@ -170,11 +184,15 @@ class FujiwaraToolBoxPreferences(AddonPreferences):
 
         layout.label(text="特殊設定")
         layout.prop(self, "assetdir")
-        layout.prop(self, "MarvelousDesigner_dir")
+        # layout.prop(self, "MarvelousDesigner_dir")
         layout.prop(self, "SubstanceAutomationToolkit_dir")
         layout.prop(self, "script_loader")
         layout.prop(self, "fjwselector")
 
+        layout.label(text="Marvelous Desinger 7")
+        layout.prop(self, "use_md7script")
+        layout.prop(self, "MarvelousDesigner_path")
+        layout.prop(self, "Python27lib_dir")
 
 
 def get_pref():

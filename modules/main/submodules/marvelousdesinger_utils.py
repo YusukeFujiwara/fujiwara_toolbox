@@ -43,7 +43,6 @@ except:
 import random
 from mathutils import *
 
-
 """
 MarvelousDesignerまわりの仕様
 カスタムプロパティを使用してコントロールする。
@@ -65,6 +64,81 @@ md_export_depth     intかintのlist
 カスタムプロパティはいずれのオブジェクトにつけてもいい。
 MDObjectにわたされたオブジェクト群の中で検索する。
 """
+
+class MarvelousDesignerScriptUtils():
+    """
+    出力されたディレクトリからworkdirにデータをコピーしてシミュレーションさせる。
+    MD側では単に、与えられたデータをシミュレーションするだけでいいのでpython2いらないかも。
+    終了を待ってからBlenderで結果を移動させればいい。
+    """
+    workdir = r"C:\mdwork_temp"
+
+    @classmethod
+    def istodo(cls):
+        pref = fujiwara_toolbox.conf.get_pref()
+        if pref.use_md7script:
+            return True
+        else:
+            return False
+    
+    @classmethod
+    def get_mdexepath(cls):
+        pref = fujiwara_toolbox.conf.get_pref()
+        return pref.MarvelousDesigner_path
+
+    def __init__(self, mdobj):
+        if not self.istodo():
+            return
+        self.mdobj = mdobj
+
+        if not os.path.exists(self.workdir):
+            os.makedirs(self.workdir)
+        pass
+
+    def __copyfile(self, src_path, dest_path):
+        if not self.istodo():
+            return
+        if not os.path.exists(src_path):
+            print("COPY:'%s' not found."%src_path)
+            return
+        
+        dest_dir = os.path.dirname(dest_path)
+        if not os.path.exists(dest_dir):
+            os.makedirs(dest_dir)
+
+        shutil.copy(src_path, dest_path)
+    
+    def copy_to_workdir_as_newname(self, src_path, new_name):
+        if not self.istodo():
+            return
+        print("copy_to_workdir_as_newname:%s"%new_name)
+        filename = os.path.basename(src_path)
+        name, ext = os.path.splitext(filename)
+        dest_path = self.workdir + os.sep + new_name + ext
+        self.__copyfile(src_path, dest_path)
+
+    def senddata_to_workdir(self):
+        if not self.istodo():
+            return
+        toolpath, avatar_path, animation_path, garment_path, result_path = self.mdobj.get_sim_path()
+        self.copy_to_workdir_as_newname(avatar_path, "avatar")
+        self.copy_to_workdir_as_newname(animation_path, "animation")
+        self.copy_to_workdir_as_newname(garment_path, "garment")
+
+        code_path = os.path.dirname(os.path.dirname(__file__)) + os.sep + "utils" + os.sep + "mdsimcode.py"
+        self.copy_to_workdir_as_newname(code_path, "mdsimcode")
+        pass
+
+    def getdata_from_workdir(self):
+        if not self.istodo():
+            return
+        pass
+    
+    def execute(self):
+        if not self.istodo():
+            return
+        pass
+
 
 class MDObject():
     """
@@ -149,10 +223,13 @@ class MDObject():
     #         bpy.ops.export_shape.mdd(filepath= self.export_dir + os.sep + self.mdname + ".mdd", fps=6,frame_start=1,frame_end=10)
     
     def export_abc(self, dirpath):
+        current_fps = bpy.context.scene.render.fps
+        bpy.context.scene.render.fps = MarvelousDesingerUtils.fps
         self.__export_setup(dirpath)
         path = os.path.normpath(self.export_dir + os.sep + self.mdname + ".abc")
         print("export abc:%s"%path)
         bpy.ops.wm.alembic_export(filepath=path, start=1, end=(MarvelousDesingerUtils.last_frame + 1), selected=True, visible_layers_only=True, flatten=True, apply_subdiv=True, compression_type='OGAWA', as_background_job=False)
+        bpy.context.scene.render.fps = current_fps
 
     def export_to_mddata(self):
         self.export_abc(self.export_dir)
@@ -205,11 +282,29 @@ class MDObject():
         (toolpath, avatar_path, animation_path, garment_path, result_path) = self.get_sim_path()
         # toolpath = os.path.basename(fjw.__file__) + os.sep + "tools" + os.sep + "mdcontrol" + os.sep + "mdcontrol.py"
 
-        cmdstr = 'python "%s" "%s" "%s" "%s" "%s"'%(toolpath, avatar_path, animation_path, garment_path, result_path)
-        print(cmdstr)
-        p = subprocess.Popen(cmdstr)
-        p.wait(5*60)
-        print("mdsim done.")
+        mdexe = MarvelousDesignerScriptUtils.get_mdexepath()
+        if MarvelousDesignerScriptUtils.istodo():
+            if not os.path.exists(mdexe):
+                print("'%s' not found."%mdexe)
+                return False
+            # ファイルのコピー
+            print("MarvelousDesignerScriptUtils.istodo")
+            mdscr_utils = MarvelousDesignerScriptUtils(self)
+            mdscr_utils.senddata_to_workdir()
+
+            script_path = MarvelousDesignerScriptUtils.workdir + os.sep + "mdsimcode.py"
+
+            # MarvelousDesignerを起動
+            cmdstr = '"%s" "%s"'%(mdexe, script_path)
+            print(cmdstr)
+            p = subprocess.Popen(cmdstr)
+            p.wait()
+        else:
+            cmdstr = 'python "%s" "%s" "%s" "%s" "%s"'%(toolpath, avatar_path, animation_path, garment_path, result_path)
+            print(cmdstr)
+            p = subprocess.Popen(cmdstr)
+            p.wait(5*60)
+            print("mdsim done.")
         return
 
     def __set_export_dir(self, dirpath):
@@ -334,7 +429,8 @@ class MDObjectManager():
     #     self.export_mdavatar(bpy.context.scene.objects, run_simulate)
 
 class MarvelousDesingerUtils():
-    last_frame = 60
+    last_frame = 10
+    fps = 5
 
     def __init__(self):
         self.mddata_dir = self.get_mddatadir()
@@ -661,6 +757,23 @@ class MarvelousDesingerUtils():
                     if md_export_depth is not None:
                         root["md_export_depth"] = md_export_depth
 
+                    #garment_pathを絶対パス化する
+                    if "md_garment_path_list" in robj:
+                        pathlist_base = robj["md_garment_path_list"]
+
+                        print("*"*15)
+                        print("* make garment path to abs")
+                        print("*"*15)
+                        lib_dir = os.path.dirname(link_path)
+                        pathlist_new = []
+                        for garment_path in pathlist_base:
+                            new_path = bpy.path.abspath(garment_path, start=lib_dir)
+                            pathlist_new.append(new_path)
+                            print(new_path)
+                        robj["md_garment_path_list"] = pathlist_new
+                        print("*"*15)
+
+
             #proxyの処理
             #同一のアーマチュアデータを使っているものを探してポーズライブラリを設定する。
             for armature_proxy in bpy.data.objects:
@@ -715,4 +828,5 @@ class MarvelousDesingerUtils():
 
             # bpy.app.handlers.scene_update_post.append(process_proxy)
             bpy.context.space_data.show_only_render = False
+
 
