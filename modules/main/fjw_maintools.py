@@ -42,8 +42,6 @@ from mathutils import *
 # assetdir = fujiwara_toolbox.conf.assetdir
 assetdir = ""
 
-    
-
 #コードtips
 #
 #bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
@@ -95,7 +93,6 @@ def load_handler(context):
 
 def dummy():
     pass
-
 
 
 #外部スクリプト実行
@@ -15294,10 +15291,16 @@ class FUJIWARATOOLBOX_401078(bpy.types.Operator):#戻る
 
     def execute(self, context):
         if "_MDWork" in bpy.data.filepath:
+            # path = bpy.data.filepath.replace("_MDWork","")
+            # subprocess.Popen("EXPLORER " + path)
+            # os.remove(bpy.data.filepath)
+            # bpy.ops.wm.quit_blender()
+            #終了しないでやってみる
+            mdwork_path = bpy.data.filepath
             path = bpy.data.filepath.replace("_MDWork","")
-            subprocess.Popen("EXPLORER " + path)
-            os.remove(bpy.data.filepath)
-            bpy.ops.wm.quit_blender()
+            bpy.ops.wm.open_mainfile(filepath=path)
+
+            os.remove(mdwork_path)
 
         return {'FINISHED'}
 ########################################
@@ -15440,6 +15443,8 @@ class FUJIWARATOOLBOX_MD_ADD_GARMENT_PATH(bpy.types.Operator):
             return {"CANCELLED"}
 
         path = os.path.normpath(self.directory + os.sep + self.filename)
+        path = bpy.path.relpath(path)
+
         active = fjw.active()
         if active is None:
             return {"CANCELLED"}
