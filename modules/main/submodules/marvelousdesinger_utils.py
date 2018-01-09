@@ -178,10 +178,10 @@ class MDObject():
                 linked_dir = os.path.dirname(linked_path)
                 garment_path = linked_dir + os.sep + self.mdname + ".zpac"
                 if not os.path.exists(garment_path):
-                    return None
+                    return ""
                 return garment_path
             else:
-                return None
+                return ""
         else:
             if garment_index is None:
                 garment_index = 0
@@ -204,9 +204,12 @@ class MDObject():
                 if "Body" in obj.name:
                     result.append(obj)
 
-        #なければ、選択オブジェクトをそのまま採用する。
+        #なければ、選択オブジェクトのうちメッシュオブジェクトをそのまま採用する。
         if len(result) == 0:
-            result.extend(objects)
+            # result.extend(objects)
+            for obj in objects:
+                if obj.type == "MESH":
+                    result.append(obj)
         
 
         return result
@@ -399,6 +402,15 @@ class MDObjectManager():
         rootname = re.sub("\.\d+", "", root.name)
         bpy.ops.fujiwara_toolbox.command_24259()#親子選択
         selection = fjw.get_selected_list()
+
+        #selectionの中にMESHオブジェクトがなかったら除外する
+        mesh_found = False
+        for obj in selection:
+            if obj.type == "MESH":
+                mesh_found = True
+        if not mesh_found:
+            return None
+
         mdobj = MDObject(rootname, selection)
         self.mdobjects.append(mdobj)
 

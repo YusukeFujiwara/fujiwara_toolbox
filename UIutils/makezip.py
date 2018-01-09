@@ -2,7 +2,6 @@ import sys
 import os
 import shutil
 import subprocess
-import mylib
 import zipfile
 
 args = sys.argv

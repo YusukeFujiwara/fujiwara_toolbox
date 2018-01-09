@@ -50,7 +50,7 @@ except:
 
 def check_abort():
     loc = Mouse().getPos()
-    if loc.getX() == 0 and loc.getY() == 0:
+    if loc.getX() < 10 and loc.getY() < 10:
         print("abort.")
         sys.exit()
 
