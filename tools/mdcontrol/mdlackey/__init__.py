@@ -351,7 +351,7 @@ class MDMacro():
         md.click("obj")
 
         # uwsc.click_item(filename)
-        MD.wait(0.5)
+        MD.wait(2)
         self.paste_str(filepath)
 
         md.click("ok", multiscreen=True)
@@ -377,7 +377,7 @@ class MDMacro():
         md.click("alembic")
 
         # uwsc.click_item(filename)
-        MD.wait(0.5)
+        MD.wait(2)
         self.paste_str(filepath)
         md.click("m", multiscreen=True)
         md.click("ok", multiscreen=True)
@@ -409,7 +409,7 @@ class MDMacro():
 
         md.click("garment")
 
-        MD.wait(0.5)
+        MD.wait(2)
         self.paste_str(filepath)
 
     @classmethod
@@ -426,7 +426,7 @@ class MDMacro():
         md.click("import")
         md.click("mdd_chache_default")
 
-        MD.wait(0.5)
+        MD.wait(2)
         self.paste_str(filepath)
         md.click("m", multiscreen=True)
         md.click("ok", multiscreen=True)
@@ -492,7 +492,7 @@ class MDMacro():
         md.click("file")
         md.click("export")
         md.click("obj_selected_only")
-        MD.wait(0.5)
+        MD.wait(2)
         self.paste_str(filepath)
         MD.wait(0.5)
         uwsc.click_item("はい")
@@ -548,7 +548,7 @@ class MDMacro():
         md.click("file")
         md.click("export")
         md.click("alembic_ogawa")
-        MD.wait(0.5)
+        MD.wait(2)
         self.paste_str(filepath)
         uwsc.click_item("はい")
         MD.wait(1)
