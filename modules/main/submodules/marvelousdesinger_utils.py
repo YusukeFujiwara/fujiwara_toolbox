@@ -533,6 +533,7 @@ class MarvelousDesingerUtils():
 
         loc = Vector((0,0,0))
         qrot = Quaternion((0,0,0,0))
+        scale = Vector((1,1,1))
 
         bonemode = False
         #もしボーンが選択されていたらそのボーンにトランスフォームをあわせる
@@ -542,10 +543,15 @@ class MarvelousDesingerUtils():
             armu.get_pbone_world_co(pbone.head)
             loc = armu.get_pbone_world_co(pbone.head)
             qrot = pbone.rotation_quaternion
+            scale = pbone.scale
+            print("loc:%s"%str(loc))
+            print("qrot:%s"%str(qrot))
+            print("scale:%s"%str(scale))
 
             #boneはYupなので入れ替え
-            qrot = Quaternion((qrot.w, qrot.x, qrot.z * -1, qrot.y))
-            bonemonde = True
+            # qrot = Quaternion((qrot.w, qrot.x, qrot.z * -1, qrot.y))
+            bonemode = True
+        print("bonemode:%s"%str(bonemode))
 
         fjw.mode("OBJECT")
 
@@ -587,6 +593,7 @@ class MarvelousDesingerUtils():
                 if bonemode:
                     obj.rotation_quaternion = obj.rotation_quaternion * qrot
                     obj.rotation_euler = obj.rotation_quaternion.to_euler()
+                    obj.scale = scale
         
                 #読み先にレイヤーをそろえる
                 if current is not None:
@@ -595,6 +602,22 @@ class MarvelousDesingerUtils():
         if attouch_fjwset:
             bpy.ops.fujiwara_toolbox.command_318722()#裏ポリエッジ付加
             bpy.ops.fujiwara_toolbox.set_thickness_driver_with_empty_auto() #指定Emptyで厚み制御
+
+
+    @classmethod
+    def __find_root_armature(cls, start_obj):
+        """start_objから親を辿っていって、アーマチュアがなければそれを返す"""
+        p = start_obj.parent
+        if not p:
+            return None
+
+        result = cls.__find_root_armature(p)
+
+        if not result:
+            if start_obj.type == "ARMATURE":
+                result = start_obj
+        
+        return result
 
 
     @classmethod
@@ -630,38 +653,77 @@ class MarvelousDesingerUtils():
             self.report({"INFO"},file)
             print("MDResult found:"+file)
             # targetname = file
-            dirname = os.path.basename(os.path.dirname(file))
-            targetname = dirname
+            # dirname = os.path.basename(os.path.dirname(file))
+            targetname = file
 
 
             # rootobjでの設置だとルートがないとおかしなことになる
             # dupli_groupの名前でみて、同一名のもののアーマチュアを探して、
             # vislble_objects内のそのデータと同一のプロクシないしアーマチュア、のジオメトリを指定すればいいのでは
 
-            if targetname not in bpy.data.groups:
-                print("!targetname not in bpy.data.groups!")
+            #グループ名だと全部"MainGroup"だからマッチしない！
+            #グループの親ファイルパスの名前を見る！！
+
+            #複製子除去
+            # targetname = re.sub(r"\.\d+", "", targetname)
+            print("basename:%s, targetname:%s"%(file, targetname))
 
             #fileと同名のdupli_groupを検索
-            if targetname in bpy.data.groups:
-                dgroup = bpy.data.groups[targetname]
+            dupli_group = None
+            for group in bpy.data.groups:
+                # gname = re.sub(r"\.\d+", "", group.name)
+                if group.name == "MainGroup":
+                    g_filepath = group.library.filepath
+                    g_filename = os.path.basename(g_filepath)
+                    gname,ext = os.path.splitext(g_filename)
+                else:
+                    gname = group.name
+
+                if targetname == gname:
+                    dupli_group = group
+                    break
+
+            if not dupli_group:
+                print("!targetname not in bpy.data.groups!:%s"%targetname)
+            else:
+                print("*targetname found*:%s"%targetname)
+
+            if dupli_group:
+                dgroup = dupli_group
                 #Bodyが参照しているアーマチュアのデータを取得
                 target_armature = None
-                if "Body" in dgroup.objects:
-                    Body = dgroup.objects["Body"]
-                    modu = fjw.Modutils(Body)
-                    armt = modu.find("Armature")
-                    if armt is not None:
-                        armature = armt.object
-                        if armature is not None:
-                            armature_data = armature.data
-                            for scene_amature in bpy.context.visible_objects:
-                                if scene_amature.type != "ARMATURE":
-                                    continue
-                                if scene_amature.data != armature_data:
-                                    continue
-                                #同一のアーマチュアデータを発見したのでこいつを使用する
-                                target_armature = scene_amature
-                                break
+                #この検索問題　名前Bodyじゃない可能性がある　まずカスタムプロパティで探すべき
+                #普通に全てのアーマチュアがシーン上のアーマチュアと一致したらそれ採用でいいのでは？
+                # for obj in dgroup.objects:
+
+                for scene_amature in bpy.context.visible_objects:
+                    if scene_amature.type != "ARMATURE":
+                        continue
+                    linked_object = scene_amature.proxy_group
+                    if linked_object:
+                        #グループが一致
+                        if linked_object.dupli_group == dupli_group:
+                            #ルートアーマチュアを採用する
+                            target_armature = cls.__find_root_armature(scene_amature)
+                            break
+
+                # if "Body" in dgroup.objects:
+                #     Body = dgroup.objects["Body"]
+                #     modu = fjw.Modutils(Body)
+                #     armt = modu.find("Armature")
+
+                #     if armt is not None:
+                #         armature = armt.object
+                #         if armature is not None:
+                #             armature_data = armature.data
+                #             for scene_amature in bpy.context.visible_objects:
+                #                 if scene_amature.type != "ARMATURE":
+                #                     continue
+                #                 if scene_amature.data != armature_data:
+                #                     continue
+                #                 #同一のアーマチュアデータを発見したのでこいつを使用する
+                #                 target_armature = scene_amature
+                #                 break
 
                 if not target_armature:
                     print("!target_armature not found!")
