@@ -419,34 +419,36 @@ def extract_stroke_to_new_layer():
     strokes = gp_data.layers.active.active_frame.strokes
 
     if len(strokes) == 0:
-        return None
+        return None, None
 
     stroke = strokes[0]
     bpy.ops.gpencil.select_all(action='DESELECT')
-    color = stroke.color.fill_color
+    color = stroke.color.color
+    fill_color = stroke.color.fill_color
     for point in stroke.points:
         point.select = True
     bpy.ops.gpencil.move_to_layer(layer='__CREATE__')
-    return color
+    return color, fill_color
 
 def gen_pancake_all_strokes(dim_z_div):
         fjw.deselect()
         color = (1,1,1)
         while color:
-            color = extract_stroke_to_new_layer()
-            if color:
+            color, fill_color = extract_stroke_to_new_layer()
+            if fill_color:
                 bpy.ops.gpencil.convert(type='CURVE', use_timing_data=True)
                 bpy.ops.gpencil.layer_remove()
                 selection = fjw.get_selected_list()
                 for obj in selection:
-                    curve_to_pancake(obj, dim_z_div, color)
+                    curve_to_pancake(obj, dim_z_div, fill_color)
                     fjw.deselect()
         bpy.ops.gpencil.layer_remove()
     
 
 def gen_pancake(dim_z_div=4):
     gen_pancake_all_strokes(dim_z_div)
-
+    if bpy.context.gpencil_data:
+        bpy.context.gpencil_data.use_stroke_edit_mode = False
 
 ########################################
 #薄め
@@ -502,6 +504,119 @@ class FUJIWARATOOLBOX_GEN_PANCAKE_THICK(bpy.types.Operator):
         gen_pancake(2)
         return {'FINISHED'}
 ########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+############################################################################################################################
+uiitem("ベベルカーブ化")
+############################################################################################################################
+
+def curve_set_bevel(obj, depth = 0.2, color=(1,1,1)):
+    fjw.activate(obj)
+    mat = bpy.data.materials.new("Bevel Mat")
+    mat.diffuse_color = color
+    obj.data.materials.append(mat)
+
+    obj.data.bevel_depth = depth
+    obj.data.bevel_resolution = 4
+
+    bpy.ops.object.origin_set(type='ORIGIN_CENTER_OF_MASS')
+
+def gen_bevelcurve_all_strokes(depth):
+        fjw.deselect()
+        color = (1,1,1)
+        while color:
+            color, fill_color = extract_stroke_to_new_layer()
+            if color:
+                bpy.ops.gpencil.convert(type='CURVE', use_timing_data=True)
+                bpy.ops.gpencil.layer_remove()
+                selection = fjw.get_selected_list()
+                for obj in selection:
+                    curve_set_bevel(obj, depth, color)
+                    fjw.deselect()
+        bpy.ops.gpencil.layer_remove()
+    
+
+def gen_bevelcurve(depth=0.2):
+    gen_bevelcurve_all_strokes(depth)
+    if bpy.context.gpencil_data:
+        bpy.context.gpencil_data.use_stroke_edit_mode = False
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#細め
+########################################
+#bpy.ops.fujiwara_toolbox.gen_bevelcurve_thin() #細め
+class FUJIWARATOOLBOX_GEN_BEVELCURVE_THIN(bpy.types.Operator):
+    """細いベベルカーブを生成する"""
+    bl_idname = "fujiwara_toolbox.gen_bevelcurve_thin"
+    bl_label = "細め"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        gen_bevelcurve(0.05)
+        return {'FINISHED'}
+########################################
+
+########################################
+#ふつう
+########################################
+#bpy.ops.fujiwara_toolbox.gen_bevelcurve_mid() #ふつう
+class FUJIWARATOOLBOX_GEN_BEVELCURVE_MID(bpy.types.Operator):
+    """ふつうのベベルカーブを生成する"""
+    bl_idname = "fujiwara_toolbox.gen_bevelcurve_mid"
+    bl_label = "ふつう"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        gen_bevelcurve(0.2)
+        return {'FINISHED'}
+########################################
+
+########################################
+#太め
+########################################
+#bpy.ops.fujiwara_toolbox.gen_bevelcurve_thick() #太め
+class FUJIWARATOOLBOX_GEN_BEVELCURVE_THICK(bpy.types.Operator):
+    """太いベベルカーブを生成する"""
+    bl_idname = "fujiwara_toolbox.gen_bevelcurve_thick"
+    bl_label = "太め"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        gen_bevelcurve(0.4)
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+
+
+
+
+
 
 
 
