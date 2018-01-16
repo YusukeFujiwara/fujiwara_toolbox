@@ -177,7 +177,8 @@ class FJWSelector(bpy.types.Panel):#メインパネル
         active.operator("fjw_selector.select_bone_nearest_to_cursor_all",icon="GROUP_BONE")
         active.operator("fjw_selector.select_bone_nearest_to_cursor",icon="BONE_DATA")
 
-        if fjw.active() and fjw.active().type == "ARMATURE":
+        # if fjw.active() and fjw.active().type == "ARMATURE":
+        if fjw.active() and "MapController" not in fjw.active().name:
             active = layout.row(align=True)
             active.label("人体", icon="OUTLINER_OB_ARMATURE")
             box = layout.box()
@@ -201,6 +202,10 @@ class FJWSelector(bpy.types.Panel):#メインパネル
             active.operator("fjw_selector.select_bone_nearest_to_cursor_eyebottom_r")
             active.label("")
             active.operator("fjw_selector.select_bone_nearest_to_cursor_eyebottom_l")
+            active.label("")
+            active = boxlayout.row(align=True)
+            active.label("")
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_mouth")
             active.label("")
             active = boxlayout.row(align=True)
             active.operator("fjw_selector.select_bone_nearest_to_cursor_face")
@@ -243,7 +248,8 @@ class FJWSelector(bpy.types.Panel):#メインパネル
             active = boxlayout.row(align=True)
             active.operator("fjw_selector.select_bone_nearest_to_cursor_geometry")
 
-        if fjw.active() and fjw.active().type == "ARMATURE":
+        # if fjw.active() and fjw.active().type == "ARMATURE":
+        if fjw.active() and "MapController" in fjw.active().name:
             active = layout.row(align=True)
             active.label("マップ", icon="OUTLINER_OB_ARMATURE")
             box = layout.box()
@@ -473,8 +479,52 @@ class SelectObjectNearestToCursor(bpy.types.Operator):
         select_object_nearest_to_cursor(bpy.context.visible_objects)
         return {"FINISHED"}
 
-def select_bone_nearest_to_cursor(objects, namepattern=".*"):
-    name_re = re.compile(namepattern, re.IGNORECASE)
+# def select_bone_nearest_to_cursor(objects, namepattern=".*"):
+#     name_re = re.compile(namepattern, re.IGNORECASE)
+
+#     fjw.deselect()
+#     kdu = fjw.KDTreeUtils()
+#     for obj in objects:
+#         if obj.type != "ARMATURE":
+#             continue
+#         armu = fjw.ArmatureUtils(obj)
+
+#         for pbone in armu.pose_bones:
+#             if name_re.search(pbone.name) is None:
+#                 continue
+#             loc = armu.get_pbone_world_co(pbone.head)
+#             data = [obj, pbone.name]
+#             kdu.append_data(loc, data)
+
+#         #ジオメトリ用処理
+#         if namepattern == "geometry":
+#             #人体判定
+#             if "neck" in armu.pose_bones:
+#                 gbone = armu.GetGeometryBone()
+#                 if gbone is not None:
+#                     loc = armu.get_pbone_world_co(gbone.head)
+#                     data = [obj, gbone.name]
+#                     kdu.append_data(loc, data)
+                
+#     #ターゲットがなければ終了
+#     if len(kdu.items) == 0:
+#         return
+
+#     kdu.construct_kd_tree()
+#     result_data = kdu.find(bpy.context.space_data.cursor_location)
+#     kdu.finish()
+
+#     obj = result_data[0]
+#     bonename = result_data[1]
+#     armu = fjw.ArmatureUtils(obj)
+#     fjw.activate(obj)
+#     fjw.mode("POSE")
+#     armu.deselect()
+#     armu.activate(armu.posebone(bonename))
+
+def select_bone_nearest_to_cursor(objects, namelist):
+    if type(namelist) == str:
+        namelist = [namelist]
 
     fjw.deselect()
     kdu = fjw.KDTreeUtils()
@@ -484,14 +534,14 @@ def select_bone_nearest_to_cursor(objects, namepattern=".*"):
         armu = fjw.ArmatureUtils(obj)
 
         for pbone in armu.pose_bones:
-            if name_re.search(pbone.name) is None:
+            if pbone.name not in namelist:
                 continue
             loc = armu.get_pbone_world_co(pbone.head)
             data = [obj, pbone.name]
             kdu.append_data(loc, data)
 
         #ジオメトリ用処理
-        if namepattern == "geometry":
+        if namelist[0] == "geometry":
             #人体判定
             if "neck" in armu.pose_bones:
                 gbone = armu.GetGeometryBone()
@@ -515,6 +565,7 @@ def select_bone_nearest_to_cursor(objects, namepattern=".*"):
     fjw.mode("POSE")
     armu.deselect()
     armu.activate(armu.posebone(bonename))
+
 
 
 class SelectBoneNearestToCursor(bpy.types.Operator):
@@ -892,7 +943,7 @@ class SelectBoneNearestToCursor_Eyetarget(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_eyetarget"
     bl_label = "視線"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.visible_objects, "eyetarget")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["eyetarget", "eyes"])
         return {"FINISHED"}
 
 class SelectBoneNearestToCursor_EyetopR(bpy.types.Operator):
@@ -900,7 +951,7 @@ class SelectBoneNearestToCursor_EyetopR(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_eyetop_r"
     bl_label = "上"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.visible_objects, "eyetop_r")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["eyetop_r", "lid.T.R.002"])
         return {"FINISHED"}
 
 class SelectBoneNearestToCursor_EyetopL(bpy.types.Operator):
@@ -908,7 +959,7 @@ class SelectBoneNearestToCursor_EyetopL(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_eyetop_l"
     bl_label = "上"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.visible_objects, "eyetop_l")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["eyetop_l","lid.T.L.002"])
         return {"FINISHED"}
 
 class SelectBoneNearestToCursor_PupilR(bpy.types.Operator):
@@ -933,7 +984,7 @@ class SelectBoneNearestToCursor_EyebottomR(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_eyebottom_r"
     bl_label = "下"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.visible_objects, "eyebottom_r")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["eyebottom_r","lid.B.R.002"])
         return {"FINISHED"}
 
 class SelectBoneNearestToCursor_EyebottomL(bpy.types.Operator):
@@ -941,7 +992,7 @@ class SelectBoneNearestToCursor_EyebottomL(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_eyebottom_l"
     bl_label = "下"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.visible_objects, "eyebottom_l")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["eyebottom_l","lid.B.L.002"])
         return {"FINISHED"}
 
 
@@ -951,6 +1002,19 @@ class SelectBoneNearestToCursor_Geometry(bpy.types.Operator):
     bl_label = "ジオメトリ"
     def execute(self,context):
         select_bone_nearest_to_cursor(bpy.context.visible_objects, "geometry")
+        return {"FINISHED"}
+
+class SelectBoneNearestToCursor_Mouth(bpy.types.Operator):
+    """ボーン選択。"""
+    bl_idname="fjw_selector.select_bone_nearest_to_cursor_mouth"
+    bl_label = "口"
+    def execute(self,context):
+        namelist = ["teeth.B", "tongue", "chin.001", "tongue.001", "teeth.T", "DEF-forehead.L.002", "lip.B", "chin.002", "lips.L", "lip.B.L.001", "lips.R", "lip.B.R.001", "lip.T", "nose.005", "lip.T.R.001", "lip.T.L.001", ]
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "head")
+        bpy.ops.pose.select_all(action='DESELECT')
+        for bone in fjw.active().pose.bones:
+            if bone.name in namelist:
+                bone.bone.select = True
         return {"FINISHED"}
 
 class SelectBoneNearestToCursor_Face(bpy.types.Operator):
@@ -964,7 +1028,6 @@ class SelectBoneNearestToCursor_Face(bpy.types.Operator):
         for bone in fjw.active().pose.bones:
             if bone.name in namelist:
                 bone.bone.select = True
-
         return {"FINISHED"}
 
 class SelectBoneNearestToCursor_Head(bpy.types.Operator):
@@ -993,14 +1056,14 @@ class SelectBoneNearestToCursor_BodyMaster(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_body_master"
     bl_label = "ボディ親"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.visible_objects, "ボディ親")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["ボディ親","torso"])
         return {"FINISHED"}
 class SelectBoneNearestToCursor_Spine(bpy.types.Operator):
     """ボーン選択。"""
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_spine"
     bl_label = "腰"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.visible_objects, "spine")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["spine","hips"])
         return {"FINISHED"}
 
 
@@ -1010,14 +1073,14 @@ class SelectBoneNearestToCursor_ShoulderR(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_shoulder_r"
     bl_label = "肩"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.visible_objects, "肩\.R")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["肩\.R", "shoulder.R"])
         return {"FINISHED"}
 class SelectBoneNearestToCursor_ShoulderL(bpy.types.Operator):
     """ボーン選択。"""
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_shoulder_l"
     bl_label = "肩"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.visible_objects, "肩\.L")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["肩\.L","shoulder.L"])
         return {"FINISHED"}
 
 class SelectBoneNearestToCursor_ElbowR(bpy.types.Operator):
@@ -1025,28 +1088,28 @@ class SelectBoneNearestToCursor_ElbowR(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_elbow_r"
     bl_label = "肘"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.visible_objects, "肘\.R")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["肘\.R","upper_arm_ik.R"])
         return {"FINISHED"}
 class SelectBoneNearestToCursor_ElbowL(bpy.types.Operator):
     """ボーン選択。"""
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_elbow_l"
     bl_label = "肘"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.visible_objects, "肘\.L")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["肘\.L","upper_arm_ik.L"])
         return {"FINISHED"}
 class SelectBoneNearestToCursor_HandR(bpy.types.Operator):
     """ボーン選択。"""
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_hand_r"
     bl_label = "手"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.visible_objects, "腕\.R")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["腕\.R","hand_ik.R"])
         return {"FINISHED"}
 class SelectBoneNearestToCursor_HandL(bpy.types.Operator):
     """ボーン選択。"""
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_hand_l"
     bl_label = "手"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.visible_objects, "腕\.L")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["腕\.L","hand_ik.L"])
         return {"FINISHED"}
 
 
@@ -1055,28 +1118,28 @@ class SelectBoneNearestToCursor_KneeR(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_knee_r"
     bl_label = "膝"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.visible_objects, "脚\.R")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["脚\.R","thigh_ik.R"])
         return {"FINISHED"}
 class SelectBoneNearestToCursor_KneeL(bpy.types.Operator):
     """ボーン選択。"""
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_knee_l"
     bl_label = "膝"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.visible_objects, "脚\.L")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["脚\.L","thigh_ik.L"])
         return {"FINISHED"}
 class SelectBoneNearestToCursor_FootR(bpy.types.Operator):
     """ボーン選択。"""
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_foot_r"
     bl_label = "足"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.visible_objects, "足\.R")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["足\.R", "foot_ik.R"])
         return {"FINISHED"}
 class SelectBoneNearestToCursor_FootL(bpy.types.Operator):
     """ボーン選択。"""
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_foot_l"
     bl_label = "足"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.visible_objects, "足\.L")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["足\.L", "foot_ik.L"])
         return {"FINISHED"}
 
 
