@@ -521,6 +521,7 @@ def curve_set_bevel(obj, depth = 0.2, color=(1,1,1)):
 
     obj.data.bevel_depth = depth
     obj.data.bevel_resolution = 4
+    obj.data.fill_mode = "FULL"
 
     bpy.ops.object.origin_set(type='ORIGIN_CENTER_OF_MASS')
 
