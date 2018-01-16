@@ -203,6 +203,8 @@ class FJWSelector(bpy.types.Panel):#メインパネル
             active.operator("fjw_selector.select_bone_nearest_to_cursor_eyebottom_l")
             active.label("")
             active = boxlayout.row(align=True)
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_face")
+            active = boxlayout.row(align=True)
             active.label("右")
             active.label("")
             active.operator("fjw_selector.select_bone_nearest_to_cursor_head")
@@ -949,6 +951,20 @@ class SelectBoneNearestToCursor_Geometry(bpy.types.Operator):
     bl_label = "ジオメトリ"
     def execute(self,context):
         select_bone_nearest_to_cursor(bpy.context.visible_objects, "geometry")
+        return {"FINISHED"}
+
+class SelectBoneNearestToCursor_Face(bpy.types.Operator):
+    """ボーン選択。"""
+    bl_idname="fjw_selector.select_bone_nearest_to_cursor_face"
+    bl_label = "顔"
+    def execute(self,context):
+        namelist = ["master_eye.L", "brow.B.L", "brow.B.L.004", "lid.B.L", "lid.T.L", "master_eye.R", "brow.B.R", "brow.B.R.004", "lid.B.R", "lid.T.R", "teeth.B", "tongue_master", "tongue", "chin.001", "tongue.001", "teeth.T", "brow.T.L", "brow.T.L.001", "brow.T.L.003", "brow.T.L.002", "brow.B.L.002", "brow.B.L.001", "brow.B.L.003", "brow.T.R", "brow.T.R.001", "brow.T.R.003", "brow.T.R.002", "brow.B.R.002", "brow.B.R.001", "brow.B.R.003", "nose", "lip.B", "chin.002", "lips.L", "lip.B.L.001", "cheek.B.L.001", "lips.R", "lip.B.R.001", "cheek.B.R.001", "lip.T", "nose.005", "lip.T.R.001", "lip.T.L.001", "nose_master", "nose.002", "nose.001", "nose.003", "nose.004", "nose.L.001", "nose.R.001", "cheek.T.L.001", "cheek.T.R.001", "nose.R", "nose.L", "lid.T.L.002", "lid.T.L.003", "lid.T.L.001", "lid.B.L.002", "lid.B.L.003", "lid.B.L.001", "lid.T.R.002", "lid.T.R.003", "lid.T.R.001", "lid.B.R.002", "lid.B.R.003", "lid.B.R.001", ]
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, "head")
+        bpy.ops.pose.select_all(action='DESELECT')
+        for bone in fjw.active().pose.bones:
+            if bone.name in namelist:
+                bone.bone.select = True
+
         return {"FINISHED"}
 
 class SelectBoneNearestToCursor_Head(bpy.types.Operator):
