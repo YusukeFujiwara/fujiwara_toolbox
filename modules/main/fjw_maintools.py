@@ -5717,6 +5717,31 @@ class FUJIWARATOOLBOX_995874(bpy.types.Operator):#中点
         return {'FINISHED'}
 ########################################
 
+########################################
+#それぞれの原点
+########################################
+#bpy.ops.fujiwara_toolbox.pivot_to_individual() #それぞれの原点
+class FUJIWARATOOLBOX_PIVOT_TO_INDIVIDUAL(bpy.types.Operator):
+    """それぞれの原点を中心にする"""
+    bl_idname = "fujiwara_toolbox.pivot_to_individual"
+    bl_label = ""
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        bpy.context.space_data.pivot_point = 'INDIVIDUAL_ORIGINS'
+        #グリッドスナップ
+        bpy.ops.fujiwara_toolbox.command_357169()
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
 
 ########################################
 #頂点に
@@ -8104,14 +8129,13 @@ class FUJIWARATOOLBOX_860977(bpy.types.Operator):#全て再バインド
         #                    bpy.ops.object.meshdeform_bind(modifier=mod.name)
         #                bpy.ops.object.meshdeform_bind(modifier=mod.name)
         for obj in fjw.get_selected_list("MESH"):
+            fjw.deselect()
             fjw.activate(obj)
             for mod in obj.modifiers:
                 if mod.type == "MESH_DEFORM":
                     if mod.is_bound:
                         bpy.ops.object.meshdeform_bind(modifier=mod.name)
                     bpy.ops.object.meshdeform_bind(modifier=mod.name)
-        
-       
         
         return {'FINISHED'}
 ########################################
@@ -17630,11 +17654,56 @@ class FUJIWARATOOLBOX_HAIR_REBIND(bpy.types.Operator):
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     def execute(self, context):
-        bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
+        # bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
         bpy.ops.fujiwara_toolbox.command_860977()
         bpy.ops.fujiwara_toolbox.rebind_wrapped_sdef()
         return {'FINISHED'}
 ########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#ケージの子を更新
+########################################
+#bpy.ops.fujiwara_toolbox.hair_update_cage_children() #ケージの子を更新
+class FUJIWARATOOLBOX_HAIR_UPDATE_CAGE_CHILDREN(bpy.types.Operator):
+    """このケージを対象にしたメッシュを再バインドする。"""
+    bl_idname = "fujiwara_toolbox.hair_update_cage_children"
+    bl_label = "ケージの子を更新"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        cage = fjw.active()
+        if not is_hair_cage(cage):
+            return {"CANCELLED"}
+
+        fjw.deselect()
+        hair_cage_to_flat(cage)
+
+        binders = find_binders(cage)
+        fjw.deselect()
+        fjw.select(binders)
+        bpy.ops.fujiwara_toolbox.hair_rebind()
+
+        fjw.deselect()
+        hair_cage_to_solid(cage)
+
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
 
 #---------------------------------------------
 uiitem().vertical()
@@ -20922,6 +20991,7 @@ def menu_func_VIEW3D_HT_header(self, context):
         active = layout.row(align = True)
         active.operator("fujiwara_toolbox.command_59910",icon="CURSOR")
         active.operator("fujiwara_toolbox.command_995874",icon="ROTATECENTER")
+        active.operator("fujiwara_toolbox.pivot_to_individual",icon="ROTATECOLLECTION")
 
     if pref.view_buttons:
         active = layout.row(align = True)
