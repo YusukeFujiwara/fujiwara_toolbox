@@ -9173,6 +9173,12 @@ uiitem().vertical()
 ############################################################################################################################
 uiitem("メッシュ")
 ############################################################################################################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
 
 ########################################
 #境界クリース
@@ -9194,6 +9200,34 @@ class FUJIWARATOOLBOX_676177(bpy.types.Operator):#境界クリース
         
         return {'FINISHED'}
 ########################################
+
+########################################
+#弱クリース
+########################################
+#bpy.ops.fujiwara_toolbox.crease_04() #クリース0.4
+class FUJIWARATOOLBOX_CREASE_04(bpy.types.Operator):
+    """メッシュ全体に弱いクリースをかける。"""
+    bl_idname = "fujiwara_toolbox.crease_04"
+    bl_label = "弱クリース"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        obj = fjw.active()
+        current_mode = obj.mode
+        fjw.mode("EDIT")
+        bpy.ops.mesh.select_all(action='SELECT')
+        bpy.ops.transform.edge_crease(value=0.2)
+        fjw.mode(current_mode)
+
+        return {'FINISHED'}
+########################################
+
+
+
+
 
 
 #---------------------------------------------
