@@ -967,7 +967,7 @@ class SelectBoneNearestToCursor_PupilR(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_pupil_r"
     bl_label = "目"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.visible_objects, "pupil_r")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["pupil_r", "master_eye.R"])
         return {"FINISHED"}
 
 class SelectBoneNearestToCursor_PupilL(bpy.types.Operator):
@@ -975,7 +975,7 @@ class SelectBoneNearestToCursor_PupilL(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_pupil_l"
     bl_label = "目"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.visible_objects, "pupil_l")
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["pupil_l", "master_eye.L"])
         return {"FINISHED"}
 
 

@@ -7895,22 +7895,7 @@ uiitem().vertical()
 uiitem().horizontal()
 #---------------------------------------------
 
-
-
-
-########################################
-#ペアレントメッシュデフォーム
-########################################
-class FUJIWARATOOLBOX_449421(bpy.types.Operator):#ペアレントメッシュデフォーム
-    """シュリンクラップは適用。"""
-    bl_idname = "fujiwara_toolbox.command_449421"
-    bl_label = "ペアレントメッシュデフォーム6"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="MOD_MESHDEFORM",mode="")
-
-    def execute(self, context):
+def parent_mesh_deform(self, precision):
         bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
         
         target = bpy.context.scene.objects.active
@@ -7956,7 +7941,7 @@ class FUJIWARATOOLBOX_449421(bpy.types.Operator):#ペアレントメッシュデ
 
                         #バインド
                         #精度6
-                        mod_md.precision = 6
+                        mod_md.precision = precision
                         mod_md.object = target
                         bpy.ops.object.meshdeform_bind(modifier=mod_md.name)
         
@@ -7964,11 +7949,23 @@ class FUJIWARATOOLBOX_449421(bpy.types.Operator):#ペアレントメッシュデ
         for obj in bpy.data.objects:
             obj.select = False
         
-        
-        
-        
-        
-        
+
+
+
+########################################
+#ペアレントメッシュデフォーム
+########################################
+class FUJIWARATOOLBOX_449421(bpy.types.Operator):#ペアレントメッシュデフォーム
+    """シュリンクラップは適用。"""
+    bl_idname = "fujiwara_toolbox.command_449421"
+    bl_label = "ペアレントメッシュデフォーム6"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="MOD_MESHDEFORM",mode="")
+
+    def execute(self, context):
+        parent_mesh_deform(self, 6)
         return {'FINISHED'}
 ########################################
 ########################################
@@ -7985,52 +7982,30 @@ class FUJIWARATOOLBOX_384891(bpy.types.Operator):#5
 
 
     def execute(self, context):
-        bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
-        
-        target = bpy.context.scene.objects.active
-        for obj in bpy.context.selected_objects:
-            if obj.type == "MESH":
-                if obj != target:
-                        mod_md = None
-                        #存在したらそれを使う
-                        for mod in obj.modifiers:
-                            if mod.type == "MESH_DEFORM":
-                                mod_md = mod
-
-                        #まずはシュリンクラップの適用
-                        for mod in obj.modifiers:
-                            if mod.type == "SHRINKWRAP":
-                                bpy.ops.object.modifier_apply(modifier=mod.name)
-                        #メッシュデフォームかける
-                        bpy.context.scene.objects.active = obj
-                        if mod_md == None:
-                            bpy.ops.object.modifier_add(type='MESH_DEFORM')
-                            last = len(obj.modifiers) - 1
-                            mod = obj.modifiers[last]
-                            mod_md = mod
-                            mod_n = last
-                            #一番上にもっていく。mirrorより後。
-                            for i in range(mod_n - 1, -1, -1):
-                                if obj.modifiers[i].type == "MIRROR":
-                                    break
-                                else:
-                                    bpy.ops.object.modifier_move_up(modifier=mod.name)
-
-                        modu = fjw.Modutils(obj)
-                        modu.sort()
-
-                        #バインド
-                        #精度5
-                        mod_md.precision = 5
-                        mod_md.object = target
-                        bpy.ops.object.meshdeform_bind(modifier=mod_md.name)
-        
-        #後処理
-        for obj in bpy.data.objects:
-            obj.select = False
+        parent_mesh_deform(self, 5)
         
         return {'FINISHED'}
 ########################################
+
+########################################
+#精度4
+########################################
+#bpy.ops.fujiwara_toolbox.parent_meshdeform_4() #精度4
+class FUJIWARATOOLBOX_PARENT_MESHDEFORM_4(bpy.types.Operator):
+    """ペアレントメッシュデフォーム"""
+    bl_idname = "fujiwara_toolbox.parent_meshdeform_4"
+    bl_label = "精度4"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        parent_mesh_deform(self, 4)
+        return {'FINISHED'}
+########################################
+
+
 
 
 
@@ -17635,8 +17610,13 @@ class FUJIWARATOOLBOX_UV_DEFORM_BIND_TO_ACTIVE(bpy.types.Operator):
 
     def execute(self, context):
         # bpy.ops.fujiwara_toolbox.bind_wrapped_sdef() #バインド
+        active = fjw.active()
+        selection = fjw.get_selected_list()
         bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
-        bpy.ops.fujiwara_toolbox.command_384891()#メッシュデフォーム　精度5
+        # bpy.ops.fujiwara_toolbox.command_384891()#メッシュデフォーム　精度5
+        bpy.ops.fujiwara_toolbox.parent_meshdeform_4() #精度4
+        fjw.select(selection)
+        active.select = False
         return {'FINISHED'}
 ########################################
 
