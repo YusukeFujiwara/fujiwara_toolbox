@@ -113,6 +113,7 @@ class FJWSelector(bpy.types.Panel):#メインパネル
             active.operator("fjw_selector.camera_work", icon="CAMERA_DATA")
             active.operator("fjw_selector.camera_work_look_at")
             active.prop(bpy.context.space_data, "lock_camera", icon="CAMERA_DATA", text="")
+            active.prop(bpy.context.space_data, "show_only_render", icon="RESTRICT_RENDER_OFF", text="")
             active = boxlayout.row(align=True)
             active.operator("fjw_selector.camerawork_turntable", icon="CAMERA_DATA",)
             active.operator("fjw_selector.camera_unlock", icon="CAMERA_DATA",)

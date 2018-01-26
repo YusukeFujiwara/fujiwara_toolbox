@@ -15288,6 +15288,8 @@ class FUJIWARATOOLBOX_902822(bpy.types.Operator):#MD作業ファイル準備
             if "proxy" in obj.name:
                 obj.select = True
         bpy.ops.object.select_all(action='INVERT')
+        if bpy.context.scene.camera:
+            bpy.context.scene.camera.select = False
         selection = fjw.get_selected_list()
         fjw.delete(selection)
         MarvelousDesingerUtils.setup_mdwork_main(self,context)
@@ -15492,6 +15494,8 @@ class FUJIWARATOOLBOX_MD_ADD_GARMENT_PATH(bpy.types.Operator):
         pathlist = []
         # if "md_garment_path_list" in root:
         #     pathlist = root["md_garment_path_list"]
+        if "md_garment_path_list" in active:
+             pathlist = active["md_garment_path_list"]
 
         if path not in pathlist:
             pathlist.append(path)
