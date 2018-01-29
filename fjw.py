@@ -1759,6 +1759,32 @@ class Textlogger():
             cls.text_data = bpy.data.texts.new("fjw_log")
         cls.text_data.write(text+"\n")
 
+
+"""
+テクスチャ列挙
+の中のイメージ列挙
+パック
+"""
+
+def pack_textures(mat):
+    if not mat or mat.is_library_indirect:
+        print("no mat.")
+        return
+
+    for i in range(len(mat.texture_slots)):
+        tslot = mat.texture_slots[i]
+
+        if not tslot or not tslot.texture or not tslot.texture.image:
+            continue
+
+        try:
+            tslot.texture.image.pack()
+            print("packed:%s"%str(tslot.texture.image))
+        except:
+            print("error:%s"%str(tslot.texture.image))
+            pass
+        
+
 def dummy():
     return
 

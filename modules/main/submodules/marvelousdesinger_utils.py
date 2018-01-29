@@ -755,8 +755,20 @@ class MarvelousDesingerUtils():
         for obj in bpy.context.visible_objects:
             if "result" in obj.name:
                 obj.select = True
+
+                #テクスチャのパック
+                cls.__pack_img_of_obj(obj)
+
         if attouch_fjwset:
             bpy.ops.fujiwara_toolbox.comic_shader_nospec()
+
+    
+    @classmethod
+    def __pack_img_of_obj(cls, obj):
+        print("pack img of:%s"%obj.name)
+        for mat in obj.data.materials:
+            fjw.pack_textures(mat)
+        pass
 
     @classmethod
     def __get_prop(cls, obj, name):
