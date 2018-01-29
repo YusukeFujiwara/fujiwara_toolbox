@@ -12481,7 +12481,60 @@ def set_rigify_ik_fk(value):
         bn.select = True
     
     bpy.ops.transform.translate(value=(0, 0, 0), constraint_axis=(False, False, False), constraint_orientation='NORMAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=0)
-    
+
+#よくよく考えたらpost_fixってリンクしてるキャラ数分あるんじゃ
+# import inspect
+# def get_rigify_postfix():
+#     post_fix = ""
+#     for meth in inspect.getmembers(bpy.ops.pose):
+#         if "fk2ik" in meth[0]:
+#             post_fix = meth[0].split("_")[-1]
+#             break
+#     return post_fix
+
+# def rigify_snap(rig, cmdstr):
+#     """
+#     cmdstr = "ik2fk" or "fk2ik"
+#     """
+#     post_fix = get_rigify_postfix()
+#     opname = "bpy.ops.pose.rigify_arm_%s_%s"%(cmdstr, post_fix)
+#     fjw.activate(rig)
+#     fjw.mode("POSE")
+#     bpy.ops.pose.select_all(action='SELECT')
+#     return opname
+
+
+# このへん作業中
+
+# def set_rigify_ik2fk(rig):
+#     opname = rigify_snap(rig, "ik2fk")
+#     evalstr = opname +'(thigh_fk="thigh_fk.L", shin_fk="shin_fk.L", foot_fk="foot_fk.L", mfoot_fk="MCH-foot_fk.L", thigh_ik="thigh_ik.L", shin_ik="MCH-thigh_ik.L", foot_ik="MCH-thigh_ik_target.L", mfoot_ik="MCH-thigh_ik_target.L")'
+#     eval(evalstr)
+#     bpy.ops.pose.select_all(action='SELECT')
+#     evalstr = opname +'(thigh_fk="thigh_fk.R", shin_fk="shin_fk.R", foot_fk="foot_fk.R", mfoot_fk="MCH-foot_fk.R", thigh_ik="thigh_ik.R", shin_ik="MCH-thigh_ik.R", foot_ik="MCH-thigh_ik_target.R", mfoot_ik="MCH-thigh_ik_target.R")'
+#     eval(evalstr)
+#     bpy.ops.pose.select_all(action='SELECT')
+#     evalstr = opname +'(uarm_fk="upper_arm_fk.L", farm_fk="forearm_fk.L", hand_fk="hand_fk.L", uarm_ik="upper_arm_ik.L", farm_ik="MCH-upper_arm_ik.L", hand_ik="hand_ik.L")'
+#     eval(evalstr)
+#     bpy.ops.pose.select_all(action='SELECT')
+#     evalstr = opname +'(uarm_fk="upper_arm_fk.R", farm_fk="forearm_fk.R", hand_fk="hand_fk.R", uarm_ik="upper_arm_ik.R", farm_ik="MCH-upper_arm_ik.R", hand_ik="hand_ik.R")'
+#     eval(evalstr)
+
+# def set_rigify_fk2ik(rig):
+#     opname = rigify_snap(rig, "fk2ik")
+#     evalstr = opname +'(thigh_fk="thigh_fk.L", shin_fk="shin_fk.L", foot_fk="foot_fk.L", mfoot_fk="MCH-foot_fk.L", thigh_ik="thigh_ik.L", shin_ik="MCH-thigh_ik.L", foot_ik="MCH-thigh_ik_target.L", mfoot_ik="MCH-thigh_ik_target.L")'
+#     eval(evalstr)
+#     bpy.ops.pose.select_all(action='SELECT')
+#     evalstr = opname +'(thigh_fk="thigh_fk.R", shin_fk="shin_fk.R", foot_fk="foot_fk.R", mfoot_fk="MCH-foot_fk.R", thigh_ik="thigh_ik.R", shin_ik="MCH-thigh_ik.R", foot_ik="MCH-thigh_ik_target.R", mfoot_ik="MCH-thigh_ik_target.R")'
+#     eval(evalstr)
+#     bpy.ops.pose.select_all(action='SELECT')
+#     evalstr = opname +'(uarm_fk="upper_arm_fk.L", farm_fk="forearm_fk.L", hand_fk="hand_fk.L", uarm_ik="upper_arm_ik.L", farm_ik="MCH-upper_arm_ik.L", hand_ik="hand_ik.L")'
+#     eval(evalstr)
+#     bpy.ops.pose.select_all(action='SELECT')
+#     evalstr = opname +'(uarm_fk="upper_arm_fk.R", farm_fk="forearm_fk.R", hand_fk="hand_fk.R", uarm_ik="upper_arm_ik.R", farm_ik="MCH-upper_arm_ik.R", hand_ik="hand_ik.R")'
+#     eval(evalstr)
+
+
 
 ########################################
 #IK All
@@ -12501,6 +12554,7 @@ class FUJIWARATOOLBOX_RIGIFY_IK_ALL(bpy.types.Operator):
         if obj.type != "ARMATURE":
             return {"CANCELLED"}
 
+        # set_rigify_ik2fk(obj)
         set_rigify_ik_fk(0)
 
         return {'FINISHED'}
@@ -12524,6 +12578,7 @@ class FUJIWARATOOLBOX_RIGIFY_FK_ALL(bpy.types.Operator):
         if obj.type != "ARMATURE":
             return {"CANCELLED"}
 
+        # set_rigify_fk2ik(obj)
         set_rigify_ik_fk(1)
 
         return {'FINISHED'}

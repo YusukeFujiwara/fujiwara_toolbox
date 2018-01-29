@@ -649,6 +649,36 @@ class RigifyTools():
             eval(evalstr)
             print(evalstr)
 
+    def __rigify_ik2fk(self, rig):
+        fjw.activate(rig)
+        fjw.mode("POSE")
+        bpy.ops.pose.select_all(action='SELECT')
+
+        post_fix = ""
+        for meth in inspect.getmembers(bpy.ops.pose):
+            if "ik2fk" in meth[0]:
+                post_fix = meth[0].split("_")[-1]
+                break
+        if post_fix != "":
+            print("post_fix:%s"%post_fix)
+            bpy.ops.pose.select_all(action='SELECT')
+            evalstr = 'bpy.ops.pose.rigify_leg_ik2fk_'+ post_fix +'(thigh_fk="thigh_fk.L", shin_fk="shin_fk.L", foot_fk="foot_fk.L", mfoot_fk="MCH-foot_fk.L", thigh_ik="thigh_ik.L", shin_ik="MCH-thigh_ik.L", foot_ik="MCH-thigh_ik_target.L", mfoot_ik="MCH-thigh_ik_target.L")'
+            print(evalstr)
+            eval(evalstr)
+            print(evalstr)
+            bpy.ops.pose.select_all(action='SELECT')
+            evalstr = 'bpy.ops.pose.rigify_leg_ik2fk_'+ post_fix +'(thigh_fk="thigh_fk.R", shin_fk="shin_fk.R", foot_fk="foot_fk.R", mfoot_fk="MCH-foot_fk.R", thigh_ik="thigh_ik.R", shin_ik="MCH-thigh_ik.R", foot_ik="MCH-thigh_ik_target.R", mfoot_ik="MCH-thigh_ik_target.R")'
+            eval(evalstr)
+            print(evalstr)
+            bpy.ops.pose.select_all(action='SELECT')
+            evalstr = 'bpy.ops.pose.rigify_arm_ik2fk_'+ post_fix +'(uarm_fk="upper_arm_fk.L", farm_fk="forearm_fk.L", hand_fk="hand_fk.L", uarm_ik="upper_arm_ik.L", farm_ik="MCH-upper_arm_ik.L", hand_ik="hand_ik.L")'
+            eval(evalstr)
+            print(evalstr)
+            bpy.ops.pose.select_all(action='SELECT')
+            evalstr = 'bpy.ops.pose.rigify_arm_ik2fk_'+ post_fix +'(uarm_fk="upper_arm_fk.R", farm_fk="forearm_fk.R", hand_fk="hand_fk.R", uarm_ik="upper_arm_ik.R", farm_ik="MCH-upper_arm_ik.R", hand_ik="hand_ik.R")'
+            eval(evalstr)
+            print(evalstr)
+
 
     def __rigify_ikfk_1(self, rig):
         for pb in rig.pose.bones:
