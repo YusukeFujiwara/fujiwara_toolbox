@@ -16339,36 +16339,9 @@ uiitem().vertical()
 uiitem().horizontal()
 #---------------------------------------------
 
-########################################
-#プロジェクション画像をロード
-########################################
-#bpy.ops.fujiwara_toolbox.load_img_projector() #プロジェクション画像をロード
-class FUJIWARATOOLBOX_LOAD_IMG_PROJECTOR(bpy.types.Operator):
-    """画像をロードしてUV投影する。オブジェクトモード時：アクティブマテリアルにテクスチャを追加していく。編集モード：選択メッシュに新規マテリアルとして割り当てる。"""
-    bl_idname = "fujiwara_toolbox.load_img_projector"
-    bl_label = "プロジェクション画像をロード"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-    # filter_glob = StringProperty(default="*.png", options={"HIDDEN"})
-
-    filename = bpy.props.StringProperty(subtype="FILE_NAME")
-    filepath = bpy.props.StringProperty(subtype="FILE_PATH")
-    directory = bpy.props.StringProperty(subtype="DIR_PATH")
-    files = bpy.props.CollectionProperty(type=bpy.types.PropertyGroup)
-
-    def invoke(self, context, event):
-        obj = fjw.active()
-        if not obj or obj.type != "MESH":
-            self.report({"INFO"}, "メッシュオブジェクトを選択してください。")
-            return {"CANCCELED"}
-
-
-        self.directory = os.path.dirname(bpy.data.filepath)
-        context.window_manager.fileselect_add(self)
-        return {'RUNNING_MODAL'}
+class ProjectionUtils():
+    def __init__(self, filepath):
+        self.filepath = filepath
 
     def __add_new_mat(self, obj):
         mat = bpy.data.materials.new("Projection Mat")
@@ -16390,7 +16363,8 @@ class FUJIWARATOOLBOX_LOAD_IMG_PROJECTOR(bpy.types.Operator):
         プロジェクタ名はテクスチャ名を使うといいかも。
         """
         #オブジェクト作成
-        pos = (baseobj.location[0], baseobj.location[1] - 1, baseobj.location[2])
+        # pos = (baseobj.location[0], baseobj.location[1] - 1, baseobj.location[2])
+        pos = baseobj.location
         bpy.ops.mesh.primitive_plane_add(radius=1, calc_uvs=True, view_align=False, enter_editmode=False, location=pos, layers=baseobj.layers)
         projector = fjw.active()
         projector.name = "UVProjector_"+name
@@ -16426,8 +16400,9 @@ class FUJIWARATOOLBOX_LOAD_IMG_PROJECTOR(bpy.types.Operator):
         m.uv_layer = projector.name
         m.projectors[0].object = projector
 
-    def execute(self, context):
-        name, ext = os.path.splitext(self.filename)
+    def execute(self, use_active_camera = False):
+        filename = os.path.basename(self.filepath)
+        name, ext = os.path.splitext(filename)
 
         obj = fjw.active()
         current_mode = obj.mode
@@ -16441,14 +16416,95 @@ class FUJIWARATOOLBOX_LOAD_IMG_PROJECTOR(bpy.types.Operator):
 
         fjw.mode("OBJECT")
 
-        projector = self.__make_projector(name, obj)
+        active_camera = bpy.context.scene.camera
+        if active_camera and use_active_camera:
+            projector = active_camera
+        else:
+            projector = self.__make_projector(name, obj)
         self.__add_texture_to_mat(mat, self.filepath, projector)
         self.__set_uv_projection(obj, projector)
 
         projector.parent = obj
+        
+
+########################################
+#プロジェクション画像をロード
+########################################
+#bpy.ops.fujiwara_toolbox.load_img_projector() #プロジェクション画像をロード
+class FUJIWARATOOLBOX_LOAD_IMG_PROJECTOR(bpy.types.Operator):
+    """画像をロードしてUV投影する。オブジェクトモード時：アクティブマテリアルにテクスチャを追加していく。編集モード：選択メッシュに新規マテリアルとして割り当てる。"""
+    bl_idname = "fujiwara_toolbox.load_img_projector"
+    bl_label = "プロジェクション画像をロード"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    # filter_glob = StringProperty(default="*.png", options={"HIDDEN"})
+
+    filename = bpy.props.StringProperty(subtype="FILE_NAME")
+    filepath = bpy.props.StringProperty(subtype="FILE_PATH")
+    directory = bpy.props.StringProperty(subtype="DIR_PATH")
+    files = bpy.props.CollectionProperty(type=bpy.types.PropertyGroup)
+
+    def invoke(self, context, event):
+        obj = fjw.active()
+        if not obj or obj.type != "MESH":
+            self.report({"INFO"}, "メッシュオブジェクトを選択してください。")
+            return {"CANCCELED"}
+
+
+        self.directory = os.path.dirname(bpy.data.filepath)
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+    def execute(self, context):
+        prju = ProjectionUtils(self.filepath)
+        prju.execute()
 
         return {'FINISHED'}
 ########################################
+
+########################################
+#アクティブカメラでプロジェクション
+########################################
+#bpy.ops.fujiwara_toolbox.projection_with_active_camera() #アクティブカメラでプロジェクション
+class FUJIWARATOOLBOX_PROJECTION_WITH_ACTIVE_CAMERA(bpy.types.Operator):
+    """画像をロードして、アクティブカメラでプロジェクションする。"""
+    bl_idname = "fujiwara_toolbox.projection_with_active_camera"
+    bl_label = "アクティブカメラでプロジェクション"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    # filter_glob = StringProperty(default="*.png", options={"HIDDEN"})
+
+    filename = bpy.props.StringProperty(subtype="FILE_NAME")
+    filepath = bpy.props.StringProperty(subtype="FILE_PATH")
+    directory = bpy.props.StringProperty(subtype="DIR_PATH")
+    files = bpy.props.CollectionProperty(type=bpy.types.PropertyGroup)
+
+    def invoke(self, context, event):
+        obj = fjw.active()
+        if not obj or obj.type != "MESH":
+            self.report({"INFO"}, "メッシュオブジェクトを選択してください。")
+            return {"CANCCELED"}
+
+
+        self.directory = os.path.dirname(bpy.data.filepath)
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+    def execute(self, context):
+        prju = ProjectionUtils(self.filepath)
+        prju.execute(use_active_camera = True)
+        return {'FINISHED'}
+########################################
+
+
+
+
 
 
 
