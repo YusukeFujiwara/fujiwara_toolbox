@@ -18613,8 +18613,10 @@ class FUJIWARATOOLBOX_318722(bpy.types.Operator):#裏ポリエッジ付加
                 mod.thickness_vertex_group = 0.1
                 mod.use_flip_normals = True
                 mod.use_quality_normals = True
-                mod.material_offset = matindex
-                mod.material_offset_rim = matindex
+                # mod.material_offset = matindex
+                # mod.material_offset_rim = matindex
+                mod.material_offset = 999
+                mod.material_offset_rim = 999
                 modu.sort()
             pass
         
