@@ -357,7 +357,7 @@ class MDObject():
         return result
 
     def __get_export_index_list(self):
-        export_index_list = None
+        export_index_list = [0]
         export_depth = self.__get_prop_from_objects("md_export_depth")
         if export_depth is None:
             export_index_list = [0]
@@ -601,7 +601,7 @@ class MarvelousDesingerUtils():
         
         if attouch_fjwset:
             bpy.ops.fujiwara_toolbox.command_318722()#裏ポリエッジ付加
-            bpy.ops.fujiwara_toolbox.set_thickness_driver_with_empty_auto() #指定Emptyで厚み制御
+            # bpy.ops.fujiwara_toolbox.set_thickness_driver_with_empty_auto() #指定Emptyで厚み制御
 
 
     @classmethod
@@ -759,8 +759,8 @@ class MarvelousDesingerUtils():
                 #テクスチャのパック
                 cls.__pack_img_of_obj(obj)
 
-        if attouch_fjwset:
-            bpy.ops.fujiwara_toolbox.comic_shader_nospec()
+        # if attouch_fjwset:
+        #     bpy.ops.fujiwara_toolbox.comic_shader_nospec()
 
     
     @classmethod
@@ -888,6 +888,7 @@ class MarvelousDesingerUtils():
                             aau = fjw.ArmatureActionUtils(armature)
                             armu = fjw.ArmatureUtils(armature)
                             
+                            fjw.active().hide = False
                             fjw.mode("POSE")
                             poselist = aau.get_poselist()
                             if poselist is not None:

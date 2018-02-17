@@ -12,6 +12,7 @@ import subprocess
 import shutil
 import time
 import copy
+import random
 from collections import OrderedDict
 from mathutils import *
 
@@ -1390,9 +1391,8 @@ class NodetreeUtils():
 
 class VertexGroupUtils():
     #https://blender.stackexchange.com/questions/39653/how-to-set-vertex-weights-from-python
-    def __init__(self, obj, groupname):
+    def __init__(self, obj):
         self.obj = obj
-        self.groupname = groupname
         activate(obj)
         mode("OBJECT")
         pass
@@ -1408,19 +1408,44 @@ class VertexGroupUtils():
 
         return vg
 
-    # def get_vertice(self,index):
-    #     if index < 0:
-    #         return None
-    #     if index >= len(obj.data.vertices):
-    #         return None
-    #     return obj.data.vertices[index]
-
     def get_vertices(self):
         return self.obj.data.vertices
 
     def set_weight(self,index,group_name, weight):
         vg = self.get_group(group_name)
         vg.add([index],weight,"REPLACE")
+
+    #追加分
+    def has_vertex_group(self):
+        vg_index = self.obj.vertex_groups.find("Shrinkwrap")
+        if vg_index == -1:
+            return False
+        return True
+
+    def set_active_group(self, name):
+        if name in self.obj.vertex_groups:
+            vg = self.obj.vertex_groups[name]
+        else:
+            vg = self.obj.vertex_groups.new(name=name)
+        vgi = self.obj.vertex_groups.find(name)
+        #これだと設定できない　インデックスでやるべき
+        # self.obj.vertex_groups.active = vg
+        self.obj.vertex_groups.active_index = vgi
+
+    def assign_weight(self, name, weight):
+        self.set_active_group(name)
+        bpy.context.scene.tool_settings.vertex_group_weight = weight
+        bpy.ops.object.vertex_group_assign()
+
+    def select_mesh(self, name):
+        #頂点グループで選択する
+        if name not in self.obj.vertex_groups:
+            return False
+        vg = self.obj.vertex_groups[name]
+        self.obj.vertex_groups.active = vg
+        bpy.ops.object.vertex_group_select()
+        return True
+
 
 def load_img(filepath):
     #別ディレクトリの同一ファイル名が処理できない！！
@@ -1596,6 +1621,10 @@ class ShapeKeyUtils():
     def set_active_key(self, name):
         index = self.get_key_index(name)
         self.obj.active_shape_key_index = index
+
+    def remove_all_keys(self):
+        for kb in self.key_blocks:
+            self.obj.shape_key_remove(kb)
     
 class CyclesTexturedMaterial():
     def __init__(self, materials):
@@ -1759,6 +1788,26 @@ class Textlogger():
             cls.text_data = bpy.data.texts.new("fjw_log")
         cls.text_data.write(text+"\n")
 
+class ObjectState():
+    def __init__(self, obj):
+        self.obj = obj
+
+    def store_transform(self):
+        self.location = copy.copy(self.obj.location)
+        self.scale = copy.copy(self.obj.scale)
+        self.rotation_mode = self.obj.rotation_mode
+        self.rotation_euler = copy.copy(self.obj.rotation_euler)
+        self.rotation_quaternion = copy.copy(self.obj.rotation_quaternion)
+
+    def restore_transform(self):
+        self.obj.location = self.location
+        self.obj.scale = self.scale
+        # self.obj.rotation_mode = self.rotation_mode
+        self.obj.rotation_euler = self.rotation_euler
+        self.obj.rotation_quaternion = self.rotation_quaternion
+        
+
+
 
 """
 テクスチャ列挙
@@ -1784,6 +1833,10 @@ def pack_textures(mat):
             print("error:%s"%str(tslot.texture.image))
             pass
         
+
+def random_color():
+    return (random.random(), random.random(), random.random())
+    
 
 def dummy():
     return

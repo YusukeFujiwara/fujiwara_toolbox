@@ -3526,6 +3526,7 @@ def set_hdri(path):
         bpy.context.scene.world.use_sky_real = True
         #重たくなるので保留→GLレンダだったら関係なかった！
         bpy.context.scene.world.light_settings.use_environment_light = True
+        bpy.context.scene.world.light_settings.environment_energy = 0
         bpy.context.scene.world.light_settings.environment_color = 'SKY_TEXTURE'
         bpy.context.scene.world.light_settings.gather_method = 'APPROXIMATE'
 
@@ -4032,18 +4033,24 @@ def glcompomat_rendermain(identifier, baselayers=None, edge=True, color=True, ma
         bpy.context.space_data.show_world = False
         bpy.context.scene.render.alpha_mode = 'TRANSPARENT'
 
-        #線画パス設定
-        selfname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
-        blenddir = os.path.dirname(bpy.data.filepath)
-        renderdir = blenddir + os.sep + "render" + os.sep 
-        renderedgepath = renderdir + selfname + "_%s_edge.png"%identifier
-        bpy.context.scene.render.filepath = renderedgepath
+        # 線画いらんかも
+        # #線画パス設定
+        # selfname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
+        # blenddir = os.path.dirname(bpy.data.filepath)
+        # renderdir = blenddir + os.sep + "render" + os.sep 
+        # renderedgepath = renderdir + selfname + "_%s_edge.png"%identifier
+        # bpy.context.scene.render.filepath = renderedgepath
 
-        #セーブ
-        bpy.ops.wm.save_mainfile()
-        #一番はじめにバックグラウンドの線画レンダ投げとく
-        if edge:
-            exec_externalutils("renderedge.py")
+        # #バージョンバックアップ対策
+        # save_version = bpy.context.user_preferences.filepaths.save_version
+        # bpy.context.user_preferences.filepaths.save_version = 0
+        # #セーブ
+        # bpy.ops.wm.save_mainfile()
+        # bpy.context.user_preferences.filepaths.save_version = save_version
+
+        # #一番はじめにバックグラウンドの線画レンダ投げとく
+        # if edge:
+        #     exec_externalutils("renderedge.py")
 
         #再計算回避
         if bpy.context.scene.render.use_simplify:
@@ -4235,7 +4242,9 @@ class FUJIWARATOOLBOX_GLRENDER_COMPOMAT(bpy.types.Operator):
         fjw.mode("OBJECT")
         starttime = time.time()
 
+        bpy.context.scene.render.resolution_percentage = 100
         glcompomat_rendermain("layerAll", baselayers=None, edge=True, color=True, mask=False, shadow=True)
+        time.sleep(3)
         bpy.ops.fujiwara_toolbox.glrender_compomat_chr() #キャラレイヤ
 
         endtime = time.time()
@@ -4270,7 +4279,9 @@ class FUJIWARATOOLBOX_GLRENDER_COMPOMAT_CHR(bpy.types.Operator):
 
         current_layers = fjw.layers_current_state()
 
-        layers = [True for i in range(20)]
+        # layers = [True for i in range(20)]
+        layers = fjw.layers_current_state()
+       
         for i in range(5,20):
             layers[i] = False
         
@@ -5185,7 +5196,7 @@ class FUJIWARATOOLBOX_977845(bpy.types.Operator):#背景手前
     uiitem.button(bl_idname,bl_label,icon="OUTLINER_OB_LATTICE",mode="")
 
     def execute(self, context):
-        setlayer(10)
+        setlayer(15)
         
         return {'FINISHED'}
 ########################################
@@ -5203,7 +5214,7 @@ class FUJIWARATOOLBOX_782024(bpy.types.Operator):#背景
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     def execute(self, context):
-        setlayer(11)
+        setlayer(16)
         
         return {'FINISHED'}
 ########################################
@@ -5221,7 +5232,7 @@ class FUJIWARATOOLBOX_288468(bpy.types.Operator):#背景
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     def execute(self, context):
-        setlayer(12)
+        setlayer(17)
         
         return {'FINISHED'}
 ########################################
@@ -5239,7 +5250,7 @@ class FUJIWARATOOLBOX_546419(bpy.types.Operator):#背景
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     def execute(self, context):
-        setlayer(13)
+        setlayer(18)
         
         return {'FINISHED'}
 ########################################
@@ -5257,7 +5268,7 @@ class FUJIWARATOOLBOX_844075(bpy.types.Operator):#背景奥
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     def execute(self, context):
-        setlayer(14)
+        setlayer(19)
         
         return {'FINISHED'}
 ########################################
@@ -15244,7 +15255,7 @@ class FUJIWARATOOLBOX_mdresult_autoimport_only(bpy.types.Operator):
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     def execute(self, context):
-        MarvelousDesingerUtils.mdresult_auto_import_main(self,context,False)
+        MarvelousDesingerUtils.mdresult_auto_import_main(self,context,True)
         return {'FINISHED'}
 ########################################
 
@@ -16328,7 +16339,7 @@ uiitem().vertical()
 #---------------------------------------------
 
 ############################################################################################################################
-uiitem("便利機能")
+uiitem("プロジェクション")
 ############################################################################################################################
 
 
@@ -16339,102 +16350,17 @@ uiitem().vertical()
 uiitem().horizontal()
 #---------------------------------------------
 
-class ProjectionUtils():
-    def __init__(self, filepath):
-        self.filepath = filepath
-
-    def __add_new_mat(self, obj):
-        mat = bpy.data.materials.new("Projection Mat")
-        obj.data.materials.append(mat)
-        obj.active_material_index = len(obj.material_slots) - 1
-        return mat
-
-    def __get_active_mat(self, obj):
-        if not obj:
-            return None
-
-        if not obj.active_material:
-            self.__add_new_mat(obj)
-        
-        return obj.active_material
-
-    def __make_projector(self, name, baseobj):
-        """
-        プロジェクタ名はテクスチャ名を使うといいかも。
-        """
-        #オブジェクト作成
-        # pos = (baseobj.location[0], baseobj.location[1] - 1, baseobj.location[2])
-        pos = baseobj.location
-        bpy.ops.mesh.primitive_plane_add(radius=1, calc_uvs=True, view_align=False, enter_editmode=False, location=pos, layers=baseobj.layers)
-        projector = fjw.active()
-        projector.name = "UVProjector_"+name
-        projector.data.uv_textures[0].name = projector.name
-        projector.hide_render = True
-
-        #コンストレイント
-        c = projector.constraints.new("DAMPED_TRACK")
-        c.track_axis = "TRACK_NEGATIVE_Z"
-        c.target = baseobj
-
-        #マテリアル
-        projector.data.materials.append(baseobj.active_material)
-
-        return projector
-
-    def __add_texture_to_mat(self, mat, filepath, projector):
-        filename = os.path.basename(filepath)
-        name, ext = os.path.splitext(filename)
-
-        tslot = mat.texture_slots.add()
-        tslot.texture = bpy.data.textures.new(name, "IMAGE")
-        tslot.texture.image = bpy.data.images.load(filepath)
-
-        tslot.uv_layer = projector.name
-        tslot.blend_type = "MULTIPLY"
-
-    def __set_uv_projection(self, obj, projector):
-        obj.data.uv_textures.new(projector.name)
-
-        modu = fjw.Modutils(obj)
-        m = modu.add(projector.name, "UV_PROJECT")
-        m.uv_layer = projector.name
-        m.projectors[0].object = projector
-
-    def execute(self, use_active_camera = False):
-        filename = os.path.basename(self.filepath)
-        name, ext = os.path.splitext(filename)
-
-        obj = fjw.active()
-        current_mode = obj.mode
-
-        if current_mode == "OBJECT":
-            mat = self.__get_active_mat(obj)
-        elif current_mode == "EDIT":
-            self.__add_new_mat(obj)
-            mat = self.__get_active_mat(obj)
-            bpy.ops.object.material_slot_assign()
-
-        fjw.mode("OBJECT")
-
-        active_camera = bpy.context.scene.camera
-        if active_camera and use_active_camera:
-            projector = active_camera
-        else:
-            projector = self.__make_projector(name, obj)
-        self.__add_texture_to_mat(mat, self.filepath, projector)
-        self.__set_uv_projection(obj, projector)
-
-        projector.parent = obj
-        
+from fujiwara_toolbox.modules.main.submodules.projection_tools import ProjectionUtils, ProjectionTools, FaceSetupTools
+    
 
 ########################################
-#プロジェクション画像をロード
+#アクティブマテリアルに
 ########################################
-#bpy.ops.fujiwara_toolbox.load_img_projector() #プロジェクション画像をロード
+#bpy.ops.fujiwara_toolbox.load_img_projector() #アクティブマテリアルに
 class FUJIWARATOOLBOX_LOAD_IMG_PROJECTOR(bpy.types.Operator):
     """画像をロードしてUV投影する。オブジェクトモード時：アクティブマテリアルにテクスチャを追加していく。編集モード：選択メッシュに新規マテリアルとして割り当てる。"""
     bl_idname = "fujiwara_toolbox.load_img_projector"
-    bl_label = "プロジェクション画像をロード"
+    bl_label = "アクティブマテリアルに"
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
@@ -16453,7 +16379,6 @@ class FUJIWARATOOLBOX_LOAD_IMG_PROJECTOR(bpy.types.Operator):
             self.report({"INFO"}, "メッシュオブジェクトを選択してください。")
             return {"CANCCELED"}
 
-
         self.directory = os.path.dirname(bpy.data.filepath)
         context.window_manager.fileselect_add(self)
         return {'RUNNING_MODAL'}
@@ -16464,6 +16389,50 @@ class FUJIWARATOOLBOX_LOAD_IMG_PROJECTOR(bpy.types.Operator):
 
         return {'FINISHED'}
 ########################################
+
+########################################
+#オブジェクトの全てのマテリアルに
+########################################
+#bpy.ops.fujiwara_toolbox.load_img_projector_to_allobjmat() #オブジェクトの全てのマテリアルに
+class FUJIWARATOOLBOX_LOAD_IMG_PROJECTOR_TO_ALLOBJMAT(bpy.types.Operator):
+    """選択マテリアルにプロジェクションテクスチャを追加する。"""
+    bl_idname = "fujiwara_toolbox.load_img_projector_to_allobjmat"
+    bl_label = "オブジェクトの全てのマテリアルに"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    # filter_glob = StringProperty(default="*.png", options={"HIDDEN"})
+
+    filename = bpy.props.StringProperty(subtype="FILE_NAME")
+    filepath = bpy.props.StringProperty(subtype="FILE_PATH")
+    directory = bpy.props.StringProperty(subtype="DIR_PATH")
+    files = bpy.props.CollectionProperty(type=bpy.types.PropertyGroup)
+
+    def invoke(self, context, event):
+        obj = fjw.active()
+        if not obj or obj.type != "MESH":
+            self.report({"INFO"}, "メッシュオブジェクトを選択してください。")
+            return {"CANCCELED"}
+
+        self.directory = os.path.dirname(bpy.data.filepath)
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+    def execute(self, context):
+        prju = ProjectionUtils(self.filepath)
+        prju.execute(to_active_mat=False)
+
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+
 
 ########################################
 #アクティブカメラでプロジェクション
@@ -16504,8 +16473,147 @@ class FUJIWARATOOLBOX_PROJECTION_WITH_ACTIVE_CAMERA(bpy.types.Operator):
 
 
 
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
 
+########################################
+#アクティブオブジェクトをプロジェクタとして追加
+########################################
+#bpy.ops.fujiwara_toolbox.set_activeobject_to_projector() #アクティブオブジェクトでプロジェクション
+class FUJIWARATOOLBOX_SET_ACTIVEOBJECT_TO_PROJECTOR(bpy.types.Operator):
+    """アクティブオブジェクトをプロジェクタとして追加。"""
+    bl_idname = "fujiwara_toolbox.set_activeobject_to_projector"
+    bl_label = "アクティブオブジェクトをプロジェクタとして追加"
+    bl_options = {'REGISTER', 'UNDO'}
 
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        projector = fjw.active()
+        projector.select = False
+        selection = fjw.get_selected_list()
+
+        filepath = projector.active_material.active_texture.image.filepath
+        prju = ProjectionUtils(filepath)
+        prju.set_projector_to_objects(projector, selection)
+        
+        return {'FINISHED'}
+########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#アクティブカメラを基準にjsonからロード
+########################################
+#bpy.ops.fujiwara_toolbox.load_from_json_with_activecamera() #アクティブカメラを基準にjsonからロード
+class FUJIWARATOOLBOX_LOAD_FROM_JSON_WITH_ACTIVECAMERA(bpy.types.Operator):
+    """アクティブカメラを基準とした座標系でjsonからプロジェクタを読み込む。フォルダを指定すると自動ロード。"""
+    bl_idname = "fujiwara_toolbox.load_from_json_with_activecamera"
+    bl_label = "アクティブカメラを基準にjsonからロード"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    filter_glob = StringProperty(default="*.json;*.png;*.psd;", options={"HIDDEN"})
+
+    filename = bpy.props.StringProperty(subtype="FILE_NAME")
+    filepath = bpy.props.StringProperty(subtype="FILE_PATH")
+    directory = bpy.props.StringProperty(subtype="DIR_PATH")
+    files = bpy.props.CollectionProperty(type=bpy.types.PropertyGroup)
+
+    def invoke(self, context, event):
+        self.directory = os.path.dirname(bpy.data.filepath) + os.sep + "textures"
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+    def execute(self, context):
+        cam = bpy.context.scene.camera
+        pt = ProjectionTools()
+        pt.set_camera(cam)
+
+        skinpath = ""
+
+        jsonmode = True
+        targetfiles = []
+        if self.files[0].name != "":
+            for file in self.files:
+                targetfiles.append(file.name)
+        else:
+            #ファイル指定ナシ＝jsonモード
+            files = os.listdir(self.directory)
+            # extlist = [".json", ".png"]
+            extlist = [".json"]
+            for file in files:
+                name, ext = os.path.splitext(file)
+                if file == "skin.psd":
+                    skinpath = self.directory + os.sep + file
+                if ext in extlist:
+                    targetfiles.append(file)
+
+        nottiledlist = ["cheek.json"]
+        fliplist = ["Eyebrow.json", "Eyelid.json", "Pupil.json"]
+        for file in targetfiles:
+            filepath = self.directory + os.sep + file
+            name, ext = os.path.splitext(file)
+            if ext == ".json":
+                if file in nottiledlist:
+                    obj = pt.load_img_with_camera(filepath, tilenumber=1)
+                else:
+                    obj = pt.load_img_with_camera(filepath)
+            elif ext == ".png" or ext == ".psd":
+                obj = pt.load_img_with_camera(filepath, tilenumber=1, use_json=False)
+
+            if file in fliplist:
+                pt.flip_x_dup(obj)
+
+        return {'FINISHED'}
+########################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+########################################
+#顔セットアップ
+########################################
+#bpy.ops.fujiwara_toolbox.setup_face_from_camera() #顔セットアップ
+class FUJIWARATOOLBOX_SETUP_FACE_FROM_CAMERA(bpy.types.Operator):
+    """アクティブカメラから選択メッシュを顔としてセットアップする。"""
+    bl_idname = "fujiwara_toolbox.setup_face_from_camera"
+    bl_label = "顔セットアップ"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        obj = fjw.active()
+        if obj.type != "MESH":
+            self.report({"WARNING"}, "メッシュオブジェクトを選択してください。")
+            return {"CANCELLED"}
+
+        cam = bpy.context.scene.camera
+        fst = FaceSetupTools(obj, cam)
+        fst.facesetup()
+
+        return {'FINISHED'}
+########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
 
 
 
@@ -17855,7 +17963,7 @@ class FUJIWARATOOLBOX_UV_DEFORM_BIND_TO_ACTIVE(bpy.types.Operator):
         # bpy.ops.fujiwara_toolbox.bind_wrapped_sdef() #バインド
         active = fjw.active()
         selection = fjw.get_selected_list()
-        bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
+        # bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
         # bpy.ops.fujiwara_toolbox.command_384891()#メッシュデフォーム　精度5
         bpy.ops.fujiwara_toolbox.parent_meshdeform_4() #精度4
         fjw.select(selection)
@@ -18156,6 +18264,83 @@ class FUJIWARATOOLBOX_RANDOMIZE_SCALE_ALL(bpy.types.Operator):
         return {'FINISHED'}
 ########################################
 
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+############################################################################################################################
+uiitem("メッシュツール")
+############################################################################################################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+########################################
+#複製分離してスキン線画化
+########################################
+#bpy.ops.fujiwara_toolbox.make_skin_line() #複製分離してスキン線画化
+class FUJIWARATOOLBOX_MAKE_SKIN_LINE(bpy.types.Operator):
+    """選択頂点を複製分離してスキンmodをかける。"""
+    bl_idname = "fujiwara_toolbox.make_skin_line"
+    bl_label = "複製分離してスキン線画化"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        # bpy.ops.fujiwara_toolbox.command_635930()#複製分離
+        fjw.mode("OBJECT")
+        obj = fjw.active()
+        fjw.deselect()
+        fjw.select([obj])
+        bpy.ops.object.duplicate()
+
+        obj = fjw.active()
+        obj.name = obj.name+"_Edge"
+        fjw.deselect()
+        fjw.select([obj])
+        #シェイプキーの除去
+        shu = fjw.ShapeKeyUtils(obj)
+        shu.remove_all_keys()
+
+        #subsurf以外のmodの適用
+        modu = fjw.Modutils(obj)
+        for mod in modu.mods:
+            if mod.type != "SUBSURF":
+                modu.apply(mod)
+        
+        #選択頂点以外の除去
+        fjw.mode("EDIT")
+        bpy.ops.mesh.duplicate(mode=1)
+        bpy.ops.mesh.select_all(action='INVERT')
+        bpy.ops.mesh.delete(type='VERT')
+        bpy.ops.mesh.select_all(action='SELECT')
+        m = modu.add("Skin", "SKIN")
+        bpy.ops.object.skin_root_mark()
+        val = 0.05
+        bpy.ops.transform.skin_resize(value=(val, val, val), constraint_axis=(False, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1)
+
+        fjw.mode("OBJECT")
+        #マテリアル初期化
+        obj.data.materials.clear()
+        blackmat = fjw.get_material("黒ベタ")
+        blackmat.diffuse_color = (0,0,0)
+        blackmat.use_shadeless = True
+        obj.data.materials.append(blackmat)
+
+        fjw.mode("EDIT")
+            
+
+
+        return {'FINISHED'}
+########################################
 
 #---------------------------------------------
 uiitem().vertical()
@@ -18635,7 +18820,7 @@ class FUJIWARATOOLBOX_gen_weight_from_vertex_ao(bpy.types.Operator):
             #頂点AO
             bpy.ops.paint.vertex_color_dirt()
 
-            vgu = fjw.VertexGroupUtils(obj,vertex_group_name)
+            vgu = fjw.VertexGroupUtils(obj)
             vertex_group = vgu.get_group(vertex_group_name)
             vertices = vgu.get_vertices()
             for v in vertices:

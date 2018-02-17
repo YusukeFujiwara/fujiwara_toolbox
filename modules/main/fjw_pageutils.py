@@ -32,12 +32,6 @@ bl_info = {
     "tracker_url": "http://projects.blender.org/tracker/index.php?func=detail&aid=",
     "category": "Object"}
 
-
-
-
-
-
-
 ############################################################################################################################
 ############################################################################################################################
 #パネル部分 メインパネル登録
@@ -981,6 +975,33 @@ def save_pre(context):
                     fjw.mode(current_mode)
 
 
+@persistent
+def rendersize_auto_fitting(context):
+    #背景にレンダサイズをあわせる
+
+    pref = fujiwara_toolbox.conf.get_pref()
+    if not pref.pageutils or not pref.pageutils_set_res_to_bgimg_onload:
+        return
+    
+    print("bpy.data.filepath:"+bpy.data.filepath)
+    if bpy.data.filepath == "":
+        return
+    
+    basename = os.path.basename(bpy.data.filepath)
+    name, ext = os.path.splitext(basename)
+    
+    m = re.fullmatch(r"page|\d+", name)
+    if not m:
+        return
+    
+    #背景にサイズをあわせる
+    bpy.ops.object.set_resolution_to_bgimg()
+
+    #ハンドラから除去しとく
+    #冒頭でハンドラ除去したらそれ以降の処理が死ぬので注意
+    #load_postは別に除去の必要ない
+    # bpy.app.handlers.load_post.remove(rendersize_auto_fitting)
+    
 
 ############################################################################################################################
 ############################################################################################################################
@@ -992,6 +1013,7 @@ def sub_registration():
     bpy.types.Scene.newcell_name = bpy.props.StringProperty()
     bpy.types.Scene.template_name = bpy.props.StringProperty()
     bpy.app.handlers.save_pre.append(save_pre)
+    bpy.app.handlers.load_post.append(rendersize_auto_fitting)
     pass
 
 def sub_unregistration():

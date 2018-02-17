@@ -99,6 +99,10 @@ class FujiwaraToolBoxPreferences(AddonPreferences):
             name="ページユーティリティでCPUプレビューを生成する",
             default=True,
             )
+    pageutils_set_res_to_bgimg_onload = BoolProperty(
+            name="ファイルロード時に背景にレンダサイズをあわせる",
+            default=True,
+            )
     subsurfmodelingtools = BoolProperty(
             name="Subsurf Modeling Tools",
             default=False,
@@ -175,6 +179,7 @@ class FujiwaraToolBoxPreferences(AddonPreferences):
         layout.prop(self, "roomtools")
         layout.prop(self, "pageutils")
         layout.prop(self, "pageutils_cpurender")
+        layout.prop(self, "pageutils_set_res_to_bgimg_onload")
         layout.prop(self, "subsurfmodelingtools")
         layout.prop(self, "cameratools")
         layout.prop(self, "greasepenciltools")
