@@ -408,7 +408,19 @@ class Modutils():
         pass
 
 class ArmatureUtils():
-    def __init__(self, obj):
+    def create(self, name, loc):
+        bpy.ops.object.armature_add(view_align=False, enter_editmode=False, location=loc, layers=bpy.context.scene.layers)
+        obj = active()
+        obj.name = name
+        self.armature = obj
+        self.clear_bones()
+        return obj
+    
+    def __init__(self, obj=None, name=None, loc=(0,0,0)):
+        if obj == None:
+            # 新規作成
+            obj = self.create(name, loc)
+
         if obj.type != "ARMATURE":
             return None
 
@@ -532,8 +544,30 @@ class ArmatureUtils():
         return geo
 
 
-    def func(self):
-        pass
+    #ボーン作成まわり
+    def add_bone(self, name, pos, vec):
+        pos = Vector(pos)
+        vec = Vector(vec)
+        
+        obj = active()
+        mode("EDIT")
+        bpy.ops.armature.select_all(action='DESELECT')
+        bone = obj.data.edit_bones.new(name)
+        bone.head = pos
+        bone.tail = pos + vec
+        return bone
+
+    def remove_bone(self, ebone):
+        mode("EDIT")
+        self.armature.data.edit_bones.remove(ebone)
+        return
+    
+    def clear_bones(self):
+        mode("EDIT")
+        for ebone in self.armature.data.edit_bones:
+            self.armature.data.edit_bones.remove(ebone)
+        return
+
 
 class ArmatureActionUtils():
     def __init__(self, armature):
@@ -1836,7 +1870,39 @@ def pack_textures(mat):
 
 def random_color():
     return (random.random(), random.random(), random.random())
-    
+
+
+def get_random_from_array(array):
+    i = random.randint(0, len(array)-1)
+    return array[i]
+
+def random_id(length, uppercase=False):
+    """
+    length桁のランダムIDを生成する。
+    """
+    #https://qiita.com/okkn/items/3aef4458ed2269a59d63
+    small_alphabets = [chr(i) for i in range(97, 97+26)]
+    large_alphabets = [chr(i) for i in range(65, 65+26)]
+    numbers = [chr(i) for i in range(48, 48+10)]
+    characters = []
+    if uppercase:
+        characters.extend(large_alphabets)
+    else:
+        characters.extend(small_alphabets)
+    characters.extend(numbers)
+
+    result = ""
+    for i in range(length):
+        result += get_random_from_array(characters)
+    return result
+
+def id(obj):
+    """
+    オブジェクトのユニークIDを生成・取得する。
+    """
+    if "fjwid" not in obj:
+        obj["fjwid"] = random_id(16, True)
+    return obj["fjwid"]
 
 def dummy():
     return

@@ -249,7 +249,7 @@ class ProjectionTools():
     def load_png_with_camera(self, filepath):
         pass
 
-    def load_img_with_camera(self, filepath, tilenumber=8, use_json=True):
+    def load_img_with_camera(self, filepath, tilenumber=1, use_json=True):
         dirname = os.path.dirname(filepath)
         basename = os.path.basename(filepath)
         name, ext = os.path.splitext(basename)
@@ -258,6 +258,7 @@ class ProjectionTools():
         plane = self.make_plane(self.camera, filepath)
         if not plane:
             return None
+        plane.hide_render = True
 
         if use_json:
             ############json依存ここから
@@ -265,6 +266,7 @@ class ProjectionTools():
             doc_size = [j["document"]["width"], j["document"]["height"]]
             layer_size = [j["layer"]["width"],j["layer"]["height"]]
             layer_pos = Vector(j["layer"]["posmid"])
+            tilenumber = j["tile"]
 
             camscale = self.camera.data.ortho_scale
 
@@ -279,7 +281,7 @@ class ProjectionTools():
             plane.location = (layer_pos[0], layer_pos[1], 0)
 
             zpos = (0.5 + len(self.camera.children)*0.1)*-1
-            plane.location[2] = zpos
+            plane.location[2] = zpos*0.1
 
             #レイヤースケール
             #ドキュメントにおけるレイヤーの大きさ割合を算出
@@ -372,27 +374,48 @@ class FaceSetupTools():
             return self.materials[name]
         return None
 
+        #やっぱだめこれ
+        # obj = fjw.active()
+        # if name in obj.data.materials:
+        #     return obj.data.materials[name]
+        # else:
+        #     print("mat not found:%s"%name)
+        #     mat = bpy.data.materials.new(name)
+        #     print("mat created.")
+        #     obj.data.materials.append(mat)
+        # return mat
+
     def get_material(self, name):
         #オブジェクトからの取得じゃなくて顔システムからの取得なことに注意
+        #これが割当失敗の原因では？ちゃんと変数に保持できてないのでは。
+        #→オブジェクトのマテリアルでやる
         mat = self.getmat_with_name(name)
         if not mat:
             #マテリアルがリストにないので新規作成
             mat = bpy.data.materials.new(name)
             self.materials[name] = mat
+        print("material:%s"%str(mat))
         return mat
+
+        # mat = self.getmat_with_name(name)
+        # return mat
 
     def assign_material_to_mesh(self, mat):
         obj = fjw.active()
         mode = obj.mode
-        bpy.ops.object.material_slot_add()
-        obj.active_material = mat
+        if mat.name not in obj.data.materials:
+            obj.data.materials.append(mat)
+        index = obj.material_slots.find(mat.name)
+        obj.active_material_index = index
         fjw.mode("EDIT")
         bpy.ops.object.material_slot_assign()
         fjw.mode(mode)
 
-    def select_mesh_by_material(self, obj, mat):
+    @classmethod
+    def select_mesh_by_material(self, obj, matname):
         fjw.mode("EDIT")
-        obj.active_material = mat
+        index = obj.material_slots.find(matname)
+        obj.active_material_index = index
         bpy.ops.object.material_slot_select()
 
 
@@ -433,14 +456,17 @@ class FaceSetupTools():
         image = bpy.data.images.load(path_noalpha)
         return image
 
-    def mesh_dup(self):
-        #選択メッシュを複製して厚みをつける(オフセット用)
+    def mesh_dup(self, vertex_group=""):
         base = fjw.active()
         mode = base.mode
 
         fjw.mode("OBJECT")
         fjw.deselect()
         fjw.mode("EDIT")
+
+        if vertex_group != "":
+            self.mesh_deselect()
+            self.select_by_vertex_group(vertex_group)
 
         bpy.ops.mesh.duplicate(mode=1)
         bpy.ops.mesh.separate(type='SELECTED')
@@ -467,6 +493,9 @@ class FaceSetupTools():
         return dup
 
     def get_projector(self, name, find=False):
+        #nameのクリーンアップ
+        name = re.sub(r"\.\d+", "", name)
+
         # カメラの子からプロジェクタを取得する
         for obj in self.camera.children:
             if name == obj.name:
@@ -474,11 +503,13 @@ class FaceSetupTools():
             if find:
                 if name in obj.name:
                     return obj
+        print("get_projector:%s not found."%name)
         return None
 
     def get_projector_image(self, projector_name, find=False):
         proj = self.get_projector(projector_name, find)
         if not proj:
+            print("!:no proj.")
             return None
         img = proj.data.materials[0].texture_slots[0].texture.image
         return img
@@ -490,10 +521,16 @@ class FaceSetupTools():
         mat.diffuse_color = (1, 1, 1)
 
     def facemat_skinsetup(self, mat):
-        img = self.get_projector_image("Projector_skin")
+        img = self.get_projector_image("Projector_Skin")
         if not img:
+            print("!:no img.")
             return
         tslot = self.set_texture_to_mat(mat, img, "Skin")
+        self.tslot_setting(tslot, True, False)
+        tslot = self.add_projectorimage_to_mat(mat, "Shadow")
+        self.tslot_setting(tslot, True, False)
+        tslot = self.add_projectorimage_to_mat(mat, "Cheek")
+        self.tslot_setting(tslot, True, False)
 
     def clear_mods(self):
         obj = fjw.active()
@@ -510,6 +547,11 @@ class FaceSetupTools():
         mode = obj.mode
         fjw.mode("OBJECT")
         proj = self.get_projector(projector_name, find)
+        if not proj:
+            print("!:no proj:%s"%projector_name)
+            #プロジェクタがなければキャンセル
+            fjw.mode(mode)
+            return
         ProjectionUtils.set_uv_projection(obj, proj)
         fjw.mode(mode)
         pass
@@ -560,6 +602,48 @@ class FaceSetupTools():
                 v.select = False
         bm.select_flush(False)
 
+    def face_cleanup(self):
+        #生成した目とかいろいろ除去
+        #UV除去
+        #マテリアル除去
+        #モディファイア除去
+        return
+
+    def assign_material_by_vetexgroup(self, vertex_group, mat, deselect_axis=""):
+        obj = fjw.active()
+        mode = obj.mode
+        fjw.mode("EDIT")
+        self.mesh_deselect()
+        self.select_by_vertex_group(vertex_group)
+        if deselect_axis != "":
+            self.deselect_by_axis(deselect_axis)
+        self.assign_material_to_mesh(mat)
+        fjw.mode(mode)
+
+    def tslot_setting(self, tslot, use_map_color_diffuse, use_map_alpha, invert=False, use_rgb_to_intensity=False):
+        if not tslot:
+            print("!:no slot.")
+            return
+        tslot.use_map_color_diffuse = use_map_color_diffuse
+        tslot.use_map_alpha = use_map_alpha
+        tslot.invert = invert
+        tslot.use_rgb_to_intensity = use_rgb_to_intensity
+
+    def add_projectorimage_to_mat(self, mat, projector_name):
+        prj = self.get_projector(projector_name, True)
+        if not prj:
+            print("!:no prj.")
+            return
+        img = self.get_projector_image(prj.name)
+        tslot = self.set_texture_to_mat(mat, img, prj.name)
+        return tslot
+
+    def attouch_uraporiedge(self):
+        fjw.deselect()
+        fjw.activate(self.face)
+        bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+        bpy.ops.fujiwara_toolbox.command_318722()
+
     def facesetup(self):
         """
         ミラーモディファイアの適用
@@ -585,121 +669,91 @@ class FaceSetupTools():
         ########################################
         # メッシュセットアップ
         ########################################
-        #プロジェクション設定
+        #鼻線画
+        fjw.mode("EDIT")
+        self.mesh_deselect()
+        bpy.context.scene.tool_settings.mesh_select_mode = [True, False, False]
+        self.select_by_vertex_group("Nose")
+        bpy.ops.fujiwara_toolbox.make_skin_line()
+        bpy.ops.transform.skin_resize(value=(0.0526974, 0.0526974, 0.0526974), constraint_axis=(False, False, False), constraint_orientation='LOCAL', mirror=True, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=0.0295401)
+        bpy.ops.mesh.subdivide(smoothness=0)
+        fjw.mode("OBJECT")
+        fjw.deselect()
+        fjw.activate(self.face)
 
+
+        #プロジェクション設定
         #肌
         mat = self.get_material("Skin")
         self.set_projection("Shadow", mat, find=True)
-        self.set_projection("cheek", mat, find=True)
-        mat.diffuse_color = fjw.random_color()
+        self.set_projection("Cheek", mat, find=True)
         self.assign_material_to_mesh(mat)
 
         #まつげテクスチャをつかった目の穴
         mat = self.get_material("Eyehole_R")
         self.set_projection("Eyelid_R", mat, find=True)
-        mat.diffuse_color = fjw.random_color()
-        self.mesh_deselect()
-        self.select_by_vertex_group("Eye")
-        self.deselect_by_axis("x")
-        self.assign_material_to_mesh(mat)
+        self.assign_material_by_vetexgroup("Eye", mat, "x")
 
         mat = self.get_material("Eyehole_L")
         self.set_projection("Eyelid_L", mat, find=True)
-        mat.diffuse_color = fjw.random_color()
-        self.mesh_deselect()
-        self.select_by_vertex_group("Eye")
-        self.deselect_by_axis("-x")
-        self.assign_material_to_mesh(mat)
+        self.assign_material_by_vetexgroup("Eye", mat, "-x")
 
         #口
         mat = self.get_material("Mouth")
         self.set_projection("Mouth", mat, find=True)
-        mat.diffuse_color = fjw.random_color()
-        self.mesh_deselect()
-        self.select_by_vertex_group("Mouth")
-        self.assign_material_to_mesh(mat)
+        self.assign_material_by_vetexgroup("Mouth", mat)
 
         #まゆげ
         #選択したら複製する
-        self.mesh_deselect()
-        self.select_by_vertex_group("Eyebrow")
-        eyebrow = self.mesh_dup()
+        eyebrow = self.mesh_dup("Eyebrow")
         eyebrow.location[1] -= 0.001
         eyebrow.name = "Eyebrow"
 
         mat = self.get_material("Eyebrow_R")
         self.set_projection("Eyebrow_R", mat, find=True)
-        mat.diffuse_color = fjw.random_color()
-        self.mesh_deselect()
-        self.select_by_vertex_group("Eyebrow")
-        self.deselect_by_axis("x")
-        self.assign_material_to_mesh(mat)
+        self.assign_material_by_vetexgroup("Eyebrow", mat, "x")
 
         mat = self.get_material("Eyebrow_L")
         self.set_projection("Eyebrow_L", mat, find=True)
-        mat.diffuse_color = fjw.random_color()
-        self.mesh_deselect()
-        self.select_by_vertex_group("Eyebrow")
-        self.deselect_by_axis("-x")
-        self.assign_material_to_mesh(mat)
+        self.assign_material_by_vetexgroup("Eyebrow", mat, "-x")
         
         #目
         fjw.mode("OBJECT")
         fjw.activate(self.face)
         fjw.mode("EDIT")
-        self.mesh_deselect()
-        self.select_by_vertex_group("Eye")
-        eye = self.mesh_dup()
+        eye = self.mesh_dup("Eye")
         eye.location[1] += 0.001
         eye.name = "Eye"
         
         mat = self.get_material("Eye_R")
         self.set_projection("Pupil_R", mat, find=True)
-        mat.diffuse_color = fjw.random_color()
-        self.mesh_deselect()
-        self.select_by_vertex_group("Eye")
-        self.deselect_by_axis("x")
-        self.assign_material_to_mesh(mat)
+        self.assign_material_by_vetexgroup("Eye", mat, "x")
 
         mat = self.get_material("Eye_L")
         self.set_projection("Pupil_L", mat, find=True)
-        mat.diffuse_color = fjw.random_color()
-        self.mesh_deselect()
-        self.select_by_vertex_group("Eye")
-        self.deselect_by_axis("-x")
-        self.assign_material_to_mesh(mat)
+        self.assign_material_by_vetexgroup("Eye", mat, "-x")
 
         #外周をすこし後ろに
         bpy.ops.mesh.select_all(action='SELECT')
         bpy.ops.mesh.region_to_loop()
-        bpy.ops.transform.translate(value=(0, 0.00963444, 0), constraint_axis=(False, True, False), constraint_orientation='GLOBAL', mirror=True, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1, release_confirm=True, use_accurate=False)
+        bpy.ops.transform.translate(value=(0, 0.001, 0), constraint_axis=(False, True, False), constraint_orientation='GLOBAL', mirror=True, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1, release_confirm=True, use_accurate=False)
 
 
         #まつげ　Z処理的に、厚み付じゃだめ。座標をズラす。
         fjw.mode("OBJECT")
         fjw.activate(self.face)
         fjw.mode("EDIT")
-        self.mesh_deselect()
-        self.select_by_vertex_group("Eye")
-        eyelid = self.mesh_dup()
+        eyelid = self.mesh_dup("Eye")
         eyelid.location[1] -= 0.001
         eyelid.name = "Eyelid"
 
         mat = self.get_material("Eyelid_R")
         self.set_projection("Eyelid_R", mat, find=True)
-        mat.diffuse_color = fjw.random_color()
-        self.mesh_deselect()
-        self.select_by_vertex_group("Eye")
-        self.deselect_by_axis("x")
-        self.assign_material_to_mesh(mat)
+        self.assign_material_by_vetexgroup("Eye", mat, "x")
 
         mat = self.get_material("Eyelid_L")
         self.set_projection("Eyelid_L", mat, find=True)
-        mat.diffuse_color = fjw.random_color()
-        self.mesh_deselect()
-        self.select_by_vertex_group("Eye")
-        self.deselect_by_axis("-x")
-        self.assign_material_to_mesh(mat)
+        self.assign_material_by_vetexgroup("Eye", mat, "-x")
 
         #外周の拡張
         bpy.ops.mesh.select_all(action='SELECT')
@@ -709,12 +763,6 @@ class FaceSetupTools():
         bpy.ops.mesh.extrude_region_move(MESH_OT_extrude_region={"mirror":False}, TRANSFORM_OT_translate={"value":(0, 0, 0), "constraint_axis":(False, False, False), "constraint_orientation":'GLOBAL', "mirror":False, "proportional":'DISABLED', "proportional_edit_falloff":'SMOOTH', "proportional_size":1, "snap":False, "snap_target":'CLOSEST', "snap_point":(0, 0, 0), "snap_align":False, "snap_normal":(0, 0, 0), "gpencil_strokes":False, "texture_space":False, "remove_on_cancel":False, "release_confirm":False, "use_accurate":False})
         bpy.ops.transform.resize(value=(1.66677, 1.66677, 1.66677), constraint_axis=(False, False, False), constraint_orientation='GLOBAL', mirror=True, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1)
 
-
-
-        # #影
-        # mat = self.get_material("Shadow")
-        # #チーク
-        # mat = self.get_material("Cheek")
         fjw.mode("OBJECT")
         fjw.activate(self.face)
         fjw.mode("OBJECT")
@@ -725,115 +773,79 @@ class FaceSetupTools():
         mat = self.get_material("Skin")
         self.facemat_basesetup(mat)
         self.facemat_skinsetup(mat)
-        #影
-        prj = self.get_projector("Shadow", True)
-        img = self.get_projector_image(prj.name)
-        self.set_texture_to_mat(mat, img, prj.name)
-        #チーク
-        prj = self.get_projector("cheek", True)
-        img = self.get_projector_image(prj.name)
-        self.set_texture_to_mat(mat, img, prj.name)
-
 
         mat = self.get_material("Eyehole_R")
         self.facemat_basesetup(mat)
         self.facemat_skinsetup(mat)
-        prj = self.get_projector("Eyelid_R", True)
-        img = self.get_projector_image(prj.name)
-        tslot = self.set_texture_to_mat(mat, img, prj.name)
-        tslot.use_map_color_diffuse = False
-        tslot.use_map_alpha = True
-        #影
-        prj = self.get_projector("Shadow", True)
-        img = self.get_projector_image(prj.name)
-        self.set_texture_to_mat(mat, img, prj.name)
-        #チーク
-        prj = self.get_projector("cheek", True)
-        img = self.get_projector_image(prj.name)
-        self.set_texture_to_mat(mat, img, prj.name)
+        tslot = self.add_projectorimage_to_mat(mat, "Eyelid_R")
+        self.tslot_setting(tslot, False, True)
 
         mat = self.get_material("Eyehole_L")
         self.facemat_basesetup(mat)
         self.facemat_skinsetup(mat)
-        prj = self.get_projector("Eyelid_L", True)
-        img = self.get_projector_image(prj.name)
-        tslot = self.set_texture_to_mat(mat, img, prj.name)
-        tslot.use_map_color_diffuse = False
-        tslot.use_map_alpha = True
-        #影
-        prj = self.get_projector("Shadow", True)
-        img = self.get_projector_image(prj.name)
-        self.set_texture_to_mat(mat, img, prj.name)
-        #チーク
-        prj = self.get_projector("cheek", True)
-        img = self.get_projector_image(prj.name)
-        self.set_texture_to_mat(mat, img, prj.name)
+        tslot = self.add_projectorimage_to_mat(mat, "Eyelid_L")
+        self.tslot_setting(tslot, False, True)
 
         mat = self.get_material("Mouth")
         self.facemat_basesetup(mat)
         self.facemat_skinsetup(mat)
-        prj = self.get_projector(mat.name, True)
-        img = self.get_projector_image(prj.name)
-        tslot = self.set_texture_to_mat(mat, img, prj.name)
-        tslot.use_map_color_diffuse = True
-        tslot.use_map_alpha = True
-        #影
-        prj = self.get_projector("Shadow", True)
-        img = self.get_projector_image(prj.name)
-        self.set_texture_to_mat(mat, img, prj.name)
-        #チーク
-        prj = self.get_projector("cheek", True)
-        img = self.get_projector_image(prj.name)
-        self.set_texture_to_mat(mat, img, prj.name)
+        tslot = self.add_projectorimage_to_mat(mat, mat.name)
+        self.tslot_setting(tslot, True, True)
 
         mat = self.get_material("Eyebrow_R")
+        # self.facemat_basesetup(mat)
+        # tslot = self.add_projectorimage_to_mat(mat, mat.name)
+        # self.tslot_setting(tslot, True, True)
         self.facemat_basesetup(mat)
-        prj = self.get_projector(mat.name, True)
-        img = self.get_projector_image(prj.name)
-        tslot = self.set_texture_to_mat(mat, img, prj.name)
-        tslot.use_map_color_diffuse = True
-        tslot.use_map_alpha = True
-
-        mat = self.get_material("Eyebrow_L")
-        self.facemat_basesetup(mat)
-        prj = self.get_projector(mat.name, True)
-        img = self.get_projector_image(prj.name)
-        tslot = self.set_texture_to_mat(mat, img, prj.name)
-        tslot.use_map_color_diffuse = True
-        tslot.use_map_alpha = True
-
-        mat = self.get_material("Eye_R")
-        self.facemat_basesetup(mat)
-        prj = self.get_projector("Pupil_R", True)
-        img = self.get_projector_image(prj.name)
-        tslot = self.set_texture_to_mat(mat, img, prj.name)
-        tslot.use_map_color_diffuse = True
-        tslot.use_map_alpha = False
-
-        mat = self.get_material("Eye_L")
-        self.facemat_basesetup(mat)
-        prj = self.get_projector("Pupil_L", True)
-        img = self.get_projector_image(prj.name)
-        tslot = self.set_texture_to_mat(mat, img, prj.name)
-        tslot.use_map_color_diffuse = True
-        tslot.use_map_alpha = False
-
-        mat = self.get_material("Eyelid_R")
-        self.facemat_basesetup(mat)
+        tslot = self.add_projectorimage_to_mat(mat, mat.name)
         prj = self.get_projector(mat.name, True)
         img = self.get_projector_image(prj.name)
         img = self.get_noalpha(img)
         #アルファ
         tslot = self.set_texture_to_mat(mat, img, prj.name)
-        tslot.use_map_color_diffuse = False
-        tslot.use_map_alpha = True
-        tslot.invert = True
-        tslot.use_rgb_to_intensity = True
+        self.tslot_setting(tslot, False, True, True, True)
         #カラー
         tslot = self.set_texture_to_mat(mat, img, prj.name)
-        tslot.use_map_color_diffuse = True
-        tslot.use_map_alpha = False
+        self.tslot_setting(tslot, True, False)
 
+        mat = self.get_material("Eyebrow_L")
+        # self.facemat_basesetup(mat)
+        # tslot = self.add_projectorimage_to_mat(mat, mat.name)
+        # self.tslot_setting(tslot, True, True)
+        self.facemat_basesetup(mat)
+        tslot = self.add_projectorimage_to_mat(mat, mat.name)
+        prj = self.get_projector(mat.name, True)
+        img = self.get_projector_image(prj.name)
+        img = self.get_noalpha(img)
+        #アルファ
+        tslot = self.set_texture_to_mat(mat, img, prj.name)
+        self.tslot_setting(tslot, False, True, True, True)
+        #カラー
+        tslot = self.set_texture_to_mat(mat, img, prj.name)
+        self.tslot_setting(tslot, True, False)
+
+        mat = self.get_material("Eye_R")
+        self.facemat_basesetup(mat)
+        tslot = self.add_projectorimage_to_mat(mat, "Pupil_R")
+        self.tslot_setting(tslot, True, False)
+
+        mat = self.get_material("Eye_L")
+        self.facemat_basesetup(mat)
+        tslot = self.add_projectorimage_to_mat(mat, "Pupil_L")
+        self.tslot_setting(tslot, True, False)
+
+        mat = self.get_material("Eyelid_R")
+        self.facemat_basesetup(mat)
+        tslot = self.add_projectorimage_to_mat(mat, mat.name)
+        prj = self.get_projector(mat.name, True)
+        img = self.get_projector_image(prj.name)
+        img = self.get_noalpha(img)
+        #アルファ
+        tslot = self.set_texture_to_mat(mat, img, prj.name)
+        self.tslot_setting(tslot, False, True, True, True)
+        #カラー
+        tslot = self.set_texture_to_mat(mat, img, prj.name)
+        self.tslot_setting(tslot, True, False)
 
         mat = self.get_material("Eyelid_L")
         self.facemat_basesetup(mat)
@@ -842,23 +854,87 @@ class FaceSetupTools():
         img = self.get_noalpha(img)
         #アルファ
         tslot = self.set_texture_to_mat(mat, img, prj.name)
-        tslot.use_map_color_diffuse = False
-        tslot.use_map_alpha = True
-        tslot.invert = True
-        tslot.use_rgb_to_intensity = True
+        self.tslot_setting(tslot, False, True, True, True)
         #カラー
         tslot = self.set_texture_to_mat(mat, img, prj.name)
-        tslot.use_map_color_diffuse = True
-        tslot.use_map_alpha = False
-
+        self.tslot_setting(tslot, True, False)
 
         #仕上げに拡縮を適用して裏ポリエッジをつける
-        fjw.deselect()
-        fjw.activate(self.face)
-        bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-        bpy.ops.fujiwara_toolbox.command_318722()
+        self.attouch_uraporiedge()
+        # bpy.ops.fujiwara_toolbox.command_793908()#2mm
 
+    def clear_texture(self, texture):
+        if not texture:
+            return
+        img = texture.image
+        if img:
+            bpy.data.images.remove(img)
+        bpy.data.textures.remove(texture)
+        return
 
+    def clear_material(self, material):
+        if not material:
+            return
+        for tslot in material.texture_slots:
+            if not tslot:
+                continue
+            if not tslot.texture:
+                continue
+            self.clear_texture(tslot.texture)
+        bpy.data.materials.remove(material)
 
+    def clear_uv(self, data):
+        # for uv in data.uv_textures:
+        #     data.uv_textures.remove(uv)
+        for i in range(len(data.uv_textures)):
+            data.uv_textures.remove(data.uv_textures[0])
 
+    def clear_object(self, obj, mod=True):
+        self.clear_uv(obj.data)
+        for mat in obj.data.materials:
+            self.clear_material(mat)
+        obj.data.materials.clear()
+        if mod:
+            obj.modifiers.clear()
+
+    def clear_face(self):
+        self.clear_object(self.face, False)
+        modu = fjw.Modutils(self.face)
+        for mod in modu.mods:
+            if mod.type == "MIRROR":
+                modu.apply(mod)
+                continue
+            
+            if mod.type == "SUBSURF":
+                continue
+            
+            if "裏ポリ" in mod.name:
+                continue
+
+            modu.remove(mod)
+
+        return
+    
+    def remove_object(self, obj):
+        if obj.type == "MESH":
+            self.clear_object(obj)
+        bpy.data.objects.remove(obj)
+
+    def initialize_all(self):
+        dellist = ["Eye", "Eyebrow", "Eyelid"]
+        for obj in self.face.parent.children:
+            if obj.name in dellist:
+                self.remove_object(obj)
+
+        self.clear_face()
+
+        for obj in self.camera.children:
+            self.remove_object(obj)
+
+        if "FaceAramature" in bpy.context.scene.objects:
+            facearmature = bpy.context.scene.objects["FaceAramature"]
+            for obj in facearmature.children:
+                self.remove_object(obj)
+            self.remove_object(facearmature)
+            
 

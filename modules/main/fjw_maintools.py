@@ -38,6 +38,7 @@ except:
 
 import random
 from mathutils import *
+from fujiwara_toolbox.modules.main.submodules.json_tools import JsonTools
 
 # assetdir = fujiwara_toolbox.conf.assetdir
 assetdir = ""
@@ -343,6 +344,8 @@ class MyaddonView3DPanel(bpy.types.Panel):#メインパネル
     bl_region_type = "TOOLS"
     bl_category = "Fujiwara Tool Box"
 
+    calltype = "PANEL"
+
     @classmethod
     def poll(cls, context):
         pref = fujiwara_toolbox.conf.get_pref()
@@ -385,47 +388,46 @@ class MyaddonView3DPanel(bpy.types.Panel):#メインパネル
         active.operator("fujiwara_toolbox.command_286488",icon="MESH_ICOSPHERE")
 
 
-        # active = cols.row(align=True)
-        # active.label(text="")
+        active = cols.row(align=True)
+        active.label(text="")
 
-        # active = cols.row(align=True)
-        # active.label(text="ペンディング",icon="PINNED")
-        # #クリアボタン
-        # active.operator("fujiwara_toolbox.command_114105",icon="UNPINNED",text="")
-        # active = cols.column(align=True)
 
-        # #ペンディングされたUIの描画
-        # for uicat in pendings:
-        #     uiitemList = uicategories[uicat]
-        #     for item in uiitemList:
-        #         #スキップ処理
-        #         if item.mode == "none":
-        #             continue
-            
-        #         #if item.mode == "edit":
-        #             ##編集モード以外飛ばす
-        #             #if bpy.context.edit_object != None:
-        #             #    continue
-            
-        #         #縦横
-        #         if item.type == "fix":
-        #             if item.direction == "vertical":
-        #                 active = cols.column(align=True)
-        #             if item.direction == "horizontal":
-        #                 active = active.row(align=True)
-        #             continue
-            
-        #         #描画
-        #         if item.type == "label":
-        #             if item.icon != "":
-        #                 active.label(text=item.label, icon=item.icon)
-        #             else:
-        #                 active.label(text=item.label)
-        #         if item.type == "button":
-        #             if item.icon != "":
-        #                 active.operator(item.idname, icon=item.icon)
-        #             else:
-        #                 active.operator(item.idname)
+        #ダイアログ呼び出し時は描画させたくない
+        if self.calltype == "PANEL":
+            active = cols.row(align=True)
+            active.label(text="ペンディング",icon="PINNED")
+            #クリアボタン
+            active.operator("fujiwara_toolbox.command_114105",icon="UNPINNED",text="")
+            active = cols.column(align=True)
+            #ペンディングされたUIの描画
+            for uicat in pendings:
+                uiitemList = uicategories[uicat]
+                for item in uiitemList:
+                    #スキップ処理
+                    if item.mode == "none":
+                        continue
+                    #if item.mode == "edit":
+                        ##編集モード以外飛ばす
+                        #if bpy.context.edit_object != None:
+                        #    continue
+                    #縦横
+                    if item.type == "fix":
+                        if item.direction == "vertical":
+                            active = cols.column(align=True)
+                        if item.direction == "horizontal":
+                            active = active.row(align=True)
+                        continue
+                    #描画
+                    if item.type == "label":
+                        if item.icon != "":
+                            active.label(text=item.label, icon=item.icon)
+                        else:
+                            active.label(text=item.label)
+                    if item.type == "button":
+                        if item.icon != "":
+                            active.operator(item.idname, icon=item.icon)
+                        else:
+                            active.operator(item.idname)
 
         active = cols.row(align=True)
         active.label(text="メイン")
@@ -8176,13 +8178,50 @@ def surface_deform_bind_all(obj, bound_state_flag):
         if mod.is_bound != bound_state_flag:
             bpy.ops.object.surfacedeform_bind(modifier=mod.name)
 
+# ########################################
+# #バインド
+# ########################################
+# #bpy.ops.fujiwara_toolbox.bind_wrapped_sdef() #バインド
+# class FUJIWARATOOLBOX_BIND_WRAPPED_SDEF(bpy.types.Operator):
+#     """シュリンクラップつきサーフェスデフォームをバインドする。既にある場合は再バインドされる。"""
+#     bl_idname = "fujiwara_toolbox.bind_wrapped_sdef"
+#     bl_label = "バインド"
+#     bl_options = {'REGISTER', 'UNDO'}
+
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+#     def execute(self, context):
+#         target = fjw.active()
+#         target.select = False
+#         selection = fjw.get_selected_list()
+
+#         armature = None
+#         if target.parent is not None and target.parent.type == "ARMATURE":
+#             armature = target.parent
+
+#         if armature is not None:
+#             armature.data.pose_position = "REST"
+
+#         for obj in selection:
+#             modu = fjw.Modutils(obj)
+#             m_sdef = modu.add("Surface Deform", "SURFACE_DEFORM")
+#             m_sdef.target = target
+#             modu.sort()
+#             surface_deform_bind_all(obj, True)
+
+#         if armature is not None:
+#             armature.data.pose_position = "POSE"
+
+#         return {'FINISHED'}
+# ########################################
 ########################################
 #バインド
 ########################################
-#bpy.ops.fujiwara_toolbox.bind_wrapped_sdef() #バインド
-class FUJIWARATOOLBOX_BIND_WRAPPED_SDEF(bpy.types.Operator):
-    """シュリンクラップつきサーフェスデフォームをバインドする。既にある場合は再バインドされる。"""
-    bl_idname = "fujiwara_toolbox.bind_wrapped_sdef"
+#bpy.ops.fujiwara_toolbox.bind_sdef() #バインド
+class FUJIWARATOOLBOX_BIND_SDEF(bpy.types.Operator):
+    """サーフェスデフォームをバインドする。既にある場合は再バインドされる。"""
+    bl_idname = "fujiwara_toolbox.bind_sdef"
     bl_label = "バインド"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -8194,33 +8233,72 @@ class FUJIWARATOOLBOX_BIND_WRAPPED_SDEF(bpy.types.Operator):
         target.select = False
         selection = fjw.get_selected_list()
 
-        armature = None
-        if target.parent is not None and target.parent.type == "ARMATURE":
-            armature = target.parent
-
-        if armature is not None:
-            armature.data.pose_position = "REST"
-
         for obj in selection:
             modu = fjw.Modutils(obj)
             m_sdef = modu.add("Surface Deform", "SURFACE_DEFORM")
             m_sdef.target = target
             modu.sort()
             surface_deform_bind_all(obj, True)
+            fjw.deselect()
+            fjw.activate(target)
+            obj.select = True
+            bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
 
-        if armature is not None:
-            armature.data.pose_position = "POSE"
 
         return {'FINISHED'}
 ########################################
 
+
+# ########################################
+# #再バインド
+# ########################################
+# #bpy.ops.fujiwara_toolbox.rebind_sdef() #再バインド
+# class FUJIWARATOOLBOX_REBIND_SDEF(bpy.types.Operator):
+#     """再バインドする。"""
+#     bl_idname = "fujiwara_toolbox.rebind_sdef"
+#     bl_label = "再バインド"
+#     bl_options = {'REGISTER', 'UNDO'}
+
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+#     def execute(self, context):
+#         selection = fjw.get_selected_list()
+
+#         for obj in selection:
+#             modu = fjw.Modutils(obj)
+#             m_sdefs = modu.find_bytype_list("SURFACE_DEFORM")
+
+#             armatures = []
+#             for m_sdef in m_sdefs:
+#                 target = m_sdef.target
+#                 self.report({"INFO"}, "target:"+target.name)
+                
+#                 if target.parent is not None and target.parent.type == "ARMATURE":
+#                     armatures.append(target.parent)
+            
+#             surface_deform_bind_all(obj, False)
+
+#             for armature in armatures:
+#                 armature.data.pose_position = "REST"
+#                 self.report({"INFO"}, "armature:"+armature.name)
+
+#             surface_deform_bind_all(obj, True)
+
+#             for armature in armatures:
+#                 armature.data.pose_position = "POSE"
+#                 self.report({"INFO"}, "armature:"+armature.name)
+                
+#             bpy.ops.transform.translate(value=(0, 0, 0), constraint_axis=(False, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1)
+#         return {'FINISHED'}
+# ########################################
 ########################################
 #再バインド
 ########################################
-#bpy.ops.fujiwara_toolbox.rebind_wrapped_sdef() #再バインド
-class FUJIWARATOOLBOX_REBIND_WRAPPED_SDEF(bpy.types.Operator):
+#bpy.ops.fujiwara_toolbox.rebind_sdef() #再バインド
+class FUJIWARATOOLBOX_REBIND_SDEF(bpy.types.Operator):
     """再バインドする。"""
-    bl_idname = "fujiwara_toolbox.rebind_wrapped_sdef"
+    bl_idname = "fujiwara_toolbox.rebind_sdef"
     bl_label = "再バインド"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -8231,33 +8309,19 @@ class FUJIWARATOOLBOX_REBIND_WRAPPED_SDEF(bpy.types.Operator):
         selection = fjw.get_selected_list()
 
         for obj in selection:
-            modu = fjw.Modutils(obj)
-            m_sdefs = modu.find_bytype_list("SURFACE_DEFORM")
-
-            armatures = []
-            for m_sdef in m_sdefs:
-                target = m_sdef.target
-                self.report({"INFO"}, "target:"+target.name)
-                
-                if target.parent is not None and target.parent.type == "ARMATURE":
-                    armatures.append(target.parent)
-            
-            surface_deform_bind_all(obj, False)
-
-            for armature in armatures:
-                armature.data.pose_position = "REST"
-                self.report({"INFO"}, "armature:"+armature.name)
-
-            surface_deform_bind_all(obj, True)
-
-            for armature in armatures:
-                armature.data.pose_position = "POSE"
-                self.report({"INFO"}, "armature:"+armature.name)
-                
-            bpy.ops.transform.translate(value=(0, 0, 0), constraint_axis=(False, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1)
+            fjw.deselect()
+            fjw.activate(obj)
+            for mod in obj.modifiers:
+                if mod.type == "SURFACE_DEFORM":
+                    if mod.is_bound:
+                        bpy.ops.object.surfacedeform_bind(modifier=mod.name)
+                    bpy.ops.object.surfacedeform_bind(modifier=mod.name)
+            # modu = fjw.Modutils(obj)
+            # m_sdefs = modu.find_bytype_list("SURFACE_DEFORM")
+            # surface_deform_bind_all(obj, False)
+            # surface_deform_bind_all(obj, True)
         return {'FINISHED'}
 ########################################
-
 
 ########################################
 #バインド解除
@@ -16505,111 +16569,6 @@ class FUJIWARATOOLBOX_SET_ACTIVEOBJECT_TO_PROJECTOR(bpy.types.Operator):
         return {'FINISHED'}
 ########################################
 
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
-
-########################################
-#アクティブカメラを基準にjsonからロード
-########################################
-#bpy.ops.fujiwara_toolbox.load_from_json_with_activecamera() #アクティブカメラを基準にjsonからロード
-class FUJIWARATOOLBOX_LOAD_FROM_JSON_WITH_ACTIVECAMERA(bpy.types.Operator):
-    """アクティブカメラを基準とした座標系でjsonからプロジェクタを読み込む。フォルダを指定すると自動ロード。"""
-    bl_idname = "fujiwara_toolbox.load_from_json_with_activecamera"
-    bl_label = "アクティブカメラを基準にjsonからロード"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-    filter_glob = StringProperty(default="*.json;*.png;*.psd;", options={"HIDDEN"})
-
-    filename = bpy.props.StringProperty(subtype="FILE_NAME")
-    filepath = bpy.props.StringProperty(subtype="FILE_PATH")
-    directory = bpy.props.StringProperty(subtype="DIR_PATH")
-    files = bpy.props.CollectionProperty(type=bpy.types.PropertyGroup)
-
-    def invoke(self, context, event):
-        self.directory = os.path.dirname(bpy.data.filepath) + os.sep + "textures"
-        context.window_manager.fileselect_add(self)
-        return {'RUNNING_MODAL'}
-
-    def execute(self, context):
-        cam = bpy.context.scene.camera
-        pt = ProjectionTools()
-        pt.set_camera(cam)
-
-        skinpath = ""
-
-        jsonmode = True
-        targetfiles = []
-        if self.files[0].name != "":
-            for file in self.files:
-                targetfiles.append(file.name)
-        else:
-            #ファイル指定ナシ＝jsonモード
-            files = os.listdir(self.directory)
-            # extlist = [".json", ".png"]
-            extlist = [".json"]
-            for file in files:
-                name, ext = os.path.splitext(file)
-                if file == "skin.psd":
-                    skinpath = self.directory + os.sep + file
-                if ext in extlist:
-                    targetfiles.append(file)
-
-        nottiledlist = ["cheek.json"]
-        fliplist = ["Eyebrow.json", "Eyelid.json", "Pupil.json"]
-        for file in targetfiles:
-            filepath = self.directory + os.sep + file
-            name, ext = os.path.splitext(file)
-            if ext == ".json":
-                if file in nottiledlist:
-                    obj = pt.load_img_with_camera(filepath, tilenumber=1)
-                else:
-                    obj = pt.load_img_with_camera(filepath)
-            elif ext == ".png" or ext == ".psd":
-                obj = pt.load_img_with_camera(filepath, tilenumber=1, use_json=False)
-
-            if file in fliplist:
-                pt.flip_x_dup(obj)
-
-        return {'FINISHED'}
-########################################
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
-########################################
-#顔セットアップ
-########################################
-#bpy.ops.fujiwara_toolbox.setup_face_from_camera() #顔セットアップ
-class FUJIWARATOOLBOX_SETUP_FACE_FROM_CAMERA(bpy.types.Operator):
-    """アクティブカメラから選択メッシュを顔としてセットアップする。"""
-    bl_idname = "fujiwara_toolbox.setup_face_from_camera"
-    bl_label = "顔セットアップ"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-    def execute(self, context):
-        obj = fjw.active()
-        if obj.type != "MESH":
-            self.report({"WARNING"}, "メッシュオブジェクトを選択してください。")
-            return {"CANCELLED"}
-
-        cam = bpy.context.scene.camera
-        fst = FaceSetupTools(obj, cam)
-        fst.facesetup()
-
-        return {'FINISHED'}
-########################################
 
 #---------------------------------------------
 uiitem().vertical()
@@ -17667,40 +17626,6 @@ class CATEGORYBUTTON_739344(bpy.types.Operator):#髪ツール
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
-############################################################################################################################
-uiitem("ベベル髪")
-############################################################################################################################
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
-
-########################################
-#ベベル髪追加
-########################################
-#bpy.ops.fjw.append_bevel_hair() #ベベル髪追加
-class FUJIWARATOOLBOX_append_bevel_hair(bpy.types.Operator):
-    """ベベル髪オブジェクトを追加する。メッシュに変換するとテクスチャが見えるようになる。"""
-    bl_idname = "fujiwara_toolbox.append_bevel_hair"
-    bl_label = "ベベル髪追加"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
-
-    def execute(self, context):
-        fjw.append_group("ベベル髪")
-        #ゼロ移動で更新させる
-        bpy.ops.transform.translate(value=(0, 0, 0), constraint_axis=(True, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1, release_confirm=True)
-        return {'FINISHED'}
-########################################
-
-
-
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-
-
 
 ############################################################################################################################
 uiitem("藤原用")
@@ -17757,8 +17682,13 @@ class FUJIWARATOOLBOX_SETUP_UV_DEFORM_CAGE(bpy.types.Operator):
         return {'FINISHED'}
 ########################################
 
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
 
-
+############################################################################################################################
+uiitem("ケージ操作")
+############################################################################################################################
 
 #---------------------------------------------
 uiitem().vertical()
@@ -17965,7 +17895,8 @@ class FUJIWARATOOLBOX_UV_DEFORM_BIND_TO_ACTIVE(bpy.types.Operator):
         selection = fjw.get_selected_list()
         # bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
         # bpy.ops.fujiwara_toolbox.command_384891()#メッシュデフォーム　精度5
-        bpy.ops.fujiwara_toolbox.parent_meshdeform_4() #精度4
+        # bpy.ops.fujiwara_toolbox.parent_meshdeform_4() #精度4
+        bpy.ops.fujiwara_toolbox.bind_sdef() #バインド
         fjw.select(selection)
         active.select = False
         return {'FINISHED'}
@@ -17986,8 +17917,10 @@ class FUJIWARATOOLBOX_HAIR_REBIND(bpy.types.Operator):
 
     def execute(self, context):
         # bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
+        selection = fjw.get_selected_list()
         bpy.ops.fujiwara_toolbox.command_860977()
-        bpy.ops.fujiwara_toolbox.rebind_wrapped_sdef()
+        fjw.select(selection)
+        bpy.ops.fujiwara_toolbox.rebind_sdef()
         return {'FINISHED'}
 ########################################
 
@@ -18341,12 +18274,419 @@ class FUJIWARATOOLBOX_MAKE_SKIN_LINE(bpy.types.Operator):
 
         return {'FINISHED'}
 ########################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+############################################################################################################################
+uiitem("ベベル髪")
+############################################################################################################################
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#ベベル髪追加
+########################################
+#bpy.ops.fjw.append_bevel_hair() #ベベル髪追加
+class FUJIWARATOOLBOX_append_bevel_hair(bpy.types.Operator):
+    """ベベル髪オブジェクトを追加する。メッシュに変換するとテクスチャが見えるようになる。"""
+    bl_idname = "fujiwara_toolbox.append_bevel_hair"
+    bl_label = "ベベル髪追加"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        fjw.append_group("ベベル髪")
+        #ゼロ移動で更新させる
+        bpy.ops.transform.translate(value=(0, 0, 0), constraint_axis=(True, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1, release_confirm=True)
+        return {'FINISHED'}
+########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+################################################################################
+#UIカテゴリ
+########################################
+#顔ツール
+########################################
+class CATEGORYBUTTON_597362(bpy.types.Operator):
+    """顔ツール"""
+    bl_idname = "fujiwara_toolbox.categorybutton_597362"
+    bl_label = "顔ツール"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem("顔ツール",True)
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+    uiitem.direction = ""
+
+    def execute(self, context):
+        uicategory_execute(self)
+        return {'FINISHED'}
+################################################################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#オートセットアップ
+########################################
+#bpy.ops.fujiwara_toolbox.auto_face_setup() #オートセットアップ
+class FUJIWARATOOLBOX_AUTO_FACE_SETUP(bpy.types.Operator):
+    """顔用メッシュを選択して実行する。"""
+    bl_idname = "fujiwara_toolbox.auto_face_setup"
+    bl_label = "オートセットアップ"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    filter_glob = StringProperty(default="*.json;*.png;*.psd;", options={"HIDDEN"})
+
+    # filename = bpy.props.StringProperty(subtype="FILE_NAME")
+    # filepath = bpy.props.StringProperty(subtype="FILE_PATH")
+    # directory = bpy.props.StringProperty(subtype="DIR_PATH")
+    # files = bpy.props.CollectionProperty(type=bpy.types.PropertyGroup)
+
+    # def invoke(self, context, event):
+    #     self.directory = os.path.dirname(bpy.data.filepath) + os.sep + "textures" + os.sep + "facetextures"
+    #     context.window_manager.fileselect_add(self)
+    #     return {'RUNNING_MODAL'}
+
+    def execute(self, context):
+        # obj = fjw.active()
+        # if obj.type != "MESH":
+        #     self.report({"WARNING"}, "メッシュオブジェクトを選択してください。")
+        #     return {"CANCELLED"}
+        #faceunitから取得する
+        objects = bpy.context.scene.objects
+        if "Faceunit" not in objects:
+            self.report({"WARNING"}, "Faceunitが存在しません！")
+            return {"CANCELLED"}
+        faceunit = bpy.context.scene.objects["Faceunit"]
+        # スケールの適用
+        fjw.mode("OBJECT")
+        fjw.deselect()
+        fjw.activate(faceunit)
+        bpy.ops.fujiwara_toolbox.command_24259()#親子選択
+        bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+        # カメラ用
+        bpy.ops.object.scale_clear(clear_delta=False)
+
+        face = None
+        for obj in faceunit.children:
+            if obj.name == "Face":
+                face = obj
+                break
+        
+        fjw.deselect()
+        fjw.activate(face)
+
+        bpy.ops.fujiwara_toolbox.proj_face_initialize() #顔初期化
+        fjw.activate(obj)
+        facetexdir = os.path.dirname(bpy.data.filepath) + os.sep + "textures" + os.sep + "facetextures"
+        # bpy.ops.fujiwara_toolbox.load_from_json_with_activecamera(filename=self.filename, filepath=self.filepath, directory=self.directory) #アクティブカメラを基準にjsonからロード
+        bpy.ops.fujiwara_toolbox.load_from_json_with_activecamera(directory=facetexdir) #アクティブカメラを基準にjsonからロード
+        fjw.activate(obj)
+        bpy.ops.fujiwara_toolbox.setup_face_from_camera() #顔セットアップ
+        fjw.activate(obj)
+        bpy.ops.fujiwara_toolbox.face_armature_setup() #アーマチュアセットアップ
+        return {'FINISHED'}
+########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+
+
+########################################
+#顔初期化
+########################################
+#bpy.ops.fujiwara_toolbox.proj_face_initialize() #顔初期化
+class FUJIWARATOOLBOX_PROJ_FACE_INITIALIZE(bpy.types.Operator):
+    """プロジェクション顔を初期化する。全てのプロジェクタ、生成メッシュを除去し、マテリアルなども全て破棄する。"""
+    bl_idname = "fujiwara_toolbox.proj_face_initialize"
+    bl_label = "顔初期化"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        obj = fjw.active()
+        if obj.type != "MESH":
+            self.report({"WARNING"}, "メッシュオブジェクトを選択してください。")
+            return {"CANCELLED"}
+
+        cam = bpy.context.scene.camera
+        fst = FaceSetupTools(obj, cam)
+        fst.initialize_all()
+        return {'FINISHED'}
+########################################
+
+########################################
+#アクティブカメラを基準にjsonからロード
+########################################
+#bpy.ops.fujiwara_toolbox.load_from_json_with_activecamera() #アクティブカメラを基準にjsonからロード
+class FUJIWARATOOLBOX_LOAD_FROM_JSON_WITH_ACTIVECAMERA(bpy.types.Operator):
+    """アクティブカメラを基準とした座標系でjsonからプロジェクタを読み込む。フォルダを指定すると自動ロード。"""
+    bl_idname = "fujiwara_toolbox.load_from_json_with_activecamera"
+    bl_label = "アクティブカメラを基準にjsonからロード"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    filter_glob = StringProperty(default="*.json;*.png;*.psd;", options={"HIDDEN"})
+
+    filename = bpy.props.StringProperty(subtype="FILE_NAME")
+    filepath = bpy.props.StringProperty(subtype="FILE_PATH")
+    directory = bpy.props.StringProperty(subtype="DIR_PATH")
+    files = bpy.props.CollectionProperty(type=bpy.types.PropertyGroup)
+
+    def invoke(self, context, event):
+        self.directory = os.path.dirname(bpy.data.filepath) + os.sep + "textures" + os.sep + "facetextures"
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+    def execute(self, context):
+        cam = bpy.context.scene.camera
+        pt = ProjectionTools()
+        pt.set_camera(cam)
+
+        skinpath = ""
+
+        jsonmode = True
+        targetfiles = []
+        if len(self.files) > 0 and self.files[0].name != "":
+            for file in self.files:
+                targetfiles.append(file.name)
+        else:
+            #ファイル指定ナシ＝jsonモード
+            #よりも、オートモードにしたい！
+            """
+                自動読み込み条件
+                ・jsonで読み込む？
+                ・必ずフォトショからjsonを書き出すなら、png単体読み込みとかいらない。
+                    フォルダ内のjsonを読みこんで、でいい。
+                    そもそもjsonに分割数記述すべき！
+                    ファイルパスも記述する。
+            """
+            files = os.listdir(self.directory)
+            # extlist = [".json", ".png"]
+            extlist = [".json"]
+            for file in files:
+                name, ext = os.path.splitext(file)
+                if file == "skin.psd":
+                    skinpath = self.directory + os.sep + file
+                if ext in extlist:
+                    targetfiles.append(file)
+
+        fliplist = ["Eyebrow.json", "Eyelid.json", "Pupil.json"]
+        for file in targetfiles:
+            filepath = self.directory + os.sep + file
+            name, ext = os.path.splitext(file)
+            if ext == ".json":
+                    obj = pt.load_img_with_camera(filepath)
+            elif ext == ".png" or ext == ".psd":
+                obj = pt.load_img_with_camera(filepath, tilenumber=1, use_json=False)
+
+            if file in fliplist:
+                dup = pt.flip_x_dup(obj)
+
+        return {'FINISHED'}
+########################################
+
+########################################
+#顔セットアップ
+########################################
+#bpy.ops.fujiwara_toolbox.setup_face_from_camera() #顔セットアップ
+class FUJIWARATOOLBOX_SETUP_FACE_FROM_CAMERA(bpy.types.Operator):
+    """アクティブカメラから選択メッシュを顔としてセットアップする。"""
+    bl_idname = "fujiwara_toolbox.setup_face_from_camera"
+    bl_label = "顔セットアップ"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        obj = fjw.active()
+        if obj.type != "MESH":
+            self.report({"WARNING"}, "メッシュオブジェクトを選択してください。")
+            return {"CANCELLED"}
+
+        cam = bpy.context.scene.camera
+        fst = FaceSetupTools(obj, cam)
+        fst.facesetup()
+
+        return {'FINISHED'}
+########################################
 
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
 
+########################################
+#アーマチュアセットアップ
+########################################
+#bpy.ops.fujiwara_toolbox.face_armature_setup() #アーマチュアセットアップ
+class FUJIWARATOOLBOX_FACE_ARMATURE_SETUP(bpy.types.Operator):
+    """アーマチュアを自動セットアップする"""
+    bl_idname = "fujiwara_toolbox.face_armature_setup"
+    bl_label = "アーマチュアセットアップ"
+    bl_options = {'REGISTER', 'UNDO'}
 
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        face = fjw.active()
+        armu = fjw.ArmatureUtils(None, "FaceAramature")
+        armu.armature.show_x_ray = True
+        cam = bpy.context.scene.camera
+
+        #ルート
+        pos = fjw.get_world_co(face)
+        root_bone = armu.add_bone("root", pos, (0,0,0.1))
+
+        #プロジェクタ
+        for obj in cam.children:
+            pos = fjw.get_world_co(obj)
+            bone = armu.add_bone(obj.name, pos, (0,-0.03,0))
+            bone.parent = root_bone
+        fjw.mode("POSE")
+
+        for obj in cam.children:
+            fjw.mode("OBJECT")
+            fjw.deselect()
+            fjw.activate(obj)
+            bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
+            fjw.activate(armu.armature)
+            fjw.mode("POSE")
+            pbone = armu.posebone(obj.name)
+            pbone.lock_location[1] = True
+            armu.activate(pbone)
+            bpy.ops.object.parent_set(type='BONE_RELATIVE')
+
+            #マスク
+            fjw.activate(obj)
+            vgu = fjw.VertexGroupUtils(obj)
+            fjw.mode("EDIT")
+            bpy.ops.mesh.select_all(action='SELECT')
+            vgu.assign_weight(obj.name, 1)
+            fjw.mode("OBJECT")
+
+            modu = fjw.Modutils(obj)
+            m = modu.add("Mask", "MASK")
+            m.mode = "ARMATURE"
+            m.armature = armu.armature
+
+        #リグ部分
+        fjw.mode("OBJECT")
+        fjw.deselect()
+        fjw.activate(armu.armature)
+
+        v_front = Vector((0,-0.1,0))*0.3
+        offset = Vector((0,0.1,0))*0.1
+        pos = self.set_3dcursor_with_mat(face, "Eyehole_R") + offset
+        bone = armu.add_bone("Pupil_R", pos, v_front)
+        bone.parent = armu.editbone("root")
+        armu.editbone("Projector_Pupil_R").parent = bone
+
+        pos = self.set_3dcursor_with_mat(face, "Eyehole_L") + offset
+        bone = armu.add_bone("Pupil_L", pos, v_front)
+        bone.parent = armu.editbone("root")
+        armu.editbone("Projector_Pupil_L").parent = bone
+
+        pos = self.set_3dcursor_with_mat(face, "Mouth") + offset
+        bone = armu.add_bone("Mouth", pos, v_front)
+        bone.parent = armu.editbone("root")
+        armu.editbone("Projector_Mouth").parent = bone
+
+        #視線
+        fjw.mode("EDIT")
+        pos = armu.editbone("Pupil_R").head - Vector((0, 0.5, 0))*0.1
+        pos.x = 0
+        eyetarget = armu.add_bone("Eyetarget", pos, v_front)
+        eyetarget.parent = armu.editbone("root")
+
+        pos = armu.editbone("Pupil_R").head - offset*2
+        bone = armu.add_bone("Eyetarget_R", pos, v_front)
+        bone.parent = eyetarget
+
+        pos = armu.editbone("Pupil_L").head - offset*2
+        bone = armu.add_bone("Eyetarget_L", pos, v_front)
+        bone.parent = eyetarget
+
+        #コンストレイント
+        fjw.mode("POSE")
+
+        pbone = armu.posebone("Pupil_R")
+        c = pbone.constraints.new("DAMPED_TRACK")
+        c.target = armu.armature
+        c.subtarget = "Eyetarget_R"
+
+        pbone = armu.posebone("Pupil_L")
+        c = pbone.constraints.new("DAMPED_TRACK")
+        c.target = armu.armature
+        c.subtarget = "Eyetarget_L"
+
+
+        #右目の反転
+        bone = armu.posebone("Pupil_R")
+        bone.scale.x = -1
+
+        fjw.mode("OBJECT")
+        fjw.deselect()
+        fjw.activate(armu.armature)
+        fjw.activate(bpy.context.scene.objects["Faceunit"])
+        bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
+
+
+        return {'FINISHED'}
+
+    def set_3dcursor_with_mat(self, obj, matname):
+        baseobj = fjw.active()
+        mode = baseobj.mode
+
+        fjw.mode("OBJECT")
+        fjw.activate(obj)
+        fjw.mode("EDIT")
+        bpy.ops.mesh.select_all(action='DESELECT')
+        FaceSetupTools.select_mesh_by_material(obj, matname)
+        bpy.ops.view3d.snap_cursor_to_selected()
+
+        fjw.mode("OBJECT")
+        fjw.activate(baseobj)
+        fjw.mode(mode)
+        return bpy.context.space_data.cursor_location
+
+########################################
+
+
+
+
+
+
+
+
+
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
 
 ################################################################################
 #UIカテゴリ
@@ -21209,6 +21549,9 @@ class DialogMain(bpy.types.Operator,MyaddonView3DPanel):
     bl_idname = "object.dialog_mainpanel"
     bl_label = "MainPanel"
     bl_options = {'REGISTER', 'UNDO'}
+
+    calltype = "DIALOG"
+
     def execute(self, context):
         return {'FINISHED'}
     def invoke(self, context, event):

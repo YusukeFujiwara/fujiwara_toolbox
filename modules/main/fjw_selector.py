@@ -198,18 +198,20 @@ class FJWSelector(bpy.types.Panel):#メインパネル
             active.label("")
             active.operator("fjw_selector.select_bone_nearest_to_cursor_pupil_l")
             active.label("")
-            active = boxlayout.row(align=True)
-            active.label("")
-            active.operator("fjw_selector.select_bone_nearest_to_cursor_eyebottom_r")
-            active.label("")
-            active.operator("fjw_selector.select_bone_nearest_to_cursor_eyebottom_l")
-            active.label("")
+            # active = boxlayout.row(align=True)
+            # active.label("")
+            # active.operator("fjw_selector.select_bone_nearest_to_cursor_eyebottom_r")
+            # active.label("")
+            # active.operator("fjw_selector.select_bone_nearest_to_cursor_eyebottom_l")
+            # active.label("")
             active = boxlayout.row(align=True)
             active.label("")
             active.operator("fjw_selector.select_bone_nearest_to_cursor_mouth")
             active.label("")
             active = boxlayout.row(align=True)
-            active.operator("fjw_selector.select_bone_nearest_to_cursor_face")
+            active.operator("fjw_selector.select_bone_nearest_to_cursor_mouthbase")
+            # active = boxlayout.row(align=True)
+            # active.operator("fjw_selector.select_bone_nearest_to_cursor_face")
             active = boxlayout.row(align=True)
             active.label("右")
             active.label("")
@@ -937,6 +939,28 @@ class SetHemiLamp(bpy.types.Operator):
         bpy.context.object.data.energy = 0.07
         return {"FINISHED"}
 
+def show_projector():
+    armature = fjw.active()
+    armu = fjw.ArmatureUtils(armature)
+    bone = armu.poseactive()
+    #boneを親にしてるオブジェクトを取得
+    target = None
+    for obj in armature.children:
+        if obj.parent_bone == bone.name:
+            target = obj
+            break
+    #オブジェクトに視点をあわせる
+    fjw.mode("OBJECT")
+    fjw.deselect()
+    fjw.activate(target)
+    bpy.ops.view3d.viewnumpad(type="TOP", align_active=True)
+
+    #そのオブジェクトを注視
+    bpy.ops.view3d.view_selected(use_all_regions=False)
+
+    #あらためてアーマチュアをアクティブに
+    fjw.activate(armature)
+    fjw.mode("POSE")
 
 #人体ボーン選択
 class SelectBoneNearestToCursor_Eyetarget(bpy.types.Operator):
@@ -944,23 +968,25 @@ class SelectBoneNearestToCursor_Eyetarget(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_eyetarget"
     bl_label = "視線"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["eyetarget", "eyes"])
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["Eyetarget","eyetarget", "eyes"])
         return {"FINISHED"}
 
 class SelectBoneNearestToCursor_EyetopR(bpy.types.Operator):
     """ボーン選択。"""
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_eyetop_r"
-    bl_label = "上"
+    bl_label = "眉毛"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["eyetop_r", "lid.T.R.002"])
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["Projector_Eyebrow_R","eyetop_r", "lid.T.R.002"])
+        show_projector()
         return {"FINISHED"}
 
 class SelectBoneNearestToCursor_EyetopL(bpy.types.Operator):
     """ボーン選択。"""
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_eyetop_l"
-    bl_label = "上"
+    bl_label = "眉毛"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["eyetop_l","lid.T.L.002"])
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["Projector_Eyebrow_L","eyetop_l","lid.T.L.002"])
+        show_projector()
         return {"FINISHED"}
 
 class SelectBoneNearestToCursor_PupilR(bpy.types.Operator):
@@ -968,7 +994,8 @@ class SelectBoneNearestToCursor_PupilR(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_pupil_r"
     bl_label = "目"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["pupil_r", "master_eye.R"])
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["Projector_Eyelid_R","pupil_r", "master_eye.R"])
+        show_projector()
         return {"FINISHED"}
 
 class SelectBoneNearestToCursor_PupilL(bpy.types.Operator):
@@ -976,7 +1003,8 @@ class SelectBoneNearestToCursor_PupilL(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_pupil_l"
     bl_label = "目"
     def execute(self,context):
-        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["pupil_l", "master_eye.L"])
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["Projector_Eyelid_L","pupil_l", "master_eye.L"])
+        show_projector()
         return {"FINISHED"}
 
 
@@ -1010,13 +1038,24 @@ class SelectBoneNearestToCursor_Mouth(bpy.types.Operator):
     bl_idname="fjw_selector.select_bone_nearest_to_cursor_mouth"
     bl_label = "口"
     def execute(self,context):
-        namelist = ["teeth.B", "tongue", "chin.001", "tongue.001", "teeth.T", "DEF-forehead.L.002", "lip.B", "chin.002", "lips.L", "lip.B.L.001", "lips.R", "lip.B.R.001", "lip.T", "nose.005", "lip.T.R.001", "lip.T.L.001", ]
-        select_bone_nearest_to_cursor(bpy.context.visible_objects, "head")
-        bpy.ops.pose.select_all(action='DESELECT')
-        for bone in fjw.active().pose.bones:
-            if bone.name in namelist:
-                bone.bone.select = True
+        namelist = ["Projector_Mouth" ,"teeth.B", "tongue", "chin.001", "tongue.001", "teeth.T", "DEF-forehead.L.002", "lip.B", "chin.002", "lips.L", "lip.B.L.001", "lips.R", "lip.B.R.001", "lip.T", "nose.005", "lip.T.R.001", "lip.T.L.001", ]
+        # select_bone_nearest_to_cursor(bpy.context.visible_objects, "head")
+        # bpy.ops.pose.select_all(action='DESELECT')
+        # for bone in fjw.active().pose.bones:
+        #     if bone.name in namelist:
+        #         bone.bone.select = True
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, namelist)
+        show_projector()
         return {"FINISHED"}
+
+class SelectBoneNearestToCursor_MouthBase(bpy.types.Operator):
+    """ボーン選択。"""
+    bl_idname="fjw_selector.select_bone_nearest_to_cursor_mouthbase"
+    bl_label = "口ベース"
+    def execute(self,context):
+        select_bone_nearest_to_cursor(bpy.context.visible_objects, ["Mouth"])
+        return {"FINISHED"}
+
 
 class SelectBoneNearestToCursor_Face(bpy.types.Operator):
     """ボーン選択。"""
