@@ -16574,7 +16574,68 @@ class FUJIWARATOOLBOX_SET_ACTIVEOBJECT_TO_PROJECTOR(bpy.types.Operator):
 uiitem().vertical()
 #---------------------------------------------
 
+############################################################################################################################
+uiitem("テクスチャ作業")
+############################################################################################################################
+from fujiwara_toolbox.modules.main.submodules.texture_working_tools import TextureWorkingTools
 
+
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#テクスチャ作業ファイル作成
+########################################
+#bpy.ops.fujiwara_toolbox.make_texture_workfile() #テクスチャ作業ファイル作成
+class FUJIWARATOOLBOX_MAKE_TEXTURE_WORKFILE(bpy.types.Operator):
+    """テクスチャ作業ファイル作成"""
+    bl_idname = "fujiwara_toolbox.make_texture_workfile"
+    bl_label = "テクスチャ作業ファイル作成"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        TextureWorkingTools.make_texture_workingfile(fjw.active(), "projector")
+        return {'FINISHED'}
+########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#UV書き出し
+########################################
+#bpy.ops.fujiwara_toolbox.fjw_texture_export_uvmap() #UV書き出し
+class FUJIWARATOOLBOX_FJW_TEXTURE_EXPORT_UVMAP(bpy.types.Operator):
+    """UVを書き出す。"""
+    bl_idname = "fujiwara_toolbox.fjw_texture_export_uvmap"
+    bl_label = "UV書き出し"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        TextureWorkingTools.fjw_texture_export_uvmap(fjw.active())
+        return {'FINISHED'}
+########################################
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
 
 
 
