@@ -14,6 +14,7 @@ from fujiwara_toolbox_modules.fjw import *
 import fujiwara_toolbox_modules as fujiwara_toolbox
 from fujiwara_toolbox_modules import fjw, conf
 
+
 from bpy.props import (StringProperty,
                        BoolProperty,
                        IntProperty,
@@ -73,24 +74,6 @@ bl_info = {
 #    self.layout.template_image(tex, 'image', tex.image_user)
 #
 #
-
-def group_exists(_directory, _filename, _group):
-    _filepath = _directory + os.sep + _filename
-    _groupname = _group
-    result = False
-    with bpy.data.libraries.load(_filepath, link=False, relative=True) as (data_from, data_to):
-        if _groupname in data_from.groups:
-            result = True
-    return result
-
-def auto_group_name(_directory, _filename):
-    _groupname = os.path.splitext(os.path.basename(_filename))[0]
-    if group_exists(_directory, _filename, _groupname):
-        return _groupname
-    elif group_exists(_directory, _filename, "MainGroup"):
-        _groupname = "MainGroup"
-        return _groupname
-    return None
 
 #assetdir = r"Z:\WORKSPACE\3D\Asset"
 # assetdir = fujiwara_toolbox.conf.assetdir
@@ -198,18 +181,19 @@ def loadfunc(self):
     additem(self.directory)
 
 
-def append_auto(self, _directory, _filename):
+def append(self, _directory, _filename):
 #    #自動で全部とグループを切り替える
     _filepath = _directory + os.sep + _filename
-    _groupname = auto_group_name(_directory, _filename)
+    _groupname = os.path.splitext(os.path.basename(_filename))[0]
 
-    if _groupname is not None:
-        append_group(self, _directory, _filename, _groupname)
+    groupappend = False
+    with bpy.data.libraries.load(_filepath, link=False, relative=True) as (data_from, data_to):
+            if _groupname in data_from.groups:
+                groupappend = True
+    if groupappend:
+        append_group(self, _directory, _filename)
     else:
         append_all(self, _directory, _filename)
-
-    #コンストレイントターゲットの設定かませとく
-    bpy.ops.fujiwara_toolbox.set_camtracker_target()
 
 
 def append_all(self, _directory, _filename):
@@ -228,44 +212,40 @@ def append_all(self, _directory, _filename):
         obj.select = True
 
 
-def append_group(self, _directory, _filename, _groupname):
+def append_group(self, _directory, _filename):
+    _groupname = os.path.splitext(os.path.basename(_filename))[0]
     _filepath = _directory + os.sep + _filename + os.sep + "Group" + os.sep
     deselect()
     bpy.ops.wm.append(filepath=_filepath, filename=_groupname, directory=_filepath)
     if len(bpy.context.selected_objects) != 0:
         bpy.context.scene.objects.active = bpy.context.selected_objects[0]
-    
-    if bpy.context.scene.objects.active is None:
-        if self != None:
-            self.report({"WARNING"},"アペンド失敗："+_groupname)
-        return
 
-    # グループ名が"MainGroup"だった場合ファイル名をグループ名にする
-    if _groupname == "MainGroup":
-        gname = os.path.splitext(os.path.basename(_filename))[0]
-        for group in bpy.context.scene.objects.active.users_group:
-            if "MainGroup" in group.name:
-                group.name = gname
-                break
+    ##emptyにまとめる
+    #selection = get_selected_list()
+    #deselect()
+    #bpy.ops.object.empty_add(type='PLAIN_AXES', radius=1, view_align=False, location=(0, 0, 0), layers=(True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False))
+    #empty = active()
+    #empty.name = _groupname
+    ##親のないものを選択してEmptyにペアレントする
+    #tobechildren = []
+    #for obj in selection:
+    #    if obj.parent == None:
+    #        tobechildren.append(obj)
+    #deselect()
+
+    #select(tobechildren)
+    #activate(empty)
+    #bpy.ops.object.parent_set(type='OBJECT', keep_transform=True)
+
+    
 
 def link_group(self, _directory, _filename):
     if self != None:
         self.report({"INFO"},"グループリンク")
-    _groupname = auto_group_name(_directory, _filename)
-    if _groupname is None:
-        if self != None:
-            self.report({"WARNING"},"グループなし")
-        return
-
+    _groupname = os.path.splitext(os.path.basename(_filename))[0]
     _filepath = _directory + os.sep + _filename + os.sep + "Group" + os.sep
+
     bpy.ops.wm.link(filepath=_filepath, filename=_groupname, directory=_filepath)
-    # グループ名が"MainGroup"だった場合ファイル名をオブジェクト名にする
-    if _groupname == "MainGroup":
-        gname = os.path.splitext(os.path.basename(_filename))[0]
-        bpy.context.scene.objects.active.name = gname
-    bpy.context.scene.objects.active.location = (0,0,0)
-
-
 
 class browsercaller(bpy.types.Operator):
     bl_idname = "file.browsercaller"
@@ -511,7 +491,7 @@ class FileBrowser_fjwAppend(bpy.types.Operator):
     def execute(self, context):
         deselect()
         for file in self.files:
-            append_auto(self, self.directory, file.name)
+            append(self, self.directory, file.name)
 
         return {'FINISHED'}
 
@@ -570,34 +550,34 @@ class FileBrowser_fjwLink(bpy.types.Operator):
 
 
 
-# class FileBrowser_fjwCharacterAppend(bpy.types.Operator):
-#     """キャラアペンド"""
-#     bl_idname = "file.fjw_characterappend"
-#     bl_label = "キャラアペンド"
+class FileBrowser_fjwCharacterAppend(bpy.types.Operator):
+    """キャラアペンド"""
+    bl_idname = "file.fjw_characterappend"
+    bl_label = "キャラアペンド"
     
-#     filename = bpy.props.StringProperty(subtype="FILE_NAME")
-#     filepath = bpy.props.StringProperty(subtype="FILE_PATH")
-#     directory = bpy.props.StringProperty(subtype="DIR_PATH")
-#     files = bpy.props.CollectionProperty(type=bpy.types.PropertyGroup)
-#     filter_glob = StringProperty(default="*.blend",options={'HIDDEN'})
+    filename = bpy.props.StringProperty(subtype="FILE_NAME")
+    filepath = bpy.props.StringProperty(subtype="FILE_PATH")
+    directory = bpy.props.StringProperty(subtype="DIR_PATH")
+    files = bpy.props.CollectionProperty(type=bpy.types.PropertyGroup)
+    filter_glob = StringProperty(default="*.blend",options={'HIDDEN'})
     
-#     @classmethod
-#     def poll(cls, context):
-#         return True
+    @classmethod
+    def poll(cls, context):
+        return True
 
-#     def execute(self, context):
-#         deselect()
-#         for file in self.files:
-#             link_group(self, self.directory, file.name)
+    def execute(self, context):
+        deselect()
+        for file in self.files:
+            link_group(self, self.directory, file.name)
 
 
-#         bpy.ops.object.myobject_823369()
-#         return {'FINISHED'}
+        bpy.ops.object.myobject_823369()
+        return {'FINISHED'}
 
-#     def invoke(self, context, event):
-#         setopentarget(self,context)
-#         context.window_manager.fileselect_add(self)
-#         return {'RUNNING_MODAL'}
+    def invoke(self, context, event):
+        setopentarget(self,context)
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
 
 
 class FileBrowser_fjwCopyandLink(bpy.types.Operator):
@@ -775,9 +755,9 @@ class AssetManager(bpy.types.Panel):#メインパネル
 
     movetocursor_bool = BoolProperty(name="カーソルに移動", description="取り込み後、3Dカーソルに移動する", default = False)
 
-    @classmethod	
-    def poll(cls, context):	
-        pref = conf.get_pref()	
+    @classmethod
+    def poll(cls, context):
+        pref = conf.get_pref()
         return pref.asset_manager
 
     def draw(self, context):
@@ -795,7 +775,7 @@ class AssetManager(bpy.types.Panel):#メインパネル
         #row.operator('my_list.initmylist', text='INIT')
         row.operator('file.fjw_append')
         row.operator('file.fjw_link')
-        # row.operator('file.fjw_characterappend')
+        row.operator('file.fjw_characterappend')
         row = layout.row(align=True)
         row.operator('file.fjw_copyandlink')
 
@@ -925,10 +905,6 @@ http://blenderartists.org/forum/archive/index.php/t-178488.html
 from bpy.app.handlers import persistent
 
 @persistent
-def load_post_handler(dummy):
-    bpy.app.handlers.scene_update_post.append(scene_update_post_handler)
-
-@persistent
 def scene_update_post_handler(dummy):
     bpy.app.handlers.scene_update_post.remove(scene_update_post_handler)
     bpy.ops.my_list.initmylist()
@@ -950,7 +926,7 @@ def sub_registration():
     bpy.types.Scene.list_index = prop.IntProperty(name = "Index for my_list", default = 0)
     bpy.types.Scene.AssetManager_settings = PointerProperty(type=AssetManagerSettings)
     
-    bpy.app.handlers.load_post.append(load_post_handler)
+    bpy.app.handlers.scene_update_post.append(scene_update_post_handler)
 
 
 def sub_unregistration():
