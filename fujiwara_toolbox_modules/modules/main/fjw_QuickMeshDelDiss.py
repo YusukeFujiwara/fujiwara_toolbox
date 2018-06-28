@@ -2,11 +2,8 @@
 import bmesh
 
 
-fujiwara_toolbox = __import__(__package__)
-try:
-    from fujiwara_toolbox import fjw #コード補完用
-except:
-    fjw = fujiwara_toolbox.fjw
+import fujiwara_toolbox_modules as fujiwara_toolbox
+from fujiwara_toolbox_modules import fjw, conf
 
 
 

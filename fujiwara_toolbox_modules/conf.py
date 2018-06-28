@@ -5,7 +5,6 @@ import os
 def dummy():
     return
 
-
 #Addon Preferences
 #https://docs.blender.org/api/blender_python_api_2_67_1/bpy.types.AddonPreferences.html
 
@@ -13,14 +12,20 @@ import bpy
 from bpy.types import Operator, AddonPreferences
 from bpy.props import StringProperty, IntProperty, BoolProperty
 
+dirpath = os.path.dirname(__file__)
+dir_name = os.path.basename(dirpath)
+if "_modules" in dir_name:
+    dirpath = os.path.dirname(dirpath)
+    dir_name = os.path.basename(dirpath)
+package_name = dir_name
 
-print("package:"+__package__)#fuijwara_toolbox
+print("package:"+package_name)#fuijwara_toolbox
 print("name:"+__name__)#fuijwara_toolbox.conf
 
 class FujiwaraToolBoxPreferences(AddonPreferences):
     # this must match the addon name, use '__package__'
     # when defining this in a submodule of a python package.
-    bl_idname = __package__
+    bl_idname = package_name
 
     #Property https://docs.blender.org/api/blender_python_api_2_78c_release/bpy.types.Property.html#bpy.types.Property.subtype
     """
@@ -131,7 +136,15 @@ class FujiwaraToolBoxPreferences(AddonPreferences):
            name="FJW Draw Tools",
             default=False,
             )
+    group_extract = BoolProperty(
+           name="Group Extract",
+            default=False,
+            )
     #特殊設定
+    asset_manager = BoolProperty(
+           name="Asset Manager",
+            default=False,
+            )
     assetdir = StringProperty(
             name="アセットマネージャ用ファイルパス",
             subtype='FILE_PATH',
@@ -186,8 +199,10 @@ class FujiwaraToolBoxPreferences(AddonPreferences):
         layout.prop(self, "quickmeshdeldiss")
         layout.prop(self, "assetsketcherhelper")
         layout.prop(self, "draw_tools")
+        layout.prop(self, "group_extract")
 
         layout.label(text="特殊設定")
+        layout.prop(self, "asset_manager")
         layout.prop(self, "assetdir")
         # layout.prop(self, "MarvelousDesigner_dir")
         layout.prop(self, "SubstanceAutomationToolkit_dir")
@@ -201,7 +216,7 @@ class FujiwaraToolBoxPreferences(AddonPreferences):
 
 
 def get_pref():
-    addon_prefs = bpy.context.user_preferences.addons[__package__].preferences
+    addon_prefs = bpy.context.user_preferences.addons[package_name].preferences
     return addon_prefs
     
 

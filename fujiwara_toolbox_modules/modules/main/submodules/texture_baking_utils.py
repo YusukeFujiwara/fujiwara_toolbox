@@ -33,11 +33,8 @@ from bpy.types import (Panel,
                        )
 
 
-bloom_tools = __import__(__package__)
-try:
-    from bloom_tools import fjw #コード補完用
-except:
-    fjw = bloom_tools.fjw
+import fujiwara_toolbox_modules as fujiwara_toolbox
+from fujiwara_toolbox_modules import fjw, conf
 
 
 import random

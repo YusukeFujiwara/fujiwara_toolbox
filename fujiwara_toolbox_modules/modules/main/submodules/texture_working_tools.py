@@ -33,11 +33,8 @@ from bpy.types import (Panel,
                        )
 
 
-fujiwara_toolbox = __import__(__package__)
-try:
-    from fujiwara_toolbox import fjw #コード補完用
-except:
-    fjw = fujiwara_toolbox.fjw
+import fujiwara_toolbox_modules as fujiwara_toolbox
+from fujiwara_toolbox_modules import fjw, conf
 
 
 import random
@@ -46,8 +43,8 @@ from mathutils import *
 # assetdir = fujiwara_toolbox.conf.assetdir
 assetdir = ""
 
-from fujiwara_toolbox.modules.main.submodules.json_tools import JsonTools
-from fujiwara_toolbox.modules.main.submodules.texture_baking_utils import TextureBaker
+from fujiwara_toolbox_modules.modules.main.submodules.json_tools import JsonTools
+from fujiwara_toolbox_modules.modules.main.submodules.texture_baking_utils import TextureBaker
 
 
 # 仕様考え直し

@@ -4,10 +4,6 @@ import re
 import sys
 import json
 
-# usage
-# from json_tools import JsonTools
-# from fujiwara_toolbox.modules.main.submodules.json_tools import JsonTools
-
 class JsonTools():
     def __init__(self, filepath=None, dictionary=None):
         """

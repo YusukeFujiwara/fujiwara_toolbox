@@ -29,16 +29,12 @@ from bpy.types import (Panel,
                        )
 
 
-fujiwara_toolbox = __import__(__package__)
-try:
-    from fujiwara_toolbox import fjw #コード補完用
-except:
-    fjw = fujiwara_toolbox.fjw
-
+import fujiwara_toolbox_modules as fujiwara_toolbox
+from fujiwara_toolbox_modules import fjw, conf
 
 import random
 from mathutils import *
-from fujiwara_toolbox.modules.main.submodules.json_tools import JsonTools
+from fujiwara_toolbox_modules.modules.main.submodules.json_tools import JsonTools
 
 # assetdir = fujiwara_toolbox.conf.assetdir
 assetdir = ""
@@ -12853,7 +12849,7 @@ class BoneInfo:
         self.use_deform = bone.use_deform
         self.hide = bone.hide
 
-import fujiwara_toolbox.modules.main.submodules.rigify_tools as rigify_tools
+import fujiwara_toolbox_modules.modules.main.submodules.rigify_tools as rigify_tools
 
 ########################################
 #Genrigして再ペアレント
@@ -15662,7 +15658,7 @@ class CATEGORYBUTTON_425599(bpy.types.Operator):#MarvelousDesigner
 ################################################################################
 
 # import fujiwara_toolbox.modules.main.submodules.marvelousdesinger_utils
-from fujiwara_toolbox.modules.main.submodules.marvelousdesinger_utils import MarvelousDesingerUtils
+from fujiwara_toolbox_modules.modules.main.submodules.marvelousdesinger_utils import MarvelousDesingerUtils
 
 #---------------------------------------------
 uiitem().vertical()
@@ -16887,7 +16883,7 @@ uiitem().vertical()
 uiitem().horizontal()
 #---------------------------------------------
 
-from fujiwara_toolbox.modules.main.submodules.projection_tools import ProjectionUtils, ProjectionTools, FaceSetupTools
+from fujiwara_toolbox_modules.modules.main.submodules.projection_tools import ProjectionUtils, ProjectionTools, FaceSetupTools
     
 
 ########################################
@@ -17050,7 +17046,7 @@ uiitem().vertical()
 ############################################################################################################################
 uiitem("テクスチャ作業")
 ############################################################################################################################
-from fujiwara_toolbox.modules.main.submodules.texture_working_tools import TextureWorkingTools
+from fujiwara_toolbox_modules.modules.main.submodules.texture_working_tools import TextureWorkingTools
 
 
 
@@ -17112,7 +17108,7 @@ uiitem().vertical()
 #---------------------------------------------
 uiitem().horizontal()
 #---------------------------------------------
-from fujiwara_toolbox.modules.main.submodules.texture_baking_utils import TextureBaker
+from fujiwara_toolbox_modules.modules.main.submodules.texture_baking_utils import TextureBaker
 
 ########################################
 #ベイク
@@ -17636,7 +17632,7 @@ uiitem().vertical()
 uiitem().horizontal()
 #---------------------------------------------
 
-from fujiwara_toolbox.modules.main.submodules.substance_tools import SubstanceTools
+from fujiwara_toolbox_modules.modules.main.submodules.substance_tools import SubstanceTools
 
 
 def set_sbsar_to_active():

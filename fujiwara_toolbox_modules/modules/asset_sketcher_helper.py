@@ -2,12 +2,8 @@
 import os
 import re
 
-
-fujiwara_toolbox = __import__(__package__)
-try:
-    from fujiwara_toolbox import fjw #コード補完用
-except:
-    fjw = fujiwara_toolbox.fjw
+import fujiwara_toolbox_modules as fujiwara_toolbox
+from fujiwara_toolbox_modules import fjw, conf
 
 
 
@@ -35,7 +31,7 @@ class Asset_Sketcher_Helper(bpy.types.Panel):#メインパネル
 
     @classmethod
     def poll(cls, context):
-        pref = fujiwara_toolbox.conf.get_pref()
+        pref = conf.get_pref()
         return pref.assetsketcherhelper
 
     def draw(self, context):

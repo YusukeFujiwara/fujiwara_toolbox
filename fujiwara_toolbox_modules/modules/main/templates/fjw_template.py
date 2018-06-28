@@ -13,8 +13,9 @@ import shutil
 import time
 import copy
 from collections import OrderedDict
-from fujiwara_toolbox.fjw import *
-import fujiwara_toolbox.conf
+
+import fujiwara_toolbox_modules as fujiwara_toolbox
+from fujiwara_toolbox_modules import fjw, conf
 
 
 bl_info = {

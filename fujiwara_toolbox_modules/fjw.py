@@ -16,13 +16,6 @@ import random
 from collections import OrderedDict
 from mathutils import *
 
-fujiwara_toolbox = __import__(__package__)
-# try:
-#     from fujiwara_toolbox import fjw #コード補完用
-# except:
-#     fjw = fujiwara_toolbox.fjw
-
-
 ############################################################################################################################
 ############################################################################################################################
 #ユーティリティ
