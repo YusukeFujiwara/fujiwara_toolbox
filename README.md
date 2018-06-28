@@ -1,4 +1,4 @@
-# Fujiwara Tool Box
+# Fujiwara Toolbox
 Blender用漫画addon群です。
 自分用のものをそのまま公開してるので、ローカルディレクトリ依存のコードが残ってたりします（メンテナンス中）。
 各ファイルの説明等はおいおい…。
