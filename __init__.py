@@ -2,7 +2,7 @@
 
 
 bl_info = {
-    "name": "Fujiwara Tool Box",
+    "name": "Fujiwara Toolbox",
     "description": "",
     "author": "Yusuke Fujiwara",
     "version": (0, 0, 1),
@@ -12,6 +12,8 @@ bl_info = {
     "category": "Tools" }
 
 
+import sys, os
+sys.path.append(os.path.dirname(__file__))
 
 
 # load and reload submodules

@@ -2,7 +2,6 @@ import sys
 import os
 import shutil
 import subprocess
-import mylib
 import zipfile
 
 args = sys.argv
@@ -19,6 +18,7 @@ zipdest = selfdir + os.sep + "fujiwara_toolbox.zip"
 if os.path.exists(zipdest):
     os.remove(zipdest)
 
+
 #http://tokibito.hatenablog.com/entry/20110630/1309359802
 def zip_directory(path):
     zip_targets = []
@@ -28,11 +28,16 @@ def zip_directory(path):
     zipfilepath = os.path.abspath('%s.zip' % base)
     # walkでファイルを探す
     for dirpath, dirnames, filenames in os.walk(path):
+        # 特定文字列の除外
+        if ".vs" in dirpath or ".vscode" in dirpath or ".git" in dirpath or "__pycache__" in dirpath or "設計とか" in dirpath or "UIutils" in dirpath:
+            continue
+
         for filename in filenames:
             filepath = os.path.join(dirpath, filename)
             # 作成するzipファイルのパスと同じファイルは除外する
             if filepath == zipfilepath:
                 continue
+
             arc_name = os.path.relpath(filepath, os.path.dirname(path))
             print(filepath, arc_name)
             zip_targets.append((filepath, arc_name))
