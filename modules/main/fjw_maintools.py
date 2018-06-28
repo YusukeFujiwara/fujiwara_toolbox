@@ -1769,6 +1769,41 @@ class FUJIWARATOOLBOX_229893(bpy.types.Operator):#posi.objインポート
         return {'FINISHED'}
 ########################################
 
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+############################################################################################################################
+uiitem(" ")
+############################################################################################################################
+
+########################################
+#Blenderを再起動
+########################################
+#bpy.ops.fujiwara_toolbox.command_630782() #Blenderを再起動
+class FUJIWARATOOLBOX_COMMAND_630782(bpy.types.Operator):
+    """Blenderを再起動"""
+    bl_idname = "fujiwara_toolbox.command_630782"
+    bl_label = "Blenderを再起動"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_confirm(self, event)
+
+    def execute(self, context):
+        if bpy.data.filepath == "":
+            subprocess.Popen("blender")
+        else:
+            subprocess.Popen('blender "%s"'%bpy.data.filepath)
+        bpy.ops.wm.quit_blender()
+        return {'FINISHED'}
+########################################
 
 #---------------------------------------------
 uiitem().vertical()
@@ -3782,6 +3817,113 @@ uiitem().vertical()
 
 #        return {'FINISHED'}
 #########################################
+
+
+############################################################################################################################
+uiitem("Cyclesレンダ")
+############################################################################################################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+########################################
+#Cycles・線画レンダ
+########################################
+#bpy.ops.fujiwara_toolbox.render_cycles_and_edge() #Cycles・線画レンダ
+class FUJIWARATOOLBOX_RENDER_CYCLES_AND_EDGE(bpy.types.Operator):
+    """Cycles・線画をレンダする。"""
+    bl_idname = "fujiwara_toolbox.render_cycles_and_edge"
+    bl_label = "Cycles・線画レンダ"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        starttime = time.time()
+        self.report({"INFO"}, "アニメーション完了　{0:.2f}秒".format(time.time() - starttime))
+
+        render_bu = fjw.PropBackup(bpy.context.scene.render)
+        render_bu.store("engine")
+        render_bu.store("filepath")
+        dirname, name, ext = fjw.splitpath(bpy.data.filepath)
+        render_dir = dirname + os.sep + "render"
+        bpy.context.scene.render.engine = 'CYCLES'
+        bpy.context.scene.render.filepath = render_dir + os.sep + name + "_cycles.png"
+        # そのままレンダ
+        bpy.ops.render.render(write_still=True)
+
+        # エッジレンダ
+        bpy.context.scene.render.engine = 'BLENDER_RENDER'
+        bpy.context.scene.render.filepath = render_dir + os.sep + name + "_edge.png"
+
+        # objects = bpy.context.scene.objects
+        objects = bpy.data.objects
+        obj_bu_list = []
+        for obj in objects:
+            obj_bu = fjw.PropBackup(obj)
+            obj_bu.store("hide_render")
+            obj_bu_list.append(obj_bu)
+
+        # render_state_list = []
+        # for obj in objects:
+        #     render_state_list.append((obj, obj.hide_render))
+
+        # パーティクルヘアの非表示
+        for obj in objects:
+            if obj.type == "MESH":
+                if len(obj.particle_systems) != 0:
+                    obj.hide_render = True
+
+        # レンダレイヤ設定
+        render_layer = bpy.context.scene.render.layers.active
+        render_layer_bu = fjw.PropBackup(render_layer)
+        render_layer_bu.store("use_zmask")
+        render_layer_bu.store("invert_zmask")
+        render_layer_bu.store("use_all_z")
+        render_layer_bu.store("use_solid")
+        render_layer_bu.store("use_halo")
+        render_layer_bu.store("use_ztransp")
+        render_layer_bu.store("use_sky")
+        render_layer_bu.store("use_strand")
+        render_layer_bu.store("use_freestyle")
+        render_layer_bu.store("use_edge_enhance")
+        render_layer.use_zmask = False
+        render_layer.invert_zmask = False
+        render_layer.use_all_z = False
+        render_layer.use_solid = False
+        render_layer.use_halo = False
+        render_layer.use_ztransp = False
+        render_layer.use_sky = False
+        render_layer.use_strand = False
+        render_layer.use_freestyle = False
+        render_layer.use_edge_enhance = True
+
+        bpy.ops.render.render(write_still=True)
+
+        # リストア
+        render_bu.restore()
+        render_layer_bu.restore()
+        for obj_bu in obj_bu_list:
+            obj_bu.restore()
+
+        endtime = time.time()
+        self.report({"INFO"}, "レンダ完了　{0:.2f}秒".format(endtime - starttime))
+
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
 
 ############################################################################################################################
 uiitem("OpenGLレンダ")
@@ -9481,7 +9623,7 @@ uiitem("メッシュアクション")
 ########################################
 class FUJIWARATOOLBOX_635930(bpy.types.Operator):#複製分離
     """複製分離"""
-    bl_idname = "fujiwara_toolbox.command_635930"
+    bl_idname = "fujiwara_toolbox.dup_and_part"
     bl_label = "複製分離"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -9514,7 +9656,6 @@ class FUJIWARATOOLBOX_635930(bpy.types.Operator):#複製分離
                 fjw.activate(obj)
                 fjw.mode("EDIT")
                 break
-
 
         return {'FINISHED'}
 ########################################
@@ -9798,7 +9939,7 @@ class FUJIWARATOOLBOX_994469(bpy.types.Operator):#スキン化
     uiitem.button(bl_idname,bl_label,icon="MOD_SKIN",mode="edit")
 
     def execute(self, context):
-        bpy.ops.fujiwara_toolbox.command_635930()
+        bpy.ops.fujiwara_toolbox.dup_and_part()
         bpy.ops.mesh.select_all(action='TOGGLE')
         bpy.ops.object.modifier_add(type='SKIN')
         bpy.ops.transform.skin_resize(value=(0.1, 0.1, 0.1), constraint_axis=(False, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1)
@@ -10471,7 +10612,237 @@ uiitem().vertical()
 #---------------------------------------------
 
 
+############################################################################################################################
+uiitem("ランダム化")
+############################################################################################################################
 
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#位置X
+########################################
+#bpy.ops.fujiwara_toolbox.randomize_loc_x() #位置X
+class FUJIWARATOOLBOX_RANDOMIZE_LOC_X_obj(bpy.types.Operator):
+    """ランダム化"""
+    bl_idname = "fujiwara_toolbox.randomize_loc_x_obj"
+    bl_label = "位置X"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        # bpy.ops.object.randomize_transform(loc=(0.06, 0, 0), rot=(0.00261799, 0, 0), scale_even=True, scale=(1.06, 1, 1))
+        rnd = random.random()*10000
+        value=1
+        bpy.ops.object.randomize_transform(random_seed=rnd,loc=(value,0,0))
+        return {'FINISHED'}
+########################################
+
+########################################
+#Y
+########################################
+#bpy.ops.fujiwara_toolbox.randomize_loc_y() #Y
+class FUJIWARATOOLBOX_RANDOMIZE_LOC_Y_obj(bpy.types.Operator):
+    """ランダム化"""
+    bl_idname = "fujiwara_toolbox.randomize_loc_y_obj"
+    bl_label = "Y"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        rnd = random.random()*10000
+        value=1
+        bpy.ops.object.randomize_transform(random_seed=rnd,loc=(0,value,0))
+        return {'FINISHED'}
+########################################
+
+########################################
+#Z
+########################################
+#bpy.ops.fujiwara_toolbox.randomize_loc_z() #Z
+class FUJIWARATOOLBOX_RANDOMIZE_LOC_Z_obj(bpy.types.Operator):
+    """ランダム化"""
+    bl_idname = "fujiwara_toolbox.randomize_loc_z_obj"
+    bl_label = "Z"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        rnd = random.random()*10000
+        value=1
+        bpy.ops.object.randomize_transform(random_seed=rnd,loc=(0,0,value))
+        return {'FINISHED'}
+########################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#回転X
+########################################
+#bpy.ops.fujiwara_toolbox.randomize_rot_x() #回転X
+class FUJIWARATOOLBOX_RANDOMIZE_ROT_X_obj(bpy.types.Operator):
+    """ランダム化"""
+    bl_idname = "fujiwara_toolbox.randomize_rot_x_obj"
+    bl_label = "回転X"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        rnd = random.random()*10000
+        value=3.14159
+        bpy.ops.object.randomize_transform(random_seed=rnd,rot=(value,0,0))
+        return {'FINISHED'}
+########################################
+
+########################################
+#Y
+########################################
+#bpy.ops.fujiwara_toolbox.randomize_rot_y() #Y
+class FUJIWARATOOLBOX_RANDOMIZE_ROT_Y_obj(bpy.types.Operator):
+    """ランダム化"""
+    bl_idname = "fujiwara_toolbox.randomize_rot_y_obj"
+    bl_label = "Y"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        rnd = random.random()*10000
+        value=3.14159
+        bpy.ops.object.randomize_transform(random_seed=rnd,rot=(0,value,0))
+        return {'FINISHED'}
+########################################
+
+########################################
+#Z
+########################################
+#bpy.ops.fujiwara_toolbox.randomize_rot_z() #Z
+class FUJIWARATOOLBOX_RANDOMIZE_ROT_Z_obj(bpy.types.Operator):
+    """ランダム化"""
+    bl_idname = "fujiwara_toolbox.randomize_rot_z_obj"
+    bl_label = "Z"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        rnd = random.random()*10000
+        value=3.14159
+        bpy.ops.object.randomize_transform(random_seed=rnd,rot=(0,0,value))
+        return {'FINISHED'}
+########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+########################################
+#拡縮X
+########################################
+#bpy.ops.fujiwara_toolbox.randomize_scale_x() #拡縮X
+class FUJIWARATOOLBOX_RANDOMIZE_SCALE_X_obj(bpy.types.Operator):
+    """ランダム化"""
+    bl_idname = "fujiwara_toolbox.randomize_scale_x_obj"
+    bl_label = "拡縮X"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        rnd = random.random()*10000
+        value=1.1
+        bpy.ops.object.randomize_transform(random_seed=rnd,scale=(value,0,0))
+        return {'FINISHED'}
+########################################
+
+########################################
+#Y
+########################################
+#bpy.ops.fujiwara_toolbox.randomize_scale_y() #Y
+class FUJIWARATOOLBOX_RANDOMIZE_SCALE_Y_obj(bpy.types.Operator):
+    """ランダム化"""
+    bl_idname = "fujiwara_toolbox.randomize_scale_y_obj"
+    bl_label = "Y"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        rnd = random.random()*10000
+        value=1.1
+        bpy.ops.object.randomize_transform(random_seed=rnd,scale=(0,value,0))
+        return {'FINISHED'}
+########################################
+
+########################################
+#Z
+########################################
+#bpy.ops.fujiwara_toolbox.randomize_scale_z() #Z
+class FUJIWARATOOLBOX_RANDOMIZE_SCALE_Z_obj(bpy.types.Operator):
+    """ランダム化"""
+    bl_idname = "fujiwara_toolbox.randomize_scale_z_obj"
+    bl_label = "Z"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        rnd = random.random()*10000
+        value=1.1
+        bpy.ops.object.randomize_transform(random_seed=rnd,scale=(0,0,value))
+        return {'FINISHED'}
+########################################
+
+########################################
+#全て
+########################################
+#bpy.ops.fujiwara_toolbox.randomize_scale_all() #全て
+class FUJIWARATOOLBOX_RANDOMIZE_SCALE_ALL_obj(bpy.types.Operator):
+    """ランダム化"""
+    bl_idname = "fujiwara_toolbox.randomize_scale_all_obj"
+    bl_label = "全て"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        rnd = random.random()*10000
+        value=1.1
+        bpy.ops.object.randomize_transform(random_seed=rnd,scale=(value,value,value),scale_even=True)
+        return {'FINISHED'}
+########################################
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
 
 
 
@@ -15798,6 +16169,9 @@ uiitem().vertical()
 #---------------------------------------------
 uiitem().horizontal()
 #---------------------------------------------
+
+
+
 ########################################
 #選択物の設定を全て消去
 ########################################
@@ -15851,7 +16225,48 @@ class CATEGORYBUTTON_81935(bpy.types.Operator):#Substance/テクスチャ
 ########################################
 ################################################################################
 
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
 
+
+########################################
+#ベイク用リメッシュ生成
+########################################
+#bpy.ops.fujiwara_toolbox.gen_remeshed_model() #ベイク用リメッシュ生成
+class FUJIWARATOOLBOX_GEN_REMESHED_MODEL(bpy.types.Operator):
+    """ベイク先用にリメッシュ・ポリゴン数削減・マテリアル除去したモデルを生成する。"""
+    bl_idname = "fujiwara_toolbox.gen_remeshed_model"
+    bl_label = "ベイク用リメッシュ生成"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        obj = fjw.active()
+        fjw.deselect()
+        fjw.activate(obj)
+        bpy.ops.object.duplicate()
+        obj = fjw.active()
+        modu = fjw.Modutils(obj)
+        m = modu.add("Remesh", "REMESH")
+        m.use_remove_disconnected = False
+        m.mode = 'SMOOTH'
+        m.octree_depth = 7
+        m.use_smooth_shade = True
+        m = modu.add("Decimate", "DECIMATE")
+        m.ratio = 0.1
+
+        obj.data.materials.clear()
+        # for mod in modu.mods:
+        #     modu.apply(mod)
+
+        return {'FINISHED'}
+########################################
 ########################################
 #リンク切れテクスチャを削除
 ########################################
@@ -15875,6 +16290,9 @@ class FUJIWARATOOLBOX_disable_textures_img_not_found(bpy.types.Operator):
         return {'FINISHED'}
 ########################################
 
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
 
 
 ############################################################################################################################
@@ -16038,7 +16456,51 @@ def bake_ModelAppearance(size):
 
     bake_finish()
 
+########################################
+#512
+########################################
+#bpy.ops.fujiwara_toolbox.command_924014() #512
+class FUJIWARATOOLBOX_COMMAND_924014(bpy.types.Operator):
+    """512"""
+    bl_idname = "fujiwara_toolbox.command_924014"
+    bl_label = "512"
+    bl_options = {'REGISTER', 'UNDO'}
 
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        res = 512
+        tbaker = TextureBaker(fjw.active(),fjw.get_selected_list(),res,res)
+        tbaker.bake("TEXTURE")
+        tbaker.bake("NORMALS")
+        tbaker.bake("DISPLACEMENT")
+
+        return {'FINISHED'}
+########################################
+
+########################################
+#1024
+########################################
+#bpy.ops.fujiwara_toolbox.command_933282() #1024
+class FUJIWARATOOLBOX_COMMAND_933282(bpy.types.Operator):
+    """1024"""
+    bl_idname = "fujiwara_toolbox.command_933282"
+    bl_label = "1024"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        res = 1024
+        tbaker = TextureBaker(fjw.active(),fjw.get_selected_list(),res,res)
+        tbaker.bake("TEXTURE")
+        tbaker.bake("NORMALS")
+        tbaker.bake("DISPLACEMENT")
+
+        return {'FINISHED'}
+########################################
 
 ########################################
 #2048
@@ -16054,7 +16516,14 @@ class FUJIWARATOOLBOX_458089(bpy.types.Operator):#2048
 
 
     def execute(self, context):
-        bake_ModelAppearance(2048)
+        # bake_ModelAppearance(2048)
+
+        res = 1024*2
+        tbaker = TextureBaker(fjw.active(),fjw.get_selected_list(),res,res)
+        tbaker.bake("TEXTURE")
+        tbaker.bake("NORMALS")
+        tbaker.bake("DISPLACEMENT")
+
         return {'FINISHED'}
 ########################################
 
@@ -16073,7 +16542,11 @@ class FUJIWARATOOLBOX_264050(bpy.types.Operator):#4096
 
 
     def execute(self, context):
-        bake_ModelAppearance(4096)
+        res = 1024*4
+        tbaker = TextureBaker(fjw.active(),fjw.get_selected_list(),res,res)
+        tbaker.bake("TEXTURE")
+        tbaker.bake("NORMALS")
+        tbaker.bake("DISPLACEMENT")
         return {'FINISHED'}
 ########################################
 #---------------------------------------------
@@ -16330,7 +16803,7 @@ def settexdepth(value,objects):
             for texture_slot in mat.texture_slots:
                 if texture_slot is None:
                     continue
-                if re.search("_Height", texture_slot.texture.name,re.IGNORECASE) is not None:
+                if re.search("_Height", texture_slot.texture.name,re.IGNORECASE) is not None or re.search("_Normals", texture_slot.texture.name,re.IGNORECASE) is not None:
                     texture_slot.normal_factor = value
 
 
@@ -16582,30 +17055,31 @@ from fujiwara_toolbox.modules.main.submodules.texture_working_tools import Textu
 
 
 
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
+# #---------------------------------------------
+# uiitem().vertical()
+# #---------------------------------------------
+# #---------------------------------------------
+# uiitem().horizontal()
+# #---------------------------------------------
 
-########################################
-#テクスチャ作業ファイル作成
-########################################
-#bpy.ops.fujiwara_toolbox.make_texture_workfile() #テクスチャ作業ファイル作成
-class FUJIWARATOOLBOX_MAKE_TEXTURE_WORKFILE(bpy.types.Operator):
-    """テクスチャ作業ファイル作成"""
-    bl_idname = "fujiwara_toolbox.make_texture_workfile"
-    bl_label = "テクスチャ作業ファイル作成"
-    bl_options = {'REGISTER', 'UNDO'}
+# ########################################
+# #テクスチャ作業ファイル作成
+# ########################################
+# #bpy.ops.fujiwara_toolbox.make_texture_workfile() #テクスチャ作業ファイル作成
+# class FUJIWARATOOLBOX_MAKE_TEXTURE_WORKFILE(bpy.types.Operator):
+#     """テクスチャ作業ファイル作成"""
+#     bl_idname = "fujiwara_toolbox.make_texture_workfile"
+#     bl_label = "テクスチャ作業ファイル作成"
+#     bl_options = {'REGISTER', 'UNDO'}
 
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    def execute(self, context):
-        TextureWorkingTools.make_texture_workingfile(fjw.active(), "projector")
-        return {'FINISHED'}
-########################################
+#     def execute(self, context):
+#         TextureWorkingTools.make_texture_workingfile(fjw.active(), "projector")
+#         return {'FINISHED'}
+# ########################################
+
 
 #---------------------------------------------
 uiitem().vertical()
@@ -16628,9 +17102,192 @@ class FUJIWARATOOLBOX_FJW_TEXTURE_EXPORT_UVMAP(bpy.types.Operator):
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     def execute(self, context):
+        # 書き出し先ファイルが既にあったらそれを開く、ってしないとダメでは
         TextureWorkingTools.fjw_texture_export_uvmap(fjw.active())
         return {'FINISHED'}
 ########################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+from fujiwara_toolbox.modules.main.submodules.texture_baking_utils import TextureBaker
+
+########################################
+#ベイク
+########################################
+#bpy.ops.fujiwara_toolbox.fjw_bake() #ベイク
+class FUJIWARATOOLBOX_FJW_BAKE(bpy.types.Operator):
+    """テクスチャ、ノーマルをベイク"""
+    bl_idname = "fujiwara_toolbox.fjw_bake"
+    bl_label = "ベイク"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        if "uv_map" not in bpy.context.scene.objects:
+            self.report({"INFO"}, "対象ファイルが存在しません")
+            return {"CANCELLED"}
+
+        tex_obj = bpy.context.scene.objects["uv_map"]
+        tex_obj.hide = False
+        fjw.activate(tex_obj)
+
+        res = 1024*2
+        tbaker = TextureBaker(tex_obj,fjw.get_selected_list(),res,res)
+        tbaker.bake("TEXTURE")
+        tbaker.bake("NORMALS")
+        # tbaker.bake("SPEC_INTENSITY")
+        # tbaker.bake("SPEC_COLOR")
+        tbaker.bake("DISPLACEMENT")
+        return {'FINISHED'}
+########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+
+
+########################################
+#戻ってテクスチャ回収
+########################################
+#bpy.ops.fujiwara_toolbox.collect_fjw_texture() #戻ってテクスチャ回収
+class FUJIWARATOOLBOX_COLLECT_FJW_TEXTURE(bpy.types.Operator):
+    """元ファイルに戻ってテクスチャを回収する"""
+    bl_idname = "fujiwara_toolbox.collect_fjw_texture"
+    bl_label = "戻ってテクスチャ回収"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        TextureWorkingTools.return_to_basefile()
+        return {'FINISHED'}
+########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+############################################################################################################################
+uiitem(" ")
+############################################################################################################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#既存テクスチャをアサイン
+########################################
+#bpy.ops.fujiwara_toolbox.assign_existing_textures() #既存テクスチャをアサイン
+class FUJIWARATOOLBOX_ASSIGN_EXISTING_TEXTURES(bpy.types.Operator):
+    """選択ファイル・フォルダのテクスチャをアサインする。"""
+    bl_idname = "fujiwara_toolbox.assign_existing_textures"
+    bl_label = "既存テクスチャをアサイン"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    filter_glob = StringProperty(default="*.png", options={"HIDDEN"})
+
+    filename = bpy.props.StringProperty(subtype="FILE_NAME")
+    filepath = bpy.props.StringProperty(subtype="FILE_PATH")
+    directory = bpy.props.StringProperty(subtype="DIR_PATH")
+    files = bpy.props.CollectionProperty(type=bpy.types.PropertyGroup)
+
+    def invoke(self, context, event):
+        if bpy.data.filepath != "":
+            self.directory = os.path.dirname(bpy.data.filepath)
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+    def execute(self, context):
+        extlist = [".png"]
+        result_path_list = []
+        print(self.directory)
+        print(self.filepath)
+        print(self.files)
+        for file in self.files:
+            # print(file)
+            name, ext = os.path.splitext(file.name)
+            if ext in extlist:
+                path = self.directory + file.name
+                result_path_list.append(path)
+
+        tbaker = TextureBaker(fjw.active(), [])
+        for path in result_path_list:
+            tbaker.assign_image(path)
+
+        return {'FINISHED'}
+########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+
+############################################################################################################################
+uiitem("便利")
+############################################################################################################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#アルファでメッシュをカットオフする
+########################################
+#bpy.ops.fujiwara_toolbox.cutoff_mesh_by_alpha() #アルファでメッシュをカットオフする
+class FUJIWARATOOLBOX_CUTOFF_MESH_BY_ALPHA(bpy.types.Operator):
+    """アサインされているテクスチャのアルファ値でメッシュを刈り込む。Subsurf推奨。"""
+    bl_idname = "fujiwara_toolbox.cutoff_mesh_by_alpha"
+    bl_label = "アルファでメッシュをカットオフする"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        #だめだったらどっかでとまるからデータ決め打ち
+        obj = fjw.active()
+        mat = obj.data.materials[0]
+        tex = mat.texture_slots[0].texture
+
+        vgu = fjw.VertexGroupUtils(obj)
+        vg = vgu.get_group("TextureMask")
+
+        modu = fjw.Modutils(obj)
+        m = modu.add("VertexWeightMix", "VERTEX_WEIGHT_MIX")
+        m.vertex_group_a = vg.name
+        m.default_weight_a = 1
+        m.mix_set = 'ALL'
+        m.mask_texture = tex
+        m.mask_tex_mapping = 'UV'
+        m.mask_tex_use_channel = 'ALPHA'
+
+        m = modu.add("Mask", "MASK")
+        m.vertex_group = vg.name
+        m.invert_vertex_group = True
+
+        return {'FINISHED'}
+########################################
+
 
 
 #---------------------------------------------
@@ -18289,7 +18946,7 @@ class FUJIWARATOOLBOX_MAKE_SKIN_LINE(bpy.types.Operator):
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     def execute(self, context):
-        # bpy.ops.fujiwara_toolbox.command_635930()#複製分離
+        # bpy.ops.fujiwara_toolbox.dup_and_part()#複製分離
         fjw.mode("OBJECT")
         obj = fjw.active()
         fjw.deselect()
@@ -18342,6 +18999,9 @@ uiitem().vertical()
 uiitem("ベベル髪")
 ############################################################################################################################
 #---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
 uiitem().horizontal()
 #---------------------------------------------
 
@@ -18364,7 +19024,797 @@ class FUJIWARATOOLBOX_append_bevel_hair(bpy.types.Operator):
         bpy.ops.transform.translate(value=(0, 0, 0), constraint_axis=(True, False, False), constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED', proportional_edit_falloff='SMOOTH', proportional_size=1, release_confirm=True)
         return {'FINISHED'}
 ########################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+############################################################################################################################
+uiitem("パーティクルヘア")
+############################################################################################################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+########################################
+#複製して新システム
+########################################
+#bpy.ops.fujiwara_toolbox.new_system_with_dup_settings() #複製して新システム
+class FUJIWARATOOLBOX_NEW_SYSTEM_WITH_DUP_SETTINGS(bpy.types.Operator):
+    """パーティクルシステムを複製して本数ゼロの新しいシステムを作る。"""
+    bl_idname = "fujiwara_toolbox.new_system_with_dup_settings"
+    bl_label = "複製して新システム"
+    bl_options = {'REGISTER', 'UNDO'}
 
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        bpy.ops.particle.duplicate_particle_system()
+        psys = fjw.active().particle_systems.active
+        psys.settings = psys.settings.copy()
+        psys.settings.count = 0
+        bpy.ops.particle.edited_clear()
+
+        return {'FINISHED'}
+########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+############################################################################################################################
+uiitem("パーティクルヘア合成")
+############################################################################################################################
+
+class CombineHair():
+    def __init__(self, obj):
+        self.org = obj
+        self.setup()
+        self.edit_hair_index = 0
+    
+    def cleanup(self, obj):
+        #パーティクルヘアをすべて削除
+        fjw.activate(obj)
+        fjw.mode("OBJECT")
+
+        for i in range(len(obj.particle_systems)):
+            bpy.ops.object.particle_system_remove()
+
+    def setup(self):
+        fjw.deselect()
+        fjw.activate(self.org)
+        bpy.ops.object.duplicate()
+        self.dup = fjw.active()
+        fjw.deselect()
+        fjw.activate(self.dup)
+        self.cleanup(self.dup)
+
+        # 生成物は次のレイヤーに送って、現在のレイヤーを非表示
+        active_layer_index = 0
+        for i, val in enumerate(self.org.layers):
+            if val:
+                active_layer_index = i
+                break
+        dup_layer_index = 0
+        if active_layer_index < 19:
+            dup_layer_index = active_layer_index + 1
+        else:
+            dup_layer_index = 19
+
+        layers = [False for i in range(20)]
+        layers[dup_layer_index] = True
+        self.dup.layers = layers
+
+        bpy.context.scene.layers[dup_layer_index] = True
+        bpy.context.scene.layers[active_layer_index] = False
+    
+    def get_particle_systems(self, obj, physics_hair=True, non_physics_hair=True):
+        # 対象になるパーティクルシステムを取得する
+        result = []
+        for ps in obj.particle_systems:
+            if ps.settings.type != "HAIR":
+                continue
+            if physics_hair:
+                if ps.use_hair_dynamics:
+                    result.append(ps)
+            if non_physics_hair:
+                if not ps.use_hair_dynamics:
+                    result.append(ps)
+        return result
+        
+    def create_hair_system(self, obj, hair_count, src_psystem, use_hair_dynamics, hair_step):
+        fjw.activate(obj)
+        bpy.ops.object.particle_system_add()
+        ps = obj.particle_systems[0]
+        ps.name = "Combined Hair"
+        ps.use_hair_dynamics = use_hair_dynamics
+
+        ps.settings = src_psystem.settings.copy()
+        ps.settings.count = hair_count
+        ps.settings.hair_step = hair_step
+
+        
+    def copy_hair(self, src_pc):
+        dest_psys = self.dup.particle_systems[0]
+        for i in range(len(src_pc.particles)):
+            src_particle = src_pc.particles[i]
+            dest_particle = dest_psys.particles[self.edit_hair_index]
+            print(len(src_particle.hair_keys))
+            print(len(dest_particle.hair_keys))
+            for j in range(len(src_particle.hair_keys)):
+                dest_particle.hair_keys[j].co = src_particle.hair_keys[j].co
+
+            self.edit_hair_index += 1
+            
+        pass
+
+    def combine_hair(self, physics_hair=True, non_physics_hair=True, use_hair_dynamics=False):
+        pss = self.get_particle_systems(self.org)
+
+        # 髪の合計本数を取得
+        total_count = 0
+        for ps in pss:
+            total_count += len(ps.particles)
+
+        self.create_hair_system(self.dup, total_count, pss[0], use_hair_dynamics, len(pss[0].particles[0].hair_keys) - 1)
+        fjw.mode("PARTICLE_EDIT")
+        #Referrenced from HairNet.py
+        bpy.context.scene.tool_settings.particle_edit.use_emitter_deflect = False
+        bpy.context.scene.tool_settings.particle_edit.use_preserve_root = False
+        bpy.context.scene.tool_settings.particle_edit.use_preserve_length = False
+        bpy.ops.particle.disconnect_hair(all=True)
+        bpy.ops.particle.connect_hair(all=True)
+
+        for ps in pss:
+            self.copy_hair(ps)
+
+        fjw.mode("OBJECT")
+        fjw.mode("PARTICLE_EDIT")
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+########################################
+#すべてを合成
+########################################
+#bpy.ops.fujiwara_toolbox.combine_all_hair() #すべてを合成
+class FUJIWARATOOLBOX_COMBINE_ALL_HAIR(bpy.types.Operator):
+    """すべてのヘアーのParticleSystemを合成した、オブジェクトの複製を生成する。"""
+    bl_idname = "fujiwara_toolbox.combine_all_hair"
+    bl_label = "すべてを合成"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        obj = fjw.active()
+        if obj is None:
+            return {"CANCELLED"}
+        if obj.type != "MESH":
+            return {"CANCELLED"}
+        chair = CombineHair(fjw.active())
+        chair.combine_hair()
+        return {'FINISHED'}
+########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#非物理のみ
+########################################
+#bpy.ops.fujiwara_toolbox.combine_non_physics_hair() #非物理のみ
+class FUJIWARATOOLBOX_COMBINE_NON_PHYSICS_HAIR(bpy.types.Operator):
+    """ヘアダイナミクスが設定されてないもののみ合成する。"""
+    bl_idname = "fujiwara_toolbox.combine_non_physics_hair"
+    bl_label = "非物理のみ"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        obj = fjw.active()
+        if obj is None:
+            return {"CANCELLED"}
+        if obj.type != "MESH":
+            return {"CANCELLED"}
+        chair = CombineHair(fjw.active())
+        chair.combine_hair(physics_hair=False, non_physics_hair=True)
+        return {'FINISHED'}
+########################################
+
+########################################
+#物理のみ
+########################################
+#bpy.ops.fujiwara_toolbox.combine_physics_hair() #物理のみ
+class FUJIWARATOOLBOX_COMBINE_PHYSICS_HAIR(bpy.types.Operator):
+    """ヘアダイナミクスが設定されてるもののみ合成する。"""
+    bl_idname = "fujiwara_toolbox.combine_physics_hair"
+    bl_label = "物理のみ"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        obj = fjw.active()
+        if obj is None:
+            return {"CANCELLED"}
+        if obj.type != "MESH":
+            return {"CANCELLED"}
+        chair = CombineHair(fjw.active())
+        chair.combine_hair(physics_hair=True, non_physics_hair=False, use_hair_dynamics=True)
+        return {'FINISHED'}
+########################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+############################################################################################################################
+uiitem("パーティクルヘア物理")
+############################################################################################################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+
+########################################
+#複製して物理ヘアをはやす
+########################################
+#bpy.ops.fujiwara_toolbox.dup_and_genphyhair() #複製して物理ヘアをはやす
+class FUJIWARATOOLBOX_DUP_AND_GENPHYHAIR(bpy.types.Operator):
+    """選択面を別オブジェクトとして複製して、物理ヘアーをはやす"""
+    bl_idname = "fujiwara_toolbox.dup_and_genphyhair"
+    bl_label = "複製して物理ヘアをはやす"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def delete_all_particle_systems(self, obj):
+        for i in range(len(obj.particle_systems)):
+            bpy.ops.object.particle_system_remove()
+
+    def get_base_particle_settings(self, obj):
+        if len(obj.particle_systems) > 0:
+            return obj.particle_systems[0].settings
+        return None
+
+    def execute(self, context):
+        bpy.ops.screen.frame_jump(end=False)
+        org = fjw.active()
+        base_particle_settings = self.get_base_particle_settings(fjw.active())
+        bpy.ops.fujiwara_toolbox.dup_and_part()
+        fjw.mode("OBJECT")
+        dup = fjw.active()
+        dup.name = org.name + "_PartHair"
+        fjw.deselect()
+        fjw.activate(dup)
+        self.delete_all_particle_systems(dup)
+        bpy.ops.object.particle_system_add()
+        psys = dup.particle_systems[0]
+        if base_particle_settings is not None:
+            pset = base_particle_settings.copy()
+            psys.settings = pset
+        psys.use_hair_dynamics = True
+
+        bpy.ops.fujiwara_toolbox.adjust_hair("INVOKE_DEFAULT")
+
+        return {'FINISHED'}
+
+########################################
+
+########################################
+#ヘア調整
+########################################
+#bpy.ops.fujiwara_toolbox.adjust_hair() #ヘア調整
+class FUJIWARATOOLBOX_ADJUST_HAIR(bpy.types.Operator):
+    """パーティクルヘアを調整する"""
+    bl_idname = "fujiwara_toolbox.adjust_hair"
+    bl_label = "ヘア調整"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    count = IntProperty(
+        name="Count",
+        description="髪の量",
+        default=10,
+        min=0,
+        max=500
+    )
+
+    hair_length = FloatProperty(
+        name="Hair Length",
+        description="髪の長さ",
+        default = 0.25,
+        min=0.0,
+        max=2.0
+    )
+
+    clump_factor = FloatProperty(
+        name="Clump Factor",
+        description="集結",
+        default=0,
+        min=0.0,
+        max=1.0
+    )
+
+    roughness_endpoint = FloatProperty(
+        name="Roughness Endpoint",
+        description="ラフネス終点",
+        default=0.0,
+        min=0.0,
+        max=1.0
+    )
+
+    def execute(self, context):
+        fjw.mode("OBJECT")
+        obj = fjw.active()
+        psys = obj.particle_systems[0]
+        settings = psys.settings
+        settings.count = self.count
+        settings.hair_length = self.hair_length
+        settings.clump_factor = self.clump_factor
+        settings.roughness_endpoint = self.roughness_endpoint
+
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        if fjw.active() is None:
+            return {"CANCELLED"}
+        if len(fjw.active().particle_systems) == 0:
+            return {"CANCELLED"}
+
+        return context.window_manager.invoke_props_popup(self, event)
+########################################
+
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+
+# class HairKeysData():
+#     def __init__(self, hairkeys):
+#         self.hairkeys = hairkeys
+#         self.hairkeys_data = []
+#         for hairkey in hairkeys:
+#             co = hairkey.co
+#             self.hairkeys_data.append((co[0], co[1], co[2]))
+    
+#     def store(self):
+#         for i, hairkey in enumerate(self.hairkeys):
+#             # print((hairkey.co, "<-", self.hairkeys_data[i]))
+#             co = hairkey.co
+#             if co.x == self.hairkeys_data[i][0] and co.y == self.hairkeys_data[i][1] and co.z == self.hairkeys_data[i][2]:
+#                 print("==")
+#             else:
+#                 print("!=")
+#             hairkey.co = self.hairkeys_data[i]
+
+# class ParticleData():
+#     def __init__(self, particle):
+#         self.particle = particle
+#         self.hairkeys_data = HairKeysData(particle.hair_keys)
+    
+#     def store(self):
+#         self.hairkeys_data.store()
+
+# class ParticleSystemData():
+#     def __init__(self, particle_system):
+#         self.particle_system = particle_system
+#         self.particle_datas = []
+#         for particle in particle_system.particles:
+#             self.particle_datas.append(ParticleData(particle))
+
+#     def store(self):
+#         for particle_data in self.particle_datas:
+#             particle_data.store()
+
+"""
+HairNetの機能を使ってやるほうが楽
+
+モディファイアごとに実行
+    セグメント数不一致
+        セグメント数一致させる
+        このフレームまで計算
+    子設定をNoneに
+    変換
+    子設定を戻す
+
+    パーティクルシステム除去
+
+    変換メッシュを選択して
+    obj.hnIsEmitter = True
+    obj.hnMasterHairSystem = 元パーティクル
+    bpy.ops.particle.hairnet(meshKind="FIBER")
+    ヘアダイナミクスのプロパティまでは反映されてないから反映
+    このフレームまで計算
+    変換メッシュ削除
+"""
+
+########################################
+#セグメント数FIX
+########################################
+#bpy.ops.fujiwara_toolbox.fix_hair_segments() #セグメント数FIX
+class FUJIWARATOOLBOX_FIX_HAIR_SEGMENTS(bpy.types.Operator):
+    """セグメント数を表示セグメント数と一致させる"""
+    bl_idname = "fujiwara_toolbox.fix_hair_segments"
+    bl_label = "セグメント数FIX"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        obj = fjw.active()
+        if obj is None:
+            return {"CANCELLED"}
+        if obj.type != "MESH":
+            return {"CANCELLED"}
+
+        for psystem in obj.particle_systems:
+            psett = psystem.settings
+            segments = 2**psett.draw_step
+            if psett.hair_step != segments:
+                psett.hair_step = segments
+
+        return {'FINISHED'}
+########################################
+
+class ApplyHairPhysicsParticleSystem:
+    def __init__(self, obj, particle_system):
+        self.obj = obj
+        self.particle_system = particle_system
+        self.settings = self.particle_system.settings
+        # 残しとく必要もないか。
+        # self.settings.id_data.use_fake_user = True
+        self.store_settings()
+    
+    def get_modifier(self):
+        for mod in self.obj.modifiers:
+            if mod.type == "PARTICLE_SYSTEM":
+                if mod.particle_system == self.particle_system:
+                    return mod
+        return None
+
+    def convert(self):
+        fjw.deselect()
+        mod = self.get_modifier()
+        fjw.activate(self.obj)
+        bpy.ops.view3d.snap_cursor_to_selected()
+        bpy.ops.object.modifier_convert(modifier=mod.name)
+        conv = fjw.active()
+
+        # 原点をあわせる
+        bpy.ops.object.origin_set(type='ORIGIN_CURSOR', center='MEDIAN')
+        return conv
+
+    def activate(self):
+        fjw.activate(self.obj)
+        index = self.obj.particle_systems.find(self.particle_system.name)
+        self.obj.particle_systems.active_index = index
+
+    def remove(self):
+        self.activate()
+        bpy.ops.object.particle_system_remove()
+
+    def bake(self):
+        self.activate()
+        fjw.mode("OBJECT")
+        try:
+            bpy.ops.ptcache.bake(bake=False)
+        except:
+            pass
+
+    def fix_segments(self):
+        segments = 2**self.settings.draw_step
+        if self.settings.hair_step != segments:
+            self.settings.hair_step = segments
+            self.bake()
+
+    def store_settings(self):
+        self.particle_system_bu = fjw.PropBackup(self.particle_system)
+        self.particle_system_bu.store("use_hair_dynamics")
+
+        self.settings_bu = fjw.PropBackup(self.settings)
+        self.settings_bu.store("child_type")
+        # 物理設定(一部)
+        self.settings_bu.store("mass")
+
+    def restore_settings(self):
+        self.particle_system_bu.restore()
+        self.settings_bu.restore()
+
+class HairNetControl:
+    def __init__(self, obj):
+        self.obj = obj
+
+    def AddHairFrom(self, from_obj, particle_settings):
+        self.obj.hnIsEmitter = True
+        self.obj.hnMasterHairSystem = particle_settings.name
+        fjw.mode("OBJECT")
+        fjw.deselect()
+        fjw.activate(self.obj)
+        fjw.mode("OBJECT")
+        fjw.select([from_obj])
+        print("add hair")
+        bpy.ops.particle.hairnet("INVOKE_DEFAULT", meshKind="FIBER")
+
+        # 追加されたパーティクルシステムを返す
+        return self.obj.particle_systems.active
+
+class HairPhysicsSetting:
+    def __init__(self, psys_setting, cloth_setting):
+        self.psys_settings_bu = fjw.PropBackup(psys_setting)
+        self.psys_settings_bu.store("bending_random")
+
+        self.cloth_settings_bu = fjw.PropBackup(cloth_setting)
+        self.cloth_settings_bu.store("quality")
+        self.cloth_settings_bu.store("mass")
+        self.cloth_settings_bu.store("bending_stiffness")
+        self.cloth_settings_bu.store("bending_damping")
+        self.cloth_settings_bu.store("air_damping")
+        self.cloth_settings_bu.store("internal_friction")
+        self.cloth_settings_bu.store("density_target")
+        self.cloth_settings_bu.store("density_strength")
+        self.cloth_settings_bu.store("voxel_cell_size")
+        self.cloth_settings_bu.store("pin_stiffness")
+    
+    def copyto(self, psys_setting, cloth_setting):
+        self.psys_settings_bu.copyto(psys_setting)
+        self.cloth_settings_bu.copyto(cloth_setting)
+
+########################################
+#物理演算を適用
+########################################
+#bpy.ops.fujiwara_toolbox.apply_hair_physics() #物理演算を適用
+class FUJIWARATOOLBOX_APPLY_HAIR_PHYSICS(bpy.types.Operator):
+    """オブジェクトのアクティブなパーティクルヘアの物理演算の結果を適用する。Addon:HairNet必須。"""
+    bl_idname = "fujiwara_toolbox.apply_hair_physics"
+    bl_label = "物理演算を適用"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    # 子ヘアーなしだと位置が異常になるという不具合あり。謎。
+
+    def remove_particle_system_by_name(self, obj, name):
+        fjw.activate(obj)
+        current_index = obj.particle_systems.active_index
+        index = obj.particle_systems.find(name)
+        if index >= 0:
+            obj.particle_systems.active_index = index
+            bpy.ops.object.particle_system_remove()
+            obj.particle_systems.active_index = current_index
+
+    def execute(self, context):
+        obj = fjw.active()
+        if obj is None:
+            return {"CANCELLED"}
+        if obj.type != "MESH":
+            return {"CANCELLED"}
+
+        ahppss = []
+        # for psys in obj.particle_systems:
+        #     # ヘアダイナミクスオンのみ
+        #     if psys.use_hair_dynamics:
+        #         ahppss.append(ApplyHairPhysicsParticleSystem(obj, psys))
+        # アクティブのみにする
+        ahppss.append(ApplyHairPhysicsParticleSystem(obj, obj.particle_systems.active))
+
+        for ahpps in ahppss:
+            psys_basename = ahpps.particle_system.name
+            # オリジナルの物理設定を取得する
+            hps = HairPhysicsSetting(ahpps.particle_system.settings, ahpps.particle_system.cloth.settings)
+
+            ahpps.fix_segments()
+            ahpps.settings.child_type = 'NONE'
+            conv = ahpps.convert()
+            conv_name = conv.name
+            ahpps.restore_settings()
+
+            hnc = HairNetControl(obj)
+            addedpsys = hnc.AddHairFrom(conv, ahpps.settings)
+            added_ahpps = ApplyHairPhysicsParticleSystem(obj, addedpsys)
+            added_ahpps.bake()
+            fjw.delete([conv])
+            ahpps.remove()
+            self.remove_particle_system_by_name(obj, "HN"+conv_name)
+            added_ahpps.particle_system.name = psys_basename
+            added_ahpps.activate()
+
+            fjw.mode("PARTICLE_EDIT")
+            bpy.context.scene.tool_settings.particle_edit.use_emitter_deflect = False
+            bpy.context.scene.tool_settings.particle_edit.use_preserve_root = False
+            bpy.context.scene.tool_settings.particle_edit.use_preserve_length = False
+            bpy.ops.particle.disconnect_hair(all=True)
+            bpy.ops.particle.connect_hair(all=True)
+            # これで編集を保存できる！
+            bpy.ops.transform.translate()
+            fjw.mode("OBJECT")
+
+            # 物理設定をコピーしておく
+            added_ahpps.particle_system.use_hair_dynamics = True
+            hps.copyto(added_ahpps.particle_system.settings, added_ahpps.particle_system.cloth.settings)
+            added_ahpps.particle_system.use_hair_dynamics = False
+        
+        bpy.ops.screen.frame_jump(end=False)
+
+
+        return {'FINISHED'}
+########################################
+
+
+
+
+
+
+
+
+
+
+# ########################################
+# #物理演算を適用
+# ########################################
+# #bpy.ops.fujiwara_toolbox.apply_hair_physics() #物理演算を適用
+# class FUJIWARATOOLBOX_APPLY_HAIR_PHYSICS(bpy.types.Operator):
+#     """オブジェクトのすべてのパーティクルヘアの物理演算の結果を適用する"""
+#     bl_idname = "fujiwara_toolbox.apply_hair_physics"
+#     bl_label = "物理演算を適用"
+#     bl_options = {'REGISTER', 'UNDO'}
+
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+#     def get_selected_v_indexes(self, data):
+#         indexes = []
+#         for v in data.vertices:
+#             if v.select:
+#                 indexes.append(v.index)
+#         return indexes
+
+#     def get_edge(self, data, v):
+#         # 所属してるエッジを返す
+#         pass
+    
+#     # def get_other_side(self, data, )
+
+#     def get_linked_v_indexes(self, data, root_index):
+#         # ルートから順番に接続頂点のインデックスを返す？
+#         pass
+
+#     def execute(self, context):
+        
+#         # 一回メッシュに変換してからその座標をとればよかった！！！！！
+#         # 変換後
+#             # ルートの頂点が選択された状態になってる
+#         # ルートとして回収
+#         # 各ルートごとに接続頂点を選択して、選択内でまわせばいいのでは
+
+#         obj = fjw.active()
+#         if obj is None:
+#             return {"CANCELLED"}
+#         if obj.type != "MESH":
+#             return {"CANCELLED"}
+
+#         # パーティクルのステップ数がビューと一致してないとめんどくさい。
+#         # 2^ビューのステップ数 == パーティクルのステップ
+
+#         org = obj
+
+#         particle_system_data = {}
+#         for pmod in org.modifiers:
+#             if pmod.type != "PARTICLE_SYSTEM":
+#                 continue
+#             fjw.deselect()
+#             fjw.activate(org)
+#             bpy.ops.view3d.snap_cursor_to_selected()
+
+#             psys = pmod.particle_system
+#             psys_index = org.particle_systems.find(psys.name)
+#             p_settings_bu = fjw.PropBackup(psys.settings)
+#             p_settings_bu.store("child_type")
+#             psys.settings.child_type = "NONE"
+#             bpy.ops.object.modifier_convert(modifier=pmod.name)
+#             p_settings_bu.restore()
+
+#             cmesh = fjw.active()
+#             # 生成されたメッシュの原点、0,0,0になってる！
+#             fjw.deselect()
+#             fjw.activate(cmesh)
+#             bpy.ops.object.origin_set(type='ORIGIN_CURSOR', center='MEDIAN')
+
+#             fjw.mode("EDIT")
+
+#             root_vertice_indexes = self.get_selected_v_indexes(cmesh.data)
+
+#             for particle_index, rvi in enumerate(root_vertice_indexes):
+#                 particle = psys.particles[particle_index]
+
+#                 bpy.ops.mesh.select_all(action="DESELECT")
+#                 cmesh.data.vertices[rvi].select = True
+#                 bpy.ops.mesh.select_linked()
+
+#                 linked_vertice_indexes = self.get_selected_v_indexes(cmesh.data)
+#                 hair_keys = particle.hair_keys
+#                 for hair_key_index, lvi in enumerate(linked_vertice_indexes):
+#                     # if hair_key_index >= len(hair_keys):
+#                     #     break
+#                     # hair_keys[index].co = cmesh.data.vertices[lvi].co
+
+#                     # 同じ値が入りまくってる
+#                     co = cmesh.data.vertices[lvi].co
+#                     particle_system_data[psys_index ,particle_index, hair_key_index] = (float(co.x), float(co.y), float(co.z))
+
+#         # 回収したデータの反映
+#         # print(particle_system_data)
+#         for data in particle_system_data:
+#             print(data, particle_system_data[data])
+#         bpy.ops.screen.frame_jump(end=False)
+
+#         for psys_index in range(len(org.particle_systems)):
+#             fjw.mode("OBJECT")
+#             # fjw.delete([cmesh])
+#             fjw.activate(org)
+#             org.particle_systems.active_index = psys_index
+#             org.particle_systems.active.use_hair_dynamics = False
+#             fjw.mode("PARTICLE_EDIT")
+#             #Referrenced from HairNet.py
+#             bpy.context.scene.tool_settings.particle_edit.use_emitter_deflect = False
+#             bpy.context.scene.tool_settings.particle_edit.use_preserve_root = False
+#             bpy.context.scene.tool_settings.particle_edit.use_preserve_length = False
+#             bpy.ops.particle.disconnect_hair(all=True)
+#             bpy.ops.particle.connect_hair(all=True)
+
+#             for particle_index,particle in enumerate(psys.particles):
+#                 for hair_key_index, hair_key in enumerate(particle.hair_keys):
+#                     hair_key.co = particle_system_data[psys_index, particle_index, hair_key_index]
+
+#             fjw.mode("OBJECT")
+
+
+#         # print(bpy.data.objects["Icosphere"].particle_systems[0].particles[0].hair_keys[0].co)
+#         # obj = fjw.active()
+#         # if obj is None:
+#         #     return {"CANCELLED"}
+#         # if obj.type != "MESH":
+#         #     return {"CANCELLED"}
+
+#         # psys_datas = []
+#         # for psys in obj.particle_systems:
+#         #     psys_datas.append(ParticleSystemData(psys))
+
+#         # bpy.ops.screen.frame_jump(end=False)
+
+#         # # fjw.mode("PARTICLE_EDIT")
+#         # # #Referrenced from HairNet.py
+#         # # bpy.context.scene.tool_settings.particle_edit.use_emitter_deflect = False
+#         # # bpy.context.scene.tool_settings.particle_edit.use_preserve_root = False
+#         # # bpy.context.scene.tool_settings.particle_edit.use_preserve_length = False
+#         # # bpy.ops.particle.disconnect_hair(all=True)
+#         # # bpy.ops.particle.connect_hair(all=True)
+
+#         # for psys_data in psys_datas:
+#         #     psys_data.store()
+
+#         # # fjw.mode("OBJECT")
+#         # # fjw.mode("PARTICLE_EDIT")
+#         # print(bpy.data.objects["Icosphere"].particle_systems[0].particles[0].hair_keys[0].co)
+
+#         return {'FINISHED'}
+# ########################################
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
@@ -18950,7 +20400,11 @@ uiitem().vertical()
 
 
 def urapolimat_index(obj):
-    mat = fjw.append_material("裏ポリエッジ")
+    if bpy.context.scene.render.engine == 'CYCLES':
+        mat = fjw.append_material("裏ポリエッジ_Cycles")
+    if bpy.context.scene.render.engine == 'BLENDER_RENDER':
+        mat = fjw.append_material("裏ポリエッジ")
+
     #デフォルトマテリアルの設置
     if len(obj.data.materials) == 0:
         dmat = bpy.data.materials.new("default")
@@ -21826,8 +23280,9 @@ def menu_func_VIEW3D_HT_header(self, context):
 
     if pref.glrenderutils_buttons:
         active = layout.row(align = True)
+        active.operator("fujiwara_toolbox.render_cycles_and_edge", text="Render",icon="RENDER_STILL")
         # active.operator("fujiwara_toolbox.glrender", text="GL",icon="RENDER_STILL")
-        active.operator("fujiwara_toolbox.glrender_compomat", text="Render",icon="RENDER_STILL")
+        # active.operator("fujiwara_toolbox.glrender_compomat", text="Render",icon="RENDER_STILL")
         # active.operator("fujiwara_toolbox.command_171760", text="MASK")
         # active.operator("fujiwara_toolbox.command_242623", text="",icon="GREASEPENCIL")
 

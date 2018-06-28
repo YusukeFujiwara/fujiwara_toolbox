@@ -245,6 +245,7 @@ class SubstanceTools():
                 mat.use_transparency = True
                 mat.alpha = 0
             if self.__texid_match(file, "normal"):
+                texture_slot.texture.use_normal_map = True
                 texture_slot.use_map_color_diffuse = False
                 texture_slot.use_map_normal = True
                 texture_slot.normal_factor = 0.1

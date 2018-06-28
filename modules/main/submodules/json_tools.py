@@ -2,9 +2,10 @@
 import os
 import re
 import sys
-from collections import OrderedDict
 import json
 
+# usage
+# from json_tools import JsonTools
 # from fujiwara_toolbox.modules.main.submodules.json_tools import JsonTools
 
 class JsonTools():
@@ -85,7 +86,8 @@ class JsonTools():
             /区切りでデータパスを記述する。
             valueなしで取得、ありで値の設定。
         """
-        if not value:
+
+        if value is None:
             return self.__get_val(datapath)
         else:
             self.__set_val(datapath, value)

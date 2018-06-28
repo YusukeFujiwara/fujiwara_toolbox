@@ -85,6 +85,15 @@ def blenddir():
     dir = os.path.dirname(bpy.data.filepath)
     return dir
 
+def splitpath(basepath):
+    """パスを分割する。
+    dirname, name, extでうける"""
+    if not basepath:
+        return None, None, None
+    dirname = os.path.dirname(basepath)
+    basename = os.path.basename(basepath)
+    name, ext = os.path.splitext(basename)
+    return dirname, name, ext
 
 # def group(name, objects):
 #     group = None
@@ -829,6 +838,63 @@ class MeshUtils():
         bpy.ops.mesh.remove_doubles()
         mode("OBJECT")
 
+class UVUtils():
+    # アクティブUVレイヤーを取得とか簡単にしたい
+    def __init__(self, obj):
+        self.obj = obj
+        pass
+    
+    def is_empty(self):
+        if len(self.obj.data.uv_textures) == 0:
+            return True
+        else:
+            return False
+
+    def active(self):
+        return self.obj.data.uv_textures.active
+    
+    def activate(self, name):
+        index = self.obj.data.uv_textures.find(name)
+        if index != -1:
+            self.obj.data.uv_textures.active_index = index
+        else:
+            self.new(name)
+        return self.active()
+
+    def new(self, name="UVMap"):
+        return self.obj.data.uv_textures.new(name)
+
+    def find(self, name):
+        if name in self.obj.data.uv_textures:
+            return self.obj.data.uv_textures[name]
+        return None
+
+
+    def uv(self, name=None):
+        """
+        ざっくりアクセス関数
+        引数が空＝アクティブを返す
+        引数が名前
+            検索してそれをアクティブにし、返す
+        ない場合は新規作成
+        """
+        if self.is_empty():
+            # 新規作成して返す
+            if name:
+                return self.new(name)
+            else:
+                return self.new()
+        
+        if not name:
+            return self.active()
+        
+        uv = self.find(name)
+        if uv:
+            return self.activate(uv)
+        
+        return self.new(name)
+
+
 class MaterialUtils():
     def __init__(self, obj):
         self.obj = obj
@@ -884,8 +950,13 @@ class MaterialUtils():
         self.set_active_mat(mat)
         return mat
 
+    def add_texture_slot(self):
+        mat = self.get_active_mat()
+        tslot = mat.texture_slots.add()
+        return tslot
 
-    def add_texture(self, filepath, 
+    def add_texture(self, filepath=None, 
+        texture=None,
         uv_layer="", 
         blend_type = 'MIX',
 
@@ -1132,9 +1203,13 @@ def editmode():
     if active() != None:
         bpy.ops.object.mode_set(mode='EDIT', toggle=False)
 
-def mode(modeto):
+def mode(modeto=None):
     if active() != None:
-        bpy.ops.object.mode_set(mode=modeto, toggle=False)
+        if modeto is not None:
+            bpy.ops.object.mode_set(mode=modeto, toggle=False)
+
+        return active().mode
+    return None
 
 
 
@@ -1165,12 +1240,14 @@ def layers(put_layer=-1,put_visible_last=False,not_visible=False):
 
 def get_selected_list(type="ALL"):
     list = []
-    for obj in bpy.context.selected_objects:
-        if type == "ALL":
-            list.append(obj)
-        else:
-            if obj.type == type:
+    # for obj in bpy.context.selected_objects:
+    for obj in bpy.context.scene.objects:
+        if obj.select:
+            if type == "ALL":
                 list.append(obj)
+            else:
+                if obj.type == type:
+                    list.append(obj)
     return list
 
 
@@ -2039,13 +2116,41 @@ def id(arg):
 
     if type(arg) == str:
         for obj in bpy.context.scene.objects:
-            if obj["fjwid"] == arg:
-                return obj
+            if "fjwid" in obj:
+                if obj["fjwid"] == arg:
+                    return obj
     else:
         obj = arg
         if "fjwid" not in obj:
             obj["fjwid"] = random_id(16, True)
         return obj["fjwid"]
+
+class PropBackup():
+    def __init__(self, obj):
+        # バックアップの親オブジェクトを指定する
+        self.obj = obj
+        self.props = []
+
+    def store(self, attr_name):
+        # バックアップするプロパティ名を指定する
+        val = getattr(self.obj, attr_name)
+        self.props.append((attr_name, val))
+    
+    def copyto(self, dest_obj):
+        # 別のオブジェクトにプロパティをコピーする
+        for prop in self.props:
+            setattr(dest_obj, prop[0], prop[1])
+
+    def restore(self):
+        # すべてのバックアップしたプロパティを復帰する
+        for prop in self.props:
+            setattr(self.obj, prop[0], prop[1])
+
+def duplicate(obj):
+    deselect()
+    activate(obj)
+    bpy.ops.object.duplicate()
+    return active()
 
 def dummy():
     return
