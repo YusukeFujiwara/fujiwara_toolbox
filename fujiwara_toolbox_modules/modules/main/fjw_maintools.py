@@ -1773,6 +1773,68 @@ uiitem().vertical()
 uiitem().horizontal()
 #---------------------------------------------
 ############################################################################################################################
+uiitem("便利")
+############################################################################################################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+########################################
+#別のファイルからUIをロード
+########################################
+#bpy.ops.fujiwara_toolbox.load_ui_from_otherblendfile() #別のファイルからUIをロード
+class FUJIWARATOOLBOX_LOAD_UI_FROM_OTHERBLENDFILE(bpy.types.Operator):
+    """他のblendファイルからUIをロードする"""
+    bl_idname = "fujiwara_toolbox.load_ui_from_otherblendfile"
+    bl_label = "別のファイルからUIをロード"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    filter_glob = StringProperty(default="*.blend", options={"HIDDEN"})
+    
+    filename = bpy.props.StringProperty(subtype="FILE_NAME")
+    filepath = bpy.props.StringProperty(subtype="FILE_PATH")
+    directory = bpy.props.StringProperty(subtype="DIR_PATH")
+    files = bpy.props.CollectionProperty(type=bpy.types.PropertyGroup)
+    
+    def invoke(self, context, event):
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
+
+    def execute(self, context):
+        current_path = bpy.data.filepath
+        current_load_ui = bpy.context.user_preferences.filepaths.use_load_ui
+        if current_path == "":
+            self.report({"WARN"}, str("ファイルが保存されていません！"))
+            return {"CANCELLED"}
+
+        if bpy.data.is_dirty:
+            bpy.ops.wm.save_mainfile()
+
+        bpy.context.user_preferences.filepaths.use_load_ui = True
+        bpy.ops.wm.open_mainfile(filepath=self.filepath)
+        bpy.context.user_preferences.filepaths.use_load_ui = False
+        bpy.ops.wm.open_mainfile(filepath=current_path)
+        bpy.context.user_preferences.filepaths.use_load_ui = current_load_ui
+
+        return {'FINISHED'}
+   
+########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+############################################################################################################################
 uiitem(" ")
 ############################################################################################################################
 
