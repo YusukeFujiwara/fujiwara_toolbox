@@ -16,6 +16,7 @@ Blenderは無料で使えますし、このアドオンももちろん無料で�
 
 ## 使い方
 →[**ドキュメント・インストール方法**](documents/README.md)  
+→[Scrapbox](https://scrapbox.io/fujiwaratoolbox/)
 →[リリースページ](https://github.com/YusukeFujiwara/fujiwara_toolbox/releases)  
 
 Blenderを漫画製作に使う方は、まずこちらを参照してください→[ページユーティリティ](documents/pageutils.md)
