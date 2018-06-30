@@ -56,6 +56,8 @@ class PageUtils(bpy.types.Panel):#メインパネル
         layout.operator("pageutils.popen",icon="FILE_FOLDER")
         layout.operator("pageutils.bgopen",icon="FILE_IMAGE")
 
+        pref = conf.get_pref()
+
         if "page" in filename:
             layout.label("ページセットアップ")
             row = layout.row(align=True)
@@ -97,8 +99,9 @@ class PageUtils(bpy.types.Panel):#メインパネル
             row.prop(bpy.context.scene, "template_name",text="")
             row = layout.row(align=True)
             row.operator("pageutils.saveastemplate")
-        row = layout.row(align=True)
-        row.prop(bpy.context.user_preferences.filepaths, "use_load_ui")
+        if pref.pageutils_show_load_ui:
+            row = layout.row(align=True)
+            row.prop(bpy.context.user_preferences.filepaths, "use_load_ui")
 
 
 ############################################################################################################################

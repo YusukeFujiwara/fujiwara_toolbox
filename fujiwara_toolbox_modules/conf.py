@@ -100,6 +100,10 @@ class FujiwaraToolBoxPreferences(AddonPreferences):
             name="ページユーティリティ",
             default=True,
             )
+    pageutils_show_load_ui = BoolProperty(
+            name="ページユーティリティに「UIをロード」設定を表示する",
+            default=False,
+    )
     pageutils_cpurender = BoolProperty(
             name="ページユーティリティでCPUプレビューを生成する",
             default=True,
@@ -191,6 +195,7 @@ class FujiwaraToolBoxPreferences(AddonPreferences):
         layout.prop(self, "maintools")
         layout.prop(self, "roomtools")
         layout.prop(self, "pageutils")
+        layout.prop(self, "pageutils_show_load_ui")
         layout.prop(self, "pageutils_cpurender")
         layout.prop(self, "pageutils_set_res_to_bgimg_onload")
         layout.prop(self, "subsurfmodelingtools")
