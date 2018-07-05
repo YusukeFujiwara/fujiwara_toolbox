@@ -579,6 +579,11 @@ class RigifyTools():
         layers_current = fjw.layers_current_state()
         fjw.layers_showall()
 
+        objects_bu = fjw.ObjectsPropBackups(bpy.context.scene.objects)
+        objects_bu.store("hide")
+        for obj in bpy.context.scene.objects:
+            obj.hide = False
+
         self.set_metarig(metarig)
         self.set_rig(self.find_rig())
 
@@ -614,6 +619,8 @@ class RigifyTools():
         if rig_old:
             new_rig.restore_settings_from(rig_old)
         
+        objects_bu.restore()
+
         return True
 
     def __rigify_fk2ik(self, rig):

@@ -1849,7 +1849,7 @@ class FUJIWARATOOLBOX_COMMAND_630782(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+    uiitem.button(bl_idname,bl_label,icon="BLENDER",mode="")
 
     def invoke(self, context, event):
         return context.window_manager.invoke_confirm(self, event)
@@ -8549,7 +8549,216 @@ class FUJIWARATOOLBOX_SURFACEDEFORM_UNBIND(bpy.types.Operator):
         return {'FINISHED'}
 ########################################
 
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+############################################################################################################################
+uiitem("マルチ解像度サーフェスデフォーム")
+############################################################################################################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
 
+class MultiResSurfaceDeform():
+    @classmethod
+    def getMultiresNames(self, obj):
+        """リスト表示用"""
+        result = []
+        modu = fjw.Modutils(obj)
+        mods = modu.find_bytype_list("SURFACE_DEFORM")
+        for mod in mods:
+            if "Sdef_" not in mod.name:
+                continue
+            name = mod.name.split("_")[1]
+            if name not in result:
+                result.append(name)
+        return result
+
+    def __init__(self, obj, target):
+        print("~~~~~~~~~~~~")
+        self.obj = obj
+        self.target = target
+        print((obj, target))
+        self.modu = fjw.Modutils(obj)
+        self.subsurf = self.modu.find_bytype("SUBSURF")
+        print(self.subsurf)
+        self.levels = self.subsurf.levels
+
+    def modname(self, level):
+        # return "Sdef_" + self.target.name + "_" + level
+        return "Sdef_%s_%d"%(self.target.name, level)
+
+    def get_level(self, name):
+        # nameの最後のlevelを得る
+        return name.split("_")[-1]
+
+    def sdef(self, level):
+        # 探す
+        m = None
+        mods = self.modu.find_bytype_list("SURFACE_DEFORM")
+        for mod in mods:
+            # m_level = self.get_level(mod.name)
+            # if m_level == level:
+            if mod.name == self.modname(level):
+                m = mod
+                break
+        # ないので作る
+        if m is None:
+            m = self.modu.add(self.modname(level), "SURFACE_DEFORM")
+        m.target = self.target
+        return m
+
+    def store(self):
+       self.render_bu = fjw.PropBackup(bpy.context.scene.render)
+       self.render_bu.store("use_simplify")
+       self.render_bu.store("simplify_subdivision")
+
+    def restore(self):
+        self.render_bu.restore()
+
+    def bind(self):
+        self.store()
+        fjw.activate(self.obj)
+        for level in range(self.levels+1):
+            bpy.context.scene.render.use_simplify = True
+            bpy.context.scene.render.simplify_subdivision = level
+            # self.subsurf.levels = level
+            sdef = self.sdef(level)
+            if not sdef.is_bound:
+                bpy.ops.object.surfacedeform_bind(modifier=sdef.name)
+        self.restore()
+
+    def remove(self):
+        print("remove...")
+        print("target:"+str(self.target))
+        remove_list = []
+        fjw.activate(self.obj)
+        for level in range(self.levels+1):
+            sdef = self.sdef(level)
+            if sdef.target == self.target:
+                print(sdef.name)
+                remove_list.append(sdef)
+
+        for mod in remove_list:
+            self.modu.remove(mod)
+        print("done.")
+
+########################################
+#アタッチ
+########################################
+#bpy.ops.fujiwara_toolbox.mutires_sdeform_attouch() #アタッチ
+class FUJIWARATOOLBOX_MUTIRES_SDEFORM_ATTOUCH(bpy.types.Operator):
+    """Subsurfのレベルごとにサーフェスデフォームを作成する。"""
+    bl_idname = "fujiwara_toolbox.mutires_sdeform_attouch"
+    bl_label = "アタッチ"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        # アクティブ=ターゲット
+        target = fjw.active()
+        obj = fjw.another(target, fjw.get_selected_list())
+        mrsfd = MultiResSurfaceDeform(obj, target)
+        mrsfd.bind()
+        return {'FINISHED'}
+########################################
+
+########################################
+#再バインド
+########################################
+#bpy.ops.fujiwara_toolbox.mutires_sdeform_rebind() #再バインド
+class FUJIWARATOOLBOX_MUTIRES_SDEFORM_REBIND(bpy.types.Operator):
+    """すべてのマルチ解像度サーフェスデフォームを再バインドする。"""
+    bl_idname = "fujiwara_toolbox.mutires_sdeform_rebind"
+    bl_label = "再バインド"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def enum_callback(scene, context):
+        result = []
+
+        obj = fjw.active()
+        sdeftarget_names = MultiResSurfaceDeform.getMultiresNames(obj)
+
+        for sdeftarget_name in sdeftarget_names:
+            name = "target:"+sdeftarget_name
+            label = sdeftarget_name
+            description = ""
+            result.append((name, label, description))
+        return result
+
+    targets = EnumProperty(
+        name="マルチ解像度サーフェスデフォーム",
+        description="ターゲット",
+        items=enum_callback
+    )
+
+    def execute(self, context):
+        self.report({"INFO"}, str(self.targets))
+        target_name = self.targets.replace("target:", "")
+        target = fjw.object(target_name)
+        obj = fjw.active()
+        mrsfd = MultiResSurfaceDeform(obj, target)
+        mrsfd.bind()
+
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_popup(self, event)
+########################################
+
+########################################
+#除去
+########################################
+#bpy.ops.fujiwara_toolbox.mutires_sdeform_remove() #除去
+class FUJIWARATOOLBOX_MUTIRES_SDEFORM_REMOVE(bpy.types.Operator):
+    """指定したマルチ解像度サーフェスデフォームを除去する。"""
+    bl_idname = "fujiwara_toolbox.mutires_sdeform_remove"
+    bl_label = "除去"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def enum_callback(scene, context):
+        result = []
+
+        obj = fjw.active()
+        sdeftarget_names = MultiResSurfaceDeform.getMultiresNames(obj)
+
+        for sdeftarget_name in sdeftarget_names:
+            name = "target:"+sdeftarget_name
+            label = sdeftarget_name
+            description = ""
+            result.append((name, label, description))
+        return result
+
+    targets = EnumProperty(
+        name="マルチ解像度サーフェスデフォーム",
+        description="ターゲット",
+        items=enum_callback
+    )
+
+    def execute(self, context):
+        self.report({"INFO"}, str(self.targets))
+        target_name = self.targets.replace("target:", "")
+        target = fjw.object(target_name)
+        obj = fjw.active()
+        mrsfd = MultiResSurfaceDeform(obj, target)
+        mrsfd.remove()
+
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_popup(self, event)
+########################################
 
 #---------------------------------------------
 uiitem().vertical()
@@ -9676,6 +9885,13 @@ uiitem().vertical()
 uiitem("メッシュアクション")
 ############################################################################################################################
 
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
 ########################################
 #複製分離
 ########################################
@@ -9686,7 +9902,7 @@ class FUJIWARATOOLBOX_635930(bpy.types.Operator):#複製分離
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="edit")
+    uiitem.button(bl_idname,bl_label,icon="OUTLINER_DATA_MESH",mode="edit")
 
     def execute(self, context):
         # baselist = []
@@ -9711,12 +9927,42 @@ class FUJIWARATOOLBOX_635930(bpy.types.Operator):#複製分離
         
         for obj in fjw.get_selected_list():
             if obj != active:
+                fjw.deselect()
                 fjw.activate(obj)
                 fjw.mode("EDIT")
                 break
 
         return {'FINISHED'}
 ########################################
+
+########################################
+#ケージとして複製分離
+########################################
+#bpy.ops.fujiwara_toolbox.dup_as_cage() #ケージとして複製分離
+class FUJIWARATOOLBOX_DUP_AS_CAGE(bpy.types.Operator):
+    """ケージ用設定で複製分離する。"""
+    bl_idname = "fujiwara_toolbox.dup_as_cage"
+    bl_label = "ケージとして複製分離"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="OUTLINER_OB_MESH",mode="")
+
+    def execute(self, context):
+        basename = fjw.active().name
+        bpy.ops.fujiwara_toolbox.dup_and_part()
+        obj = fjw.active()
+        obj.name = basename + "_cage"
+        fjw.mode("OBJECT")
+        obj.draw_type = 'WIRE'
+        obj.hide_render = True
+
+        return {'FINISHED'}
+########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
 
 #---------------------------------------------
 uiitem().horizontal()

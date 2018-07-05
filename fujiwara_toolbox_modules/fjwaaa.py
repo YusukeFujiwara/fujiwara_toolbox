@@ -1,4 +1,4 @@
-﻿import bpy
+import bpy
 import sys
 import inspect
 #パス関連のユーティリティ
@@ -143,12 +143,13 @@ def find_parent_bytype(obj,type):
     return find_parent_bytype(parent, type)
 
 def object(name):
+    # nameのオブジェクトをdata返す
     #オブジェクトが突っ込まれたらそのままかえす
     if type(name) == bpy.types.Object:
         return name
 
-    if name in bpy.data.objects:
-        return bpy.data.objects[name]
+    if name in bpy.context.scene.objects:
+        return bpy.context.scene.objects[name]
     else:
         return None
 
@@ -224,6 +225,13 @@ def layers_showall():
 
 def layers_show_list(layers):
     bpy.context.scene.layers = layers
+
+def another(obj, objects):
+    # リストの中の別のオブジェクトを返す
+    for other in objects:
+        if other != obj:
+            return other
+    return None
 
 class Modutils():
     def __init__(self, obj):
@@ -2138,6 +2146,23 @@ class PropBackup():
         # すべてのバックアップしたプロパティを復帰する
         for prop in self.props:
             setattr(self.obj, prop[0], prop[1])
+
+class ObjectsPropBackups():
+    def __init__(self, objects):
+        self.backups = []
+        for obj in objects:
+            self.backups.append(PropBackup(obj))
+    
+    def store(self, attr_name):
+        for bu in self.backups:
+            bu.store(attr_name)
+    
+    def restore(self):
+        for bu in self.backups:
+            bu.restore()
+
+        
+    
 
 def duplicate(obj):
     deselect()
