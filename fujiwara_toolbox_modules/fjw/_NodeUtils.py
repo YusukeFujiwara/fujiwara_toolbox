@@ -95,3 +95,34 @@ class NodetreeUtils():
     def link(self, output, input):
         self.links.new(output, input)
 
+"""
+リンクベースで考えると効率的かも
+
+ノードはnode("タイプ")
+    検索してあればそれ、なければ作成
+
+
+link = ntree.link(from_node, socket, to_node, socket)
+もしくは
+link = ntree.link()
+link.from(node, socket)
+link.to(node, socket)
+
+
+画像ノードはクラス用意してもいいかも？
+ImageNode(filepath)
+みたいの
+クラス作っておいてタイプ別に関数用意するか
+Node.image(filepath)
+Node.principle()
+Node.node(type) 汎用のやつ
+みたいなかんじで
+
+レイアウト
+ルートから辿って順番に位置決定するみたいの組む？
+fromはいっぱいある
+toは必ず一つ
+ただし一つのノードにいろいろ入力がある←これは一旦無視するか
+末端を基準に組む？
+
+"""
