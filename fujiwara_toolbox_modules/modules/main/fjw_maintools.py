@@ -3567,142 +3567,142 @@ class FUJIWARATOOLBOX_CYCLES_TO_CYCLES_MATERIAL(bpy.types.Operator):
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
-############################################################################################################################
-uiitem("Cycles")
-############################################################################################################################
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
-########################################
-#テクスチャ用ベースマテリアル作成
-########################################
-#bpy.ops.fujiwara_toolbox.create_cycles_texturedbasemat() #テクスチャ用ベースマテリアル作成
-class FUJIWARATOOLBOX_CREATE_CYCLES_TEXTUREDBASEMAT(bpy.types.Operator):
-    """Cycles用のテクスチャマテリアルを作成する。"""
-    bl_idname = "fujiwara_toolbox.create_cycles_texturedbasemat"
-    bl_label = "テクスチャ用ベースマテリアル作成"
-    bl_options = {'REGISTER', 'UNDO'}
-    # bl_options = {'REGISTER', 'UNDO'}
+# ############################################################################################################################
+# uiitem("Cycles")
+# ############################################################################################################################
+# #---------------------------------------------
+# uiitem().vertical()
+# #---------------------------------------------
+# #---------------------------------------------
+# uiitem().horizontal()
+# #---------------------------------------------
+# ########################################
+# #テクスチャ用ベースマテリアル作成
+# ########################################
+# #bpy.ops.fujiwara_toolbox.create_cycles_texturedbasemat() #テクスチャ用ベースマテリアル作成
+# class FUJIWARATOOLBOX_CREATE_CYCLES_TEXTUREDBASEMAT(bpy.types.Operator):
+#     """Cycles用のテクスチャマテリアルを作成する。"""
+#     bl_idname = "fujiwara_toolbox.create_cycles_texturedbasemat"
+#     bl_label = "テクスチャ用ベースマテリアル作成"
+#     bl_options = {'REGISTER', 'UNDO'}
+#     # bl_options = {'REGISTER', 'UNDO'}
 
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    matname = StringProperty(
-        name="マテリアル名",
-        description="マテリアル名",
-        default="Matname",
-    )
+#     matname = StringProperty(
+#         name="マテリアル名",
+#         description="マテリアル名",
+#         default="Matname",
+#     )
 
-    resolution = EnumProperty(
-        name="解像度",
-        description="解像度",
-        items=[
-            ("256", "256", "256"),
-            ("512", "512", "512"),
-            ("1024", "1024", "1024"),
-            ("2048", "2048", "2048"),
-            ("4096", "4096", "4096"),
-        ],
-        default="2048"
-    )
+#     resolution = EnumProperty(
+#         name="解像度",
+#         description="解像度",
+#         items=[
+#             ("256", "256", "256"),
+#             ("512", "512", "512"),
+#             ("1024", "1024", "1024"),
+#             ("2048", "2048", "2048"),
+#             ("4096", "4096", "4096"),
+#         ],
+#         default="2048"
+#     )
 
-    # resolution = IntProperty(
-    #     name="解像度",
-    #     description="解像度",
-    #     default=2048,
-    #     min=0,
-    #     max=4096
-    # )
+#     # resolution = IntProperty(
+#     #     name="解像度",
+#     #     description="解像度",
+#     #     default=2048,
+#     #     min=0,
+#     #     max=4096
+#     # )
 
-    def image(self, name):
-        img = bpy.data.images.new(name, int(self.resolution), int(self.resolution))
-        self_dir = os.path.dirname(bpy.data.filepath)
-        img_dir = self_dir + os.sep + "TEXTURES" + os.sep + self.matname
-        if not os.path.exists(img_dir):
-            os.makedirs(img_dir)
-        img.filepath = img_dir + os.sep + name + ".png"
-        img.save()
-        return img
+#     def image(self, name):
+#         img = bpy.data.images.new(name, int(self.resolution), int(self.resolution))
+#         self_dir = os.path.dirname(bpy.data.filepath)
+#         img_dir = self_dir + os.sep + "TEXTURES" + os.sep + self.matname
+#         if not os.path.exists(img_dir):
+#             os.makedirs(img_dir)
+#         img.filepath = img_dir + os.sep + name + ".png"
+#         img.save()
+#         return img
     
-    def image_node(self, node_builder, name):
-        img = self.image(name)
-        node = node_builder.node("ShaderNodeTexImage", True)
-        node.image = img
-        return node
+#     def image_node(self, node_builder, name):
+#         img = self.image(name)
+#         node = node_builder.node("ShaderNodeTexImage", True)
+#         node.image = img
+#         return node
 
-    def execute(self, context):
-        # self.matname = "プロパティで入力させる"
-        matname = self.matname
-        mat = bpy.data.materials.new(matname)
-        # 実際に作成された名前にする
-        self.matname = mat.name
-        obj = fjw.active()
-        obj.data.materials.append(mat)
+#     def execute(self, context):
+#         # self.matname = "プロパティで入力させる"
+#         matname = self.matname
+#         mat = bpy.data.materials.new(matname)
+#         # 実際に作成された名前にする
+#         self.matname = mat.name
+#         obj = fjw.active()
+#         obj.data.materials.append(mat)
 
-        nb = fjw._NodeUtils.NodeBuilder(mat)
-        nb.clear()
-        nb.node("ShaderNodeOutputMaterial")
-        shader_node = nb.node("ShaderNodeBsdfPrincipled")
-        nb.link(shader_node.outputs["BSDF"],nb.node("ShaderNodeOutputMaterial").inputs["Surface"])
-        img_color_node = self.image_node(nb, self.matname+"_TEXTURE")
-        img_normals_node = self.image_node(nb, self.matname+"_NORMALS")
-        img_roughness_node = self.image_node(nb, self.matname+"_ROUGHNESS")
-        nb.link(img_color_node.outputs["Color"], shader_node.inputs["Base Color"])
-        nb.link(img_normals_node.outputs["Color"], shader_node.inputs["Normal"])
-        nb.link(img_roughness_node.outputs["Color"], shader_node.inputs["Roughness"])
-        nb.layout()
-        bpy.ops.file.make_paths_relative()
+#         nb = fjw._NodeUtils.NodeBuilder(mat)
+#         nb.clear()
+#         nb.node("ShaderNodeOutputMaterial")
+#         shader_node = nb.node("ShaderNodeBsdfPrincipled")
+#         nb.link(shader_node.outputs["BSDF"],nb.node("ShaderNodeOutputMaterial").inputs["Surface"])
+#         img_color_node = self.image_node(nb, self.matname+"_TEXTURE")
+#         img_normals_node = self.image_node(nb, self.matname+"_NORMALS")
+#         img_roughness_node = self.image_node(nb, self.matname+"_ROUGHNESS")
+#         nb.link(img_color_node.outputs["Color"], shader_node.inputs["Base Color"])
+#         nb.link(img_normals_node.outputs["Color"], shader_node.inputs["Normal"])
+#         nb.link(img_roughness_node.outputs["Color"], shader_node.inputs["Roughness"])
+#         nb.layout()
+#         bpy.ops.file.make_paths_relative()
 
-        return {'FINISHED'}
+#         return {'FINISHED'}
 
-    def invoke(self, context, event):
-        self.matname = fjw.active().name
-        return context.window_manager.invoke_props_dialog(self)
+#     def invoke(self, context, event):
+#         self.matname = fjw.active().name
+#         return context.window_manager.invoke_props_dialog(self)
 
-########################################
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
-########################################
-#アクティブマテリアルの場所にエクスポート
-########################################
-#bpy.ops.fujiwara_toolbox.export_obj_to_activematerial() #アクティブマテリアルの場所にエクスポート
-class FUJIWARATOOLBOX_EXPORT_OBJ_TO_ACTIVEMATERIAL(bpy.types.Operator):
-    """アクティブマテリアルのテクスチャフォルダにobjをエクスポートして、フォルダを開く。"""
-    bl_idname = "fujiwara_toolbox.export_obj_to_activematerial"
-    bl_label = "アクティブマテリアルの場所にエクスポート"
-    bl_options = {'REGISTER', 'UNDO'}
+# ########################################
+# #---------------------------------------------
+# uiitem().vertical()
+# #---------------------------------------------
+# #---------------------------------------------
+# uiitem().horizontal()
+# #---------------------------------------------
+# ########################################
+# #アクティブマテリアルの場所にエクスポート
+# ########################################
+# #bpy.ops.fujiwara_toolbox.export_obj_to_activematerial() #アクティブマテリアルの場所にエクスポート
+# class FUJIWARATOOLBOX_EXPORT_OBJ_TO_ACTIVEMATERIAL(bpy.types.Operator):
+#     """アクティブマテリアルのテクスチャフォルダにobjをエクスポートして、フォルダを開く。"""
+#     bl_idname = "fujiwara_toolbox.export_obj_to_activematerial"
+#     bl_label = "アクティブマテリアルの場所にエクスポート"
+#     bl_options = {'REGISTER', 'UNDO'}
 
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    def execute(self, context):
-        obj = fjw.active()
-        fjw.main.deselect()
-        fjw.main.select([obj])
-        mat = obj.active_material
-        image_dir = ""
-        for node in mat.node_tree.nodes:
-            if node.bl_idname == "ShaderNodeTexImage":
-                image_path = node.image.filepath
-                image_dir = os.path.dirname(image_path)
-                break
-        obj_path = image_dir + os.sep + mat.name + ".obj"
-        bpy.ops.export_scene.obj(filepath=bpy.path.abspath(obj_path), use_selection=False, use_mesh_modifiers=True)
-        subprocess.Popen("EXPLORER " + bpy.path.abspath(image_dir))
+#     def execute(self, context):
+#         obj = fjw.active()
+#         fjw.main.deselect()
+#         fjw.main.select([obj])
+#         mat = obj.active_material
+#         image_dir = ""
+#         for node in mat.node_tree.nodes:
+#             if node.bl_idname == "ShaderNodeTexImage":
+#                 image_path = node.image.filepath
+#                 image_dir = os.path.dirname(image_path)
+#                 break
+#         obj_path = image_dir + os.sep + mat.name + ".obj"
+#         bpy.ops.export_scene.obj(filepath=bpy.path.abspath(obj_path), use_selection=False, use_mesh_modifiers=True)
+#         subprocess.Popen("EXPLORER " + bpy.path.abspath(image_dir))
 
-        return {'FINISHED'}
-########################################
+#         return {'FINISHED'}
+# ########################################
 
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
+# #---------------------------------------------
+# uiitem().vertical()
+# #---------------------------------------------
 
 
 ############################################################################################################################
@@ -17783,7 +17783,8 @@ def substance_output(obj, copy_sbstemplate=True, show_explorer=True):
 
     dir = os.path.dirname(bpy.data.filepath)
     name = sbsname(obj.name)
-    imgdir = dir + os.sep + "textures" + os.sep + name + "_textures" + os.sep
+    # imgdir = dir + os.sep + "textures" + os.sep + name + "_textures" + os.sep
+    imgdir = dir + os.sep + "textures" + os.sep + name + os.sep + "sbswork" + os.sep
     if not os.path.exists(imgdir):
         os.makedirs(imgdir)
 
@@ -17872,11 +17873,11 @@ uiitem().vertical()
 #---------------------------------------------
 uiitem().horizontal()
 #---------------------------------------------
-
 ########################################
 #テクスチャ回収
 ########################################
-class FUJIWARATOOLBOX_358608(bpy.types.Operator):#テクスチャ回収
+#bpy.ops.fujiwara_toolbox.substance_collect_textures() #テクスチャ回収
+class FUJIWARATOOLBOX_SUBSTANCE_COLLECT_TEXTURES(bpy.types.Operator):
     """テクスチャ回収"""
     bl_idname = "fujiwara_toolbox.substance_collect_textures"
     bl_label = "テクスチャ回収"
@@ -17885,122 +17886,199 @@ class FUJIWARATOOLBOX_358608(bpy.types.Operator):#テクスチャ回収
     uiitem = uiitem()
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
+    def socket_name(self, tex_name):
+        tex_name = tex_name.replace(".png", "")
+        identifier = tex_name.split("_")[-1]
+        dic = {
+            "Metallic":["Metallic"],
+            "Roughness":["Roughness"],
+            "Normal":["Normal", "NORMALS"],
+            "Base Color":["Base Color", "BaseColor", "TEXTURES"],
+            "Displacement":["Height", "DISPLACEMENT"]
+        }
+
+        for key in dic:
+            if identifier in dic[key]:
+                return key
+        return None
 
     def execute(self, context):
-        global tex_identifiers
-        basedir = os.path.dirname(bpy.data.filepath)
-        texfiles = []
+        self_dir = os.path.dirname(bpy.data.filepath)
+        textures_dir = self_dir + os.path.sep + "textures"
 
         bpy.ops.fujiwara_toolbox.command_998634()#無マテリアルに白を割り当て
 
-        #テクスチャピックアップ
-        for dirpath, dirs, files in os.walk(basedir):
-            for file in files:
-                name,ext = os.path.splitext(file)
-                if re.search("bmp|png|jpg|jpeg", ext, re.IGNORECASE) is not None:
-                    texfiles.append(dirpath + os.sep + file)
-
-        images = []
-        for texfile in texfiles:
-            self.report({"INFO"},texfile)
-            #Substanceのモデル情報はスルー
-            if re.search(tex_identifiers["modelinfo"], texfile,re.IGNORECASE) is not None:
-            #if re.search("_curvature", texfile,re.IGNORECASE) is not None:
+        for matname in os.listdir(textures_dir):
+            matdir_path = textures_dir + os.path.sep + matname
+            if not os.path.isdir(matdir_path):
                 continue
-            images.append(fjw.load_img(texfile))
-
-        #basecolor類がはじめになるように並べ替える
-        tmp = []
-        for image in images:
-            if re.search(tex_identifiers["color"], image.name,re.IGNORECASE) is not None:
-                tmp.append(image)
-                images.remove(image)
-        #残りを足す
-        tmp.extend(images)
-        images = tmp
-
-        new_mats = []
-        for image in images:
-            texname, ext = os.path.splitext(image.name)
-
-            #テクスチャが存在する場合は既にマテリアル設定とかしてるはずなのでスルー
-            if texname in bpy.data.textures:
-                continue
-
-            tex = bpy.data.textures.new(texname, "IMAGE")
-            tex.image = image
-
             
-            if "_textures" in image.filepath:
-                #1オブジェクト1マテリアルにしたい。フォルダ名から作る。
-                imgdir = os.path.dirname(image.filepath)
-                imgdirname = os.path.basename(imgdir)
-                matname = imgdirname.replace("_textures", "")
-            else:
-                #Substance的命名規則で名前を得る
-                #matname = texname.split("_")[0]
-                #identifier=最後の_hogeを除去したものが名前
-                matname = re.sub("_[a-zA-Z]+$", "", texname)
-                
-
-            mat = fjw.get_material(matname)
-            new_mats.append(mat)
-
-            if len(mat.texture_slots) >= 17:
+            mat = fjw.material(matname, bpy.context.scene.objects)
+            if mat is None:
                 continue
+            
+            nb = fjw.NodeBuilder(mat)
+            nb.clear()
+            shader_node = nb.node("ShaderNodeBsdfPrincipled")
+            nb.link(shader_node.outputs["BSDF"],nb.node("ShaderNodeOutputMaterial").inputs["Surface"])
+            
+            for file in os.listdir(matdir_path):
+                filepath = matdir_path + os.sep + file
+                if not os.path.isfile(filepath):
+                    continue
+                
+                img_node = nb.node("ShaderNodeTexImage", True)
+                img_node.image = bpy.data.images.load(filepath=filepath)
+                socket = self.socket_name(file)
+                if socket is not None:
+                    if socket == "Base Color":
+                        img_node.color_space = "COLOR"
+                    else:
+                        img_node.color_space = "NONE"
+                    
+                    if socket == "Displacement":
+                        nb.link(img_node.outputs["Color"], nb.node("ShaderNodeOutputMaterial").inputs[socket])
+                    else:
+                        nb.link(img_node.outputs["Color"], shader_node.inputs[socket])
 
-            texture_slot = mat.texture_slots.add()
-            texture_slot.texture = tex
+            nb.layout()
 
-            if re.search(tex_identifiers["color"], tex.name,re.IGNORECASE) is not None:
-                texture_slot.use_map_color_diffuse = True
-                texture_slot.diffuse_color_factor = 1
-                texture_slot.use_map_alpha = True
-                texture_slot.blend_type = 'MULTIPLY'
-                mat.use_transparency = True
-                mat.alpha = 1
-            if re.search(tex_identifiers["alpha"], tex.name,re.IGNORECASE) is not None:
-                texture_slot.use_map_color_diffuse = False
-                texture_slot.use_map_alpha = True
-                texture_slot.use_rgb_to_intensity = True
-                texture_slot.alpha_factor = 1
-                texture_slot.blend_type = 'MIX'
-                mat.use_transparency = True
-                mat.alpha = 0
-            if re.search(tex_identifiers["height"], tex.name,re.IGNORECASE) is not None:
-                texture_slot.use_map_color_diffuse = False
-                texture_slot.use_map_normal = True
-                texture_slot.normal_factor = 0.01
-            if re.search(tex_identifiers["ao"], tex.name,re.IGNORECASE) is not None:
-                texture_slot.use_map_color_diffuse = True
-                texture_slot.diffuse_color_factor = 1
-                texture_slot.blend_type = 'MULTIPLY'
-            if re.search(tex_identifiers["metallic"], tex.name,re.IGNORECASE) is not None:
-                texture_slot.use_map_color_diffuse = False
-                texture_slot.use_map_hardness = True
-                texture_slot.hardness_factor = 1
-            if re.search(tex_identifiers["roughness"], tex.name,re.IGNORECASE) is not None:
-                texture_slot.use_map_color_diffuse = False
-                texture_slot.use_map_specular = True
-                texture_slot.specular_factor = 1
-            if re.search(tex_identifiers["shadow"], tex.name,re.IGNORECASE) is not None:
-                #作業中
-                tex.image.use_alpha = False
-                mat.use_transparency = True
-                mat.alpha = 0
-                texture_slot.blend_type = 'MIX'
-                texture_slot.use_map_color_diffuse = True
-                texture_slot.diffuse_color_factor = 1
-                texture_slot.use_map_alpha = True
-                texture_slot.alpha_factor = -1
-
-        ctm = fjw.CyclesTexturedMaterial(new_mats)
-        ctm.execute()
-
-
-        bpy.ops.file.make_paths_relative()
         return {'FINISHED'}
 ########################################
+
+
+
+
+
+
+# ########################################
+# #テクスチャ回収
+# ########################################
+# class FUJIWARATOOLBOX_358608(bpy.types.Operator):#テクスチャ回収
+#     """テクスチャ回収"""
+#     bl_idname = "fujiwara_toolbox.substance_collect_textures"
+#     bl_label = "テクスチャ回収"
+#     bl_options = {'REGISTER', 'UNDO'}
+
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+
+#     def execute(self, context):
+#         global tex_identifiers
+#         basedir = os.path.dirname(bpy.data.filepath)
+#         texfiles = []
+
+#         bpy.ops.fujiwara_toolbox.command_998634()#無マテリアルに白を割り当て
+
+#         #テクスチャピックアップ
+#         for dirpath, dirs, files in os.walk(basedir):
+#             for file in files:
+#                 name,ext = os.path.splitext(file)
+#                 if re.search("bmp|png|jpg|jpeg", ext, re.IGNORECASE) is not None:
+#                     texfiles.append(dirpath + os.sep + file)
+
+#         images = []
+#         for texfile in texfiles:
+#             self.report({"INFO"},texfile)
+#             #Substanceのモデル情報はスルー
+#             if re.search(tex_identifiers["modelinfo"], texfile,re.IGNORECASE) is not None:
+#             #if re.search("_curvature", texfile,re.IGNORECASE) is not None:
+#                 continue
+#             images.append(fjw.load_img(texfile))
+
+#         #basecolor類がはじめになるように並べ替える
+#         tmp = []
+#         for image in images:
+#             if re.search(tex_identifiers["color"], image.name,re.IGNORECASE) is not None:
+#                 tmp.append(image)
+#                 images.remove(image)
+#         #残りを足す
+#         tmp.extend(images)
+#         images = tmp
+
+#         new_mats = []
+#         for image in images:
+#             texname, ext = os.path.splitext(image.name)
+
+#             #テクスチャが存在する場合は既にマテリアル設定とかしてるはずなのでスルー
+#             if texname in bpy.data.textures:
+#                 continue
+
+#             tex = bpy.data.textures.new(texname, "IMAGE")
+#             tex.image = image
+
+            
+#             if "_textures" in image.filepath:
+#                 #1オブジェクト1マテリアルにしたい。フォルダ名から作る。
+#                 imgdir = os.path.dirname(image.filepath)
+#                 imgdirname = os.path.basename(imgdir)
+#                 matname = imgdirname.replace("_textures", "")
+#             else:
+#                 #Substance的命名規則で名前を得る
+#                 #matname = texname.split("_")[0]
+#                 #identifier=最後の_hogeを除去したものが名前
+#                 matname = re.sub("_[a-zA-Z]+$", "", texname)
+                
+
+#             mat = fjw.get_material(matname)
+#             new_mats.append(mat)
+
+#             if len(mat.texture_slots) >= 17:
+#                 continue
+
+#             texture_slot = mat.texture_slots.add()
+#             texture_slot.texture = tex
+
+#             if re.search(tex_identifiers["color"], tex.name,re.IGNORECASE) is not None:
+#                 texture_slot.use_map_color_diffuse = True
+#                 texture_slot.diffuse_color_factor = 1
+#                 texture_slot.use_map_alpha = True
+#                 texture_slot.blend_type = 'MULTIPLY'
+#                 mat.use_transparency = True
+#                 mat.alpha = 1
+#             if re.search(tex_identifiers["alpha"], tex.name,re.IGNORECASE) is not None:
+#                 texture_slot.use_map_color_diffuse = False
+#                 texture_slot.use_map_alpha = True
+#                 texture_slot.use_rgb_to_intensity = True
+#                 texture_slot.alpha_factor = 1
+#                 texture_slot.blend_type = 'MIX'
+#                 mat.use_transparency = True
+#                 mat.alpha = 0
+#             if re.search(tex_identifiers["height"], tex.name,re.IGNORECASE) is not None:
+#                 texture_slot.use_map_color_diffuse = False
+#                 texture_slot.use_map_normal = True
+#                 texture_slot.normal_factor = 0.01
+#             if re.search(tex_identifiers["ao"], tex.name,re.IGNORECASE) is not None:
+#                 texture_slot.use_map_color_diffuse = True
+#                 texture_slot.diffuse_color_factor = 1
+#                 texture_slot.blend_type = 'MULTIPLY'
+#             if re.search(tex_identifiers["metallic"], tex.name,re.IGNORECASE) is not None:
+#                 texture_slot.use_map_color_diffuse = False
+#                 texture_slot.use_map_hardness = True
+#                 texture_slot.hardness_factor = 1
+#             if re.search(tex_identifiers["roughness"], tex.name,re.IGNORECASE) is not None:
+#                 texture_slot.use_map_color_diffuse = False
+#                 texture_slot.use_map_specular = True
+#                 texture_slot.specular_factor = 1
+#             if re.search(tex_identifiers["shadow"], tex.name,re.IGNORECASE) is not None:
+#                 #作業中
+#                 tex.image.use_alpha = False
+#                 mat.use_transparency = True
+#                 mat.alpha = 0
+#                 texture_slot.blend_type = 'MIX'
+#                 texture_slot.use_map_color_diffuse = True
+#                 texture_slot.diffuse_color_factor = 1
+#                 texture_slot.use_map_alpha = True
+#                 texture_slot.alpha_factor = -1
+
+#         ctm = fjw.CyclesTexturedMaterial(new_mats)
+#         ctm.execute()
+
+
+#         bpy.ops.file.make_paths_relative()
+#         return {'FINISHED'}
+# ########################################
 
 
 

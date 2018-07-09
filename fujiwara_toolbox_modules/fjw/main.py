@@ -153,6 +153,24 @@ def object(name):
     else:
         return None
 
+def material(name, objects=None):
+    targets = []
+    if objects is None:
+        targets = bpy.data.materials
+    else:
+        for obj in objects:
+            if obj.type != "MESH":
+                continue
+            for mat in obj.data.materials:
+                targets.append(mat)
+    
+    for mat in targets:
+        if mat.name == name:
+            return mat
+    
+    return None
+        
+
 def objects_filter(objects, type="", name=""):
     result = []
     for obj in objects:
