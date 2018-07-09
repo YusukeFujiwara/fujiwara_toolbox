@@ -3564,6 +3564,141 @@ class FUJIWARATOOLBOX_CYCLES_TO_CYCLES_MATERIAL(bpy.types.Operator):
 
         return {'FINISHED'}
 ########################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+############################################################################################################################
+uiitem("Cycles")
+############################################################################################################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+########################################
+#テクスチャ用ベースマテリアル作成
+########################################
+#bpy.ops.fujiwara_toolbox.create_cycles_texturedbasemat() #テクスチャ用ベースマテリアル作成
+class FUJIWARATOOLBOX_CREATE_CYCLES_TEXTUREDBASEMAT(bpy.types.Operator):
+    """Cycles用のテクスチャマテリアルを作成する。"""
+    bl_idname = "fujiwara_toolbox.create_cycles_texturedbasemat"
+    bl_label = "テクスチャ用ベースマテリアル作成"
+    bl_options = {'REGISTER', 'UNDO'}
+    # bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    matname = StringProperty(
+        name="マテリアル名",
+        description="マテリアル名",
+        default="Matname",
+    )
+
+    resolution = EnumProperty(
+        name="解像度",
+        description="解像度",
+        items=[
+            ("256", "256", "256"),
+            ("512", "512", "512"),
+            ("1024", "1024", "1024"),
+            ("2048", "2048", "2048"),
+            ("4096", "4096", "4096"),
+        ],
+        default="2048"
+    )
+
+    # resolution = IntProperty(
+    #     name="解像度",
+    #     description="解像度",
+    #     default=2048,
+    #     min=0,
+    #     max=4096
+    # )
+
+    def image(self, name):
+        img = bpy.data.images.new(name, int(self.resolution), int(self.resolution))
+        self_dir = os.path.dirname(bpy.data.filepath)
+        img_dir = self_dir + os.sep + "TEXTURES" + os.sep + self.matname
+        if not os.path.exists(img_dir):
+            os.makedirs(img_dir)
+        img.filepath = img_dir + os.sep + name + ".png"
+        img.save()
+        return img
+    
+    def image_node(self, node_builder, name):
+        img = self.image(name)
+        node = node_builder.node("ShaderNodeTexImage", True)
+        node.image = img
+        return node
+
+    def execute(self, context):
+        # self.matname = "プロパティで入力させる"
+        matname = self.matname
+        mat = bpy.data.materials.new(matname)
+        # 実際に作成された名前にする
+        self.matname = mat.name
+        obj = fjw.active()
+        obj.data.materials.append(mat)
+
+        nb = fjw._NodeUtils.NodeBuilder(mat)
+        nb.clear()
+        nb.node("ShaderNodeOutputMaterial")
+        shader_node = nb.node("ShaderNodeBsdfPrincipled")
+        nb.link(shader_node.outputs["BSDF"],nb.node("ShaderNodeOutputMaterial").inputs["Surface"])
+        img_color_node = self.image_node(nb, self.matname+"_TEXTURE")
+        img_normals_node = self.image_node(nb, self.matname+"_NORMALS")
+        img_roughness_node = self.image_node(nb, self.matname+"_ROUGHNESS")
+        nb.link(img_color_node.outputs["Color"], shader_node.inputs["Base Color"])
+        nb.link(img_normals_node.outputs["Color"], shader_node.inputs["Normal"])
+        nb.link(img_roughness_node.outputs["Color"], shader_node.inputs["Roughness"])
+        nb.layout()
+        bpy.ops.file.make_paths_relative()
+
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        self.matname = fjw.active().name
+        return context.window_manager.invoke_props_dialog(self)
+
+########################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+########################################
+#アクティブマテリアルの場所にエクスポート
+########################################
+#bpy.ops.fujiwara_toolbox.export_obj_to_activematerial() #アクティブマテリアルの場所にエクスポート
+class FUJIWARATOOLBOX_EXPORT_OBJ_TO_ACTIVEMATERIAL(bpy.types.Operator):
+    """アクティブマテリアルのテクスチャフォルダにobjをエクスポートして、フォルダを開く。"""
+    bl_idname = "fujiwara_toolbox.export_obj_to_activematerial"
+    bl_label = "アクティブマテリアルの場所にエクスポート"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        obj = fjw.active()
+        fjw.main.deselect()
+        fjw.main.select([obj])
+        mat = obj.active_material
+        image_dir = ""
+        for node in mat.node_tree.nodes:
+            if node.bl_idname == "ShaderNodeTexImage":
+                image_path = node.image.filepath
+                image_dir = os.path.dirname(image_path)
+                break
+        obj_path = image_dir + os.sep + mat.name + ".obj"
+        bpy.ops.export_scene.obj(filepath=bpy.path.abspath(obj_path), use_selection=False, use_mesh_modifiers=True)
+        subprocess.Popen("EXPLORER " + bpy.path.abspath(image_dir))
+
+        return {'FINISHED'}
+########################################
 
 #---------------------------------------------
 uiitem().vertical()
