@@ -15,7 +15,7 @@ from collections import OrderedDict
 from mathutils import *
 
 from .main import *
-
+from ._NodeUtils import *
 
 
 class CyclesTexturedMaterial():
