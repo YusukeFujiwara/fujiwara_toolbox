@@ -16663,6 +16663,35 @@ class CATEGORYBUTTON_81935(bpy.types.Operator):#Substance/テクスチャ
         return {'FINISHED'}
 ########################################
 ################################################################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+########################################
+#テクスチャ更新
+########################################
+#bpy.ops.fujiwara_toolbox.reload_images() #テクスチャ更新
+class FUJIWARATOOLBOX_RELOAD_IMAGES(bpy.types.Operator):
+    """テクスチャを再読み込みする"""
+    bl_idname = "fujiwara_toolbox.reload_images"
+    bl_label = "テクスチャ更新"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        for img in bpy.data.images:
+            img.reload()
+        return {'FINISHED'}
+########################################
+
+
+
+
+
 
 #---------------------------------------------
 uiitem().vertical()
@@ -17801,7 +17830,7 @@ def substance_output(obj, copy_sbstemplate=True, show_explorer=True):
         bpy.ops.uv.smart_project()
         fjw.mode("OBJECT")
 
-    bpy.ops.export_scene.obj(filepath=imgdir + name + ".obj",check_existing=False,use_selection=True,use_mesh_modifiers=False)
+    bpy.ops.export_scene.obj(filepath=imgdir + name + ".obj",check_existing=False,use_selection=True,use_mesh_modifiers=True)
     #出力フォルダを開く
     if show_explorer:
         os.system("EXPLORER " + imgdir)
@@ -17913,7 +17942,7 @@ class FUJIWARATOOLBOX_SUBSTANCE_COLLECT_TEXTURES(bpy.types.Operator):
             if not os.path.isdir(matdir_path):
                 continue
             
-            mat = fjw.material(matname, bpy.context.scene.objects)
+            mat = fjw.material(matname, bpy.context.selected_objects)
             if mat is None:
                 continue
             
