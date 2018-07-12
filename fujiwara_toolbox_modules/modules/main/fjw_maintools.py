@@ -23844,7 +23844,7 @@ def menu_func_VIEW3D_HT_header(self, context):
         #active.operator("fujiwara_toolbox.framejump_15",icon="TRIA_RIGHT_BAR", text="")
         active.operator("fujiwara_toolbox.set_key", icon="KEYINGSET", text="")
         active.operator("fujiwara_toolbox.del_key", icon="KEY_DEHLT", text="")
-        active.operator("fujiwara_toolbox.export_mdavatar_uwsc", icon="EXPORT", text="")
+        active.operator("fujiwara_toolbox.md_exportonly", icon="EXPORT", text="")
 
     if pref.glrenderutils_buttons:
         active = layout.row(align = True)
