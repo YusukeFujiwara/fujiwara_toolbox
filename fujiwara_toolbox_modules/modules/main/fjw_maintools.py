@@ -34,7 +34,7 @@ from fujiwara_toolbox_modules import fjw, conf
 
 import random
 from mathutils import *
-from fujiwara_toolbox_modules.modules.main.submodules.json_tools import JsonTools
+from fujiwara_toolbox_modules.fjw import JsonTools
 
 # assetdir = fujiwara_toolbox.conf.assetdir
 assetdir = ""

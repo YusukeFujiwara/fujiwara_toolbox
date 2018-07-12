@@ -12,9 +12,11 @@ class JsonTools():
             dict
                 ロードせずに、辞書を設定する
         """
+        open_result = False
         if filepath:
-            self.open(filepath)
-        else:
+            open_result = self.open(filepath)
+        
+        if not open_result:
             self.filepath = filepath
             self.dictionary = {}
             if dictionary:
