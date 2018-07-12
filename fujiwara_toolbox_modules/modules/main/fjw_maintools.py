@@ -34,7 +34,7 @@ from fujiwara_toolbox_modules import fjw, conf
 
 import random
 from mathutils import *
-from fujiwara_toolbox_modules.modules.main.submodules.json_tools import JsonTools
+from fujiwara_toolbox_modules.fjw import JsonTools
 
 # assetdir = fujiwara_toolbox.conf.assetdir
 assetdir = ""
@@ -16129,59 +16129,46 @@ class FUJIWARATOOLBOX_mdresult_autoimport_only(bpy.types.Operator):
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     def execute(self, context):
-        MarvelousDesingerUtils.mdresult_auto_import_main(self,context,True)
+        MarvelousDesingerUtils.mdresult_auto_import_main(self,context,False)
         return {'FINISHED'}
 ########################################
 
-########################################
-#オートインポートしてアタッチ
-########################################
-#bpy.ops.fujiwara_toolbox.mdresult_autoimport_and_attouch() #オートインポートしてアタッチ
-class FUJIWARATOOLBOX_MDRESULT_AUTOIMPORT_AND_ATTOUCH(bpy.types.Operator):
-    """漫画処理をアタッチする"""
-    bl_idname = "fujiwara_toolbox.mdresult_autoimport_and_attouch"
-    bl_label = "オートインポートしてアタッチ"
-    bl_options = {'REGISTER', 'UNDO'}
+# ########################################
+# #オートインポートしてアタッチ
+# ########################################
+# #bpy.ops.fujiwara_toolbox.mdresult_autoimport_and_attouch() #オートインポートしてアタッチ
+# class FUJIWARATOOLBOX_MDRESULT_AUTOIMPORT_AND_ATTOUCH(bpy.types.Operator):
+#     """漫画処理をアタッチする"""
+#     bl_idname = "fujiwara_toolbox.mdresult_autoimport_and_attouch"
+#     bl_label = "オートインポートしてアタッチ"
+#     bl_options = {'REGISTER', 'UNDO'}
 
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    def execute(self, context):
-        MarvelousDesingerUtils.mdresult_auto_import_main(self,context,True)
-        return {'FINISHED'}
-########################################
+#     def execute(self, context):
+#         MarvelousDesingerUtils.mdresult_auto_import_main(self,context,True)
+#         return {'FINISHED'}
+# ########################################
 
-########################################
-#オートインポートしてGLレンダ
-########################################
-#bpy.ops.fujiwara_toolbox.mdresult_autoimport_and_glrender() #オートインポートしてGLレンダ
-class FUJIWARATOOLBOX_mdresult_autoimport_and_glrender(bpy.types.Operator):
-    """終了はしないでGLレンダする"""
-    bl_idname = "fujiwara_toolbox.mdresult_autoimport_and_glrender"
-    bl_label = "オートインポートしてGLレンダ"
-    bl_options = {'REGISTER', 'UNDO'}
+# ########################################
+# #オートインポートしてGLレンダ
+# ########################################
+# #bpy.ops.fujiwara_toolbox.mdresult_autoimport_and_glrender() #オートインポートしてGLレンダ
+# class FUJIWARATOOLBOX_mdresult_autoimport_and_glrender(bpy.types.Operator):
+#     """終了はしないでGLレンダする"""
+#     bl_idname = "fujiwara_toolbox.mdresult_autoimport_and_glrender"
+#     bl_label = "オートインポートしてGLレンダ"
+#     bl_options = {'REGISTER', 'UNDO'}
 
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    def execute(self, context):
-        MarvelousDesingerUtils.mdresult_auto_import_main(self,context,True)
-        bpy.ops.fujiwara_toolbox.glrender()
-        return {'FINISHED'}
-########################################
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-############################################################################################################################
-uiitem("オート")
-############################################################################################################################
-#---------------------------------------------
-uiitem().vertical()
-#---------------------------------------------
-#---------------------------------------------
-uiitem().horizontal()
-#---------------------------------------------
-
+#     def execute(self, context):
+#         MarvelousDesingerUtils.mdresult_auto_import_main(self,context,True)
+#         bpy.ops.fujiwara_toolbox.glrender()
+#         return {'FINISHED'}
+# ########################################
 #---------------------------------------------
 uiitem().vertical()
 #---------------------------------------------
@@ -16312,44 +16299,44 @@ uiitem().vertical()
 uiitem().horizontal()
 #---------------------------------------------
 
-########################################
-#選択物を全てシミュレート
-########################################
-#bpy.ops.fujiwara_toolbox.md_sim_all() #全てシミュレート
-class FUJIWARATOOLBOX_MD_SIM_ALL(bpy.types.Operator):
-    """選択された全てのアバターをシミュレートさせる。通常はシミュレートして、ファイルを開き直す。MD作業ファイル上で実行すると、特に開き直さない。"""
-    bl_idname = "fujiwara_toolbox.md_sim_all"
-    bl_label = "選択物を全てシミュレート"
-    bl_options = {'REGISTER', 'UNDO'}
+# ########################################
+# #選択物を全てシミュレート
+# ########################################
+# #bpy.ops.fujiwara_toolbox.md_sim_all() #全てシミュレート
+# class FUJIWARATOOLBOX_MD_SIM_ALL(bpy.types.Operator):
+#     """選択された全てのアバターをシミュレートさせる。通常はシミュレートして、ファイルを開き直す。MD作業ファイル上で実行すると、特に開き直さない。"""
+#     bl_idname = "fujiwara_toolbox.md_sim_all"
+#     bl_label = "選択物を全てシミュレート"
+#     bl_options = {'REGISTER', 'UNDO'}
 
-    uiitem = uiitem()
-    uiitem.button(bl_idname,bl_label,icon="",mode="")
+#     uiitem = uiitem()
+#     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
-    def execute(self, context):
-        back = False
-        if "_MDWork" not in bpy.data.filepath:
-            bpy.ops.fujiwara_toolbox.setup_mdwork_blend()
-            back = True
+#     def execute(self, context):
+#         back = False
+#         if "_MDWork" not in bpy.data.filepath:
+#             bpy.ops.fujiwara_toolbox.setup_mdwork_blend()
+#             back = True
 
-        for obj in bpy.context.visible_objects:
-            obj.select = True
-        selection = fjw.get_selected_list()
-        MarvelousDesingerUtils.export_selected(True)
+#         for obj in bpy.context.visible_objects:
+#             obj.select = True
+#         selection = fjw.get_selected_list()
+#         MarvelousDesingerUtils.export_selected(True)
                 
-        self.report({"INFO"},"シミュレート完了。")
-        if back:
-            bpy.ops.fujiwara_toolbox.return_from_mdwork()
-        return {'FINISHED'}
-########################################
+#         self.report({"INFO"},"シミュレート完了。")
+#         if back:
+#             bpy.ops.fujiwara_toolbox.return_from_mdwork()
+#         return {'FINISHED'}
+# ########################################
 
 ########################################
-#エクスポートのみ
+#エクスポート＆キュー
 ########################################
 #bpy.ops.fujiwara_toolbox.md_exportonly() #エクスポートのみ
 class FUJIWARATOOLBOX_MD_EXPORTONLY(bpy.types.Operator):
     """MarvelousDesignerでシミュレートするためのデータをエクスポートする。"""
     bl_idname = "fujiwara_toolbox.md_exportonly"
-    bl_label = "エクスポートのみ"
+    bl_label = "エクスポート＆キュー"
     bl_options = {'REGISTER', 'UNDO'}
 
     uiitem = uiitem()
@@ -16369,6 +16356,9 @@ class FUJIWARATOOLBOX_MD_EXPORTONLY(bpy.types.Operator):
         self.report({"INFO"},"エクスポート完了。")
         if back:
             bpy.ops.fujiwara_toolbox.return_from_mdwork()
+
+        self.report({"INFO"},"コマンド文字列をクリップボードにコピーしました。Marvelous Designerのスクリプト画面でペーストしてください。")
+        bpy.context.window_manager.clipboard = 'exec("from fjwMDControl import *;run(mdsa)",globals(), locals())'
         return {'FINISHED'}
 ########################################
 
@@ -16636,6 +16626,38 @@ class FUJIWARATOOLBOX_MD_DELETE_ALL_SETTINGS(bpy.types.Operator):
             self.delkey(obj, "md_garment_index")
             self.delkey(obj, "md_export_depth")
 
+        return {'FINISHED'}
+########################################
+
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+
+############################################################################################################################
+uiitem("Marvelous Designer機能のためのセットアップ")
+############################################################################################################################
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+########################################
+#使用スクリプトフォルダを開く
+########################################
+#bpy.ops.fujiwara_toolbox.open_md_script_folder() #使用スクリプトフォルダを開く
+class FUJIWARATOOLBOX_OPEN_MD_SCRIPT_FOLDER(bpy.types.Operator):
+    """このスクリプトをMarvelous Designerインストールディレクトリにコピーしてください。"""
+    bl_idname = "fujiwara_toolbox.open_md_script_folder"
+    bl_label = "使用スクリプトフォルダを開く"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        src_dir = os.path.dirname(fujiwara_toolbox.__file__)+ os.sep + "resources" + os.sep + "MarvelousDesignerResources"
+        os.system("EXPLORER " + src_dir)
         return {'FINISHED'}
 ########################################
 

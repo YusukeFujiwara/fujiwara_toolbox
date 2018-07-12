@@ -43,7 +43,7 @@ from mathutils import *
 # assetdir = fujiwara_toolbox.conf.assetdir
 assetdir = ""
 
-from fujiwara_toolbox_modules.modules.main.submodules.json_tools import JsonTools
+from fujiwara_toolbox_modules.fjw import JsonTools
 from fujiwara_toolbox_modules.modules.main.submodules.texture_baking_utils import TextureBaker
 
 

@@ -35,7 +35,7 @@ from bpy.types import (Panel,
 
 import fujiwara_toolbox_modules as fujiwara_toolbox
 from fujiwara_toolbox_modules import fjw, conf
-
+from fujiwara_toolbox_modules.fjw import JsonTools
 
 import random
 from mathutils import *
@@ -61,6 +61,123 @@ md_export_depth     intかintのlist
 カスタムプロパティはいずれのオブジェクトにつけてもいい。
 MDObjectにわたされたオブジェクト群の中で検索する。
 """
+
+def get_mddatadir(add_sep=True):
+    # mdtemp_dir = r"C:" + os.sep + "fjw_mdtemp"
+    mdtemp_dir = r"C:\fjwmdtemp"
+    if not os.path.exists(mdtemp_dir):
+        os.makedirs(mdtemp_dir)
+    if add_sep:
+        mdtemp_dir += os.sep
+    return mdtemp_dir
+
+class MDCode():
+    codename = "mdcode"
+
+    def __init__(self):
+        """Marvelous Designerに食わせるコードを生成するクラス"""
+        pass
+    
+    def get_existingfile(self):
+        dir_path = get_mddatadir()
+        if not os.path.exists(dir_path):
+            return None
+
+        files = os.listdir(dir_path)
+        for file in files:
+            name, ext = os.path.splitext(file)
+            if ext != ".py":
+                continue
+            if self.codename not in name:
+                continue
+            return dir_path + os.sep + file
+        return None
+
+    # initialcode = "import fjwMDControl.MD as MD\n"
+    initialcode = ""
+
+    def create(self):
+        # self.code_path = get_mddatadir() + self.codename + fjw.random_id(16) + ".py"
+        self.code_path = get_mddatadir() + self.codename + ".py"
+        f = open(self.code_path, "w")
+        f.write(self.initialcode)
+        return f
+
+    def open(self, mode="a"):
+        self.code_path = self.get_existingfile()
+        print(self.code_path)
+        if self.code_path is None:
+            return self.create()
+        return open(self.code_path, mode)
+        
+    def addline(self, avatar_path, cloth_path):
+        f = self.open()
+        output_path = os.path.splitext(avatar_path)[0] + ".obj"
+        # f.write('MD.simulate("%s", "%s", "%s")\n'%(avatar_path, cloth_path, output_path))
+        f.write('%s,%s,%s\n'%(avatar_path, cloth_path, output_path))
+        f.close()
+
+    def removeline(self, searchword):
+        newdata = ""
+        f = self.open("r")
+        lines = f.readlines()
+        for line in lines:
+            if searchword in line:
+                continue
+            newdata += line
+        f.close()
+        f = self.open("w")
+        f.write(newdata)
+        f.close()
+
+class MDJson():
+    def __init__(self):
+        self.jsonpath = get_mddatadir() + "mddata.json"
+        self.jsondata = JsonTools(self.jsonpath)
+    
+    def add_fileentry(self, obj_name):
+        """エクスポートしたファイルと、エクスポート元のファイルを対応させるエントリ"""
+        entry_name = self.new_entryname()
+        # self.jsondata.val("fileentry/%s/%s"%(bpy.data.filepath, obj.name), entry_name)
+        self.jsondata.val("entry/%s/filepath"%entry_name, bpy.data.filepath.replace("_MDWork",""))
+        self.jsondata.val("entry/%s/obj"%entry_name, obj_name)
+        self.jsondata.save()
+        return entry_name
+    
+    def get_entry_name(self, obj):
+        """ファイルパスとobjからエントリの名前を得る"""
+        # entry_name = self.jsondata.val("fileentry/%s/%s"%(bpy.data.filepath, obj.name))
+        dic = self.jsondata.dictionary
+        for entry_name in dic["entry"]:
+            if dic["entry"]["filepath"] == bpy.data.filepath:
+                if dic["entry"]["obj"] == obj.name:
+                    return entry_name
+        return None
+    
+    def remove_entry(self, name):
+        dic = self.jsondata.dictionary
+        dellist = []
+        if "entry" in dic:
+            for entry_name in dic["entry"]:
+                if entry_name == name:
+                    dellist.append(entry_name)
+        for todel in dellist:
+            dic["entry"].pop(todel)
+        self.jsondata.save()
+    
+    @classmethod
+    def new_entryname(self):
+        return fjw.random_id(8)
+    
+    def get_thisfile_entries(self):
+        """このBlendファイルに関連するエントリ名を返す"""
+        result = []
+        dic = self.jsondata.dictionary
+        if "entry" in dic:
+            for entry_name in dic["entry"]:
+                if bpy.data.filepath == dic["entry"][entry_name]["filepath"]:
+                    result.append(entry_name)
+        return result
 
 class MarvelousDesignerScriptUtils():
     """
@@ -142,18 +259,19 @@ class MDObject():
         MarvelousDesignerエクスポート用のデータ。
     """
 
-    def __init__(self, mdname, objects, garment_path="", export_dir="MDData"):
+    def __init__(self, mdname, objects, garment_path=""):
         """
             エクスポートオブジェクトの名前
             オブジェクトのリスト
         """
         self.mdname = mdname
         self.objects = objects
-        if export_dir == "MDData":
-            blendname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
-            self.__set_export_dir(self.__get_mddatadir() + os.sep + blendname.replace("_MDWork", "") + os.sep + mdname)
-        else:
-            self.export_dir = export_dir
+        # if export_dir == "MDData":
+        #     blendname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
+        #     self.__set_export_dir(get_mddatadir() + os.sep + blendname.replace("_MDWork", "") + os.sep + mdname)
+        # else:
+        #     self.export_dir = export_dir
+        self.export_dir = get_mddatadir()
 
         if garment_path == "":
             self.garment_path = self.get_garment_path()
@@ -222,18 +340,29 @@ class MDObject():
     #         #PointCache出力
     #         bpy.ops.export_shape.mdd(filepath= self.export_dir + os.sep + self.mdname + ".mdd", fps=6,frame_start=1,frame_end=10)
     
-    def export_abc(self, dirpath):
+    def export_abc(self, dirpath, name):
         current_fps = bpy.context.scene.render.fps
         bpy.context.scene.render.fps = MarvelousDesingerUtils.fps
         self.__export_setup(dirpath)
-        path = os.path.normpath(self.export_dir + os.sep + self.mdname + ".abc")
+        # path = os.path.normpath(self.export_dir + os.sep + self.mdname + ".abc")
+        path = os.path.normpath(self.export_dir + os.sep + name + ".abc")
         print("export abc:%s"%path)
         bpy.ops.wm.alembic_export(filepath=path, start=1, end=(MarvelousDesingerUtils.last_frame + 1), selected=True, visible_layers_only=True, flatten=True, apply_subdiv=True, compression_type='OGAWA', as_background_job=False)
         bpy.context.scene.render.fps = current_fps
 
     def export_to_mddata(self):
-        self.export_abc(self.export_dir)
-        self.export_mdscript()
+        mdj = MDJson()
+        entry_name = mdj.add_fileentry(self.mdname)
+        self.export_abc(self.export_dir, entry_name)
+        # 衣装データをコピーしておく
+        garment_path = self.get_garment_path()
+        if garment_path != "":
+            garment_name, garment_ext = os.path.splitext(os.path.basename(garment_path))
+            shutil.copy(garment_path, get_mddatadir()+ entry_name + garment_ext)
+        # self.export_mdscript()
+        mdcode = MDCode()
+        entry_path = self.export_dir + entry_name
+        mdcode.addline(entry_path + ".abc", entry_path + ".zpac")
 
     def open_export_dir(self):
         os.system("EXPLORER " + self.export_dir)
@@ -318,9 +447,6 @@ class MDObject():
             if obj.type == object_type:
                 result.append(obj)
         return result
-
-    def __get_mddatadir(self):
-        return os.path.dirname(bpy.data.filepath) + os.sep + "MDData"+ os.sep
 
     def __export_setup(self, dirpath):
         fjw.deselect()
@@ -522,6 +648,22 @@ class MarvelousDesingerUtils():
             fjw.framejump(cls.last_frame)
 
     @classmethod
+    def delete_imported_files(cls, path):
+        mddata_dir = get_mddatadir()
+        basename = os.path.basename(path)
+        name, ext = os.path.splitext(basename)
+        files = os.listdir(mddata_dir)
+        for file in files:
+            if name in file:
+                filepath = mddata_dir + file
+                os.remove(filepath)
+        mdj = MDJson()
+        mdj.remove_entry(name)
+        mdc = MDCode()
+        mdc.removeline(name)
+
+
+    @classmethod
     def import_mdresult(cls,resultpath, attouch_fjwset=False):
         if not os.path.exists(resultpath):
             return
@@ -600,6 +742,8 @@ class MarvelousDesingerUtils():
             bpy.ops.fujiwara_toolbox.command_318722()#裏ポリエッジ付加
             # bpy.ops.fujiwara_toolbox.set_thickness_driver_with_empty_auto() #指定Emptyで厚み制御
 
+        cls.delete_imported_files(resultpath)
+
 
     @classmethod
     def __find_root_armature(cls, start_obj):
@@ -623,11 +767,12 @@ class MarvelousDesingerUtils():
 
 
         #存在確認
-        blendname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
-        dir = os.path.dirname(bpy.data.filepath) + os.sep + "MDData" + os.sep + blendname + os.sep
-        self.report({"INFO"},dir)
+        # blendname = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
+        # dir_path = get_mddatadir() + blendname + os.sep
+        dir_path = get_mddatadir()
+        self.report({"INFO"},dir_path)
 
-        if not os.path.exists(dir):
+        if not os.path.exists(dir_path):
             self.report({"INFO"},"キャンセルされました。")
             # bpy.ops.wm.quit_blender()
             return {'CANCELLED'}
@@ -645,14 +790,17 @@ class MarvelousDesingerUtils():
             if obj.parent is None:
                 root_objects.append(obj)
 
-        files = os.listdir(dir)
-        for file in files:
+        mdj = MDJson()
+        entries = mdj.get_thisfile_entries()
+        # files = os.listdir(dir_path)
+        # for file in files:
+        for entry in entries:
+            file = entry + import_ext
             self.report({"INFO"},file)
             print("MDResult found:"+file)
             # targetname = file
             # dirname = os.path.basename(os.path.dirname(file))
             targetname = file
-
 
             # rootobjでの設置だとルートがないとおかしなことになる
             # dupli_groupの名前でみて、同一名のもののアーマチュアを探して、
@@ -740,11 +888,12 @@ class MarvelousDesingerUtils():
                     print("MDImport Step 2")
                     fjw.mode("POSE")
 
-                    self.report({"INFO"},dir + file)
-                    print("MDImport Selecting GeoBone:" + dir + file)
+                    self.report({"INFO"},dir_path + file)
+                    print("MDImport Selecting GeoBone:" + dir_path + file)
 
             #インポート
-            mdresultpath = dir + file + os.sep + "result" + import_ext
+            # mdresultpath = dir_path + file + os.sep + "result" + import_ext
+            mdresultpath = dir_path + file
             MarvelousDesingerUtils.import_mdresult(mdresultpath, attouch_fjwset)
             print("MDImport Import MDResult:"+mdresultpath)
 
