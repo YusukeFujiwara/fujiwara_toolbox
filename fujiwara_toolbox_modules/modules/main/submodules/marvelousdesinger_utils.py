@@ -798,8 +798,16 @@ class MarvelousDesingerUtils():
         entries = mdj.get_thisfile_entries()
         # files = os.listdir(dir_path)
         # for file in files:
+        files = []
         for entry in entries:
             file = entry + import_ext
+            # 対応するファイルが実際にあるかをチェックしないとだめ！
+            filepath = dir_path + file
+            if not os.path.exists(filepath):
+                continue
+            files.append(file)
+
+        for file in files:
             self.report({"INFO"},file)
             print("MDResult found:"+file)
             # targetname = file
@@ -822,9 +830,12 @@ class MarvelousDesingerUtils():
             for group in bpy.data.groups:
                 # gname = re.sub(r"\.\d+", "", group.name)
                 if group.name == "MainGroup":
-                    g_filepath = group.library.filepath
-                    g_filename = os.path.basename(g_filepath)
-                    gname,ext = os.path.splitext(g_filename)
+                    if group.library is not None:
+                        g_filepath = group.library.filepath
+                        g_filename = os.path.basename(g_filepath)
+                        gname,ext = os.path.splitext(g_filename)
+                    else:
+                        gname = group.name
                 else:
                     gname = group.name
 
