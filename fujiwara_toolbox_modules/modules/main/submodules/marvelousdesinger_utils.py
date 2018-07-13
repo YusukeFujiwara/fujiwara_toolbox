@@ -681,21 +681,22 @@ class MarvelousDesingerUtils():
         scale = Vector((1,1,1))
 
         bonemode = False
-        #もしボーンが選択されていたらそのボーンにトランスフォームをあわせる
-        if current is not None and current.mode == "POSE":
-            armu = fjw.ArmatureUtils(current)
-            pbone = armu.poseactive()
-            armu.get_pbone_world_co(pbone.head)
-            loc = armu.get_pbone_world_co(pbone.head)
-            qrot = pbone.rotation_quaternion
-            scale = pbone.scale
-            print("loc:%s"%str(loc))
-            print("qrot:%s"%str(qrot))
-            print("scale:%s"%str(scale))
+        # ↓微妙なのでやめる
+        # #もしボーンが選択されていたらそのボーンにトランスフォームをあわせる
+        # if current is not None and current.mode == "POSE":
+        #     armu = fjw.ArmatureUtils(current)
+        #     pbone = armu.poseactive()
+        #     armu.get_pbone_world_co(pbone.head)
+        #     loc = armu.get_pbone_world_co(pbone.head)
+        #     qrot = pbone.rotation_quaternion
+        #     scale = pbone.scale
+        #     print("loc:%s"%str(loc))
+        #     print("qrot:%s"%str(qrot))
+        #     print("scale:%s"%str(scale))
 
-            #boneはYupなので入れ替え
-            # qrot = Quaternion((qrot.w, qrot.x, qrot.z * -1, qrot.y))
-            bonemode = True
+        #     #boneはYupなので入れ替え
+        #     # qrot = Quaternion((qrot.w, qrot.x, qrot.z * -1, qrot.y))
+        #     bonemode = True
         print("bonemode:%s"%str(bonemode))
 
         fjw.mode("OBJECT")
