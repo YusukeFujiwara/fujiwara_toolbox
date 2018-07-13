@@ -71,6 +71,7 @@ def get_mddatadir(add_sep=True):
         mdtemp_dir += os.sep
     return mdtemp_dir
 
+
 class MDCode():
     codename = "mdcode"
 
@@ -575,6 +576,15 @@ class MarvelousDesingerUtils():
 
     def __init__(self):
         self.mddata_dir = self.get_mddatadir()
+
+    @classmethod
+    def clear_cue_folder(cls):
+        mdtemp_dir = get_mddatadir(False)
+        files = os.listdir(mdtemp_dir)
+        for file in files:
+            filepath = mdtemp_dir + os.sep + file
+            os.remove(filepath)
+
 
     @classmethod
     def export_active(self, run_simulate=False):
