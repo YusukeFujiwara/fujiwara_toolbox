@@ -16129,6 +16129,10 @@ class FUJIWARATOOLBOX_mdresult_autoimport_only(bpy.types.Operator):
     uiitem.button(bl_idname,bl_label,icon="",mode="")
 
     def execute(self, context):
+        if "_MDWork" in bpy.data.filepath:
+            self.report({"WARNING"}, str("_MDWork.blendでのインポートは無効です！元ファイルに戻ってください！"))
+            return {"CANCELLED"}
+
         MarvelousDesingerUtils.mdresult_auto_import_main(self,context,False)
         return {'FINISHED'}
 ########################################
