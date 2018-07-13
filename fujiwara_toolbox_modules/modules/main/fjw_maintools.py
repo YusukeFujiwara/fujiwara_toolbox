@@ -16590,7 +16590,7 @@ uiitem().vertical()
 #---------------------------------------------
 
 ############################################################################################################################
-uiitem("設定消去")
+uiitem("設定消去など")
 ############################################################################################################################
 #---------------------------------------------
 uiitem().vertical()
@@ -16626,6 +16626,24 @@ class FUJIWARATOOLBOX_MD_DELETE_ALL_SETTINGS(bpy.types.Operator):
             self.delkey(obj, "md_garment_index")
             self.delkey(obj, "md_export_depth")
 
+        return {'FINISHED'}
+########################################
+
+########################################
+#キューをクリア
+########################################
+#bpy.ops.fujiwara_toolbox.md_clear_cuefolder() #キューをクリア
+class FUJIWARATOOLBOX_MD_CLEAR_CUEFOLDER(bpy.types.Operator):
+    """キューフォルダを空にする。"""
+    bl_idname = "fujiwara_toolbox.md_clear_cuefolder"
+    bl_label = "キューをクリア"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        MarvelousDesingerUtils.clear_cue_folder()
         return {'FINISHED'}
 ########################################
 
