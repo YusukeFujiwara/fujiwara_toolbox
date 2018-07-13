@@ -358,6 +358,10 @@ class MDObject():
         garment_path = self.get_garment_path()
         if garment_path != "":
             garment_name, garment_ext = os.path.splitext(os.path.basename(garment_path))
+            # garment_pathを絶対パス化しないといけない
+            if garment_path.find("//") == 0:
+                # 相対パスである
+                garment_path = bpy.path.abspath(garment_path)
             shutil.copy(garment_path, get_mddatadir()+ entry_name + garment_ext)
         # self.export_mdscript()
         mdcode = MDCode()
