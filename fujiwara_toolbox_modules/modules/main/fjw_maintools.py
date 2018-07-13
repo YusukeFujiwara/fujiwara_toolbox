@@ -16623,6 +16623,13 @@ class FUJIWARATOOLBOX_MD_DELETE_ALL_SETTINGS(bpy.types.Operator):
             del obj[name]
 
     def execute(self, context):
+        active = fjw.active()
+        selection = fjw.get_selected_list()
+        for obj in selection:
+            root = fjw.get_root(obj)
+            fjw.activate(root)
+            bpy.ops.object.select_grouped(extend=True, type='CHILDREN_RECURSIVE')
+    
         selection = fjw.get_selected_list()
         for obj in selection:
             self.delkey(obj, "md_garment_path_list")
