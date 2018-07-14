@@ -12520,6 +12520,71 @@ class FUJIWARATOOLBOX_273078(bpy.types.Operator):#ウェイトボーン相対
 
 
 
+#---------------------------------------------
+uiitem().vertical()
+#---------------------------------------------
+#---------------------------------------------
+uiitem().horizontal()
+#---------------------------------------------
+
+
+########################################
+#コンストレイントリセット
+########################################
+#bpy.ops.fujiwara_toolbox.reset_bone_constraints() #コンストレイントリセット
+class FUJIWARATOOLBOX_RESET_BONE_CONSTRAINTS(bpy.types.Operator):
+    """選択ボーンのコンストレイントをリセットする。"""
+    bl_idname = "fujiwara_toolbox.reset_bone_constraints"
+    bl_label = "コンストレイントリセット"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    uiitem = uiitem()
+    uiitem.button(bl_idname,bl_label,icon="",mode="")
+
+    def execute(self, context):
+        obj = fjw.active()
+        if obj.type != "ARMATURE":
+            self.report({"WARNING"}, "アーマチュアを選択してください。")
+            return {"CANCELLED"}
+
+        bonenames = fjw.get_selected_bone_names()
+        
+        # https://blender.stackexchange.com/questions/19602/child-of-constraint-set-inverse-with-python
+        context_copy = bpy.context.copy()
+
+        # bc.mute
+        bc_backups = []
+        for pbone in obj.pose.bones:
+            for bc in pbone.constraints:
+                bc_bu = fjw.PropBackup(bc) 
+                bc_bu.store("mute")
+                bc_bu.store("influence")
+                bc_backups.append(bc_bu)
+                bc.mute = True
+
+        for bonename in bonenames:
+            pbone = obj.pose.bones[bonename]
+            fjw.activate_bone(bonename)
+            for bc in pbone.constraints:
+                bc.mute = False
+                bc.influence = 1
+                context_copy["constraint"] = bc
+                
+                if bc.type == "STRETCH_TO":
+                    bpy.ops.constraint.stretchto_reset(context_copy, constraint=bc.name, owner="BONE")
+                if bc.type == "CHILD_OF":
+                    bpy.ops.constraint.childof_clear_inverse(context_copy, constraint=bc.name, owner='BONE')
+                    bpy.ops.constraint.childof_set_inverse(context_copy, constraint=bc.name, owner='BONE')
+                bc.mute = True
+        
+        for bc_bu in bc_backups:
+            bc_bu.restore()
+            
+        return {'FINISHED'}
+########################################
+
+
+
 
 
 

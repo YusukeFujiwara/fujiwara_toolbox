@@ -469,6 +469,17 @@ def get_selected_list(type="ALL"):
                     list.append(obj)
     return list
 
+def get_selected_bone_names():
+    obj = active()
+    selected_bone_names = []
+    for bone in obj.data.bones:
+        if bone.select:
+            selected_bone_names.append(bone.name)
+    return selected_bone_names
+
+def activate_bone(name):
+    obj = active()
+    obj.data.bones.active = obj.data.bones[name]
 
 #指定名でプロクシを作成する
 def make_proxy(name):
