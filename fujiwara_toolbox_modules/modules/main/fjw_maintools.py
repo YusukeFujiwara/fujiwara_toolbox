@@ -10092,6 +10092,12 @@ class FUJIWARATOOLBOX_DUP_AS_CAGE(bpy.types.Operator):
         obj.draw_type = 'WIRE'
         obj.hide_render = True
 
+        # Subsurfの除去
+        modu = fjw.Modutils(obj)
+        mod_ss_list = modu.find_bytype_list("SUBSURF")
+        for mod_ss in mod_ss_list:
+            modu.remove(mod_ss)
+
         return {'FINISHED'}
 ########################################
 
