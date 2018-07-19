@@ -912,6 +912,31 @@ def duplicate(obj):
     bpy.ops.object.duplicate()
     return active()
 
+
+class EditState:
+    active_obj = None
+    selected_objects = None
+    obj_mode = None
+
+    @classmethod
+    def store(cls):
+        """アクティブオブジェクト、選択とモードの状態を保存する"""
+        cls.active_obj = active()
+        cls.selected_objects = get_selected_list()
+        if cls.active_obj is not None:
+            cls.obj_mode = cls.active_obj.mode
+
+    @classmethod
+    def restore(cls):
+        mode("OBJECT")
+        deselect()
+        if cls.active_obj is not None:
+            activate(cls.active_obj)
+            mode(cls.obj_mode)
+
+
+
+
 def dummy():
     return
 
