@@ -277,7 +277,7 @@ class TextureBaker():
         render.use_bake_normalize = False
         render.bake_margin = 14
         bpy.context.scene.render.bake_distance = 0.2
-        bpy.context.scene.render.bake_bias = 0
+        bpy.context.scene.render.bake_bias = 0.0001
         bpy.ops.object.bake_image()
         self.set_tslots_state(True)
 

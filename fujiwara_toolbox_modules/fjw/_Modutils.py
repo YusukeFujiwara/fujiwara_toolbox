@@ -103,9 +103,9 @@ class Modutils():
                 result.append(mod)
         return result
     
-    def find_bytype(self, type):
+    def find_bytype(self, mod_type):
         for mod in self.mods:
-            if type == mod.type:
+            if mod_type == mod.type:
                 return mod
         return None
 

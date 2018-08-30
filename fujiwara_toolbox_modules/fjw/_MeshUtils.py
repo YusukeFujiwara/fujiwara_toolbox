@@ -128,3 +128,33 @@ class MeshUtils():
         bpy.ops.mesh.remove_doubles()
         mode("OBJECT")
 
+class BmeshUtils():
+    def __init__(self, obj):
+        activate(obj)
+        mode("EDIT")
+        self.data = obj.data
+        self.bm = bmesh.from_edit_mesh(obj.data)
+    
+    def select_all(self):
+        for v in self.bm.verts:
+            v.select = True
+        for e in self.bm.edges:
+            e.select = True
+        for f in self.bm.faces:
+            f.select = True
+        self.bm.select_flush(True)
+
+    def deselect_all(self):
+        for v in self.bm.verts:
+            v.select = False
+        for e in self.bm.edges:
+            e.select = False
+        for f in self.bm.faces:
+            f.select = False
+        self.bm.select_flush(True)
+
+    def select_flush(self):
+        self.bm.select_flush(True)
+
+    def update(self):
+        bmesh.update_edit_mesh(self.data)

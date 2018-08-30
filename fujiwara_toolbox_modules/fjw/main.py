@@ -469,6 +469,17 @@ def get_selected_list(type="ALL"):
                     list.append(obj)
     return list
 
+def get_selected_bone_names():
+    obj = active()
+    selected_bone_names = []
+    for bone in obj.data.bones:
+        if bone.select:
+            selected_bone_names.append(bone.name)
+    return selected_bone_names
+
+def activate_bone(name):
+    obj = active()
+    obj.data.bones.active = obj.data.bones[name]
 
 #指定名でプロクシを作成する
 def make_proxy(name):
@@ -913,6 +924,40 @@ def duplicate(obj):
     return active()
 
 
+class Transform():
+    def __init__(self, obj, copy=True):
+        location = obj.location
+        rotation_euler = obj.rotation_euler
+        rotation_quaternion = obj.rotation_quaternion
+        scale = obj.scale
+        if copy:
+            location = location.copy()
+            rotation_euler = rotation_euler.copy()
+            rotation_quaternion = rotation_quaternion.copy()
+            scale = scale.copy()
+
+        self.location = location
+        self.rotation_euler = rotation_euler
+        self.rotation_quaternion = rotation_quaternion
+        self.scale = scale
+
+        if hasattr(obj, "head"):
+            head = obj.head
+            tail = obj.tail
+            if copy:
+                head = head.copy()
+                tail = tail.copy()
+            self.head = head
+            self.tail = tail
+
+        if hasattr(obj, "vector"):
+            vector = obj.vector
+            if copy:
+                vector = vector.copy()
+            self.vector = vector
+
+
+
 class EditState:
     active_obj = None
     selected_objects = None
@@ -935,7 +980,21 @@ class EditState:
             mode(cls.obj_mode)
 
 
+def create_object(name, obj_type, data_type=None):
+    scene = bpy.context.scene
+    datalist = getattr(bpy.data, obj_type)
+    if not data_type:
+        data = datalist.new(name=name)
+    else:
+        data = datalist.new(name=name, type=data_type)
+    obj = bpy.data.objects.new(name=name, object_data=data)
+    scene.objects.link(obj)
+    return obj
 
+def append(filepath, func):
+    with bpy.data.libraries.load(filepath, link=False) as (data_from, data_to):
+        data_to = func(data_from)
+    return data_to
 
 def dummy():
     return
