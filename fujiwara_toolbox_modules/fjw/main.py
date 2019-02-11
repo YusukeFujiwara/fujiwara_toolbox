@@ -923,6 +923,65 @@ def duplicate(obj):
     bpy.ops.object.duplicate()
     return active()
 
+
+class Transform():
+    def __init__(self, obj, copy=True):
+        location = obj.location
+        rotation_euler = obj.rotation_euler
+        rotation_quaternion = obj.rotation_quaternion
+        scale = obj.scale
+        if copy:
+            location = location.copy()
+            rotation_euler = rotation_euler.copy()
+            rotation_quaternion = rotation_quaternion.copy()
+            scale = scale.copy()
+
+        self.location = location
+        self.rotation_euler = rotation_euler
+        self.rotation_quaternion = rotation_quaternion
+        self.scale = scale
+
+        if hasattr(obj, "head"):
+            head = obj.head
+            tail = obj.tail
+            if copy:
+                head = head.copy()
+                tail = tail.copy()
+            self.head = head
+            self.tail = tail
+
+        if hasattr(obj, "vector"):
+            vector = obj.vector
+            if copy:
+                vector = vector.copy()
+            self.vector = vector
+
+
+
+class EditState:
+    active_obj = None
+    selected_objects = None
+    obj_mode = None
+
+    @classmethod
+    def store(cls):
+        """アクティブオブジェクト、選択とモードの状態を保存する"""
+        cls.active_obj = active()
+        cls.selected_objects = get_selected_list()
+        if cls.active_obj is not None:
+            cls.obj_mode = cls.active_obj.mode
+
+    @classmethod
+    def restore(cls):
+        mode("OBJECT")
+        deselect()
+        if cls.active_obj is not None:
+            activate(cls.active_obj)
+            mode(cls.obj_mode)
+
+
+
+
 def dummy():
     return
 

@@ -13106,7 +13106,7 @@ class FUJIWARATOOLBOX_gen_bone_from_selected_vertices(bpy.types.Operator):
             if v.select:
                 b = edit_bones.new("bonefromnormal")
                 b.head = v.co
-                b.tail = b.head + v.normal*0.1
+                b.tail = b.head + v.normal*0.01
                 pass
 
         return {'FINISHED'}
